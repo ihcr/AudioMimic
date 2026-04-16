@@ -38,6 +38,17 @@ def parse_train_opt():
     parser.add_argument(
         "--checkpoint", type=str, default="", help="trained checkpoint path (optional)"
     )
+    parser.add_argument("--learning_rate", type=float, default=4e-4)
+    parser.add_argument("--weight_decay", type=float, default=0.02)
+    parser.add_argument("--use_beats", action="store_true")
+    parser.add_argument(
+        "--beat_rep", type=str, choices=("distance", "pulse"), default="distance"
+    )
+    parser.add_argument("--lambda_acc", type=float, default=0.1)
+    parser.add_argument("--lambda_beat", type=float, default=0.5)
+    parser.add_argument("--beat_a", type=float, default=10.0)
+    parser.add_argument("--beat_c", type=float, default=0.1)
+    parser.add_argument("--beat_estimator_ckpt", type=str, default="")
     opt = parser.parse_args()
     return opt
 
@@ -45,7 +56,12 @@ def parse_train_opt():
 def parse_test_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument("--feature_type", type=str, default="jukebox")
-    parser.add_argument("--out_length", type=float, default=30, help="max. length of output, in seconds")
+    parser.add_argument(
+        "--out_length",
+        type=float,
+        default=30,
+        help="max. length of output, in seconds",
+    )
     parser.add_argument(
         "--processed_data_dir",
         type=str,
@@ -94,5 +110,13 @@ def parse_test_opt():
         default="cached_features/",
         help="Where to save/load the features",
     )
+    parser.add_argument("--use_beats", action="store_true")
+    parser.add_argument(
+        "--beat_rep", type=str, choices=("distance", "pulse"), default="distance"
+    )
+    parser.add_argument(
+        "--beat_source", type=str, choices=("none", "audio", "user"), default="none"
+    )
+    parser.add_argument("--beat_file", type=str, default="")
     opt = parser.parse_args()
     return opt

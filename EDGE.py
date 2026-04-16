@@ -37,12 +37,26 @@ class EDGE:
         EMA=True,
         learning_rate=4e-4,
         weight_decay=0.02,
+        use_beats=False,
+        beat_rep="distance",
+        lambda_acc=0.1,
+        lambda_beat=0.5,
+        beat_a=10.0,
+        beat_c=0.1,
+        beat_estimator_ckpt="",
     ):
         ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
         self.accelerator = Accelerator(kwargs_handlers=[ddp_kwargs])
         state = AcceleratorState()
         num_processes = state.num_processes
         use_baseline_feats = feature_type == "baseline"
+        self.use_beats = use_beats
+        self.beat_rep = beat_rep
+        self.lambda_acc = lambda_acc
+        self.lambda_beat = lambda_beat
+        self.beat_a = beat_a
+        self.beat_c = beat_c
+        self.beat_estimator_ckpt = beat_estimator_ckpt
 
         pos_dim = 3
         rot_dim = 24 * 6  # 24 joints, 6dof

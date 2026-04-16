@@ -5,16 +5,16 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 import random
 
-import jukemirlib
 import numpy as np
 import torch
 from tqdm import tqdm
 
 from args import parse_test_opt
 from data.slice import slice_audio
-from EDGE import EDGE
-from data.audio_extraction.baseline_features import extract as baseline_extract
-from data.audio_extraction.jukebox_features import extract as juke_extract
+
+EDGE = None
+baseline_extract = None
+juke_extract = None
 
 # sort filenames that look like songname_slice{number}.ext
 key_func = lambda x: int(os.path.splitext(x)[0].split("_")[-1].split("slice")[-1])
@@ -37,8 +37,39 @@ def stringintcmp_(a, b):
 stringintkey = cmp_to_key(stringintcmp_)
 
 
+def _load_edge():
+    global EDGE
+    if EDGE is None:
+        from EDGE import EDGE as edge_cls
+
+        EDGE = edge_cls
+    return EDGE
+
+
+def _load_baseline_extract():
+    global baseline_extract
+    if baseline_extract is None:
+        from data.audio_extraction.baseline_features import extract as extract
+
+        baseline_extract = extract
+    return baseline_extract
+
+
+def _load_jukebox_extract():
+    global juke_extract
+    if juke_extract is None:
+        from data.audio_extraction.jukebox_features import extract as extract
+
+        juke_extract = extract
+    return juke_extract
+
+
 def test(opt):
-    feature_func = juke_extract if opt.feature_type == "jukebox" else baseline_extract
+    feature_func = (
+        _load_jukebox_extract()
+        if opt.feature_type == "jukebox"
+        else _load_baseline_extract()
+    )
     sample_length = opt.out_length
     sample_size = int(sample_length / 2.5) - 1
 
@@ -103,7 +134,7 @@ def test(opt):
             all_cond.append(cond_list)
             all_filenames.append(file_list[rand_idx : rand_idx + sample_size])
 
-    model = EDGE(opt.feature_type, opt.checkpoint)
+    model = _load_edge()(opt.feature_type, opt.checkpoint)
     model.eval()
 
     # directory for optionally saving the dances for eval
