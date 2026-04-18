@@ -58,6 +58,10 @@ class TrainArgParserTests(unittest.TestCase):
             "0.2",
             "--beat_estimator_ckpt",
             "weights/beat_estimator.pt",
+            "--train_num_workers",
+            "3",
+            "--test_num_workers",
+            "1",
         ):
             opt = args.parse_train_opt()
 
@@ -70,6 +74,8 @@ class TrainArgParserTests(unittest.TestCase):
         self.assertEqual(opt.beat_a, 12.0)
         self.assertEqual(opt.beat_c, 0.2)
         self.assertEqual(opt.beat_estimator_ckpt, "weights/beat_estimator.pt")
+        self.assertEqual(opt.train_num_workers, 3)
+        self.assertEqual(opt.test_num_workers, 1)
 
     def test_test_parser_accepts_phase0_beat_arguments(self):
         with argv_context(
@@ -104,6 +110,8 @@ class TrainWiringTests(unittest.TestCase):
             beat_a=10.0,
             beat_c=0.1,
             beat_estimator_ckpt="weights/beat_estimator.pt",
+            train_num_workers=0,
+            test_num_workers=0,
         )
         fake_model = MagicMock()
         fake_edge_ctor = MagicMock(return_value=fake_model)
@@ -129,6 +137,15 @@ class TrainWiringTests(unittest.TestCase):
 
 
 class CreateDatasetEntrypointTests(unittest.TestCase):
+    def test_dataset_folder_falls_back_to_shared_repo_data_in_worktree(self):
+        create_dataset_module = reload_data_module("create_dataset")
+        shared_root = REPO_ROOT.parents[1] / "data" / "edge_aistpp"
+
+        with patch.object(create_dataset_module, "DATA_DIR", DATA_DIR):
+            resolved = create_dataset_module._resolve_dataset_folder("edge_aistpp")
+
+        self.assertEqual(resolved, shared_root)
+
     def test_train_help_runs_from_repo_root(self):
         completed = subprocess.run(
             [str(ENV_PYTHON), "train.py", "--help"],
@@ -173,18 +190,21 @@ class CreateDatasetEntrypointTests(unittest.TestCase):
             length=5.0,
         )
         expected_root = DATA_DIR
+        expected_dataset_root = REPO_ROOT.parents[1] / "data" / "edge_aistpp"
 
         with patch.object(create_dataset_module, "split_data") as split_data, patch.object(
             create_dataset_module, "slice_aistpp"
         ) as slice_aistpp, patch.object(
             create_dataset_module, "baseline_extract"
         ) as baseline_extract, patch.object(
+            create_dataset_module, "_load_jukebox_setup", return_value=lambda: None
+        ), patch.object(
             create_dataset_module, "jukebox_extract"
         ) as jukebox_extract:
             create_dataset_module.create_dataset(opt)
 
         split_data.assert_called_once_with(
-            str(expected_root / "edge_aistpp"), output_root=expected_root
+            str(expected_dataset_root), output_root=expected_root
         )
         slice_aistpp.assert_any_call(
             str(expected_root / "train" / "motions"),
@@ -209,10 +229,14 @@ class CreateDatasetEntrypointTests(unittest.TestCase):
         jukebox_extract.assert_any_call(
             str(expected_root / "train" / "wavs_sliced"),
             str(expected_root / "train" / "jukebox_feats"),
+            opt.stride,
+            opt.length,
         )
         jukebox_extract.assert_any_call(
             str(expected_root / "test" / "wavs_sliced"),
             str(expected_root / "test" / "jukebox_feats"),
+            opt.stride,
+            opt.length,
         )
 
     def test_create_dataset_invokes_beat_extraction_when_requested(self):
@@ -242,6 +266,38 @@ class CreateDatasetEntrypointTests(unittest.TestCase):
             str(expected_root / "test" / "wavs_sliced"),
             str(expected_root / "test" / "beat_feats"),
         )
+
+    def test_create_dataset_preflights_jukebox_models_before_processing(self):
+        create_dataset_module = reload_data_module("create_dataset")
+        opt = SimpleNamespace(
+            dataset_folder="edge_aistpp",
+            extract_baseline=False,
+            extract_jukebox=True,
+            extract_beats=False,
+            stride=0.5,
+            length=5.0,
+        )
+        call_order = []
+
+        def record(name):
+            def inner(*args, **kwargs):
+                call_order.append(name)
+            return inner
+
+        with patch.object(
+            create_dataset_module, "_load_jukebox_setup", return_value=record("setup")
+        ), patch.object(
+            create_dataset_module, "split_data", side_effect=record("split")
+        ), patch.object(
+            create_dataset_module, "slice_aistpp", side_effect=record("slice")
+        ), patch.object(
+            create_dataset_module, "_load_jukebox_extract", return_value=record("extract")
+        ):
+            create_dataset_module.create_dataset(opt)
+
+        self.assertIn("setup", call_order)
+        self.assertIn("split", call_order)
+        self.assertLess(call_order.index("setup"), call_order.index("split"))
 
 
 if __name__ == "__main__":

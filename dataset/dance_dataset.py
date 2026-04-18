@@ -8,13 +8,13 @@ from typing import Any
 
 import numpy as np
 import torch
-from pytorch3d.transforms import (RotateAxisAngle, axis_angle_to_quaternion,
-                                  quaternion_multiply,
-                                  quaternion_to_axis_angle)
 from torch.utils.data import Dataset
 
 from dataset.preprocess import Normalizer, vectorize_many
 from dataset.quaternion import ax_to_6v
+from rotation_transforms import (RotateAxisAngle, axis_angle_to_quaternion,
+                                 quaternion_multiply,
+                                 quaternion_to_axis_angle)
 from vis import SMPLSkeleton
 
 
@@ -29,6 +29,8 @@ class AISTPPDataset(Dataset):
         data_len: int = -1,
         include_contacts: bool = True,
         force_reload: bool = False,
+        use_beats: bool = False,
+        beat_rep: str = "distance",
     ):
         self.data_path = data_path
         self.raw_fps = 60
@@ -39,19 +41,22 @@ class AISTPPDataset(Dataset):
         self.train = train
         self.name = "Train" if self.train else "Test"
         self.feature_type = feature_type
+        self.use_beats = use_beats
+        self.beat_rep = beat_rep
 
         self.normalizer = normalizer
         self.data_len = data_len
 
-        pickle_name = "processed_train_data.pkl" if train else "processed_test_data.pkl"
+        split_name = "train" if train else "test"
+        beat_tag = "beat" if use_beats else "nobeat"
+        pickle_name = f"processed_{split_name}_{feature_type}_{beat_tag}_{beat_rep}.pkl"
 
         backup_path = Path(backup_path)
         backup_path.mkdir(parents=True, exist_ok=True)
         # save normalizer
         if not train:
-            pickle.dump(
-                normalizer, open(os.path.join(backup_path, "normalizer.pkl"), "wb")
-            )
+            with open(os.path.join(backup_path, "normalizer.pkl"), "wb") as handle:
+                pickle.dump(normalizer, handle)
         # load raw data
         if not force_reload and pickle_name in os.listdir(backup_path):
             print("Using cached dataset...")
@@ -74,6 +79,8 @@ class AISTPPDataset(Dataset):
             "filenames": data["filenames"],
             "wavs": data["wavs"],
         }
+        if self.use_beats:
+            self.data["beatnames"] = data["beatnames"]
         assert len(pose_input) == len(data["filenames"])
         self.length = len(pose_input)
 
@@ -82,8 +89,28 @@ class AISTPPDataset(Dataset):
 
     def __getitem__(self, idx):
         filename_ = self.data["filenames"][idx]
-        feature = torch.from_numpy(np.load(filename_))
-        return self.data["pose"][idx], feature, filename_, self.data["wavs"][idx]
+        feature = torch.from_numpy(np.load(filename_)).float()
+        wavname = self.data["wavs"][idx]
+        if not self.use_beats:
+            return self.data["pose"][idx], feature, filename_, wavname
+
+        beat_meta = np.load(self.data["beatnames"][idx])
+        cond_key = "motion" if self.train else "audio"
+        if self.beat_rep == "distance":
+            beat = torch.from_numpy(beat_meta[f"{cond_key}_dist"].astype(np.int64))
+        elif self.beat_rep == "pulse":
+            beat = torch.from_numpy(beat_meta[f"{cond_key}_mask"].astype(np.float32)).unsqueeze(-1)
+        else:
+            raise ValueError(f"Unsupported beat representation: {self.beat_rep}")
+
+        cond = {
+            "music": feature,
+            "beat": beat,
+            "beat_target": torch.from_numpy(beat_meta["motion_dist"].astype(np.float32)),
+            "beat_spacing": torch.from_numpy(beat_meta["motion_spacing"].astype(np.float32)),
+            "audio_mask": torch.from_numpy(beat_meta["audio_mask"].astype(np.float32)),
+        }
+        return self.data["pose"][idx], cond, filename_, wavname
 
     def load_aistpp(self):
         # open data path
@@ -104,31 +131,51 @@ class AISTPPDataset(Dataset):
         motion_path = os.path.join(split_data_path, "motions_sliced")
         sound_path = os.path.join(split_data_path, f"{self.feature_type}_feats")
         wav_path = os.path.join(split_data_path, f"wavs_sliced")
+        beat_path = os.path.join(split_data_path, "beat_feats")
         # sort motions and sounds
         motions = sorted(glob.glob(os.path.join(motion_path, "*.pkl")))
         features = sorted(glob.glob(os.path.join(sound_path, "*.npy")))
         wavs = sorted(glob.glob(os.path.join(wav_path, "*.wav")))
+        beats = sorted(glob.glob(os.path.join(beat_path, "*.npz"))) if self.use_beats else []
 
         # stack the motions and features together
         all_pos = []
         all_q = []
         all_names = []
         all_wavs = []
-        assert len(motions) == len(features)
-        for motion, feature, wav in zip(motions, features, wavs):
+        all_beats = []
+        if self.use_beats:
+            assert len(motions) == len(features) == len(wavs) == len(beats)
+            pairs = zip(motions, features, wavs, beats)
+        else:
+            assert len(motions) == len(features) == len(wavs)
+            pairs = zip(motions, features, wavs)
+
+        for items in pairs:
+            if self.use_beats:
+                motion, feature, wav, beat = items
+            else:
+                motion, feature, wav = items
             # make sure name is matching
             m_name = os.path.splitext(os.path.basename(motion))[0]
             f_name = os.path.splitext(os.path.basename(feature))[0]
             w_name = os.path.splitext(os.path.basename(wav))[0]
-            assert m_name == f_name == w_name, str((motion, feature, wav))
+            if self.use_beats:
+                b_name = os.path.splitext(os.path.basename(beat))[0]
+                assert m_name == f_name == w_name == b_name, str((motion, feature, wav, beat))
+            else:
+                assert m_name == f_name == w_name, str((motion, feature, wav))
             # load motion
-            data = pickle.load(open(motion, "rb"))
+            with open(motion, "rb") as handle:
+                data = pickle.load(handle)
             pos = data["pos"]
             q = data["q"]
             all_pos.append(pos)
             all_q.append(q)
             all_names.append(feature)
             all_wavs.append(wav)
+            if self.use_beats:
+                all_beats.append(beat)
 
         all_pos = np.array(all_pos)  # N x seq x 3
         all_q = np.array(all_q)  # N x seq x (joint * 3)
@@ -137,6 +184,8 @@ class AISTPPDataset(Dataset):
         all_pos = all_pos[:, :: self.data_stride, :]
         all_q = all_q[:, :: self.data_stride, :]
         data = {"pos": all_pos, "q": all_q, "filenames": all_names, "wavs": all_wavs}
+        if self.use_beats:
+            data["beatnames"] = all_beats
         return data
 
     def process_dataset(self, root_pos, local_q):

@@ -36,6 +36,18 @@ def parse_train_opt():
     )
     parser.add_argument("--ema_interval", type=int, default=1, help="ema every x steps")
     parser.add_argument(
+        "--train_num_workers",
+        type=int,
+        default=0,
+        help="DataLoader workers for the training split",
+    )
+    parser.add_argument(
+        "--test_num_workers",
+        type=int,
+        default=0,
+        help="DataLoader workers for the test split",
+    )
+    parser.add_argument(
         "--checkpoint", type=str, default="", help="trained checkpoint path (optional)"
     )
     parser.add_argument("--learning_rate", type=float, default=4e-4)

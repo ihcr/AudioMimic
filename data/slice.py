@@ -57,7 +57,13 @@ def slice_aistpp(motion_dir, wav_dir, stride=0.5, length=5):
     os.makedirs(wav_out, exist_ok=True)
     os.makedirs(motion_out, exist_ok=True)
     assert len(wavs) == len(motions)
-    for wav, motion in tqdm(zip(wavs, motions)):
+    split_name = os.path.basename(motion_dir)
+    for wav, motion in tqdm(
+        zip(wavs, motions),
+        total=len(wavs),
+        desc=f"Slicing {split_name}",
+        unit="clip",
+    ):
         # make sure name is matching
         m_name = os.path.splitext(os.path.basename(motion))[0]
         w_name = os.path.splitext(os.path.basename(wav))[0]
@@ -74,5 +80,5 @@ def slice_audio_folder(wav_dir, stride=0.5, length=5):
     wavs = sorted(glob.glob(f"{wav_dir}/*.wav"))
     wav_out = wav_dir + "_sliced"
     os.makedirs(wav_out, exist_ok=True)
-    for wav in tqdm(wavs):
+    for wav in tqdm(wavs, total=len(wavs), desc="Slicing audio", unit="file"):
         audio_slices = slice_audio(wav, stride, length, wav_out)

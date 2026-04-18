@@ -1,0 +1,326 @@
+import importlib
+import os
+import pickle
+import sys
+import unittest
+from pathlib import Path
+from tempfile import TemporaryDirectory
+from unittest.mock import patch
+
+import numpy as np
+import torch
+from torch.utils.data import Dataset
+
+
+def reload_module(module_name):
+    sys.modules.pop(module_name, None)
+    return importlib.import_module(module_name)
+
+
+class DatasetBeatSchemaTests(unittest.TestCase):
+    def setUp(self):
+        self.dataset_module = reload_module("dataset.dance_dataset")
+
+    def test_dataset_imports_without_pytorch3d(self):
+        self.assertTrue(hasattr(self.dataset_module, "AISTPPDataset"))
+
+    def test_dataset_uses_beat_aware_cache_name(self):
+        dataset_cls = self.dataset_module.AISTPPDataset
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            feature_path = tmp_path / "clip.npy"
+            beat_path = tmp_path / "clip.npz"
+            wav_path = tmp_path / "clip.wav"
+            np.save(feature_path, np.zeros((150, 4800), dtype=np.float32))
+            np.savez(
+                beat_path,
+                motion_beats=np.array([1], dtype=np.int64),
+                motion_mask=np.zeros(150, dtype=np.float32),
+                motion_dist=np.zeros(150, dtype=np.int64),
+                motion_spacing=np.ones(150, dtype=np.float32),
+                audio_beats=np.array([1], dtype=np.int64),
+                audio_mask=np.zeros(150, dtype=np.float32),
+                audio_dist=np.zeros(150, dtype=np.int64),
+                audio_spacing=np.ones(150, dtype=np.float32),
+            )
+            wav_path.write_bytes(b"wav")
+
+            fake_data = {
+                "pos": np.zeros((1, 150, 3), dtype=np.float32),
+                "q": np.zeros((1, 150, 72), dtype=np.float32),
+                "filenames": [str(feature_path)],
+                "wavs": [str(wav_path)],
+                "beatnames": [str(beat_path)],
+            }
+            fake_pose = torch.zeros((1, 150, 151), dtype=torch.float32)
+
+            with patch.object(dataset_cls, "load_aistpp", return_value=fake_data), patch.object(
+                dataset_cls, "process_dataset", return_value=fake_pose
+            ):
+                dataset_cls(
+                    data_path="unused",
+                    backup_path=tmpdir,
+                    train=True,
+                    feature_type="jukebox",
+                    use_beats=True,
+                    beat_rep="distance",
+                    force_reload=True,
+                )
+
+            self.assertTrue((tmp_path / "processed_train_jukebox_beat_distance.pkl").is_file())
+
+    def test_getitem_returns_tensor_condition_when_beats_disabled(self):
+        dataset_cls = self.dataset_module.AISTPPDataset
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            feature = np.ones((150, 35), dtype=np.float32)
+            feature_path = tmp_path / "clip.npy"
+            np.save(feature_path, feature)
+            wav_path = tmp_path / "clip.wav"
+            wav_path.write_bytes(b"wav")
+
+            fake_data = {
+                "pos": np.zeros((1, 150, 3), dtype=np.float32),
+                "q": np.zeros((1, 150, 72), dtype=np.float32),
+                "filenames": [str(feature_path)],
+                "wavs": [str(wav_path)],
+            }
+            fake_pose = torch.zeros((1, 150, 151), dtype=torch.float32)
+
+            with patch.object(dataset_cls, "load_aistpp", return_value=fake_data), patch.object(
+                dataset_cls, "process_dataset", return_value=fake_pose
+            ):
+                dataset = dataset_cls(
+                    data_path="unused",
+                    backup_path=tmpdir,
+                    train=True,
+                    feature_type="baseline",
+                    force_reload=True,
+                )
+
+            pose, cond, _, _ = dataset[0]
+            self.assertTrue(torch.is_tensor(cond))
+            self.assertEqual(cond.shape, (150, 35))
+            self.assertTrue(torch.equal(pose, fake_pose[0]))
+
+    def test_getitem_returns_train_distance_condition_dict(self):
+        dataset_cls = self.dataset_module.AISTPPDataset
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            feature_path = tmp_path / "clip.npy"
+            beat_path = tmp_path / "clip.npz"
+            wav_path = tmp_path / "clip.wav"
+
+            np.save(feature_path, np.ones((150, 4800), dtype=np.float32))
+            np.savez(
+                beat_path,
+                motion_beats=np.array([10, 40], dtype=np.int64),
+                motion_mask=np.eye(1, 150, 10, dtype=np.float32).reshape(150),
+                motion_dist=np.arange(150, dtype=np.int64),
+                motion_spacing=np.full(150, 30.0, dtype=np.float32),
+                audio_beats=np.array([12, 42], dtype=np.int64),
+                audio_mask=np.eye(1, 150, 12, dtype=np.float32).reshape(150),
+                audio_dist=np.arange(149, -1, -1, dtype=np.int64),
+                audio_spacing=np.full(150, 20.0, dtype=np.float32),
+            )
+            wav_path.write_bytes(b"wav")
+
+            fake_data = {
+                "pos": np.zeros((1, 150, 3), dtype=np.float32),
+                "q": np.zeros((1, 150, 72), dtype=np.float32),
+                "filenames": [str(feature_path)],
+                "wavs": [str(wav_path)],
+                "beatnames": [str(beat_path)],
+            }
+            fake_pose = torch.zeros((1, 150, 151), dtype=torch.float32)
+
+            with patch.object(dataset_cls, "load_aistpp", return_value=fake_data), patch.object(
+                dataset_cls, "process_dataset", return_value=fake_pose
+            ):
+                dataset = dataset_cls(
+                    data_path="unused",
+                    backup_path=tmpdir,
+                    train=True,
+                    feature_type="jukebox",
+                    use_beats=True,
+                    beat_rep="distance",
+                    force_reload=True,
+                )
+
+            _, cond, _, _ = dataset[0]
+            self.assertEqual(set(cond.keys()), {"music", "beat", "beat_target", "beat_spacing", "audio_mask"})
+            self.assertEqual(cond["music"].shape, (150, 4800))
+            self.assertEqual(cond["beat"].dtype, torch.int64)
+            self.assertEqual(cond["beat_target"].dtype, torch.float32)
+            self.assertTrue(torch.equal(cond["beat"], torch.arange(150, dtype=torch.int64)))
+
+    def test_getitem_returns_test_pulse_condition_dict(self):
+        dataset_cls = self.dataset_module.AISTPPDataset
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            feature_path = tmp_path / "clip.npy"
+            beat_path = tmp_path / "clip.npz"
+            wav_path = tmp_path / "clip.wav"
+
+            np.save(feature_path, np.ones((150, 35), dtype=np.float32))
+            audio_mask = np.zeros(150, dtype=np.float32)
+            audio_mask[[5, 25]] = 1.0
+            np.savez(
+                beat_path,
+                motion_beats=np.array([10], dtype=np.int64),
+                motion_mask=np.zeros(150, dtype=np.float32),
+                motion_dist=np.arange(150, dtype=np.int64),
+                motion_spacing=np.full(150, 30.0, dtype=np.float32),
+                audio_beats=np.array([5, 25], dtype=np.int64),
+                audio_mask=audio_mask,
+                audio_dist=np.arange(149, -1, -1, dtype=np.int64),
+                audio_spacing=np.full(150, 20.0, dtype=np.float32),
+            )
+            wav_path.write_bytes(b"wav")
+
+            fake_data = {
+                "pos": np.zeros((1, 150, 3), dtype=np.float32),
+                "q": np.zeros((1, 150, 72), dtype=np.float32),
+                "filenames": [str(feature_path)],
+                "wavs": [str(wav_path)],
+                "beatnames": [str(beat_path)],
+            }
+            fake_pose = torch.zeros((1, 150, 151), dtype=torch.float32)
+
+            with patch.object(dataset_cls, "load_aistpp", return_value=fake_data), patch.object(
+                dataset_cls, "process_dataset", return_value=fake_pose
+            ):
+                dataset = dataset_cls(
+                    data_path="unused",
+                    backup_path=tmpdir,
+                    train=False,
+                    feature_type="baseline",
+                    use_beats=True,
+                    beat_rep="pulse",
+                    normalizer=object(),
+                    force_reload=True,
+                )
+
+            _, cond, _, _ = dataset[0]
+            self.assertEqual(cond["music"].shape, (150, 35))
+            self.assertEqual(cond["beat"].shape, (150, 1))
+            self.assertEqual(cond["beat"].dtype, torch.float32)
+            self.assertTrue(torch.equal(cond["beat"][:, 0], torch.from_numpy(audio_mask)))
+
+
+class BeatEstimatorTests(unittest.TestCase):
+    def test_beat_estimator_forward_shape_and_nonnegative(self):
+        beat_estimator = reload_module("model.beat_estimator")
+        model = beat_estimator.BeatDistanceEstimator()
+        joints = torch.randn(2, 150, 24, 3)
+
+        output = model(joints)
+
+        self.assertEqual(output.shape, (2, 150))
+        self.assertTrue(torch.all(output >= 0))
+
+    def test_motion_beat_dataset_pairs_motion_and_beats(self):
+        train_module = reload_module("train_beat_estimator")
+
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            motion_dir = tmp_path / "motions_sliced"
+            beat_dir = tmp_path / "beat_feats"
+            motion_dir.mkdir()
+            beat_dir.mkdir()
+
+            with open(motion_dir / "clipA.pkl", "wb") as handle:
+                pickle.dump({"pos": np.zeros((300, 3)), "q": np.zeros((300, 72))}, handle)
+            np.savez(
+                beat_dir / "clipA.npz",
+                motion_dist=np.arange(150, dtype=np.int64),
+                motion_spacing=np.full(150, 30.0, dtype=np.float32),
+            )
+
+            dataset = train_module.MotionBeatDataset(str(motion_dir), str(beat_dir))
+            motion_path, beat_path = dataset.samples[0]
+
+            self.assertEqual(len(dataset), 1)
+            self.assertTrue(motion_path.endswith("clipA.pkl"))
+            self.assertTrue(beat_path.endswith("clipA.npz"))
+
+    def test_save_checkpoint_roundtrip(self):
+        beat_estimator = reload_module("model.beat_estimator")
+        train_module = reload_module("train_beat_estimator")
+        model = beat_estimator.BeatDistanceEstimator()
+
+        with TemporaryDirectory() as tmpdir:
+            ckpt_path = Path(tmpdir) / "beat_estimator.pt"
+            train_module.save_checkpoint(
+                model,
+                ckpt_path,
+                {"hidden_dim": 128, "num_layers": 6},
+            )
+            payload = torch.load(ckpt_path, map_location="cpu", weights_only=False)
+
+        self.assertIn("model_state_dict", payload)
+        self.assertEqual(payload["config"]["hidden_dim"], 128)
+
+    def test_train_reports_batch_progress(self):
+        train_module = reload_module("train_beat_estimator")
+
+        class TinyDataset(Dataset):
+            def __len__(self):
+                return 2
+
+            def __getitem__(self, idx):
+                joints = torch.zeros(150, 24, 3, dtype=torch.float32)
+                target = torch.zeros(150, dtype=torch.float32)
+                return joints, target
+
+        progress_calls = []
+
+        class FakeProgress:
+            def __init__(self, iterable, **kwargs):
+                self._iterable = iterable
+                self.kwargs = kwargs
+                progress_calls.append(kwargs)
+
+            def __iter__(self):
+                return iter(self._iterable)
+
+            def set_postfix(self, **kwargs):
+                self.postfix = kwargs
+
+        def fake_tqdm(iterable, **kwargs):
+            return FakeProgress(iterable, **kwargs)
+
+        class TinyModel(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.bias = torch.nn.Parameter(torch.zeros(1))
+
+            def forward(self, joints):
+                batch, seq_len = joints.shape[:2]
+                return self.bias.expand(batch, seq_len)
+
+        with patch.object(
+            train_module, "MotionBeatDataset", return_value=TinyDataset()
+        ), patch.object(
+            train_module, "save_checkpoint"
+        ), patch.object(
+            train_module, "BeatDistanceEstimator", return_value=TinyModel()
+        ), patch.object(
+            train_module, "tqdm", side_effect=fake_tqdm, create=True
+        ):
+            train_module.train(
+                motion_dir="unused",
+                beat_dir="unused",
+                output_path="unused.pt",
+                epochs=1,
+                batch_size=1,
+                device="cpu",
+            )
+
+        self.assertEqual(len(progress_calls), 1)
+        self.assertEqual(progress_calls[0]["desc"], "Beat estimator 1/1")
+        self.assertEqual(progress_calls[0]["unit"], "batch")
+
+
+if __name__ == "__main__":
+    unittest.main()

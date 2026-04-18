@@ -5,12 +5,16 @@ from pathlib import Path
 import librosa
 import librosa as lr
 import numpy as np
+import scipy.signal
 from tqdm import tqdm
 
 FPS = 30
 HOP_LENGTH = 512
 SR = FPS * HOP_LENGTH
 EPS = 1e-6
+
+if not hasattr(scipy.signal, "hann") and hasattr(scipy.signal, "windows"):
+    scipy.signal.hann = scipy.signal.windows.hann
 
 
 def _get_tempo(audio_name):
@@ -93,7 +97,12 @@ def extract_folder(src, dest):
     fpaths = Path(src).glob("*")
     fpaths = sorted(list(fpaths))
     extract_ = partial(extract, skip_completed=False, dest_dir=dest)
-    for fpath in tqdm(fpaths):
+    for fpath in tqdm(
+        fpaths,
+        total=len(fpaths),
+        desc="Baseline features",
+        unit="clip",
+    ):
         rep, path = extract_(fpath)
         np.save(path, rep)
 

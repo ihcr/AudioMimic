@@ -328,6 +328,15 @@ class DanceDecoder(nn.Module):
         
         self.final_layer = nn.Linear(latent_dim, output_feats)
 
+    def _project_condition(self, cond_embed):
+        return self.cond_projection(cond_embed)
+
+    def _encode_condition_tokens(self, cond_embed):
+        cond_tokens = self._project_condition(cond_embed)
+        cond_tokens = self.abs_pos_encoding(cond_tokens)
+        cond_tokens = self.cond_encoder(cond_tokens)
+        return cond_tokens
+
     def guided_forward(self, x, cond_embed, times, guidance_weight):
         unc = self.forward(x, cond_embed, times, cond_drop_prob=1)
         conditioned = self.forward(x, cond_embed, times, cond_drop_prob=0)
@@ -349,10 +358,7 @@ class DanceDecoder(nn.Module):
         keep_mask_embed = rearrange(keep_mask, "b -> b 1 1")
         keep_mask_hidden = rearrange(keep_mask, "b -> b 1")
 
-        cond_tokens = self.cond_projection(cond_embed)
-        # encode tokens
-        cond_tokens = self.abs_pos_encoding(cond_tokens)
-        cond_tokens = self.cond_encoder(cond_tokens)
+        cond_tokens = self._encode_condition_tokens(cond_embed)
 
         null_cond_embed = self.null_cond_embed.to(cond_tokens.dtype)
         cond_tokens = torch.where(keep_mask_embed, cond_tokens, null_cond_embed)
@@ -382,3 +388,116 @@ class DanceDecoder(nn.Module):
 
         output = self.final_layer(output)
         return output
+
+
+class BeatEncoder(nn.Module):
+    def __init__(
+        self,
+        beat_rep: str,
+        seq_len: int,
+        beat_emb_dim: int = 128,
+        latent_dim: int = 512,
+        ff_size: int = 1024,
+        num_heads: int = 4,
+        dropout: float = 0.1,
+        activation: Callable[[Tensor], Tensor] = F.gelu,
+        use_rotary: bool = True,
+        max_distance_vocab: int = 151,
+    ) -> None:
+        super().__init__()
+        self.beat_rep = beat_rep
+        self.max_distance_vocab = max_distance_vocab
+        self.rotary = RotaryEmbedding(dim=beat_emb_dim) if use_rotary else None
+        self.abs_pos_encoding = (
+            nn.Identity()
+            if use_rotary
+            else PositionalEncoding(beat_emb_dim, dropout, batch_first=True)
+        )
+
+        if beat_rep == "distance":
+            self.input_projection = nn.Embedding(max_distance_vocab, beat_emb_dim)
+        elif beat_rep == "pulse":
+            self.input_projection = nn.Linear(1, beat_emb_dim)
+        else:
+            raise ValueError(f"Unsupported beat representation: {beat_rep}")
+
+        self.encoder = nn.Sequential(
+            TransformerEncoderLayer(
+                d_model=beat_emb_dim,
+                nhead=num_heads,
+                dim_feedforward=ff_size,
+                dropout=dropout,
+                activation=activation,
+                batch_first=True,
+                rotary=self.rotary,
+            ),
+            TransformerEncoderLayer(
+                d_model=beat_emb_dim,
+                nhead=num_heads,
+                dim_feedforward=ff_size,
+                dropout=dropout,
+                activation=activation,
+                batch_first=True,
+                rotary=self.rotary,
+            ),
+        )
+        self.output_projection = nn.Linear(beat_emb_dim, latent_dim)
+
+    def forward(self, beat):
+        if self.beat_rep == "distance":
+            if beat.ndim == 3 and beat.shape[-1] == 1:
+                beat = beat.squeeze(-1)
+            beat = beat.long().clamp_(0, self.max_distance_vocab - 1)
+            tokens = self.input_projection(beat)
+        else:
+            if beat.ndim == 2:
+                beat = beat.unsqueeze(-1)
+            tokens = self.input_projection(beat.float())
+
+        tokens = self.abs_pos_encoding(tokens)
+        tokens = self.encoder(tokens)
+        return self.output_projection(tokens)
+
+
+class BeatDanceDecoder(DanceDecoder):
+    def __init__(
+        self,
+        *args,
+        beat_rep: str = "distance",
+        beat_emb_dim: int = 128,
+        max_distance_vocab: int = 151,
+        **kwargs,
+    ) -> None:
+        seq_len = kwargs.get("seq_len", 150)
+        latent_dim = kwargs.get("latent_dim", 256)
+        ff_size = kwargs.get("ff_size", 1024)
+        num_heads = kwargs.get("num_heads", 4)
+        dropout = kwargs.get("dropout", 0.1)
+        activation = kwargs.get("activation", F.gelu)
+        use_rotary = kwargs.get("use_rotary", True)
+        super().__init__(*args, **kwargs)
+        self.beat_rep = beat_rep
+        self.beat_encoder = BeatEncoder(
+            beat_rep=beat_rep,
+            seq_len=seq_len,
+            beat_emb_dim=beat_emb_dim,
+            latent_dim=latent_dim,
+            ff_size=ff_size,
+            num_heads=num_heads,
+            dropout=dropout,
+            activation=activation,
+            use_rotary=use_rotary,
+            max_distance_vocab=max_distance_vocab,
+        )
+        self.fuse_projection = nn.Sequential(
+            nn.Linear(latent_dim * 2, latent_dim),
+            nn.SiLU(),
+            nn.Linear(latent_dim, latent_dim),
+        )
+
+    def _project_condition(self, cond_embed):
+        if not isinstance(cond_embed, dict):
+            raise TypeError("BeatDanceDecoder expects a condition dict")
+        music_tokens = self.cond_projection(cond_embed["music"])
+        beat_tokens = self.beat_encoder(cond_embed["beat"])
+        return self.fuse_projection(torch.cat((music_tokens, beat_tokens), dim=-1))

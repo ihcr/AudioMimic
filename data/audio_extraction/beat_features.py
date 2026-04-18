@@ -5,7 +5,9 @@ from pathlib import Path
 
 import librosa
 import numpy as np
+import scipy.signal
 import torch
+from tqdm import tqdm
 
 SMPL_PARENTS = [
     -1,
@@ -65,6 +67,9 @@ _HAS_CHILDREN = [
     any(parent == joint_idx for parent in SMPL_PARENTS)
     for joint_idx in range(len(SMPL_PARENTS))
 ]
+
+if not hasattr(scipy.signal, "hann") and hasattr(scipy.signal, "windows"):
+    scipy.signal.hann = scipy.signal.windows.hann
 
 
 def _sanitize_beat_frames(beat_frames, seq_len):
@@ -296,7 +301,16 @@ def extract_folder(motion_dir, wav_dir, out_dir, fps=30, seq_len=150):
     if set(motion_map) != set(wav_map):
         raise ValueError("motions_sliced and wavs_sliced must match by basename")
 
-    for clip_name in sorted(motion_map):
+    clip_names = sorted(motion_map)
+    for clip_name in tqdm(
+        clip_names,
+        total=len(clip_names),
+        desc="Beat metadata",
+        unit="clip",
+    ):
+        output_path = out_dir / f"{clip_name}.npz"
+        if output_path.exists():
+            continue
         motion_beats, motion_mask, motion_dist, motion_spacing = (
             extract_motion_beats_from_motion_pkl(
                 motion_map[clip_name], fps=fps, seq_len=seq_len
@@ -307,7 +321,7 @@ def extract_folder(motion_dir, wav_dir, out_dir, fps=30, seq_len=150):
         )
 
         np.savez(
-            out_dir / f"{clip_name}.npz",
+            output_path,
             motion_beats=np.asarray(motion_beats, dtype=np.int64),
             motion_mask=np.asarray(motion_mask, dtype=np.float32),
             motion_dist=np.asarray(motion_dist, dtype=np.int64),
