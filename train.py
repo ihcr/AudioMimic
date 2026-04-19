@@ -17,6 +17,7 @@ def train(opt):
         opt.feature_type,
         checkpoint_path=opt.checkpoint,
         learning_rate=opt.learning_rate,
+        learning_rate_was_explicit=getattr(opt, "learning_rate_was_explicit", False),
         weight_decay=opt.weight_decay,
         use_beats=opt.use_beats,
         beat_rep=opt.beat_rep,
@@ -25,6 +26,7 @@ def train(opt):
         beat_a=opt.beat_a,
         beat_c=opt.beat_c,
         beat_estimator_ckpt=opt.beat_estimator_ckpt,
+        resume_training_state=bool(opt.checkpoint),
     )
     model.train_loop(opt)
 

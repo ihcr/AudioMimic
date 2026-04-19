@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 import torch
 import torch.nn.functional as F
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import DataLoader, Dataset, random_split
 from tqdm import tqdm
 
 from model.beat_estimator import BeatDistanceEstimator
@@ -93,21 +93,75 @@ def save_checkpoint(model, path, config):
     )
 
 
+def split_train_val_dataset(dataset, val_split=0.1, split_seed=42):
+    if not 0.0 <= val_split < 1.0:
+        raise ValueError("val_split must be in the range [0.0, 1.0).")
+
+    dataset_size = len(dataset)
+    if dataset_size < 2 or val_split == 0.0:
+        return dataset, None
+
+    val_size = max(1, int(round(dataset_size * val_split)))
+    val_size = min(val_size, dataset_size - 1)
+    train_size = dataset_size - val_size
+    generator = torch.Generator().manual_seed(split_seed)
+    return random_split(dataset, [train_size, val_size], generator=generator)
+
+
+def run_epoch(model, dataloader, device, desc, optimizer=None):
+    if optimizer is None:
+        model.eval()
+    else:
+        model.train()
+
+    epoch_loss = 0.0
+    batch_loop = tqdm(
+        dataloader,
+        desc=desc,
+        unit="batch",
+    )
+    with torch.set_grad_enabled(optimizer is not None):
+        for joints, target in batch_loop:
+            joints = joints.to(device)
+            target = target.to(device)
+
+            pred_dist = model(joints)
+            loss = F.mse_loss(pred_dist, target)
+
+            if optimizer is not None:
+                optimizer.zero_grad()
+                loss.backward()
+                optimizer.step()
+
+            epoch_loss += loss.item()
+            batch_loop.set_postfix(loss=f"{loss.item():.4f}")
+
+    return epoch_loss / max(len(dataloader), 1)
+
+
 def train(
     motion_dir,
     beat_dir,
     output_path="weights/beat_estimator.pt",
-    epochs=10,
+    epochs=50,
     batch_size=16,
     learning_rate=1e-4,
     weight_decay=0.0,
     fps=30,
     seq_len=150,
+    val_split=0.1,
+    split_seed=42,
     device=None,
 ):
     device = device or ("cuda" if torch.cuda.is_available() else "cpu")
     dataset = MotionBeatDataset(motion_dir, beat_dir, fps=fps, seq_len=seq_len)
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    train_dataset, val_dataset = split_train_val_dataset(
+        dataset, val_split=val_split, split_seed=split_seed
+    )
+    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    val_dataloader = None
+    if val_dataset is not None:
+        val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
     model = BeatDistanceEstimator().to(device)
     optimizer = torch.optim.AdamW(
@@ -121,37 +175,63 @@ def train(
         "batch_size": batch_size,
         "learning_rate": learning_rate,
         "weight_decay": weight_decay,
+        "val_split": val_split,
+        "split_seed": split_seed,
         "hidden_dim": 128,
         "num_heads": 4,
         "num_layers": 6,
         "ff_dim": 512,
     }
 
+    best_epoch = None
+    best_val_loss = None
     for epoch in range(epochs):
-        model.train()
-        epoch_loss = 0.0
-        batch_loop = tqdm(
-            dataloader,
-            desc=f"Beat estimator {epoch + 1}/{epochs}",
-            unit="batch",
+        train_loss = run_epoch(
+            model,
+            train_dataloader,
+            device=device,
+            desc=f"Beat estimator train {epoch + 1}/{epochs}",
+            optimizer=optimizer,
         )
-        for joints, target in batch_loop:
-            joints = joints.to(device)
-            target = target.to(device)
+        if val_dataloader is None:
+            best_epoch = epoch + 1
+            print(f"epoch={epoch + 1} train_loss={train_loss:.6f}")
+            continue
 
-            pred_dist = model(joints)
-            loss = F.mse_loss(pred_dist, target)
+        val_loss = run_epoch(
+            model,
+            val_dataloader,
+            device=device,
+            desc=f"Beat estimator val {epoch + 1}/{epochs}",
+        )
+        print(
+            f"epoch={epoch + 1} train_loss={train_loss:.6f} val_loss={val_loss:.6f}"
+        )
+        if best_val_loss is None or val_loss < best_val_loss:
+            best_epoch = epoch + 1
+            best_val_loss = val_loss
+            save_checkpoint(
+                model,
+                output_path,
+                {
+                    **config,
+                    "best_epoch": best_epoch,
+                    "best_train_loss": train_loss,
+                    "best_val_loss": best_val_loss,
+                },
+            )
 
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            epoch_loss += loss.item()
-            batch_loop.set_postfix(loss=f"{loss.item():.4f}")
-
-        mean_loss = epoch_loss / max(len(dataloader), 1)
-        print(f"epoch={epoch + 1} loss={mean_loss:.6f}")
-
-    save_checkpoint(model, output_path, config)
+    if val_dataloader is None:
+        save_checkpoint(
+            model,
+            output_path,
+            {
+                **config,
+                "best_epoch": best_epoch,
+                "best_train_loss": train_loss,
+                "best_val_loss": None,
+            },
+        )
     return model
 
 
@@ -164,12 +244,14 @@ def parse_args():
         default="weights/beat_estimator.pt",
         help="Checkpoint path.",
     )
-    parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--epochs", type=int, default=50)
     parser.add_argument("--batch_size", type=int, default=16)
     parser.add_argument("--learning_rate", type=float, default=1e-4)
     parser.add_argument("--weight_decay", type=float, default=0.0)
     parser.add_argument("--fps", type=int, default=30)
     parser.add_argument("--seq_len", type=int, default=150)
+    parser.add_argument("--val_split", type=float, default=0.1)
+    parser.add_argument("--split_seed", type=int, default=42)
     parser.add_argument("--device", default=None, help="Explicit torch device override.")
     return parser.parse_args()
 
@@ -186,6 +268,8 @@ def main():
         weight_decay=args.weight_decay,
         fps=args.fps,
         seq_len=args.seq_len,
+        val_split=args.val_split,
+        split_seed=args.split_seed,
         device=args.device,
     )
 

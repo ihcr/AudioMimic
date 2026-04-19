@@ -38,6 +38,25 @@ def load_train_module():
 
 
 class TrainArgParserTests(unittest.TestCase):
+    def test_train_parser_uses_stable_default_learning_rate_for_beat_runs(self):
+        with argv_context("train.py", "--use_beats"):
+            beat_opt = args.parse_train_opt()
+
+        with argv_context("train.py"):
+            baseline_opt = args.parse_train_opt()
+
+        self.assertEqual(beat_opt.learning_rate, 1e-4)
+        self.assertEqual(baseline_opt.learning_rate, 4e-4)
+        self.assertFalse(beat_opt.learning_rate_was_explicit)
+        self.assertFalse(baseline_opt.learning_rate_was_explicit)
+
+    def test_train_parser_tracks_explicit_learning_rate(self):
+        with argv_context("train.py", "--learning_rate", "0.001"):
+            opt = args.parse_train_opt()
+
+        self.assertEqual(opt.learning_rate, 0.001)
+        self.assertTrue(opt.learning_rate_was_explicit)
+
     def test_train_parser_accepts_phase0_arguments(self):
         with argv_context(
             "train.py",
@@ -102,6 +121,7 @@ class TrainWiringTests(unittest.TestCase):
             feature_type="jukebox",
             checkpoint="weights/example.pt",
             learning_rate=1e-3,
+            learning_rate_was_explicit=True,
             weight_decay=0.05,
             use_beats=True,
             beat_rep="distance",
@@ -124,6 +144,7 @@ class TrainWiringTests(unittest.TestCase):
             opt.feature_type,
             checkpoint_path=opt.checkpoint,
             learning_rate=opt.learning_rate,
+            learning_rate_was_explicit=opt.learning_rate_was_explicit,
             weight_decay=opt.weight_decay,
             use_beats=opt.use_beats,
             beat_rep=opt.beat_rep,
@@ -132,6 +153,7 @@ class TrainWiringTests(unittest.TestCase):
             beat_a=opt.beat_a,
             beat_c=opt.beat_c,
             beat_estimator_ckpt=opt.beat_estimator_ckpt,
+            resume_training_state=True,
         )
         fake_model.train_loop.assert_called_once_with(opt)
 

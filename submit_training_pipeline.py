@@ -52,7 +52,7 @@ def parse_args(argv=None):
     parser.add_argument("--epochs", type=int, default=2000)
     parser.add_argument("--save_interval", type=int, default=100)
     parser.add_argument("--ema_interval", type=int, default=1)
-    parser.add_argument("--learning_rate", type=float, default=4e-4)
+    parser.add_argument("--learning_rate", type=float, default=None)
     parser.add_argument("--weight_decay", type=float, default=0.02)
     parser.add_argument("--train_num_workers", type=int, default=0)
     parser.add_argument("--test_num_workers", type=int, default=0)
@@ -78,6 +78,8 @@ def parse_args(argv=None):
 def apply_dynamic_defaults(args):
     if args.preprocess_gpus is None:
         args.preprocess_gpus = 1 if args.feature_type == "jukebox" else 0
+    if args.learning_rate is None:
+        args.learning_rate = 1e-4 if args.use_beats else 4e-4
     return args
 
 

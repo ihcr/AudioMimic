@@ -328,6 +328,21 @@ class DanceDecoder(nn.Module):
         
         self.final_layer = nn.Linear(latent_dim, output_feats)
 
+    def _apply_condition_dropout(self, cond_tokens, cond_hidden, keep_mask):
+        if keep_mask.dtype != torch.bool:
+            keep_mask = keep_mask.bool()
+        keep_mask_embed = rearrange(keep_mask, "b -> b 1 1").to(cond_tokens.dtype)
+        keep_mask_hidden = rearrange(keep_mask, "b -> b 1").to(cond_hidden.dtype)
+        null_cond_embed = self.null_cond_embed.to(cond_tokens.dtype)
+        null_cond_hidden = self.null_cond_hidden.to(cond_hidden.dtype)
+        cond_tokens = cond_tokens * keep_mask_embed + null_cond_embed * (
+            1.0 - keep_mask_embed
+        )
+        cond_hidden = cond_hidden * keep_mask_hidden + null_cond_hidden * (
+            1.0 - keep_mask_hidden
+        )
+        return cond_tokens, cond_hidden
+
     def _project_condition(self, cond_embed):
         return self.cond_projection(cond_embed)
 
@@ -355,16 +370,14 @@ class DanceDecoder(nn.Module):
 
         # create music conditional embedding with conditional dropout
         keep_mask = prob_mask_like((batch_size,), 1 - cond_drop_prob, device=device)
-        keep_mask_embed = rearrange(keep_mask, "b -> b 1 1")
-        keep_mask_hidden = rearrange(keep_mask, "b -> b 1")
 
         cond_tokens = self._encode_condition_tokens(cond_embed)
 
-        null_cond_embed = self.null_cond_embed.to(cond_tokens.dtype)
-        cond_tokens = torch.where(keep_mask_embed, cond_tokens, null_cond_embed)
-
         mean_pooled_cond_tokens = cond_tokens.mean(dim=-2)
         cond_hidden = self.non_attn_cond_projection(mean_pooled_cond_tokens)
+        cond_tokens, cond_hidden = self._apply_condition_dropout(
+            cond_tokens, cond_hidden, keep_mask
+        )
 
         # create the diffusion timestep embedding, add the extra music projection
         t_hidden = self.time_mlp(times)
@@ -374,8 +387,6 @@ class DanceDecoder(nn.Module):
         t_tokens = self.to_time_tokens(t_hidden)
 
         # FiLM conditioning
-        null_cond_hidden = self.null_cond_hidden.to(t.dtype)
-        cond_hidden = torch.where(keep_mask_hidden, cond_hidden, null_cond_hidden)
         t += cond_hidden
 
         # cross-attention conditioning

@@ -4,6 +4,17 @@ import torch
 import torch.nn.functional as F
 
 
+def _sqrt_positive_part(x):
+    ret = torch.zeros_like(x)
+    positive_mask = x > 0
+    ret[positive_mask] = torch.sqrt(x[positive_mask])
+    return ret
+
+
+def standardize_quaternion(quaternions):
+    return torch.where(quaternions[..., :1] < 0, -quaternions, quaternions)
+
+
 def _normalize_quaternion(quaternions):
     return F.normalize(quaternions, dim=-1)
 
@@ -45,7 +56,7 @@ def quaternion_to_axis_angle(quaternions):
 def quaternion_multiply(a, b):
     aw, ax, ay, az = torch.unbind(a, dim=-1)
     bw, bx, by, bz = torch.unbind(b, dim=-1)
-    return torch.stack(
+    product = torch.stack(
         [
             aw * bw - ax * bx - ay * by - az * bz,
             aw * bx + ax * bw + ay * bz - az * by,
@@ -54,6 +65,7 @@ def quaternion_multiply(a, b):
         ],
         dim=-1,
     )
+    return standardize_quaternion(product)
 
 
 def quaternion_apply(quaternions, points):
@@ -101,21 +113,44 @@ def matrix_to_quaternion(matrix):
     if matrix.shape[-2:] != (3, 3):
         raise ValueError("Expected rotation matrices with shape (..., 3, 3)")
 
+    batch_dim = matrix.shape[:-2]
     m00 = matrix[..., 0, 0]
+    m01 = matrix[..., 0, 1]
+    m02 = matrix[..., 0, 2]
+    m10 = matrix[..., 1, 0]
     m11 = matrix[..., 1, 1]
+    m12 = matrix[..., 1, 2]
+    m20 = matrix[..., 2, 0]
+    m21 = matrix[..., 2, 1]
     m22 = matrix[..., 2, 2]
 
-    qw = torch.sqrt(torch.clamp(1.0 + m00 + m11 + m22, min=0.0)) / 2.0
-    qx = torch.sqrt(torch.clamp(1.0 + m00 - m11 - m22, min=0.0)) / 2.0
-    qy = torch.sqrt(torch.clamp(1.0 - m00 + m11 - m22, min=0.0)) / 2.0
-    qz = torch.sqrt(torch.clamp(1.0 - m00 - m11 + m22, min=0.0)) / 2.0
+    q_abs = _sqrt_positive_part(
+        torch.stack(
+            [
+                1.0 + m00 + m11 + m22,
+                1.0 + m00 - m11 - m22,
+                1.0 - m00 + m11 - m22,
+                1.0 - m00 - m11 + m22,
+            ],
+            dim=-1,
+        )
+    )
 
-    qx = _copysign(qx, matrix[..., 2, 1] - matrix[..., 1, 2])
-    qy = _copysign(qy, matrix[..., 0, 2] - matrix[..., 2, 0])
-    qz = _copysign(qz, matrix[..., 1, 0] - matrix[..., 0, 1])
+    quat_by_rijk = torch.stack(
+        [
+            torch.stack([q_abs[..., 0] ** 2, m21 - m12, m02 - m20, m10 - m01], dim=-1),
+            torch.stack([m21 - m12, q_abs[..., 1] ** 2, m10 + m01, m02 + m20], dim=-1),
+            torch.stack([m02 - m20, m10 + m01, q_abs[..., 2] ** 2, m12 + m21], dim=-1),
+            torch.stack([m10 - m01, m20 + m02, m21 + m12, q_abs[..., 3] ** 2], dim=-1),
+        ],
+        dim=-2,
+    )
 
-    quaternions = torch.stack([qw, qx, qy, qz], dim=-1)
-    return _normalize_quaternion(quaternions)
+    denom = torch.clamp(2.0 * q_abs[..., None], min=0.1)
+    quat_candidates = quat_by_rijk / denom
+    best = F.one_hot(q_abs.argmax(dim=-1), num_classes=4).bool()
+    quaternions = quat_candidates[best].reshape(batch_dim + (4,))
+    return standardize_quaternion(_normalize_quaternion(quaternions))
 
 
 def axis_angle_to_matrix(axis_angle):

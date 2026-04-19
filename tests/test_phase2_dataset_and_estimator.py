@@ -261,6 +261,25 @@ class BeatEstimatorTests(unittest.TestCase):
         self.assertIn("model_state_dict", payload)
         self.assertEqual(payload["config"]["hidden_dim"], 128)
 
+    def test_parse_args_defaults_to_50_epochs_with_validation(self):
+        train_module = reload_module("train_beat_estimator")
+
+        with patch.object(
+            sys,
+            "argv",
+            [
+                "train_beat_estimator.py",
+                "--motion_dir",
+                "motions",
+                "--beat_dir",
+                "beats",
+            ],
+        ):
+            args = train_module.parse_args()
+
+        self.assertEqual(args.epochs, 50)
+        self.assertAlmostEqual(args.val_split, 0.1)
+
     def test_train_reports_batch_progress(self):
         train_module = reload_module("train_beat_estimator")
 
@@ -314,12 +333,86 @@ class BeatEstimatorTests(unittest.TestCase):
                 output_path="unused.pt",
                 epochs=1,
                 batch_size=1,
+                val_split=0.0,
                 device="cpu",
             )
 
         self.assertEqual(len(progress_calls), 1)
-        self.assertEqual(progress_calls[0]["desc"], "Beat estimator 1/1")
+        self.assertEqual(progress_calls[0]["desc"], "Beat estimator train 1/1")
         self.assertEqual(progress_calls[0]["unit"], "batch")
+
+    def test_train_uses_validation_and_saves_best_checkpoint(self):
+        train_module = reload_module("train_beat_estimator")
+
+        class TinyDataset(Dataset):
+            def __len__(self):
+                return 4
+
+            def __getitem__(self, idx):
+                joints = torch.zeros(150, 24, 3, dtype=torch.float32)
+                target = torch.zeros(150, dtype=torch.float32)
+                return joints, target
+
+        progress_calls = []
+
+        class FakeProgress:
+            def __init__(self, iterable, **kwargs):
+                self._iterable = iterable
+                self.kwargs = kwargs
+                progress_calls.append(kwargs)
+
+            def __iter__(self):
+                return iter(self._iterable)
+
+            def set_postfix(self, **kwargs):
+                self.postfix = kwargs
+
+        def fake_tqdm(iterable, **kwargs):
+            return FakeProgress(iterable, **kwargs)
+
+        class TinyModel(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.bias = torch.nn.Parameter(torch.ones(1))
+
+            def forward(self, joints):
+                batch, seq_len = joints.shape[:2]
+                return self.bias.expand(batch, seq_len)
+
+        with patch.object(
+            train_module, "MotionBeatDataset", return_value=TinyDataset()
+        ), patch.object(
+            train_module, "save_checkpoint"
+        ) as save_checkpoint, patch.object(
+            train_module, "BeatDistanceEstimator", return_value=TinyModel()
+        ), patch.object(
+            train_module, "tqdm", side_effect=fake_tqdm, create=True
+        ):
+            train_module.train(
+                motion_dir="unused",
+                beat_dir="unused",
+                output_path="unused.pt",
+                epochs=2,
+                batch_size=1,
+                learning_rate=0.0,
+                val_split=0.5,
+                device="cpu",
+            )
+
+        self.assertEqual(save_checkpoint.call_count, 1)
+        _, _, config = save_checkpoint.call_args.args
+        self.assertEqual(config["best_epoch"], 1)
+        self.assertAlmostEqual(config["best_val_loss"], 1.0)
+        self.assertAlmostEqual(config["val_split"], 0.5)
+        self.assertEqual(
+            [call["desc"] for call in progress_calls],
+            [
+                "Beat estimator train 1/2",
+                "Beat estimator val 1/2",
+                "Beat estimator train 2/2",
+                "Beat estimator val 2/2",
+            ],
+        )
 
 
 if __name__ == "__main__":

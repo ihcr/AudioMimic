@@ -50,7 +50,7 @@ def parse_train_opt():
     parser.add_argument(
         "--checkpoint", type=str, default="", help="trained checkpoint path (optional)"
     )
-    parser.add_argument("--learning_rate", type=float, default=4e-4)
+    parser.add_argument("--learning_rate", type=float, default=None)
     parser.add_argument("--weight_decay", type=float, default=0.02)
     parser.add_argument("--use_beats", action="store_true")
     parser.add_argument(
@@ -62,6 +62,9 @@ def parse_train_opt():
     parser.add_argument("--beat_c", type=float, default=0.1)
     parser.add_argument("--beat_estimator_ckpt", type=str, default="")
     opt = parser.parse_args()
+    opt.learning_rate_was_explicit = opt.learning_rate is not None
+    if opt.learning_rate is None:
+        opt.learning_rate = 1e-4 if opt.use_beats else 4e-4
     return opt
 
 

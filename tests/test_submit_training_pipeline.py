@@ -12,6 +12,22 @@ def reload_module():
 
 
 class CommandBuilderTests(unittest.TestCase):
+    def test_apply_dynamic_defaults_uses_stable_learning_rate_for_beat_runs(self):
+        submit_module = reload_module()
+
+        args = submit_module.parse_args(
+            [
+                "--feature_type",
+                "jukebox",
+                "--use_beats",
+                "--train_name",
+                "demo",
+            ]
+        )
+        submit_module.apply_dynamic_defaults(args)
+
+        self.assertEqual(args.learning_rate, 1e-4)
+
     def test_resolve_shared_root_collapses_worktree_path(self):
         submit_module = reload_module()
 

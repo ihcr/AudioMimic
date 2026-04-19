@@ -38,6 +38,8 @@ DEFAULT_MODEL_CONFIG = {
     "use_beats": False,
     "beat_rep": "distance",
 }
+DEFAULT_NON_BEAT_LEARNING_RATE = 4e-4
+DEFAULT_BEAT_LEARNING_RATE = 1e-4
 
 
 def wandb_disabled_by_env():
@@ -83,6 +85,49 @@ def resolve_model_config(feature_type, use_beats, beat_rep, checkpoint_config=No
     return resolved
 
 
+def default_learning_rate(use_beats):
+    return DEFAULT_BEAT_LEARNING_RATE if use_beats else DEFAULT_NON_BEAT_LEARNING_RATE
+
+
+def resolve_runtime_training_config(
+    feature_type,
+    use_beats,
+    beat_rep,
+    learning_rate,
+    learning_rate_was_explicit=False,
+    checkpoint_config=None,
+):
+    resolved = resolve_model_config(
+        feature_type=feature_type,
+        use_beats=use_beats,
+        beat_rep=beat_rep,
+        checkpoint_config=checkpoint_config,
+    )
+    if not learning_rate_was_explicit:
+        learning_rate = default_learning_rate(resolved["use_beats"])
+    resolved["learning_rate"] = learning_rate
+    resolved["grad_clip_norm"] = 1.0 if resolved["use_beats"] else None
+    return resolved
+
+
+def restore_checkpoint_state(
+    model,
+    diffusion,
+    optim,
+    checkpoint,
+    use_ema_weights,
+    num_processes,
+    restore_optimizer=False,
+):
+    state_key = "ema_state_dict" if use_ema_weights else "model_state_dict"
+    model.load_state_dict(maybe_wrap(checkpoint[state_key], num_processes))
+    ema_state_dict = checkpoint.get("ema_state_dict")
+    if ema_state_dict is not None:
+        diffusion.master_model.load_state_dict(ema_state_dict)
+    if restore_optimizer and "optimizer_state_dict" in checkpoint:
+        optim.load_state_dict(checkpoint["optimizer_state_dict"])
+
+
 def build_beat_estimator_from_checkpoint(checkpoint_path, device):
     checkpoint = load_trusted_checkpoint(checkpoint_path, map_location=device)
     config = checkpoint.get("config", {})
@@ -96,6 +141,33 @@ def build_beat_estimator_from_checkpoint(checkpoint_path, device):
     return model.to(device)
 
 
+def validate_loss_terms(total_loss, losses, filenames=None, wavnames=None):
+    named_losses = {
+        "recon_loss": losses[0],
+        "velocity_loss": losses[1],
+        "fk_loss": losses[2],
+        "foot_loss": losses[3],
+        "acc_loss": losses[4],
+        "beat_loss": losses[5],
+    }
+    tensors = {"total_loss": total_loss, **named_losses}
+    bad_terms = {
+        name: float(value.detach().cpu())
+        for name, value in tensors.items()
+        if not torch.isfinite(value).all()
+    }
+    if bad_terms:
+        context = []
+        if filenames:
+            context.append(f"features={list(filenames)[:2]}")
+        if wavnames:
+            context.append(f"wavs={list(wavnames)[:2]}")
+        context_str = f" ({', '.join(context)})" if context else ""
+        raise FloatingPointError(
+            f"Non-finite loss detected{context_str}: {bad_terms}"
+        )
+
+
 class EDGE:
     def __init__(
         self,
@@ -103,7 +175,8 @@ class EDGE:
         checkpoint_path="",
         normalizer=None,
         EMA=True,
-        learning_rate=4e-4,
+        learning_rate=DEFAULT_NON_BEAT_LEARNING_RATE,
+        learning_rate_was_explicit=False,
         weight_decay=0.02,
         use_beats=False,
         beat_rep="distance",
@@ -112,6 +185,7 @@ class EDGE:
         beat_a=10.0,
         beat_c=0.1,
         beat_estimator_ckpt="",
+        resume_training_state=False,
     ):
         ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
         self.accelerator = Accelerator(kwargs_handlers=[ddp_kwargs])
@@ -122,6 +196,7 @@ class EDGE:
         self.beat_a = beat_a
         self.beat_c = beat_c
         self.beat_estimator_ckpt = beat_estimator_ckpt
+        self.resume_training_state = resume_training_state
 
         pos_dim = 3
         rot_dim = 24 * 6  # 24 joints, 6dof
@@ -138,16 +213,26 @@ class EDGE:
             checkpoint = load_trusted_checkpoint(
                 checkpoint_path, map_location=self.accelerator.device
             )
-            resolved = resolve_model_config(
-                feature_type=feature_type,
-                use_beats=use_beats,
-                beat_rep=beat_rep,
-                checkpoint_config=checkpoint.get("config"),
-            )
-            feature_type = resolved["feature_type"]
-            use_beats = resolved["use_beats"]
-            beat_rep = resolved["beat_rep"]
             self.normalizer = checkpoint["normalizer"]
+
+        resolved = resolve_runtime_training_config(
+            feature_type=feature_type,
+            use_beats=use_beats,
+            beat_rep=beat_rep,
+            learning_rate=learning_rate,
+            learning_rate_was_explicit=learning_rate_was_explicit,
+            checkpoint_config=checkpoint.get("config") if checkpoint is not None else None,
+        )
+        feature_type = resolved["feature_type"]
+        use_beats = resolved["use_beats"]
+        beat_rep = resolved["beat_rep"]
+        learning_rate = resolved["learning_rate"]
+        self.grad_clip_norm = resolved["grad_clip_norm"]
+
+        if checkpoint is not None and not learning_rate_was_explicit:
+            checkpoint_uses_beats = checkpoint.get("config", {}).get("use_beats")
+            if checkpoint_uses_beats is True:
+                print(f"Using checkpoint-inferred beat defaults: learning_rate={learning_rate}")
 
         self.feature_type = feature_type
         self.use_beats = use_beats
@@ -207,12 +292,15 @@ class EDGE:
         optim = Adan(model.parameters(), lr=learning_rate, weight_decay=weight_decay)
         self.optim = self.accelerator.prepare(optim)
 
-        if checkpoint_path != "":
-            self.model.load_state_dict(
-                maybe_wrap(
-                    checkpoint["ema_state_dict" if EMA else "model_state_dict"],
-                    num_processes,
-                )
+        if checkpoint is not None:
+            restore_checkpoint_state(
+                self.model,
+                self.diffusion,
+                self.optim,
+                checkpoint,
+                use_ema_weights=EMA,
+                num_processes=num_processes,
+                restore_optimizer=self.resume_training_state,
             )
 
     def eval(self):
@@ -322,8 +410,18 @@ class EDGE:
                 total_loss, (loss, v_loss, fk_loss, foot_loss, acc_loss, beat_loss) = self.diffusion(
                     x, cond, t_override=None
                 )
+                validate_loss_terms(
+                    total_loss,
+                    (loss, v_loss, fk_loss, foot_loss, acc_loss, beat_loss),
+                    filenames=filename,
+                    wavnames=wavnames,
+                )
                 self.optim.zero_grad()
                 self.accelerator.backward(total_loss)
+                if self.grad_clip_norm is not None:
+                    self.accelerator.clip_grad_norm_(
+                        self.model.parameters(), self.grad_clip_norm
+                    )
 
                 self.optim.step()
 

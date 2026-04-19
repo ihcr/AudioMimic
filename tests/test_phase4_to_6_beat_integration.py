@@ -5,7 +5,7 @@ import sys
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 import torch
@@ -67,6 +67,40 @@ class DecoderBeatConditioningTests(unittest.TestCase):
 
         self.assertEqual(output.shape, (1, 150, 151))
 
+    def test_mixed_condition_dropout_keeps_null_condition_gradients_finite(self):
+        model_module = reload_module("model.model")
+        model = model_module.BeatDanceDecoder(
+            nfeats=151,
+            seq_len=32,
+            latent_dim=64,
+            ff_size=128,
+            num_layers=2,
+            num_heads=4,
+            cond_feature_dim=35,
+            beat_rep="distance",
+            use_rotary=False,
+        )
+        x = torch.randn(2, 32, 151)
+        cond = {
+            "music": torch.randn(2, 32, 35),
+            "beat": torch.randint(0, 151, (2, 32)),
+        }
+        times = torch.randint(0, 1000, (2,))
+
+        with patch.object(
+            model_module,
+            "prob_mask_like",
+            return_value=torch.tensor([True, False]),
+        ):
+            output = model(x, cond, times, cond_drop_prob=0.25)
+            loss = output.square().mean()
+
+        loss.backward()
+
+        grad = model.null_cond_embed.grad
+        self.assertIsNotNone(grad)
+        self.assertTrue(torch.isfinite(grad).all())
+
 
 class ConditionHelperTests(unittest.TestCase):
     def test_condition_helpers_support_tensor_and_dict(self):
@@ -125,7 +159,48 @@ class CheckpointConfigTests(unittest.TestCase):
                     "use_beats": True,
                     "beat_rep": "pulse",
                 },
-            )
+                )
+
+
+class RuntimeTrainingConfigTests(unittest.TestCase):
+    def test_checkpoint_inferred_beat_run_uses_safe_defaults_when_lr_not_explicit(self):
+        edge_module = reload_module("EDGE")
+
+        resolved = edge_module.resolve_runtime_training_config(
+            feature_type="jukebox",
+            use_beats=False,
+            beat_rep="distance",
+            learning_rate=4e-4,
+            learning_rate_was_explicit=False,
+            checkpoint_config={
+                "feature_type": "jukebox",
+                "use_beats": True,
+                "beat_rep": "distance",
+            },
+        )
+
+        self.assertTrue(resolved["use_beats"])
+        self.assertEqual(resolved["learning_rate"], 1e-4)
+        self.assertEqual(resolved["grad_clip_norm"], 1.0)
+
+    def test_explicit_learning_rate_is_preserved_across_checkpoint_resolution(self):
+        edge_module = reload_module("EDGE")
+
+        resolved = edge_module.resolve_runtime_training_config(
+            feature_type="jukebox",
+            use_beats=False,
+            beat_rep="distance",
+            learning_rate=2.5e-4,
+            learning_rate_was_explicit=True,
+            checkpoint_config={
+                "feature_type": "jukebox",
+                "use_beats": True,
+                "beat_rep": "distance",
+            },
+        )
+
+        self.assertEqual(resolved["learning_rate"], 2.5e-4)
+        self.assertEqual(resolved["grad_clip_norm"], 1.0)
 
 
 class WandbFallbackTests(unittest.TestCase):
@@ -149,6 +224,30 @@ class WandbFallbackTests(unittest.TestCase):
         mock_init.assert_not_called()
 
 
+class LossGuardTests(unittest.TestCase):
+    def test_validate_loss_terms_raises_on_non_finite_loss(self):
+        edge_module = reload_module("EDGE")
+
+        with self.assertRaises(FloatingPointError) as ctx:
+            edge_module.validate_loss_terms(
+                torch.tensor(float("nan")),
+                (
+                    torch.tensor(1.0),
+                    torch.tensor(2.0),
+                    torch.tensor(3.0),
+                    torch.tensor(4.0),
+                    torch.tensor(float("nan")),
+                    torch.tensor(6.0),
+                ),
+                filenames=["feature_a.npy"],
+                wavnames=["song_a.wav"],
+            )
+
+        self.assertIn("Non-finite loss detected", str(ctx.exception))
+        self.assertIn("feature_a.npy", str(ctx.exception))
+        self.assertIn("song_a.wav", str(ctx.exception))
+
+
 class CheckpointLoadCompatibilityTests(unittest.TestCase):
     def test_load_trusted_checkpoint_uses_weights_only_false(self):
         edge_module = reload_module("EDGE")
@@ -162,6 +261,33 @@ class CheckpointLoadCompatibilityTests(unittest.TestCase):
             map_location="cpu",
             weights_only=False,
         )
+
+
+class CheckpointRestoreTests(unittest.TestCase):
+    def test_restore_checkpoint_state_loads_model_optimizer_and_ema(self):
+        edge_module = reload_module("EDGE")
+        model = MagicMock()
+        diffusion = MagicMock()
+        optim = MagicMock()
+        checkpoint = {
+            "ema_state_dict": {"ema": 1},
+            "model_state_dict": {"model": 2},
+            "optimizer_state_dict": {"optim": 3},
+        }
+
+        edge_module.restore_checkpoint_state(
+            model,
+            diffusion,
+            optim,
+            checkpoint,
+            use_ema_weights=True,
+            num_processes=1,
+            restore_optimizer=True,
+        )
+
+        model.load_state_dict.assert_called_once_with({"ema": 1})
+        diffusion.master_model.load_state_dict.assert_called_once_with({"ema": 1})
+        optim.load_state_dict.assert_called_once_with({"optim": 3})
 
 
 class DummyModel(nn.Module):
