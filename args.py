@@ -1,7 +1,56 @@
 import argparse
+import os
 
 
-def parse_train_opt():
+DEFAULT_DATALOADER_WORKER_CAP = 6
+DEFAULT_TRAIN_DATALOADER_WORKER_CAP = 2
+DEFAULT_TEST_WORKER_CAP = 2
+DEFAULT_BATCH_SIZE = 128
+DEFAULT_LEARNING_RATE = 2e-4
+
+
+def default_lambda_acc(use_beats):
+    return 0.0
+
+
+def _flag_was_explicit(argv, flag):
+    return flag in set(argv or [])
+
+
+def resolve_cpu_budget(cpu_budget=None):
+    if cpu_budget is not None:
+        return max(int(cpu_budget), 1)
+    slurm_cpus = os.environ.get("SLURM_CPUS_PER_TASK", "").strip()
+    if slurm_cpus.isdigit():
+        return max(int(slurm_cpus), 1)
+    detected = os.cpu_count() or 1
+    return max(int(detected), 1)
+
+
+def resolve_worker_count(cpu_budget=None, reserve=2, cap=DEFAULT_DATALOADER_WORKER_CAP):
+    budget = resolve_cpu_budget(cpu_budget)
+    return min(cap, max(1, budget - reserve))
+
+
+def resolve_train_test_workers(train_num_workers, test_num_workers, cpu_budget=None):
+    resolved_train = (
+        train_num_workers
+        if train_num_workers is not None
+        else resolve_worker_count(
+            cpu_budget=cpu_budget,
+            cap=DEFAULT_TRAIN_DATALOADER_WORKER_CAP,
+        )
+    )
+    resolved_test = (
+        test_num_workers
+        if test_num_workers is not None
+        else min(DEFAULT_TEST_WORKER_CAP, resolved_train)
+    )
+    return resolved_train, resolved_test
+
+
+def parse_train_opt(argv=None):
+    raw_argv = list(argv or os.sys.argv[1:])
     parser = argparse.ArgumentParser()
     parser.add_argument("--project", default="runs/train", help="project/name")
     parser.add_argument("--exp_name", default="exp", help="save to project/name")
@@ -20,7 +69,7 @@ def parse_train_opt():
     parser.add_argument(
         "--wandb_pj_name", type=str, default="EDGE", help="project name"
     )
-    parser.add_argument("--batch_size", type=int, default=64, help="batch size")
+    parser.add_argument("--batch_size", type=int, default=DEFAULT_BATCH_SIZE, help="batch size")
     parser.add_argument("--epochs", type=int, default=2000)
     parser.add_argument(
         "--force_reload", action="store_true", help="force reloads the datasets"
@@ -56,15 +105,37 @@ def parse_train_opt():
     parser.add_argument(
         "--beat_rep", type=str, choices=("distance", "pulse"), default="distance"
     )
-    parser.add_argument("--lambda_acc", type=float, default=0.1)
+    parser.add_argument("--lambda_acc", type=float, default=None)
     parser.add_argument("--lambda_beat", type=float, default=0.5)
     parser.add_argument("--beat_a", type=float, default=10.0)
     parser.add_argument("--beat_c", type=float, default=0.1)
     parser.add_argument("--beat_estimator_ckpt", type=str, default="")
-    opt = parser.parse_args()
+    parser.add_argument(
+        "--gradient_accumulation_steps",
+        type=int,
+        default=1,
+        help="Number of microbatches to accumulate before each optimizer step.",
+    )
+    parser.add_argument(
+        "--mixed_precision",
+        type=str,
+        choices=("no", "bf16"),
+        default="bf16",
+        help="Autocast/accelerator mixed precision mode for training.",
+    )
+    opt = parser.parse_args(raw_argv)
     opt.learning_rate_was_explicit = opt.learning_rate is not None
+    opt.lambda_acc_was_explicit = opt.lambda_acc is not None
+    train_workers_explicit = _flag_was_explicit(raw_argv, "--train_num_workers")
+    test_workers_explicit = _flag_was_explicit(raw_argv, "--test_num_workers")
     if opt.learning_rate is None:
-        opt.learning_rate = 1e-4 if opt.use_beats else 4e-4
+        opt.learning_rate = DEFAULT_LEARNING_RATE
+    if opt.lambda_acc is None:
+        opt.lambda_acc = default_lambda_acc(opt.use_beats)
+    opt.train_num_workers, opt.test_num_workers = resolve_train_test_workers(
+        opt.train_num_workers if train_workers_explicit else None,
+        opt.test_num_workers if test_workers_explicit else None,
+    )
     return opt
 
 
@@ -124,6 +195,12 @@ def parse_test_opt():
         type=str,
         default="cached_features/",
         help="Where to save/load the features",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=-1,
+        help="Random seed for deterministic slice selection (-1 disables seeding)",
     )
     parser.add_argument("--use_beats", action="store_true")
     parser.add_argument(

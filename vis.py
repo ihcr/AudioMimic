@@ -12,6 +12,7 @@ from matplotlib import cm
 from matplotlib.colors import ListedColormap
 from tqdm import tqdm
 
+from render_camera import compute_axes_limits
 from rotation_transforms import (axis_angle_to_quaternion, quaternion_apply,
                                  quaternion_multiply)
 
@@ -108,26 +109,7 @@ def set_scatter_data_3d(scat, x, c):
     scat.set_facecolors([c])
 
 
-def get_axrange(poses):
-    pose = poses[0]
-    x_min = pose[:, 0].min()
-    x_max = pose[:, 0].max()
-
-    y_min = pose[:, 1].min()
-    y_max = pose[:, 1].max()
-
-    z_min = pose[:, 2].min()
-    z_max = pose[:, 2].max()
-
-    xdiff = x_max - x_min
-    ydiff = y_max - y_min
-    zdiff = z_max - z_min
-
-    biggestdiff = max([xdiff, ydiff, zdiff])
-    return biggestdiff
-
-
-def plot_single_pose(num, poses, lines, ax, axrange, scat, contact):
+def plot_single_pose(num, poses, lines, ax, axes_limits, scat, contact):
     pose = poses[num]
     static = contact[num]
     indices = [7, 8, 10, 11]
@@ -146,18 +128,10 @@ def plot_single_pose(num, poses, lines, ax, axrange, scat, contact):
         set_line_data_3d(line, data)
 
     if num == 0:
-        if isinstance(axrange, int):
-            axrange = (axrange, axrange, axrange)
-        xcenter, ycenter, zcenter = 0, 0, 2.5
-        stepx, stepy, stepz = axrange[0] / 2, axrange[1] / 2, axrange[2] / 2
-
-        x_min, x_max = xcenter - stepx, xcenter + stepx
-        y_min, y_max = ycenter - stepy, ycenter + stepy
-        z_min, z_max = zcenter - stepz, zcenter + stepz
-
-        ax.set_xlim(x_min, x_max)
-        ax.set_ylim(y_min, y_max)
-        ax.set_zlim(z_min, z_max)
+        xlim, ylim, zlim = axes_limits
+        ax.set_xlim(*xlim)
+        ax.set_ylim(*ylim)
+        ax.set_zlim(*zlim)
 
 
 def skeleton_render(
@@ -175,6 +149,7 @@ def skeleton_render(
         # generate the pose with FK
         Path(out).mkdir(parents=True, exist_ok=True)
         num_steps = poses.shape[0]
+        axes_limits = compute_axes_limits(poses)
         
         fig = plt.figure()
         ax = fig.add_subplot(projection="3d")
@@ -182,7 +157,10 @@ def skeleton_render(
         point = np.array([0, 0, 1])
         normal = np.array([0, 0, 1])
         d = -point.dot(normal)
-        xx, yy = np.meshgrid(np.linspace(-1.5, 1.5, 2), np.linspace(-1.5, 1.5, 2))
+        xx, yy = np.meshgrid(
+            np.linspace(*axes_limits[0], 2),
+            np.linspace(*axes_limits[1], 2),
+        )
         z = (-normal[0] * xx - normal[1] * yy - d) * 1.0 / normal[2]
         # plot the plane
         ax.plot_surface(xx, yy, z, zorder=-11, cmap=cm.twilight)
@@ -195,7 +173,6 @@ def skeleton_render(
             ax.scatter([], [], [], zorder=10, s=0, cmap=ListedColormap(["r", "g", "b"]))
             for _ in range(4)
         ]
-        axrange = 3
 
         # create contact labels
         feet = poses[:, (7, 8, 10, 11)]
@@ -211,7 +188,7 @@ def skeleton_render(
             fig,
             plot_single_pose,
             num_steps,
-            fargs=(poses, lines, ax, axrange, scat, contact),
+            fargs=(poses, lines, ax, axes_limits, scat, contact),
             interval=1000 // 30,
         )
     if sound:

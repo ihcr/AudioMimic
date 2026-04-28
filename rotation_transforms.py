@@ -68,11 +68,26 @@ def quaternion_multiply(a, b):
     return standardize_quaternion(product)
 
 
+def quaternion_raw_multiply(a, b):
+    aw, ax, ay, az = torch.unbind(a, dim=-1)
+    bw, bx, by, bz = torch.unbind(b, dim=-1)
+    product = torch.stack(
+        [
+            aw * bw - ax * bx - ay * by - az * bz,
+            aw * bx + ax * bw + ay * bz - az * by,
+            aw * by - ax * bz + ay * bw + az * bx,
+            aw * bz + ax * by - ay * bx + az * bw,
+        ],
+        dim=-1,
+    )
+    return product
+
+
 def quaternion_apply(quaternions, points):
     quaternions = _normalize_quaternion(quaternions)
     point_quaternions = torch.cat([torch.zeros_like(points[..., :1]), points], dim=-1)
-    rotated = quaternion_multiply(
-        quaternion_multiply(quaternions, point_quaternions),
+    rotated = quaternion_raw_multiply(
+        quaternion_raw_multiply(quaternions, point_quaternions),
         _quaternion_conjugate(quaternions),
     )
     return rotated[..., 1:]

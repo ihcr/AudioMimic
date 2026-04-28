@@ -1,11 +1,10 @@
 import os
-import re
 import subprocess
-from functools import partial
 from pathlib import Path
 
 import jukemirlib
 import numpy as np
+import torch
 from tqdm import tqdm
 
 FPS = 30
@@ -13,7 +12,7 @@ LAYER = 66
 REPO_ROOT = Path(__file__).resolve().parents[2]
 MODEL_FILENAMES = ("vqvae.pth.tar", "prior_level_2.pth.tar")
 MODELS_READY = False
-SLICE_PATTERN = re.compile(r"^(?P<song>.+)_slice(?P<idx>\d+)$")
+DEFAULT_BATCH_SIZE = 8
 
 
 def _shared_repo_root(repo_root):
@@ -37,6 +36,29 @@ def _configure_jukemirlib_cache(cache_dir=None):
     os.environ["JUKEMIRLIB_CACHE_DIR"] = str(cache_dir)
     jukemirlib.constants.CACHE_DIR = str(cache_dir)
     return cache_dir
+
+
+def _prefer_runtime_device():
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    jukemirlib.constants.DEVICE = device
+    return device
+
+
+def _ensure_condition_cache_matches_batch_size(batch_size):
+    extract_globals = getattr(jukemirlib.extract, "__globals__", {})
+    x_cond = extract_globals.get("x_cond")
+    y_cond = extract_globals.get("y_cond")
+    if x_cond is None and y_cond is None:
+        return
+    if (
+        getattr(x_cond, "shape", (None,))[0] == batch_size
+        and getattr(y_cond, "shape", (None,))[0] == batch_size
+    ):
+        return
+    if "x_cond" in extract_globals:
+        extract_globals["x_cond"] = None
+    if "y_cond" in extract_globals:
+        extract_globals["y_cond"] = None
 
 
 def _cleanup_incomplete_jukemirlib_downloads(cache_dir):
@@ -71,6 +93,7 @@ def _download_with_resume(url, dest_path, runner=subprocess.run):
 def ensure_jukebox_models(cache_dir=None, remote_prefix=None, runner=subprocess.run):
     global MODELS_READY
     cache_dir = _configure_jukemirlib_cache(cache_dir)
+    _prefer_runtime_device()
     if MODELS_READY and all((cache_dir / name).exists() for name in MODEL_FILENAMES):
         return cache_dir
 
@@ -95,6 +118,7 @@ def extract(fpath, skip_completed=True, dest_dir="aist_juke_feats"):
         return
 
     ensure_jukebox_models()
+    _prefer_runtime_device()
     audio = jukemirlib.load_audio(fpath)
     reps = jukemirlib.extract(audio, layers=[LAYER], downsample_target_rate=FPS)
 
@@ -102,99 +126,73 @@ def extract(fpath, skip_completed=True, dest_dir="aist_juke_feats"):
     return reps[LAYER], save_path
 
 
-def extract_full_track(wav_path):
-    ensure_jukebox_models()
-    audio = jukemirlib.load_audio(wav_path)
-    reps = jukemirlib.extract(audio, layers=[LAYER], downsample_target_rate=FPS)
-    return reps[LAYER]
+def _resolve_batch_size(batch_size=None):
+    if batch_size is not None:
+        return max(int(batch_size), 1)
+    env_value = os.environ.get("EDGE_JUKEBOX_BATCH_SIZE", "").strip()
+    if env_value:
+        return max(int(env_value), 1)
+    return DEFAULT_BATCH_SIZE
 
 
-def _slice_feature_track(features, slice_idx, stride=0.5, length=5.0, fps=FPS):
-    start = int(round(slice_idx * stride * fps))
-    window = int(round(length * fps))
-    chunk = features[start : start + window]
-    if chunk.shape[0] == window:
-        return chunk
-    if chunk.shape[0] == 0:
-        feature_dim = features.shape[1] if features.ndim == 2 else 0
-        return np.zeros((window, feature_dim), dtype=features.dtype)
-    pad = np.repeat(chunk[-1:], window - chunk.shape[0], axis=0)
-    return np.concatenate((chunk, pad), axis=0)
+def _chunked(sequence, batch_size):
+    for start in range(0, len(sequence), batch_size):
+        yield sequence[start : start + batch_size]
 
 
-def _parse_slice_name(stem):
-    match = SLICE_PATTERN.match(stem)
-    if match is None:
-        return None
-    return match.group("song"), int(match.group("idx"))
+def extract_batch(fpaths, dest_dir="aist_juke_feats", skip_completed=True):
+    fpaths = [Path(fpath) for fpath in fpaths]
+    dest_dir = Path(dest_dir)
+    dest_dir.mkdir(parents=True, exist_ok=True)
 
-
-def _resolve_source_wav(src_dir, song_name):
-    src_dir = Path(src_dir)
-    candidate = src_dir.parent / "wavs" / f"{song_name}.wav"
-    if candidate.exists():
-        return candidate
-    candidate = src_dir / f"{song_name}.wav"
-    if candidate.exists():
-        return candidate
-    raise FileNotFoundError(f"Could not resolve original wav for {song_name!r} from {src_dir}")
-
-
-def _group_slice_requests(fpaths):
-    grouped = {}
+    pending_paths = []
+    outputs = []
     for fpath in fpaths:
-        parsed = _parse_slice_name(fpath.stem)
-        if parsed is None:
-            return None
-        song_name, slice_idx = parsed
-        grouped.setdefault(song_name, []).append((slice_idx, fpath))
-    return {song: sorted(items) for song, items in grouped.items()}
+        save_path = dest_dir / f"{fpath.stem}.npy"
+        if skip_completed and save_path.exists():
+            continue
+        pending_paths.append(fpath)
+        outputs.append((None, save_path))
+
+    if not pending_paths:
+        return []
+
+    ensure_jukebox_models()
+    _prefer_runtime_device()
+    audios = [jukemirlib.load_audio(str(fpath)) for fpath in pending_paths]
+
+    if len(audios) == 1:
+        _ensure_condition_cache_matches_batch_size(1)
+        reps = jukemirlib.extract(
+            audios[0], layers=[LAYER], downsample_target_rate=FPS
+        )[LAYER]
+        return [(reps, outputs[0][1])]
+
+    _ensure_condition_cache_matches_batch_size(len(audios))
+    reps = jukemirlib.extract(
+        audio=audios,
+        layers=[LAYER],
+        downsample_target_rate=FPS,
+    )[LAYER]
+    return list(zip(reps, [save_path for _, save_path in outputs]))
 
 
-def extract_folder(src, dest, stride=0.5, length=5.0):
+def extract_folder(src, dest, batch_size=None, skip_completed=True):
     fpaths = Path(src).glob("*")
     fpaths = sorted(path for path in fpaths if path.suffix == ".wav")
     dest = Path(dest)
     dest.mkdir(parents=True, exist_ok=True)
-    extract_ = partial(extract, dest_dir=dest)
-    ensure_jukebox_models()
-    grouped = _group_slice_requests(fpaths)
-    if grouped:
-        grouped_items = sorted(grouped.items())
-        for song_name, slice_items in tqdm(
-            grouped_items,
-            total=len(grouped_items),
-            desc="Jukebox songs",
-            unit="song",
-        ):
-            missing_items = [
-                (slice_idx, fpath)
-                for slice_idx, fpath in slice_items
-                if not (dest / f"{fpath.stem}.npy").exists()
-            ]
-            if not missing_items:
-                continue
-            source_wav = _resolve_source_wav(src, song_name)
-            full_features = extract_full_track(source_wav)
-            for slice_idx, fpath in missing_items:
-                slice_features = _slice_feature_track(
-                    full_features,
-                    slice_idx=slice_idx,
-                    stride=stride,
-                    length=length,
-                )
-                np.save(dest / f"{fpath.stem}.npy", slice_features)
+    if not fpaths:
         return
 
-    for fpath in tqdm(
-        fpaths,
-        total=len(fpaths),
-        desc="Jukebox slices",
-        unit="clip",
-    ):
-        rep, path = extract_(fpath)
-        if rep is not None:
-            np.save(path, rep)
+    batch_size = _resolve_batch_size(batch_size)
+    ensure_jukebox_models()
+    print(f"Using Jukebox batch_size={batch_size} on device={jukemirlib.constants.DEVICE}")
+    with tqdm(total=len(fpaths), desc="Jukebox slices", unit="clip") as progress:
+        for batch in _chunked(fpaths, batch_size):
+            for rep, path in extract_batch(batch, dest_dir=dest, skip_completed=skip_completed):
+                np.save(path, rep)
+            progress.update(len(batch))
 
 
 if __name__ == "__main__":
@@ -204,9 +202,6 @@ if __name__ == "__main__":
 
     parser.add_argument("--src", help="source path to AIST++ audio files")
     parser.add_argument("--dest", help="dest path to audio features")
-    parser.add_argument("--stride", type=float, default=0.5)
-    parser.add_argument("--length", type=float, default=5.0)
-
     args = parser.parse_args()
 
-    extract_folder(args.src, args.dest, stride=args.stride, length=args.length)
+    extract_folder(args.src, args.dest)

@@ -26,6 +26,8 @@ def train(opt):
         beat_a=opt.beat_a,
         beat_c=opt.beat_c,
         beat_estimator_ckpt=opt.beat_estimator_ckpt,
+        gradient_accumulation_steps=opt.gradient_accumulation_steps,
+        mixed_precision=opt.mixed_precision,
         resume_training_state=bool(opt.checkpoint),
     )
     model.train_loop(opt)

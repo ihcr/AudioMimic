@@ -1,6 +1,8 @@
 import argparse
 import glob
+import os
 import pickle
+import time
 from pathlib import Path
 
 import numpy as np
@@ -9,11 +11,50 @@ import torch.nn.functional as F
 from torch.utils.data import DataLoader, Dataset, random_split
 from tqdm import tqdm
 
+from args import resolve_worker_count
 from model.beat_estimator import BeatDistanceEstimator
 from rotation_transforms import (RotateAxisAngle, axis_angle_to_quaternion,
                                  quaternion_multiply,
                                  quaternion_to_axis_angle)
 from vis import SMPLSkeleton
+
+BEAT_ESTIMATOR_CACHE_VERSION = "v2"
+
+
+def beat_estimator_cache_name(motion_dir, fps=30, seq_len=150):
+    split_name = Path(motion_dir).resolve().parent.name
+    return f"beat_estimator_{split_name}_fps{fps}_seq{seq_len}_{BEAT_ESTIMATOR_CACHE_VERSION}.pt"
+
+
+def default_cache_dir(motion_dir):
+    motion_path = Path(motion_dir).resolve()
+    if len(motion_path.parents) >= 2:
+        return motion_path.parents[1] / "dataset_backups"
+    return motion_path.parent / "dataset_backups"
+
+
+def build_dataloader_kwargs(num_workers, pin_memory):
+    kwargs = {
+        "num_workers": num_workers,
+        "pin_memory": pin_memory,
+    }
+    if num_workers > 0:
+        kwargs["persistent_workers"] = True
+        kwargs["prefetch_factor"] = 1
+    return kwargs
+
+
+def resolve_runtime_mixed_precision(mixed_precision, device):
+    device_obj = torch.device(device)
+    return mixed_precision if device_obj.type == "cuda" else "no"
+
+
+def configure_cuda_math():
+    if not torch.cuda.is_available():
+        return
+    torch.backends.cuda.matmul.allow_tf32 = True
+    torch.backends.cudnn.allow_tf32 = True
+    torch.set_float32_matmul_precision("high")
 
 
 def rotate_motion_to_z_up(local_q, root_pos):
@@ -54,7 +95,15 @@ def load_motion_joints(motion_path, fps=30, seq_len=150, device="cpu"):
 
 
 class MotionBeatDataset(Dataset):
-    def __init__(self, motion_dir, beat_dir, fps=30, seq_len=150):
+    def __init__(
+        self,
+        motion_dir,
+        beat_dir,
+        fps=30,
+        seq_len=150,
+        cache_dir=None,
+        force_rebuild_cache=False,
+    ):
         motion_map = {
             Path(path).stem: path for path in sorted(glob.glob(str(Path(motion_dir) / "*.pkl")))
         }
@@ -69,16 +118,51 @@ class MotionBeatDataset(Dataset):
         ]
         self.fps = fps
         self.seq_len = seq_len
+        cache_root = Path(cache_dir) if cache_dir is not None else default_cache_dir(motion_dir)
+        cache_root.mkdir(parents=True, exist_ok=True)
+        self.cache_path = cache_root / beat_estimator_cache_name(
+            motion_dir, fps=fps, seq_len=seq_len
+        )
+
+        if not force_rebuild_cache and self.cache_path.is_file():
+            payload = torch.load(self.cache_path, map_location="cpu", weights_only=False)
+            self.joints = payload["joints"].float()
+            self.targets = payload["targets"].float()
+            return
+
+        joints = []
+        targets = []
+        for motion_path, beat_path in self.samples:
+            joints.append(
+                load_motion_joints(motion_path, fps=self.fps, seq_len=self.seq_len)
+            )
+            with np.load(beat_path) as beat_data:
+                targets.append(
+                    torch.from_numpy(beat_data["motion_dist"].astype(np.float32))
+                )
+
+        if joints:
+            self.joints = torch.stack(joints, dim=0).float()
+            self.targets = torch.stack(targets, dim=0).float()
+        else:
+            self.joints = torch.empty((0, seq_len, 24, 3), dtype=torch.float32)
+            self.targets = torch.empty((0, seq_len), dtype=torch.float32)
+
+        torch.save(
+            {
+                "joints": self.joints,
+                "targets": self.targets,
+                "fps": fps,
+                "seq_len": seq_len,
+            },
+            self.cache_path,
+        )
 
     def __len__(self):
         return len(self.samples)
 
     def __getitem__(self, idx):
-        motion_path, beat_path = self.samples[idx]
-        joints = load_motion_joints(motion_path, fps=self.fps, seq_len=self.seq_len)
-        with np.load(beat_path) as beat_data:
-            target = torch.from_numpy(beat_data["motion_dist"].astype(np.float32))
-        return joints.float(), target.float()
+        return self.joints[idx], self.targets[idx]
 
 
 def save_checkpoint(model, path, config):
@@ -108,7 +192,9 @@ def split_train_val_dataset(dataset, val_split=0.1, split_seed=42):
     return random_split(dataset, [train_size, val_size], generator=generator)
 
 
-def run_epoch(model, dataloader, device, desc, optimizer=None):
+def run_epoch(model, dataloader, device, desc, optimizer=None, mixed_precision="no"):
+    device_obj = torch.device(device)
+    autocast_enabled = mixed_precision == "bf16" and device_obj.type == "cuda"
     if optimizer is None:
         model.eval()
     else:
@@ -122,11 +208,16 @@ def run_epoch(model, dataloader, device, desc, optimizer=None):
     )
     with torch.set_grad_enabled(optimizer is not None):
         for joints, target in batch_loop:
-            joints = joints.to(device)
-            target = target.to(device)
+            joints = joints.to(device_obj, non_blocking=autocast_enabled)
+            target = target.to(device_obj, non_blocking=autocast_enabled)
 
-            pred_dist = model(joints)
-            loss = F.mse_loss(pred_dist, target)
+            with torch.autocast(
+                device_type=device_obj.type,
+                dtype=torch.bfloat16,
+                enabled=autocast_enabled,
+            ):
+                pred_dist = model(joints)
+                loss = F.mse_loss(pred_dist, target)
 
             if optimizer is not None:
                 optimizer.zero_grad()
@@ -151,17 +242,50 @@ def train(
     seq_len=150,
     val_split=0.1,
     split_seed=42,
+    num_workers=None,
+    mixed_precision="bf16",
+    force_rebuild_cache=False,
     device=None,
 ):
     device = device or ("cuda" if torch.cuda.is_available() else "cpu")
-    dataset = MotionBeatDataset(motion_dir, beat_dir, fps=fps, seq_len=seq_len)
+    configure_cuda_math()
+    mixed_precision = resolve_runtime_mixed_precision(mixed_precision, device)
+    device_obj = torch.device(device)
+    resolved_num_workers = (
+        num_workers
+        if num_workers is not None
+        else (resolve_worker_count() if device_obj.type == "cuda" else 0)
+    )
+    dataset = MotionBeatDataset(
+        motion_dir,
+        beat_dir,
+        fps=fps,
+        seq_len=seq_len,
+        force_rebuild_cache=force_rebuild_cache,
+    )
     train_dataset, val_dataset = split_train_val_dataset(
         dataset, val_split=val_split, split_seed=split_seed
     )
-    train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+    pin_memory = device_obj.type == "cuda"
+    train_dataloader = DataLoader(
+        train_dataset,
+        batch_size=batch_size,
+        shuffle=True,
+        **build_dataloader_kwargs(resolved_num_workers, pin_memory),
+    )
     val_dataloader = None
     if val_dataset is not None:
-        val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
+        val_dataloader = DataLoader(
+            val_dataset,
+            batch_size=batch_size,
+            shuffle=False,
+            **build_dataloader_kwargs(resolved_num_workers, pin_memory),
+        )
+
+    print(
+        f"Beat estimator config: batch_size={batch_size} num_workers={resolved_num_workers} "
+        f"mixed_precision={mixed_precision} cache_path={getattr(dataset, 'cache_path', '<none>')}"
+    )
 
     model = BeatDistanceEstimator().to(device)
     optimizer = torch.optim.AdamW(
@@ -177,6 +301,8 @@ def train(
         "weight_decay": weight_decay,
         "val_split": val_split,
         "split_seed": split_seed,
+        "num_workers": resolved_num_workers,
+        "mixed_precision": mixed_precision,
         "hidden_dim": 128,
         "num_heads": 4,
         "num_layers": 6,
@@ -186,23 +312,45 @@ def train(
     best_epoch = None
     best_val_loss = None
     for epoch in range(epochs):
+        epoch_start = time.perf_counter()
         train_loss = run_epoch(
             model,
             train_dataloader,
             device=device,
             desc=f"Beat estimator train {epoch + 1}/{epochs}",
             optimizer=optimizer,
+            mixed_precision=mixed_precision,
+        )
+        train_duration = max(time.perf_counter() - epoch_start, 1e-6)
+        peak_cuda_memory_mb = (
+            torch.cuda.max_memory_allocated(device=torch.device(device)) / (1024 ** 2)
+            if torch.device(device).type == "cuda"
+            else 0.0
+        )
+        print(
+            f"train_epoch={epoch + 1} seconds={train_duration:.2f} "
+            f"batches_per_second={len(train_dataloader) / train_duration:.2f} "
+            f"samples_per_second={len(train_dataset) / train_duration:.2f} "
+            f"peak_cuda_memory_mb={peak_cuda_memory_mb:.2f}"
         )
         if val_dataloader is None:
             best_epoch = epoch + 1
             print(f"epoch={epoch + 1} train_loss={train_loss:.6f}")
             continue
 
+        val_start = time.perf_counter()
         val_loss = run_epoch(
             model,
             val_dataloader,
             device=device,
             desc=f"Beat estimator val {epoch + 1}/{epochs}",
+            mixed_precision=mixed_precision,
+        )
+        val_duration = max(time.perf_counter() - val_start, 1e-6)
+        print(
+            f"val_epoch={epoch + 1} seconds={val_duration:.2f} "
+            f"batches_per_second={len(val_dataloader) / val_duration:.2f} "
+            f"samples_per_second={len(val_dataset) / val_duration:.2f}"
         )
         print(
             f"epoch={epoch + 1} train_loss={train_loss:.6f} val_loss={val_loss:.6f}"
@@ -252,6 +400,13 @@ def parse_args():
     parser.add_argument("--seq_len", type=int, default=150)
     parser.add_argument("--val_split", type=float, default=0.1)
     parser.add_argument("--split_seed", type=int, default=42)
+    parser.add_argument("--num_workers", type=int, default=None)
+    parser.add_argument(
+        "--mixed_precision",
+        choices=("no", "bf16"),
+        default="bf16",
+    )
+    parser.add_argument("--force_rebuild_cache", action="store_true")
     parser.add_argument("--device", default=None, help="Explicit torch device override.")
     return parser.parse_args()
 
@@ -270,6 +425,9 @@ def main():
         seq_len=args.seq_len,
         val_split=args.val_split,
         split_seed=args.split_seed,
+        num_workers=args.num_workers,
+        mixed_precision=args.mixed_precision,
+        force_rebuild_cache=args.force_rebuild_cache,
         device=args.device,
     )
 

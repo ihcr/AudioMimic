@@ -2,7 +2,6 @@ import importlib
 import os
 import pickle
 import unittest
-from collections import Counter
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import patch
@@ -285,45 +284,69 @@ class JukeboxFeatureCacheTests(unittest.TestCase):
         self.assertFalse(tmp_file.exists())
         download.assert_not_called()
 
-    def test_extract_folder_extracts_once_per_song_and_materializes_slice_outputs(self):
+    def test_extract_folder_skips_existing_outputs_by_default(self):
         jukebox_features = importlib.import_module("data.audio_extraction.jukebox_features")
 
         with TemporaryDirectory() as tmpdir:
             tmp_path = Path(tmpdir)
             sliced_dir = tmp_path / "train" / "wavs_sliced"
-            source_dir = tmp_path / "train" / "wavs"
             dest_dir = tmp_path / "train" / "jukebox_feats"
             sliced_dir.mkdir(parents=True)
-            source_dir.mkdir(parents=True)
+            dest_dir.mkdir(parents=True)
 
-            for name in [
-                "songA_slice0.wav",
-                "songA_slice1.wav",
-                "songA_slice2.wav",
-                "songB_slice0.wav",
-            ]:
+            for name in ["songA_slice0.wav", "songA_slice1.wav", "songB_slice0.wav"]:
                 (sliced_dir / name).write_bytes(b"slice")
 
-            for name in ["songA.wav", "songB.wav"]:
-                (source_dir / name).write_bytes(b"full")
+            stale_path = dest_dir / "songA_slice1.npy"
+            np.save(stale_path, np.full((150, 2), -1.0, dtype=np.float32))
 
-            call_counter = Counter()
+            batch_calls = []
 
-            def fake_extract_full_track(wav_path):
-                call_counter[Path(wav_path).stem] += 1
-                if Path(wav_path).stem == "songA":
-                    return np.arange(210 * 2, dtype=np.float32).reshape(210, 2)
-                return np.arange(150 * 2, dtype=np.float32).reshape(150, 2) + 1000
+            def fake_extract_batch(wav_paths, dest_dir=None, skip_completed=False):
+                batch_calls.append([Path(path).name for path in wav_paths])
+                outputs = []
+                for wav_path in wav_paths:
+                    stem = Path(wav_path).stem
+                    save_path = Path(dest_dir) / f"{stem}.npy"
+                    if skip_completed and save_path.exists():
+                        continue
+                    feature_value = float(len(stem))
+                    feature = np.full((150, 2), feature_value, dtype=np.float32)
+                    outputs.append((feature, str(save_path)))
+                return outputs
+
+            class FakeProgress:
+                def __init__(self, **kwargs):
+                    self.kwargs = kwargs
+                    self.updated = []
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, exc_type, exc, tb):
+                    return False
+
+                def update(self, amount):
+                    self.updated.append(amount)
+
+            progress_instances = []
+
+            def fake_tqdm(*args, **kwargs):
+                progress = FakeProgress(**kwargs)
+                progress_instances.append(progress)
+                return progress
 
             with patch.object(
+                jukebox_features, "extract_batch", side_effect=fake_extract_batch
+            ), patch.object(
                 jukebox_features, "ensure_jukebox_models"
             ), patch.object(
-                jukebox_features, "extract_full_track", side_effect=fake_extract_full_track
+                jukebox_features,
+                "tqdm",
+                side_effect=fake_tqdm,
+                create=True,
             ):
-                jukebox_features.extract_folder(str(sliced_dir), str(dest_dir))
-
-            self.assertEqual(call_counter["songA"], 1)
-            self.assertEqual(call_counter["songB"], 1)
+                jukebox_features.extract_folder(str(sliced_dir), str(dest_dir), batch_size=2)
 
             song_a_slice0 = np.load(dest_dir / "songA_slice0.npy")
             song_a_slice1 = np.load(dest_dir / "songA_slice1.npy")
@@ -332,77 +355,157 @@ class JukeboxFeatureCacheTests(unittest.TestCase):
             self.assertEqual(song_a_slice0.shape, (150, 2))
             self.assertEqual(song_a_slice1.shape, (150, 2))
             self.assertEqual(song_b_slice0.shape, (150, 2))
-            np.testing.assert_array_equal(song_a_slice0, np.arange(150 * 2, dtype=np.float32).reshape(150, 2))
-            np.testing.assert_array_equal(song_a_slice1, np.arange(30, 330, dtype=np.float32).reshape(150, 2))
-            np.testing.assert_array_equal(song_b_slice0, np.arange(150 * 2, dtype=np.float32).reshape(150, 2) + 1000)
+            self.assertEqual(batch_calls, [["songA_slice0.wav", "songA_slice1.wav"], ["songB_slice0.wav"]])
+            self.assertEqual(progress_instances[0].updated, [2, 1])
+            np.testing.assert_array_equal(song_a_slice0, np.full((150, 2), 12.0, dtype=np.float32))
+            np.testing.assert_array_equal(song_a_slice1, np.full((150, 2), -1.0, dtype=np.float32))
+            np.testing.assert_array_equal(song_b_slice0, np.full((150, 2), 12.0, dtype=np.float32))
 
-    def test_extract_folder_reports_song_level_progress_for_grouped_jukebox_work(self):
+    def test_extract_folder_reports_clip_level_progress_for_jukebox_slices(self):
         jukebox_features = importlib.import_module("data.audio_extraction.jukebox_features")
 
         with TemporaryDirectory() as tmpdir:
             tmp_path = Path(tmpdir)
             sliced_dir = tmp_path / "train" / "wavs_sliced"
-            source_dir = tmp_path / "train" / "wavs"
             dest_dir = tmp_path / "train" / "jukebox_feats"
             sliced_dir.mkdir(parents=True)
-            source_dir.mkdir(parents=True)
 
             for name in ["songA_slice0.wav", "songA_slice1.wav", "songB_slice0.wav"]:
                 (sliced_dir / name).write_bytes(b"slice")
 
-            for name in ["songA.wav", "songB.wav"]:
-                (source_dir / name).write_bytes(b"full")
-
             progress_calls = []
 
-            def fake_tqdm(iterable, **kwargs):
+            class FakeProgress:
+                def __init__(self, **kwargs):
+                    progress_calls.append(kwargs)
+
+                def __enter__(self):
+                    return self
+
+                def __exit__(self, exc_type, exc, tb):
+                    return False
+
+                def update(self, amount):
+                    return None
+
+            def fake_tqdm(*args, **kwargs):
                 progress_calls.append(kwargs)
-                return iterable
+                return FakeProgress(**kwargs)
 
             with patch.object(
-                jukebox_features, "ensure_jukebox_models"
-            ), patch.object(
                 jukebox_features,
-                "extract_full_track",
-                return_value=np.zeros((150, 2), dtype=np.float32),
+                "extract_batch",
+                return_value=[
+                    (np.zeros((150, 2), dtype=np.float32), str(dest_dir / "clip0.npy")),
+                    (np.zeros((150, 2), dtype=np.float32), str(dest_dir / "clip1.npy")),
+                ],
+            ), patch.object(
+                jukebox_features, "ensure_jukebox_models"
             ), patch.object(
                 jukebox_features,
                 "tqdm",
                 side_effect=fake_tqdm,
                 create=True,
             ):
-                jukebox_features.extract_folder(str(sliced_dir), str(dest_dir))
+                jukebox_features.extract_folder(str(sliced_dir), str(dest_dir), batch_size=2)
 
-        self.assertEqual(len(progress_calls), 1)
-        self.assertEqual(progress_calls[0]["desc"], "Jukebox songs")
-        self.assertEqual(progress_calls[0]["total"], 2)
-        self.assertEqual(progress_calls[0]["unit"], "song")
+        self.assertEqual(len(progress_calls), 2)
+        self.assertEqual(progress_calls[0]["desc"], "Jukebox slices")
+        self.assertEqual(progress_calls[0]["total"], 3)
+        self.assertEqual(progress_calls[0]["unit"], "clip")
 
-    def test_extract_folder_skips_full_song_when_all_slice_outputs_exist(self):
+    def test_extract_batch_uses_batched_jukemirlib_extract(self):
         jukebox_features = importlib.import_module("data.audio_extraction.jukebox_features")
 
         with TemporaryDirectory() as tmpdir:
             tmp_path = Path(tmpdir)
-            sliced_dir = tmp_path / "train" / "wavs_sliced"
-            source_dir = tmp_path / "train" / "wavs"
-            dest_dir = tmp_path / "train" / "jukebox_feats"
-            sliced_dir.mkdir(parents=True)
-            source_dir.mkdir(parents=True)
-            dest_dir.mkdir(parents=True)
+            dest_dir = tmp_path / "jukebox_feats"
+            wav_paths = [tmp_path / "songA.wav", tmp_path / "songB.wav"]
+            for wav_path in wav_paths:
+                wav_path.write_bytes(b"slice")
 
-            for name in ["songA_slice0.wav", "songA_slice1.wav"]:
-                (sliced_dir / name).write_bytes(b"slice")
-                np.save(dest_dir / name.replace(".wav", ".npy"), np.ones((150, 2), dtype=np.float32))
-            (source_dir / "songA.wav").write_bytes(b"full")
+            loaded_audio = {
+                str(wav_paths[0]): np.array([1.0, 2.0], dtype=np.float32),
+                str(wav_paths[1]): np.array([3.0, 4.0], dtype=np.float32),
+            }
 
             with patch.object(
                 jukebox_features, "ensure_jukebox_models"
             ), patch.object(
-                jukebox_features, "extract_full_track"
-            ) as extract_full_track:
-                jukebox_features.extract_folder(str(sliced_dir), str(dest_dir))
+                jukebox_features, "_prefer_runtime_device"
+            ) as prefer_device, patch.object(
+                jukebox_features.jukemirlib, "load_audio", side_effect=lambda path: loaded_audio[str(path)]
+            ) as load_audio, patch.object(
+                jukebox_features.jukemirlib,
+                "extract",
+                return_value={
+                    jukebox_features.LAYER: np.stack(
+                        [
+                            np.full((150, 2), 11.0, dtype=np.float32),
+                            np.full((150, 2), 22.0, dtype=np.float32),
+                        ],
+                        axis=0,
+                    )
+                },
+            ) as extract:
+                outputs = jukebox_features.extract_batch(wav_paths, dest_dir=dest_dir)
 
-        extract_full_track.assert_not_called()
+        prefer_device.assert_called_once()
+        self.assertEqual(load_audio.call_count, 2)
+        extract.assert_called_once()
+        self.assertEqual(len(outputs), 2)
+        np.testing.assert_array_equal(outputs[0][0], np.full((150, 2), 11.0, dtype=np.float32))
+        np.testing.assert_array_equal(outputs[1][0], np.full((150, 2), 22.0, dtype=np.float32))
+        self.assertTrue(str(outputs[0][1]).endswith("songA.npy"))
+        self.assertTrue(str(outputs[1][1]).endswith("songB.npy"))
+
+    def test_extract_batch_resets_cached_jukemirlib_conditions_when_batch_size_changes(self):
+        jukebox_features = importlib.import_module("data.audio_extraction.jukebox_features")
+
+        class FakeCondition:
+            def __init__(self, batch_size):
+                self.shape = (batch_size, 1, 8)
+
+        def fake_extract(audio=None, **kwargs):
+            if fake_extract.__globals__["x_cond"] is not None:
+                raise AssertionError("stale x_cond was not reset before smaller batch")
+            if fake_extract.__globals__["y_cond"] is not None:
+                raise AssertionError("stale y_cond was not reset before smaller batch")
+            fake_extract.__globals__["x_cond"] = FakeCondition(len(audio))
+            fake_extract.__globals__["y_cond"] = FakeCondition(len(audio))
+            return {
+                jukebox_features.LAYER: np.stack(
+                    [np.full((150, 2), idx, dtype=np.float32) for idx in range(len(audio))],
+                    axis=0,
+                )
+            }
+
+        fake_extract.__globals__["x_cond"] = FakeCondition(16)
+        fake_extract.__globals__["y_cond"] = FakeCondition(16)
+
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            wav_paths = [tmp_path / f"song{idx}.wav" for idx in range(5)]
+            for wav_path in wav_paths:
+                wav_path.write_bytes(b"slice")
+
+            with patch.object(
+                jukebox_features, "ensure_jukebox_models"
+            ), patch.object(
+                jukebox_features, "_prefer_runtime_device"
+            ), patch.object(
+                jukebox_features.jukemirlib,
+                "load_audio",
+                side_effect=lambda path: np.array([1.0, 2.0], dtype=np.float32),
+            ), patch.object(
+                jukebox_features.jukemirlib,
+                "extract",
+                new=fake_extract,
+            ):
+                jukebox_features.extract_batch(wav_paths, dest_dir=tmp_path / "features")
+
+        self.assertEqual(fake_extract.__globals__["x_cond"].shape[0], 5)
+        self.assertEqual(fake_extract.__globals__["y_cond"].shape[0], 5)
 
 
 if __name__ == "__main__":

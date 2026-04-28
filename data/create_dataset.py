@@ -118,14 +118,10 @@ def create_dataset(opt):
         _load_jukebox_extract()(
             str(DATA_DIR / "train" / "wavs_sliced"),
             str(DATA_DIR / "train" / "jukebox_feats"),
-            opt.stride,
-            opt.length,
         )
         _load_jukebox_extract()(
             str(DATA_DIR / "test" / "wavs_sliced"),
             str(DATA_DIR / "test" / "jukebox_feats"),
-            opt.stride,
-            opt.length,
         )
     if opt.extract_beats:
         print("Extracting beat metadata")

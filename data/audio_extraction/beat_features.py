@@ -249,11 +249,43 @@ def _detect_local_minima(curve, min_gap=5):
     return np.asarray(selected, dtype=np.int64)
 
 
-def extract_audio_beats_librosa(wav_path, fps=30, seq_len=150):
+def load_audio_beat_frames(wav_path, fps=30, seq_len=None):
     audio, sr = librosa.load(wav_path, sr=None, mono=True)
     _, beat_times = librosa.beat.beat_track(y=audio, sr=sr, units="time")
     beat_frames = np.rint(np.asarray(beat_times) * fps).astype(np.int64)
-    beat_frames = _sanitize_beat_frames(beat_frames, seq_len)
+    if seq_len is None:
+        return np.unique(np.clip(beat_frames, 0, None))
+    return _sanitize_beat_frames(beat_frames, seq_len)
+
+
+def mean_joint_speed_curve(full_pose):
+    full_pose = np.asarray(full_pose, dtype=np.float32)
+    if full_pose.ndim != 3 or full_pose.shape[-1] != 3:
+        raise ValueError("full_pose must have shape [T, J, 3]")
+    if full_pose.shape[0] == 0:
+        return np.zeros(0, dtype=np.float32)
+    if full_pose.shape[0] == 1:
+        return np.zeros(1, dtype=np.float32)
+
+    velocity = np.linalg.norm(full_pose[1:] - full_pose[:-1], axis=-1).mean(axis=-1)
+    return np.concatenate((velocity[:1], velocity), axis=0).astype(np.float32)
+
+
+def detect_motion_beat_frames_from_pose(full_pose, min_gap=5):
+    full_pose = np.asarray(full_pose, dtype=np.float32)
+    if full_pose.ndim != 3 or full_pose.shape[-1] != 3:
+        raise ValueError("full_pose must have shape [T, J, 3]")
+    if full_pose.shape[0] == 0:
+        return np.zeros(0, dtype=np.int64)
+
+    velocity = mean_joint_speed_curve(full_pose)
+    smooth_velocity = _smooth_curve(velocity.astype(np.float32))
+    beat_frames = _detect_local_minima(smooth_velocity, min_gap=min_gap)
+    return _sanitize_beat_frames(beat_frames, full_pose.shape[0])
+
+
+def extract_audio_beats_librosa(wav_path, fps=30, seq_len=150):
+    beat_frames = load_audio_beat_frames(wav_path, fps=fps, seq_len=seq_len)
     beat_mask = _beat_mask(beat_frames, seq_len)
     beat_dist = nearest_beat_distance(beat_frames, seq_len)
     beat_spacing = local_beat_spacing(beat_frames, seq_len)
@@ -277,11 +309,7 @@ def extract_motion_beats_from_motion_pkl(motion_pkl_path, fps=30, seq_len=150):
     local_q, root_pos = _rotate_root_to_z_up(local_q, root_pos)
     joints = _forward_kinematics(local_q, root_pos).cpu().numpy()
 
-    velocity = np.linalg.norm(joints[1:] - joints[:-1], axis=-1).mean(axis=-1)
-    velocity = np.concatenate((velocity[:1], velocity), axis=0)
-    smooth_velocity = _smooth_curve(velocity.astype(np.float32))
-    beat_frames = _detect_local_minima(smooth_velocity, min_gap=5)
-    beat_frames = _sanitize_beat_frames(beat_frames, len(root_pos))
+    beat_frames = detect_motion_beat_frames_from_pose(joints, min_gap=5)
 
     beat_mask = _beat_mask(beat_frames, len(root_pos))
     beat_dist = nearest_beat_distance(beat_frames, len(root_pos))

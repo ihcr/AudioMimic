@@ -1,4 +1,5 @@
 import importlib
+import os
 import subprocess
 import sys
 import unittest
@@ -38,15 +39,21 @@ def load_train_module():
 
 
 class TrainArgParserTests(unittest.TestCase):
-    def test_train_parser_uses_stable_default_learning_rate_for_beat_runs(self):
+    def test_train_parser_uses_official_style_training_defaults(self):
         with argv_context("train.py", "--use_beats"):
             beat_opt = args.parse_train_opt()
 
         with argv_context("train.py"):
             baseline_opt = args.parse_train_opt()
 
-        self.assertEqual(beat_opt.learning_rate, 1e-4)
-        self.assertEqual(baseline_opt.learning_rate, 4e-4)
+        self.assertEqual(beat_opt.learning_rate, 2e-4)
+        self.assertEqual(baseline_opt.learning_rate, 2e-4)
+        self.assertEqual(beat_opt.batch_size, 128)
+        self.assertEqual(baseline_opt.batch_size, 128)
+        self.assertEqual(beat_opt.gradient_accumulation_steps, 1)
+        self.assertEqual(baseline_opt.gradient_accumulation_steps, 1)
+        self.assertEqual(beat_opt.lambda_acc, 0.0)
+        self.assertEqual(baseline_opt.lambda_acc, 0.0)
         self.assertFalse(beat_opt.learning_rate_was_explicit)
         self.assertFalse(baseline_opt.learning_rate_was_explicit)
 
@@ -56,6 +63,20 @@ class TrainArgParserTests(unittest.TestCase):
 
         self.assertEqual(opt.learning_rate, 0.001)
         self.assertTrue(opt.learning_rate_was_explicit)
+
+    def test_train_parser_uses_dynamic_worker_defaults_when_unset(self):
+        with patch.dict(os.environ, {"SLURM_CPUS_PER_TASK": "8"}, clear=False):
+            with argv_context("train.py"):
+                opt = args.parse_train_opt()
+
+        self.assertEqual(opt.train_num_workers, 2)
+        self.assertEqual(opt.test_num_workers, 2)
+
+    def test_train_parser_accepts_mixed_precision_argument(self):
+        with argv_context("train.py", "--mixed_precision", "no"):
+            opt = args.parse_train_opt()
+
+        self.assertEqual(opt.mixed_precision, "no")
 
     def test_train_parser_accepts_phase0_arguments(self):
         with argv_context(
@@ -81,6 +102,10 @@ class TrainArgParserTests(unittest.TestCase):
             "3",
             "--test_num_workers",
             "1",
+            "--gradient_accumulation_steps",
+            "3",
+            "--mixed_precision",
+            "bf16",
         ):
             opt = args.parse_train_opt()
 
@@ -95,6 +120,8 @@ class TrainArgParserTests(unittest.TestCase):
         self.assertEqual(opt.beat_estimator_ckpt, "weights/beat_estimator.pt")
         self.assertEqual(opt.train_num_workers, 3)
         self.assertEqual(opt.test_num_workers, 1)
+        self.assertEqual(opt.gradient_accumulation_steps, 3)
+        self.assertEqual(opt.mixed_precision, "bf16")
 
     def test_test_parser_accepts_phase0_beat_arguments(self):
         with argv_context(
@@ -130,6 +157,8 @@ class TrainWiringTests(unittest.TestCase):
             beat_a=10.0,
             beat_c=0.1,
             beat_estimator_ckpt="weights/beat_estimator.pt",
+            gradient_accumulation_steps=4,
+            mixed_precision="bf16",
             train_num_workers=0,
             test_num_workers=0,
         )
@@ -153,6 +182,8 @@ class TrainWiringTests(unittest.TestCase):
             beat_a=opt.beat_a,
             beat_c=opt.beat_c,
             beat_estimator_ckpt=opt.beat_estimator_ckpt,
+            gradient_accumulation_steps=opt.gradient_accumulation_steps,
+            mixed_precision=opt.mixed_precision,
             resume_training_state=True,
         )
         fake_model.train_loop.assert_called_once_with(opt)
@@ -251,14 +282,10 @@ class CreateDatasetEntrypointTests(unittest.TestCase):
         jukebox_extract.assert_any_call(
             str(expected_root / "train" / "wavs_sliced"),
             str(expected_root / "train" / "jukebox_feats"),
-            opt.stride,
-            opt.length,
         )
         jukebox_extract.assert_any_call(
             str(expected_root / "test" / "wavs_sliced"),
             str(expected_root / "test" / "jukebox_feats"),
-            opt.stride,
-            opt.length,
         )
 
     def test_create_dataset_invokes_beat_extraction_when_requested(self):

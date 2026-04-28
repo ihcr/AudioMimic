@@ -180,7 +180,7 @@ class RuntimeTrainingConfigTests(unittest.TestCase):
         )
 
         self.assertTrue(resolved["use_beats"])
-        self.assertEqual(resolved["learning_rate"], 1e-4)
+        self.assertEqual(resolved["learning_rate"], 2e-4)
         self.assertEqual(resolved["grad_clip_norm"], 1.0)
 
     def test_explicit_learning_rate_is_preserved_across_checkpoint_resolution(self):
@@ -201,6 +201,151 @@ class RuntimeTrainingConfigTests(unittest.TestCase):
 
         self.assertEqual(resolved["learning_rate"], 2.5e-4)
         self.assertEqual(resolved["grad_clip_norm"], 1.0)
+
+
+class LoaderConfigTests(unittest.TestCase):
+    def test_tensor_dataset_cache_name_is_versioned(self):
+        edge_module = reload_module("EDGE")
+
+        cache_name = edge_module.tensor_dataset_cache_name(
+            "train", "jukebox", True, "distance"
+        )
+
+        self.assertEqual(cache_name, "train_tensor_dataset_jukebox_beat_distance_v5.pkl")
+
+    def test_prune_legacy_tensor_dataset_caches_removes_older_matching_versions(self):
+        edge_module = reload_module("EDGE")
+
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            current = tmp_path / "train_tensor_dataset_jukebox_beat_distance_v5.pkl"
+            legacy_a = tmp_path / "train_tensor_dataset_jukebox_beat_distance.pkl"
+            legacy_b = tmp_path / "train_tensor_dataset_jukebox_beat_distance_v3.pkl"
+            keep_other = tmp_path / "train_tensor_dataset_jukebox_nobeat_distance_v3.pkl"
+            for path in (current, legacy_a, legacy_b, keep_other):
+                path.write_bytes(b"cache")
+
+            edge_module.prune_legacy_tensor_dataset_caches(
+                tmp_path, "train", "jukebox", True, "distance"
+            )
+
+            self.assertTrue(current.exists())
+            self.assertFalse(legacy_a.exists())
+            self.assertFalse(legacy_b.exists())
+            self.assertTrue(keep_other.exists())
+
+
+class AccumulationTrainingHelperTests(unittest.TestCase):
+    def test_accumulation_helper_only_steps_on_sync_and_checkpoint_tracks_recipe(self):
+        edge_module = reload_module("EDGE")
+        params = [torch.nn.Parameter(torch.tensor(1.0))]
+        model = MagicMock()
+        model.parameters.return_value = params
+        optim = MagicMock()
+        diffusion = MagicMock()
+        accelerator = MagicMock()
+        accelerator.sync_gradients = False
+
+        stepped = edge_module.maybe_apply_optimization_step(
+            accelerator=accelerator,
+            model=model,
+            optim=optim,
+            diffusion=diffusion,
+            grad_clip_norm=1.0,
+            global_step=0,
+            ema_interval=1,
+        )
+
+        self.assertFalse(stepped)
+        accelerator.clip_grad_norm_.assert_not_called()
+        optim.step.assert_not_called()
+        diffusion.ema.update_model_average.assert_not_called()
+
+        accelerator.sync_gradients = True
+        stepped = edge_module.maybe_apply_optimization_step(
+            accelerator=accelerator,
+            model=model,
+            optim=optim,
+            diffusion=diffusion,
+            grad_clip_norm=1.0,
+            global_step=0,
+            ema_interval=1,
+        )
+
+        self.assertTrue(stepped)
+        accelerator.clip_grad_norm_.assert_called_once_with(params, 1.0)
+        optim.step.assert_called_once_with()
+        diffusion.ema.update_model_average.assert_called_once_with(
+            diffusion.master_model,
+            diffusion.model,
+        )
+
+        config = edge_module.build_checkpoint_config(
+            feature_type="jukebox",
+            use_beats=True,
+            beat_rep="distance",
+            batch_size=128,
+            gradient_accumulation_steps=4,
+            num_processes=1,
+            learning_rate=2e-4,
+            weight_decay=0.02,
+            lambda_acc=0.1,
+            lambda_beat=0.5,
+        )
+
+        self.assertEqual(config["feature_type"], "jukebox")
+        self.assertTrue(config["use_beats"])
+        self.assertEqual(config["beat_rep"], "distance")
+        self.assertEqual(config["batch_size"], 128)
+        self.assertEqual(config["gradient_accumulation_steps"], 4)
+        self.assertEqual(config["effective_batch_size"], 512)
+        self.assertEqual(config["learning_rate"], 2e-4)
+        self.assertEqual(config["weight_decay"], 0.02)
+        self.assertEqual(config["lambda_acc"], 0.1)
+        self.assertEqual(config["lambda_beat"], 0.5)
+
+    def test_build_sample_dataloader_keeps_partial_test_batch(self):
+        edge_module = reload_module("EDGE")
+
+        dataset = torch.utils.data.TensorDataset(torch.arange(186))
+
+        loader = edge_module.build_sample_dataloader(
+            dataset,
+            batch_size=256,
+            num_workers=0,
+            pin_memory=False,
+        )
+
+        batch = next(iter(loader))
+
+        self.assertEqual(len(loader), 1)
+        self.assertEqual(batch[0].shape[0], 186)
+
+    def test_build_dataloader_kwargs_enables_prefetching_when_workers_present(self):
+        edge_module = reload_module("EDGE")
+
+        kwargs = edge_module.build_dataloader_kwargs(num_workers=6, pin_memory=True)
+
+        self.assertEqual(kwargs["num_workers"], 6)
+        self.assertTrue(kwargs["pin_memory"])
+        self.assertTrue(kwargs["persistent_workers"])
+        self.assertEqual(kwargs["prefetch_factor"], 1)
+
+    def test_build_dataloader_kwargs_skips_prefetching_without_workers(self):
+        edge_module = reload_module("EDGE")
+
+        kwargs = edge_module.build_dataloader_kwargs(num_workers=0, pin_memory=True)
+
+        self.assertEqual(kwargs, {"num_workers": 0, "pin_memory": True})
+
+    def test_resolve_runtime_mixed_precision_disables_bf16_without_cuda(self):
+        edge_module = reload_module("EDGE")
+
+        resolved = edge_module.resolve_runtime_mixed_precision(
+            "bf16", torch.device("cpu")
+        )
+
+        self.assertEqual(resolved, "no")
 
 
 class WandbFallbackTests(unittest.TestCase):
@@ -246,6 +391,57 @@ class LossGuardTests(unittest.TestCase):
         self.assertIn("Non-finite loss detected", str(ctx.exception))
         self.assertIn("feature_a.npy", str(ctx.exception))
         self.assertIn("song_a.wav", str(ctx.exception))
+
+
+class TrainingProgressFormattingTests(unittest.TestCase):
+    def test_build_train_postfix_for_baseline_run(self):
+        edge_module = reload_module("EDGE")
+
+        postfix = edge_module.build_train_postfix(
+            loss=torch.tensor(0.125),
+            acc_loss=torch.tensor(0.05),
+            beat_loss=torch.tensor(0.0),
+            use_beats=False,
+            beat_rep="distance",
+            lambda_beat=0.5,
+        )
+
+        self.assertEqual(postfix["beat_mode"], "none")
+        self.assertEqual(postfix["beat_loss"], "n/a")
+        self.assertEqual(postfix["loss"], "0.1250")
+        self.assertEqual(postfix["acc_loss"], "0.0500")
+
+    def test_build_train_postfix_for_condition_only_beat_run(self):
+        edge_module = reload_module("EDGE")
+
+        postfix = edge_module.build_train_postfix(
+            loss=torch.tensor(0.03125),
+            acc_loss=torch.tensor(0.01),
+            beat_loss=torch.tensor(0.0),
+            use_beats=True,
+            beat_rep="distance",
+            lambda_beat=0.0,
+        )
+
+        self.assertEqual(postfix["beat_mode"], "distance:cond")
+        self.assertEqual(postfix["beat_loss"], "off")
+        self.assertEqual(postfix["loss"], "0.0312")
+
+    def test_build_train_postfix_for_lbeat_run(self):
+        edge_module = reload_module("EDGE")
+
+        postfix = edge_module.build_train_postfix(
+            loss=torch.tensor(0.05234),
+            acc_loss=torch.tensor(0.0049),
+            beat_loss=torch.tensor(2.2187),
+            use_beats=True,
+            beat_rep="distance",
+            lambda_beat=0.5,
+        )
+
+        self.assertEqual(postfix["beat_mode"], "distance:cond+lbeat")
+        self.assertEqual(postfix["beat_loss"], "2.2187")
+        self.assertEqual(postfix["acc_loss"], "0.0049")
 
 
 class CheckpointLoadCompatibilityTests(unittest.TestCase):
@@ -450,6 +646,28 @@ class InferenceBeatUtilityTests(unittest.TestCase):
         self.assertEqual(sliced.shape, (150,))
         self.assertEqual(sliced[0].item(), 0)
         self.assertEqual(sliced[75].item(), 0)
+
+    def test_long_ddim_sample_falls_back_to_ddim_for_single_clip(self):
+        diffusion_module = reload_module("model.diffusion")
+        diffusion = diffusion_module.GaussianDiffusion(
+            DummyModel(),
+            horizon=150,
+            repr_dim=151,
+            smpl=DummySMPL(),
+            schedule="cosine",
+            n_timestep=10,
+            predict_epsilon=False,
+            loss_type="l2",
+            cond_drop_prob=0.0,
+        )
+        cond = torch.randn(1, 150, 35)
+        expected = torch.randn(1, 150, 151)
+
+        with patch.object(diffusion, "ddim_sample", return_value=expected) as mock_ddim:
+            output = diffusion.long_ddim_sample((1, 150, 151), cond)
+
+        mock_ddim.assert_called_once()
+        self.assertTrue(torch.equal(output, expected))
 
     def test_build_full_song_pulse_track_keeps_channel_dimension(self):
         test_module = reload_module("test")

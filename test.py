@@ -173,12 +173,29 @@ def resolve_cached_source_wav(cache_dir, music_dir):
     return str(wav_path)
 
 
+def set_inference_seed(seed):
+    if seed is None or seed < 0:
+        return None
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+    return random.Random(seed)
+
+
+def choose_slice_start(total_slices, sample_size, rng):
+    max_start = max(total_slices - sample_size, 0)
+    return rng.randint(0, max_start)
+
+
 def test(opt):
     feature_func = (
         _load_jukebox_extract()
         if opt.feature_type == "jukebox"
         else _load_baseline_extract()
     )
+    rng = set_inference_seed(getattr(opt, "seed", -1)) or random
     sample_length = opt.out_length
     sample_size = int(sample_length / 2.5) - 1
 
@@ -194,7 +211,7 @@ def test(opt):
             juke_file_list = sorted(glob.glob(f"{dir}/*.npy"), key=stringintkey)
             assert len(file_list) == len(juke_file_list)
             # random chunk after sanity check
-            rand_idx = random.randint(0, len(file_list) - sample_size)
+            rand_idx = choose_slice_start(len(file_list), sample_size, rng)
             slice_wavs = file_list[rand_idx : rand_idx + sample_size]
             slice_features = juke_file_list[rand_idx : rand_idx + sample_size]
             cond_list = [np.load(x) for x in slice_features]
@@ -232,7 +249,7 @@ def test(opt):
             slice_audio(wav_file, 2.5, 5.0, dirname)
             file_list = sorted(glob.glob(f"{dirname}/*.wav"), key=stringintkey)
             # randomly sample a chunk of length at most sample_size
-            rand_idx = random.randint(0, len(file_list) - sample_size)
+            rand_idx = choose_slice_start(len(file_list), sample_size, rng)
             cond_list = []
             # generate juke representations
             print(f"Computing features for {wav_file}")

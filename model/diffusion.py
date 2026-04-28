@@ -70,6 +70,47 @@ def slice_cond(cond, idx):
     raise TypeError("Unsupported condition type")
 
 
+def designated_beat_frames_from_track(beat_track, beat_rep):
+    if torch.is_tensor(beat_track):
+        beat_array = beat_track.detach().cpu().numpy()
+    else:
+        beat_array = np.asarray(beat_track)
+
+    if beat_rep == "distance":
+        beat_array = np.asarray(beat_array, dtype=np.int64).reshape(-1)
+        return np.flatnonzero(beat_array == 0).astype(np.int64)
+    if beat_rep == "pulse":
+        beat_array = np.asarray(beat_array, dtype=np.float32).reshape(-1)
+        return np.flatnonzero(beat_array > 0.5).astype(np.int64)
+    raise ValueError(f"Unsupported beat representation: {beat_rep}")
+
+
+def build_saved_motion_metadata(cond, sample_idx, audio_path=None, beat_rep=None):
+    metadata = {}
+    if audio_path is not None:
+        metadata["audio_path"] = audio_path
+
+    if not isinstance(cond, dict) or "beat" not in cond:
+        return metadata
+
+    beat_value = cond["beat"]
+    if torch.is_tensor(beat_value):
+        beat_track = beat_value[sample_idx]
+    else:
+        beat_track = np.asarray(beat_value)[sample_idx]
+
+    resolved_beat_rep = beat_rep
+    if resolved_beat_rep is None:
+        beat_shape = beat_track.shape if hasattr(beat_track, "shape") else np.asarray(beat_track).shape
+        resolved_beat_rep = "pulse" if len(beat_shape) > 1 and beat_shape[-1] == 1 else "distance"
+
+    metadata["designated_beat_frames"] = designated_beat_frames_from_track(
+        beat_track, resolved_beat_rep
+    )
+    metadata["beat_rep"] = resolved_beat_rep
+    return metadata
+
+
 class EMA:
     def __init__(self, beta):
         super().__init__()
@@ -820,19 +861,25 @@ class GaussianDiffusion(nn.Module):
 
         if fk_out is not None and mode != "long":
             Path(fk_out).mkdir(parents=True, exist_ok=True)
+            beat_rep = getattr(self.model, "beat_rep", None)
             for num, (qq, pos_, filename, pose) in enumerate(zip(q, pos, name, poses)):
                 path = os.path.normpath(filename)
                 pathparts = path.split(os.sep)
                 pathparts[-1] = pathparts[-1].replace("npy", "wav")
                 # path is like "data/train/features/name"
                 pathparts[2] = "wav_sliced"
-                audioname = os.path.join(*pathparts)
                 outname = f"{epoch}_{num}_{pathparts[-1][:-4]}.pkl"
-                pickle.dump(
-                    {
-                        "smpl_poses": qq.reshape((-1, 72)).cpu().numpy(),
-                        "smpl_trans": pos_.cpu().numpy(),
-                        "full_pose": pose,
-                    },
-                    open(f"{fk_out}/{outname}", "wb"),
+                payload = {
+                    "smpl_poses": qq.reshape((-1, 72)).cpu().numpy(),
+                    "smpl_trans": pos_.cpu().numpy(),
+                    "full_pose": pose,
+                }
+                payload.update(
+                    build_saved_motion_metadata(
+                        cond,
+                        sample_idx=num,
+                        audio_path=filename,
+                        beat_rep=beat_rep,
+                    )
                 )
+                pickle.dump(payload, open(f"{fk_out}/{outname}", "wb"))

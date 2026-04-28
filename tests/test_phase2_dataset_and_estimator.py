@@ -21,6 +21,25 @@ class DatasetBeatSchemaTests(unittest.TestCase):
     def setUp(self):
         self.dataset_module = reload_module("dataset.dance_dataset")
 
+    def test_prune_legacy_processed_dataset_caches_removes_older_matching_versions(self):
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            current = tmp_path / "processed_train_jukebox_beat_distance_v4.pkl"
+            legacy_a = tmp_path / "processed_train_jukebox_beat_distance.pkl"
+            legacy_b = tmp_path / "processed_train_jukebox_beat_distance_v3.pkl"
+            keep_other = tmp_path / "processed_train_jukebox_nobeat_distance_v3.pkl"
+            for path in (current, legacy_a, legacy_b, keep_other):
+                path.write_bytes(b"cache")
+
+            self.dataset_module.prune_legacy_processed_dataset_caches(
+                tmp_path, "train", "jukebox", True, "distance"
+            )
+
+            self.assertTrue(current.exists())
+            self.assertFalse(legacy_a.exists())
+            self.assertFalse(legacy_b.exists())
+            self.assertTrue(keep_other.exists())
+
     def test_dataset_imports_without_pytorch3d(self):
         self.assertTrue(hasattr(self.dataset_module, "AISTPPDataset"))
 
@@ -67,7 +86,53 @@ class DatasetBeatSchemaTests(unittest.TestCase):
                     force_reload=True,
                 )
 
-            self.assertTrue((tmp_path / "processed_train_jukebox_beat_distance.pkl").is_file())
+            self.assertTrue((tmp_path / "processed_train_jukebox_beat_distance_v4.pkl").is_file())
+
+    def test_getitem_uses_preloaded_beat_tensors_and_loads_feature_on_demand(self):
+        dataset_cls = self.dataset_module.AISTPPDataset
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            feature_path = tmp_path / "clip.npy"
+            np.save(feature_path, np.ones((150, 35), dtype=np.float32))
+            fake_data = {
+                "pos": np.zeros((1, 150, 3), dtype=np.float32),
+                "q": np.zeros((1, 150, 72), dtype=np.float32),
+                "filenames": [str(feature_path)],
+                "wavs": ["clip.wav"],
+                "motion_dist": np.arange(150, dtype=np.int64)[None, :],
+                "motion_spacing": np.full((1, 150), 30.0, dtype=np.float32),
+                "motion_mask": np.zeros((1, 150), dtype=np.float32),
+                "audio_dist": np.arange(149, -1, -1, dtype=np.int64)[None, :],
+                "audio_mask": np.zeros((1, 150), dtype=np.float32),
+            }
+            fake_pose = torch.zeros((1, 150, 151), dtype=torch.float32)
+
+            with patch.object(dataset_cls, "load_aistpp", return_value=fake_data), patch.object(
+                dataset_cls, "process_dataset", return_value=fake_pose
+            ):
+                dataset = dataset_cls(
+                    data_path="unused",
+                    backup_path=tmpdir,
+                    train=True,
+                    feature_type="baseline",
+                    use_beats=True,
+                    beat_rep="distance",
+                    force_reload=True,
+                )
+
+            original_np_load = self.dataset_module.np.load
+            load_calls = []
+
+            def tracked_np_load(path, *args, **kwargs):
+                load_calls.append((str(path), kwargs.get("mmap_mode")))
+                return original_np_load(path, *args, **kwargs)
+
+            with patch.object(self.dataset_module.np, "load", side_effect=tracked_np_load):
+                _, cond, _, _ = dataset[0]
+
+            self.assertEqual(cond["music"].shape, (150, 35))
+            self.assertTrue(torch.equal(cond["beat"], torch.arange(150, dtype=torch.int64)))
+            self.assertEqual(load_calls, [(str(feature_path), "r")])
 
     def test_getitem_returns_tensor_condition_when_beats_disabled(self):
         dataset_cls = self.dataset_module.AISTPPDataset
@@ -244,6 +309,84 @@ class BeatEstimatorTests(unittest.TestCase):
             self.assertTrue(motion_path.endswith("clipA.pkl"))
             self.assertTrue(beat_path.endswith("clipA.npz"))
 
+    def test_motion_beat_dataset_writes_versioned_cache(self):
+        train_module = reload_module("train_beat_estimator")
+
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            motion_dir = tmp_path / "train" / "motions_sliced"
+            beat_dir = tmp_path / "train" / "beat_feats"
+            cache_dir = tmp_path / "dataset_backups"
+            motion_dir.mkdir(parents=True)
+            beat_dir.mkdir(parents=True)
+
+            (motion_dir / "clipA.pkl").write_bytes(b"motion")
+            np.savez(
+                beat_dir / "clipA.npz",
+                motion_dist=np.arange(150, dtype=np.int64),
+                motion_spacing=np.full(150, 30.0, dtype=np.float32),
+            )
+
+            with patch.object(
+                train_module,
+                "load_motion_joints",
+                return_value=torch.zeros(150, 24, 3, dtype=torch.float32),
+            ):
+                dataset = train_module.MotionBeatDataset(
+                    str(motion_dir),
+                    str(beat_dir),
+                    cache_dir=cache_dir,
+                )
+
+            self.assertEqual(len(dataset), 1)
+            self.assertTrue(
+                (cache_dir / "beat_estimator_train_fps30_seq150_v2.pt").is_file()
+            )
+
+    def test_motion_beat_dataset_reuses_cache_without_reloading_motion_files(self):
+        train_module = reload_module("train_beat_estimator")
+
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            motion_dir = tmp_path / "train" / "motions_sliced"
+            beat_dir = tmp_path / "train" / "beat_feats"
+            cache_dir = tmp_path / "dataset_backups"
+            motion_dir.mkdir(parents=True)
+            beat_dir.mkdir(parents=True)
+
+            (motion_dir / "clipA.pkl").write_bytes(b"motion")
+            np.savez(
+                beat_dir / "clipA.npz",
+                motion_dist=np.arange(150, dtype=np.int64),
+                motion_spacing=np.full(150, 30.0, dtype=np.float32),
+            )
+
+            with patch.object(
+                train_module,
+                "load_motion_joints",
+                return_value=torch.zeros(150, 24, 3, dtype=torch.float32),
+            ):
+                train_module.MotionBeatDataset(
+                    str(motion_dir),
+                    str(beat_dir),
+                    cache_dir=cache_dir,
+                )
+
+            with patch.object(
+                train_module,
+                "load_motion_joints",
+                side_effect=AssertionError("cache should be reused"),
+            ):
+                dataset = train_module.MotionBeatDataset(
+                    str(motion_dir),
+                    str(beat_dir),
+                    cache_dir=cache_dir,
+                )
+                joints, target = dataset[0]
+
+            self.assertEqual(joints.shape, (150, 24, 3))
+            self.assertEqual(target.shape, (150,))
+
     def test_save_checkpoint_roundtrip(self):
         beat_estimator = reload_module("model.beat_estimator")
         train_module = reload_module("train_beat_estimator")
@@ -279,6 +422,41 @@ class BeatEstimatorTests(unittest.TestCase):
 
         self.assertEqual(args.epochs, 50)
         self.assertAlmostEqual(args.val_split, 0.1)
+
+    def test_parse_args_accepts_loader_and_precision_flags(self):
+        train_module = reload_module("train_beat_estimator")
+
+        with patch.object(
+            sys,
+            "argv",
+            [
+                "train_beat_estimator.py",
+                "--motion_dir",
+                "motions",
+                "--beat_dir",
+                "beats",
+                "--num_workers",
+                "5",
+                "--mixed_precision",
+                "no",
+                "--force_rebuild_cache",
+            ],
+        ):
+            args = train_module.parse_args()
+
+        self.assertEqual(args.num_workers, 5)
+        self.assertEqual(args.mixed_precision, "no")
+        self.assertTrue(args.force_rebuild_cache)
+
+    def test_build_dataloader_kwargs_enables_prefetching_for_estimator(self):
+        train_module = reload_module("train_beat_estimator")
+
+        kwargs = train_module.build_dataloader_kwargs(num_workers=6, pin_memory=True)
+
+        self.assertEqual(kwargs["num_workers"], 6)
+        self.assertTrue(kwargs["pin_memory"])
+        self.assertTrue(kwargs["persistent_workers"])
+        self.assertEqual(kwargs["prefetch_factor"], 1)
 
     def test_train_reports_batch_progress(self):
         train_module = reload_module("train_beat_estimator")

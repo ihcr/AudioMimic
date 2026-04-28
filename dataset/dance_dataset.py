@@ -17,6 +17,51 @@ from rotation_transforms import (RotateAxisAngle, axis_angle_to_quaternion,
                                  quaternion_to_axis_angle)
 from vis import SMPLSkeleton
 
+DATASET_CACHE_VERSION = "v4"
+
+
+def atomic_pickle_dump(payload, path):
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = path.with_name(f"{path.name}.{os.getpid()}.tmp")
+    with open(tmp_path, "wb") as handle:
+        pickle.dump(payload, handle, pickle.HIGHEST_PROTOCOL)
+    tmp_path.replace(path)
+
+
+def processed_dataset_cache_name(split_name, feature_type, use_beats, beat_rep):
+    beat_tag = "beat" if use_beats else "nobeat"
+    return f"processed_{split_name}_{feature_type}_{beat_tag}_{beat_rep}_{DATASET_CACHE_VERSION}.pkl"
+
+
+def prune_legacy_processed_dataset_caches(backup_path, split_name, feature_type, use_beats, beat_rep):
+    backup_path = Path(backup_path)
+    beat_tag = "beat" if use_beats else "nobeat"
+    current_name = processed_dataset_cache_name(split_name, feature_type, use_beats, beat_rep)
+    pattern = f"processed_{split_name}_{feature_type}_{beat_tag}_{beat_rep}*.pkl"
+    for cache_path in backup_path.glob(pattern):
+        if cache_path.name == current_name:
+            continue
+        cache_path.unlink(missing_ok=True)
+
+
+def _stack_loaded_beats(beatnames):
+    payload = {
+        "motion_dist": [],
+        "motion_spacing": [],
+        "motion_mask": [],
+        "audio_dist": [],
+        "audio_mask": [],
+    }
+    for beat_path in beatnames:
+        with np.load(beat_path) as beat_data:
+            payload["motion_dist"].append(beat_data["motion_dist"].astype(np.int64))
+            payload["motion_spacing"].append(beat_data["motion_spacing"].astype(np.float32))
+            payload["motion_mask"].append(beat_data["motion_mask"].astype(np.float32))
+            payload["audio_dist"].append(beat_data["audio_dist"].astype(np.int64))
+            payload["audio_mask"].append(beat_data["audio_mask"].astype(np.float32))
+    return {key: np.stack(values, axis=0) for key, values in payload.items()}
+
 
 class AISTPPDataset(Dataset):
     def __init__(
@@ -48,15 +93,18 @@ class AISTPPDataset(Dataset):
         self.data_len = data_len
 
         split_name = "train" if train else "test"
-        beat_tag = "beat" if use_beats else "nobeat"
-        pickle_name = f"processed_{split_name}_{feature_type}_{beat_tag}_{beat_rep}.pkl"
+        pickle_name = processed_dataset_cache_name(
+            split_name, feature_type, use_beats, beat_rep
+        )
 
         backup_path = Path(backup_path)
         backup_path.mkdir(parents=True, exist_ok=True)
+        prune_legacy_processed_dataset_caches(
+            backup_path, split_name, feature_type, use_beats, beat_rep
+        )
         # save normalizer
         if not train:
-            with open(os.path.join(backup_path, "normalizer.pkl"), "wb") as handle:
-                pickle.dump(normalizer, handle)
+            atomic_pickle_dump(normalizer, backup_path / "normalizer.pkl")
         # load raw data
         if not force_reload and pickle_name in os.listdir(backup_path):
             print("Using cached dataset...")
@@ -65,8 +113,7 @@ class AISTPPDataset(Dataset):
         else:
             print("Loading dataset...")
             data = self.load_aistpp()  # Call this last
-            with open(os.path.join(backup_path, pickle_name), "wb") as f:
-                pickle.dump(data, f, pickle.HIGHEST_PROTOCOL)
+            atomic_pickle_dump(data, backup_path / pickle_name)
 
         print(
             f"Loaded {self.name} Dataset With Dimensions: Pos: {data['pos'].shape}, Q: {data['q'].shape}"
@@ -80,7 +127,23 @@ class AISTPPDataset(Dataset):
             "wavs": data["wavs"],
         }
         if self.use_beats:
-            self.data["beatnames"] = data["beatnames"]
+            if all(
+                key in data
+                for key in ("motion_dist", "motion_spacing", "motion_mask", "audio_dist", "audio_mask")
+            ):
+                beat_payload = {
+                    key: data[key]
+                    for key in ("motion_dist", "motion_spacing", "motion_mask", "audio_dist", "audio_mask")
+                }
+            else:
+                beat_payload = _stack_loaded_beats(data["beatnames"])
+            self.data["motion_dist"] = torch.from_numpy(beat_payload["motion_dist"]).long()
+            self.data["motion_spacing"] = torch.from_numpy(beat_payload["motion_spacing"]).float()
+            self.data["motion_mask"] = torch.from_numpy(beat_payload["motion_mask"]).float()
+            self.data["audio_dist"] = torch.from_numpy(beat_payload["audio_dist"]).long()
+            self.data["audio_mask"] = torch.from_numpy(beat_payload["audio_mask"]).float()
+            if "beatnames" in data:
+                self.data["beatnames"] = data["beatnames"]
         assert len(pose_input) == len(data["filenames"])
         self.length = len(pose_input)
 
@@ -89,26 +152,27 @@ class AISTPPDataset(Dataset):
 
     def __getitem__(self, idx):
         filename_ = self.data["filenames"][idx]
-        feature = torch.from_numpy(np.load(filename_)).float()
+        feature = torch.from_numpy(
+            np.array(np.load(filename_, mmap_mode="r"), dtype=np.float32, copy=True)
+        )
         wavname = self.data["wavs"][idx]
         if not self.use_beats:
             return self.data["pose"][idx], feature, filename_, wavname
 
-        beat_meta = np.load(self.data["beatnames"][idx])
-        cond_key = "motion" if self.train else "audio"
         if self.beat_rep == "distance":
-            beat = torch.from_numpy(beat_meta[f"{cond_key}_dist"].astype(np.int64))
+            beat = self.data["motion_dist"][idx] if self.train else self.data["audio_dist"][idx]
         elif self.beat_rep == "pulse":
-            beat = torch.from_numpy(beat_meta[f"{cond_key}_mask"].astype(np.float32)).unsqueeze(-1)
+            beat_source = self.data["motion_mask"][idx] if self.train else self.data["audio_mask"][idx]
+            beat = beat_source.unsqueeze(-1)
         else:
             raise ValueError(f"Unsupported beat representation: {self.beat_rep}")
 
         cond = {
             "music": feature,
             "beat": beat,
-            "beat_target": torch.from_numpy(beat_meta["motion_dist"].astype(np.float32)),
-            "beat_spacing": torch.from_numpy(beat_meta["motion_spacing"].astype(np.float32)),
-            "audio_mask": torch.from_numpy(beat_meta["audio_mask"].astype(np.float32)),
+            "beat_target": self.data["motion_dist"][idx].float(),
+            "beat_spacing": self.data["motion_spacing"][idx],
+            "audio_mask": self.data["audio_mask"][idx],
         }
         return self.data["pose"][idx], cond, filename_, wavname
 
@@ -144,6 +208,11 @@ class AISTPPDataset(Dataset):
         all_names = []
         all_wavs = []
         all_beats = []
+        all_motion_dist = []
+        all_motion_spacing = []
+        all_motion_mask = []
+        all_audio_dist = []
+        all_audio_mask = []
         if self.use_beats:
             assert len(motions) == len(features) == len(wavs) == len(beats)
             pairs = zip(motions, features, wavs, beats)
@@ -176,6 +245,12 @@ class AISTPPDataset(Dataset):
             all_wavs.append(wav)
             if self.use_beats:
                 all_beats.append(beat)
+                with np.load(beat) as beat_meta:
+                    all_motion_dist.append(beat_meta["motion_dist"].astype(np.int64))
+                    all_motion_spacing.append(beat_meta["motion_spacing"].astype(np.float32))
+                    all_motion_mask.append(beat_meta["motion_mask"].astype(np.float32))
+                    all_audio_dist.append(beat_meta["audio_dist"].astype(np.int64))
+                    all_audio_mask.append(beat_meta["audio_mask"].astype(np.float32))
 
         all_pos = np.array(all_pos)  # N x seq x 3
         all_q = np.array(all_q)  # N x seq x (joint * 3)
@@ -183,9 +258,19 @@ class AISTPPDataset(Dataset):
         print(all_pos.shape)
         all_pos = all_pos[:, :: self.data_stride, :]
         all_q = all_q[:, :: self.data_stride, :]
-        data = {"pos": all_pos, "q": all_q, "filenames": all_names, "wavs": all_wavs}
+        data = {
+            "pos": all_pos,
+            "q": all_q,
+            "filenames": all_names,
+            "wavs": all_wavs,
+        }
         if self.use_beats:
             data["beatnames"] = all_beats
+            data["motion_dist"] = np.stack(all_motion_dist, axis=0)
+            data["motion_spacing"] = np.stack(all_motion_spacing, axis=0)
+            data["motion_mask"] = np.stack(all_motion_mask, axis=0)
+            data["audio_dist"] = np.stack(all_audio_dist, axis=0)
+            data["audio_mask"] = np.stack(all_audio_mask, axis=0)
         return data
 
     def process_dataset(self, root_pos, local_q):
