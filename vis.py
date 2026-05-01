@@ -1,4 +1,6 @@
 import os
+import shutil
+import subprocess
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -10,9 +12,24 @@ import soundfile as sf
 import torch
 from matplotlib import cm
 from matplotlib.colors import ListedColormap
-from pytorch3d.transforms import (axis_angle_to_quaternion, quaternion_apply,
-                                  quaternion_multiply)
+from rotation_transforms import (axis_angle_to_quaternion, quaternion_apply,
+                                 quaternion_multiply)
 from tqdm import tqdm
+
+
+def get_ffmpeg_exe():
+    ffmpeg_exe = shutil.which("ffmpeg")
+    if ffmpeg_exe is not None:
+        return ffmpeg_exe
+
+    try:
+        import imageio_ffmpeg
+    except ImportError as exc:
+        raise RuntimeError(
+            "ffmpeg executable not found. Install ffmpeg or imageio-ffmpeg."
+        ) from exc
+
+    return imageio_ffmpeg.get_ffmpeg_exe()
 
 smpl_joints = [
     "root",  # 0
@@ -248,8 +265,30 @@ def skeleton_render(
                 out, f"{epoch}_{os.path.splitext(os.path.basename(name))[0]}.mp4"
             )
         if render:
-            out = os.system(
-                f"ffmpeg -loglevel error -stream_loop 0 -y -i {gifname} -i {audioname} -shortest -c:v libx264 -crf 26 -c:a aac -q:a 4 {outname}"
+            subprocess.run(
+                [
+                    get_ffmpeg_exe(),
+                    "-loglevel",
+                    "error",
+                    "-stream_loop",
+                    "0",
+                    "-y",
+                    "-i",
+                    gifname,
+                    "-i",
+                    audioname,
+                    "-shortest",
+                    "-c:v",
+                    "libx264",
+                    "-crf",
+                    "26",
+                    "-c:a",
+                    "aac",
+                    "-q:a",
+                    "4",
+                    outname,
+                ],
+                check=True,
             )
     else:
         if render:

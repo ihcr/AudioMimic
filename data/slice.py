@@ -1,16 +1,59 @@
 import glob
 import os
 import pickle
+import wave
 
-import librosa as lr
 import numpy as np
-import soundfile as sf
 from tqdm import tqdm
+
+
+def _read_wav(audio_file):
+    with wave.open(audio_file, "rb") as wav_file:
+        sr = wav_file.getframerate()
+        channels = wav_file.getnchannels()
+        sample_width = wav_file.getsampwidth()
+        frames = wav_file.readframes(wav_file.getnframes())
+
+    if sample_width == 1:
+        audio = np.frombuffer(frames, dtype=np.uint8).astype(np.float32)
+        audio = (audio - 128.0) / 128.0
+    elif sample_width == 2:
+        audio = np.frombuffer(frames, dtype="<i2").astype(np.float32) / 32768.0
+    elif sample_width == 3:
+        raw = np.frombuffer(frames, dtype=np.uint8).reshape(-1, 3)
+        signed = (
+            raw[:, 0].astype(np.int32)
+            | (raw[:, 1].astype(np.int32) << 8)
+            | (raw[:, 2].astype(np.int32) << 16)
+        )
+        signed = np.where(signed & 0x800000, signed - 0x1000000, signed)
+        audio = signed.astype(np.float32) / 8388608.0
+    elif sample_width == 4:
+        audio = np.frombuffer(frames, dtype="<i4").astype(np.float32) / 2147483648.0
+    else:
+        raise ValueError(f"Unsupported WAV sample width: {sample_width}")
+
+    audio = audio.reshape(-1, channels)
+    if channels > 1:
+        audio = audio.mean(axis=1)
+    else:
+        audio = audio[:, 0]
+    return audio, sr
+
+
+def _write_wav(audio_file, audio, sr):
+    audio = np.clip(audio, -1.0, 1.0)
+    pcm = (audio * 32767.0).astype(np.int16)
+    with wave.open(audio_file, "wb") as wav_file:
+        wav_file.setnchannels(1)
+        wav_file.setsampwidth(2)
+        wav_file.setframerate(sr)
+        wav_file.writeframes(pcm.tobytes())
 
 
 def slice_audio(audio_file, stride, length, out_dir):
     # stride, length in seconds
-    audio, sr = lr.load(audio_file, sr=None)
+    audio, sr = _read_wav(audio_file)
     file_name = os.path.splitext(os.path.basename(audio_file))[0]
     start_idx = 0
     idx = 0
@@ -18,7 +61,7 @@ def slice_audio(audio_file, stride, length, out_dir):
     stride_step = int(stride * sr)
     while start_idx <= len(audio) - window:
         audio_slice = audio[start_idx : start_idx + window]
-        sf.write(f"{out_dir}/{file_name}_slice{idx}.wav", audio_slice, sr)
+        _write_wav(f"{out_dir}/{file_name}_slice{idx}.wav", audio_slice, sr)
         start_idx += stride_step
         idx += 1
     return idx

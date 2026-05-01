@@ -1,10 +1,17 @@
 import os
 from functools import partial
 from pathlib import Path
+import sys
 
-import jukemirlib
 import numpy as np
 from tqdm import tqdm
+
+repo_root = Path(__file__).resolve().parents[2]
+vendored_jukemirlib = repo_root / "third_party" / "jukemirlib"
+if vendored_jukemirlib.exists():
+    sys.path.insert(0, str(vendored_jukemirlib))
+
+import jukemirlib
 
 FPS = 30
 LAYER = 66

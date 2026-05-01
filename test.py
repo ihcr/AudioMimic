@@ -4,11 +4,19 @@ from functools import cmp_to_key
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import random
+import sys
 
-import jukemirlib
 import numpy as np
 import torch
 from tqdm import tqdm
+
+repo_root = Path(__file__).resolve().parent
+vendored_jukemirlib = repo_root / "third_party" / "jukemirlib"
+if vendored_jukemirlib.exists():
+    sys.path.insert(0, str(vendored_jukemirlib))
+os.environ.setdefault("JUKE_MIRLIB_CACHE_DIR", str(repo_root / ".cache" / "jukemirlib"))
+
+import jukemirlib
 
 from args import parse_test_opt
 from data.slice import slice_audio
@@ -37,10 +45,18 @@ def stringintcmp_(a, b):
 stringintkey = cmp_to_key(stringintcmp_)
 
 
+def pick_sample_window(num_slices, requested_size):
+    if num_slices <= 0:
+        raise ValueError("No audio slices were produced")
+    window_size = min(num_slices, requested_size)
+    start = 0 if window_size == num_slices else random.randint(0, num_slices - window_size)
+    return start, window_size
+
+
 def test(opt):
     feature_func = juke_extract if opt.feature_type == "jukebox" else baseline_extract
     sample_length = opt.out_length
-    sample_size = int(sample_length / 2.5) - 1
+    sample_size = max(1, int(sample_length / 2.5) - 1)
 
     temp_dir_list = []
     all_cond = []
@@ -54,9 +70,9 @@ def test(opt):
             juke_file_list = sorted(glob.glob(f"{dir}/*.npy"), key=stringintkey)
             assert len(file_list) == len(juke_file_list)
             # random chunk after sanity check
-            rand_idx = random.randint(0, len(file_list) - sample_size)
-            file_list = file_list[rand_idx : rand_idx + sample_size]
-            juke_file_list = juke_file_list[rand_idx : rand_idx + sample_size]
+            rand_idx, window_size = pick_sample_window(len(file_list), sample_size)
+            file_list = file_list[rand_idx : rand_idx + window_size]
+            juke_file_list = juke_file_list[rand_idx : rand_idx + window_size]
             cond_list = [np.load(x) for x in juke_file_list]
             all_filenames.append(file_list)
             all_cond.append(torch.from_numpy(np.array(cond_list)))
@@ -78,13 +94,17 @@ def test(opt):
             slice_audio(wav_file, 2.5, 5.0, dirname)
             file_list = sorted(glob.glob(f"{dirname}/*.wav"), key=stringintkey)
             # randomly sample a chunk of length at most sample_size
-            rand_idx = random.randint(0, len(file_list) - sample_size)
+            try:
+                rand_idx, window_size = pick_sample_window(len(file_list), sample_size)
+            except ValueError:
+                print(f"Skipping {wav_file}: audio is too short to produce a 5s slice")
+                continue
             cond_list = []
             # generate juke representations
             print(f"Computing features for {wav_file}")
             for idx, file in enumerate(tqdm(file_list)):
                 # if not caching then only calculate for the interested range
-                if (not opt.cache_features) and (not (rand_idx <= idx < rand_idx + sample_size)):
+                if (not opt.cache_features) and (not (rand_idx <= idx < rand_idx + window_size)):
                     continue
                 # audio = jukemirlib.load_audio(file)
                 # reps = jukemirlib.extract(
@@ -97,11 +117,11 @@ def test(opt):
                     np.save(featurename, reps)
                 # if in the random range, put it into the list of reps we want
                 # to actually use for generation
-                if rand_idx <= idx < rand_idx + sample_size:
+                if rand_idx <= idx < rand_idx + window_size:
                     cond_list.append(reps)
             cond_list = torch.from_numpy(np.array(cond_list))
             all_cond.append(cond_list)
-            all_filenames.append(file_list[rand_idx : rand_idx + sample_size])
+            all_filenames.append(file_list[rand_idx : rand_idx + window_size])
 
     model = EDGE(opt.feature_type, opt.checkpoint)
     model.eval()
