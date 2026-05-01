@@ -23,6 +23,7 @@ custom_music/
 slurm/
 smoke_artifacts/
 tmp/
+retarget_exports/
 .cache/
 .pytest_cache/
 *.log
