@@ -70,6 +70,16 @@ class SavedMotionMetadataTests(unittest.TestCase):
 
 
 class EvalBasBapTests(unittest.TestCase):
+    def test_compute_bas_scores_motion_beats_against_music_beats(self):
+        eval_module = reload_module("eval.eval_bas_bap")
+
+        result = eval_module.compute_bas_score(
+            music_beats=np.array([10, 50], dtype=np.int64),
+            motion_beats=np.array([10], dtype=np.int64),
+        )
+
+        self.assertAlmostEqual(result, 1.0, places=6)
+
     def test_evaluate_motion_dir_reports_bas_and_bap(self):
         eval_module = reload_module("eval.eval_bas_bap")
 
@@ -123,7 +133,7 @@ class EvalBasBapTests(unittest.TestCase):
         self.assertTrue(np.isnan(result["BAP_precision"]))
         self.assertTrue(np.isnan(result["BAP_recall"]))
 
-    def test_compute_bas_score_matches_bailando_music_to_motion_direction(self):
+    def test_compute_bas_score_matches_aist_motion_to_music_direction(self):
         eval_module = reload_module("eval.eval_bas_bap")
 
         score = eval_module.compute_bas_score(
@@ -131,8 +141,7 @@ class EvalBasBapTests(unittest.TestCase):
             motion_beats=np.array([0], dtype=np.int64),
         )
 
-        expected = (1.0 + np.exp(-(25.0) / 18.0)) / 2.0
-        self.assertAlmostEqual(score, expected, places=6)
+        self.assertAlmostEqual(score, 1.0, places=6)
 
 
 class EvalPfcAuditTests(unittest.TestCase):
@@ -498,6 +507,18 @@ class InferenceSeedingTests(unittest.TestCase):
 
 
 class DatasetEvalRunnerTests(unittest.TestCase):
+    def test_iter_limited_batches_stops_at_requested_clip_count(self):
+        eval_module = reload_module("eval.run_dataset_eval")
+        batches = [
+            ("batch0",),
+            ("batch1",),
+            ("batch2",),
+        ]
+
+        limited = list(eval_module.iter_limited_batches(batches, max_eval_clips=2))
+
+        self.assertEqual(limited, [("batch0",), ("batch1",)])
+
     def test_batch_to_render_tuple_keeps_cond_and_wavname(self):
         eval_module = reload_module("eval.run_dataset_eval")
         cond = {
@@ -558,6 +579,68 @@ class DatasetEvalRunnerTests(unittest.TestCase):
         _, kwargs = model.diffusion.calls[0]
         self.assertEqual(kwargs["mode"], "normal")
         self.assertEqual(kwargs["name"], ["song_slice0.wav"])
+
+
+class LBeatQualityGateTests(unittest.TestCase):
+    def test_quality_gate_rejects_collapsed_lbeat_metrics(self):
+        gate_module = reload_module("eval.lbeat_quality_gate")
+        reference = {
+            "PFC": 2.077395,
+            "Distg": 4.140899,
+            "Distk": 7.928006,
+            "BAS": 0.581007,
+            "BAP": 0.673,
+        }
+        collapsed = {
+            "PFC": 759.031591,
+            "Distg": 5.877259,
+            "Distk": 204.261169,
+            "BAS": 0.403505,
+            "BAP": 0.460,
+        }
+
+        result = gate_module.evaluate_lbeat_acceptance(collapsed, reference)
+
+        self.assertFalse(result["accepted"])
+        self.assertIn("PFC", result["failed_rules"])
+        self.assertIn("Distk", result["failed_rules"])
+
+    def test_select_best_checkpoint_prefers_accepted_alignment_gain(self):
+        gate_module = reload_module("eval.lbeat_quality_gate")
+        reference = {
+            "PFC": 2.0,
+            "Distg": 4.0,
+            "Distk": 8.0,
+            "BAS": 0.50,
+            "BAP": 0.60,
+        }
+        candidates = [
+            {
+                "checkpoint": "train-50.pt",
+                "metrics": {"PFC": 2.5, "Distg": 4.2, "Distk": 9.0, "BAS": 0.49, "BAP": 0.61},
+            },
+            {
+                "checkpoint": "train-100.pt",
+                "metrics": {"PFC": 2.4, "Distg": 4.1, "Distk": 8.5, "BAS": 0.53, "BAP": 0.62},
+            },
+        ]
+
+        selected = gate_module.select_best_checkpoint(candidates, reference)
+
+        self.assertEqual(selected["checkpoint"], "train-100.pt")
+        self.assertTrue(selected["acceptance"]["accepted"])
+
+    def test_lbeat_screen_main_succeeds_when_full_eval_rejects_candidate_by_default(self):
+        screen_module = reload_module("eval.screen_lbeat_checkpoints")
+
+        with patch.object(
+            screen_module,
+            "screen_checkpoints",
+            return_value={"accepted": False},
+        ):
+            exit_code = screen_module.main(object())
+
+        self.assertEqual(exit_code, 0)
 
 
 if __name__ == "__main__":

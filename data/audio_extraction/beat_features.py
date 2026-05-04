@@ -9,6 +9,8 @@ import scipy.signal
 import torch
 from tqdm import tqdm
 
+from eval.g1_kinematics import forward_g1_kinematics
+
 SMPL_PARENTS = [
     -1,
     0,
@@ -284,6 +286,59 @@ def detect_motion_beat_frames_from_pose(full_pose, min_gap=5):
     return _sanitize_beat_frames(beat_frames, full_pose.shape[0])
 
 
+def _zscore_curve(curve):
+    curve = np.asarray(curve, dtype=np.float32)
+    if curve.size == 0:
+        return curve
+    std = float(curve.std())
+    if std < 1e-8:
+        return np.zeros_like(curve)
+    return (curve - float(curve.mean())) / std
+
+
+def detect_g1_motion_beat_frames(root_pos, root_rot, dof_pos, fps=30, min_gap=5):
+    root_pos = np.asarray(root_pos, dtype=np.float32)
+    root_rot = np.asarray(root_rot, dtype=np.float32)
+    dof_pos = np.asarray(dof_pos, dtype=np.float32)
+    if root_pos.shape[0] < 3:
+        return np.zeros(0, dtype=np.int64)
+
+    root_velocity = np.diff(root_pos, axis=0) * float(fps)
+    root_linear = np.linalg.norm(root_velocity[:, (0, 1)], axis=-1)
+    root_linear = np.concatenate((root_linear[:1], root_linear), axis=0)
+
+    if root_rot.shape[0] < 2:
+        root_angular = np.zeros(root_pos.shape[0], dtype=np.float32)
+    else:
+        quat_norm = np.linalg.norm(root_rot, axis=-1, keepdims=True)
+        root_rot = root_rot / np.maximum(quat_norm, 1e-8)
+        dots = np.sum(root_rot[1:] * root_rot[:-1], axis=-1)
+        dots = np.clip(np.abs(dots), -1.0, 1.0)
+        root_angular = (2.0 * np.arccos(dots) * float(fps)).astype(np.float32)
+        root_angular = np.concatenate((root_angular[:1], root_angular), axis=0)
+
+    joint_velocity = np.diff(dof_pos, axis=0) * float(fps)
+    joint_speed = np.mean(np.abs(joint_velocity), axis=-1)
+    joint_speed = np.concatenate((joint_speed[:1], joint_speed), axis=0)
+
+    speed = _zscore_curve(root_linear) + _zscore_curve(root_angular) + _zscore_curve(joint_speed)
+    smooth_speed = _smooth_curve(speed.astype(np.float32))
+    beat_frames = _detect_local_minima(smooth_speed, min_gap=min_gap)
+    return _sanitize_beat_frames(beat_frames, root_pos.shape[0])
+
+
+def detect_g1_fk_motion_beat_frames(keypoints, fps=30, min_gap=5):
+    keypoints = np.asarray(keypoints, dtype=np.float32)
+    if keypoints.ndim != 3 or keypoints.shape[-1] != 3:
+        raise ValueError("G1 FK keypoints must have shape [T, K, 3]")
+    if keypoints.shape[0] < 3:
+        return np.zeros(0, dtype=np.int64)
+    speed = mean_joint_speed_curve(keypoints) * float(fps)
+    smooth_speed = _smooth_curve(speed.astype(np.float32))
+    beat_frames = _detect_local_minima(smooth_speed, min_gap=min_gap)
+    return _sanitize_beat_frames(beat_frames, keypoints.shape[0])
+
+
 def extract_audio_beats_librosa(wav_path, fps=30, seq_len=150):
     beat_frames = load_audio_beat_frames(wav_path, fps=fps, seq_len=seq_len)
     beat_mask = _beat_mask(beat_frames, seq_len)
@@ -292,9 +347,52 @@ def extract_audio_beats_librosa(wav_path, fps=30, seq_len=150):
     return beat_frames, beat_mask, beat_dist, beat_spacing
 
 
-def extract_motion_beats_from_motion_pkl(motion_pkl_path, fps=30, seq_len=150):
+def extract_motion_beats_from_motion_pkl(
+    motion_pkl_path,
+    fps=30,
+    seq_len=150,
+    g1_motion_beat_source="proxy",
+    g1_fk_model_path=None,
+    g1_root_quat_order="wxyz",
+):
     with open(motion_pkl_path, "rb") as handle:
         motion = pickle.load(handle)
+
+    if {"root_pos", "root_rot", "dof_pos"}.issubset(motion):
+        root_pos = np.asarray(motion["root_pos"], dtype=np.float32)[:seq_len]
+        root_rot = np.asarray(motion["root_rot"], dtype=np.float32)[:seq_len]
+        dof_pos = np.asarray(motion["dof_pos"], dtype=np.float32)[:seq_len]
+        if g1_motion_beat_source == "proxy":
+            beat_frames = detect_g1_motion_beat_frames(
+                root_pos,
+                root_rot,
+                dof_pos,
+                fps=fps,
+                min_gap=5,
+            )
+        elif g1_motion_beat_source == "fk":
+            if g1_fk_model_path is None:
+                raise ValueError("g1_fk_model_path is required for FK G1 beat extraction")
+            fk_result = forward_g1_kinematics(
+                {
+                    "root_pos": root_pos,
+                    "root_rot": root_rot,
+                    "dof_pos": dof_pos,
+                },
+                model_path=g1_fk_model_path,
+                root_quat_order=g1_root_quat_order,
+            )
+            beat_frames = detect_g1_fk_motion_beat_frames(
+                fk_result["keypoints"],
+                fps=fps,
+                min_gap=5,
+            )
+        else:
+            raise ValueError(f"Unsupported G1 motion beat source: {g1_motion_beat_source}")
+        beat_mask = _beat_mask(beat_frames, len(root_pos))
+        beat_dist = nearest_beat_distance(beat_frames, len(root_pos))
+        beat_spacing = local_beat_spacing(beat_frames, len(root_pos))
+        return beat_frames, beat_mask, beat_dist, beat_spacing
 
     pos = np.asarray(motion["pos"], dtype=np.float32)
     q = np.asarray(motion["q"], dtype=np.float32)
@@ -317,7 +415,16 @@ def extract_motion_beats_from_motion_pkl(motion_pkl_path, fps=30, seq_len=150):
     return beat_frames, beat_mask, beat_dist, beat_spacing
 
 
-def extract_folder(motion_dir, wav_dir, out_dir, fps=30, seq_len=150):
+def extract_folder(
+    motion_dir,
+    wav_dir,
+    out_dir,
+    fps=30,
+    seq_len=150,
+    g1_motion_beat_source="proxy",
+    g1_fk_model_path=None,
+    g1_root_quat_order="wxyz",
+):
     motion_paths = sorted(glob.glob(os.path.join(motion_dir, "*.pkl")))
     wav_paths = sorted(glob.glob(os.path.join(wav_dir, "*.wav")))
     out_dir = Path(out_dir)
@@ -341,7 +448,12 @@ def extract_folder(motion_dir, wav_dir, out_dir, fps=30, seq_len=150):
             continue
         motion_beats, motion_mask, motion_dist, motion_spacing = (
             extract_motion_beats_from_motion_pkl(
-                motion_map[clip_name], fps=fps, seq_len=seq_len
+                motion_map[clip_name],
+                fps=fps,
+                seq_len=seq_len,
+                g1_motion_beat_source=g1_motion_beat_source,
+                g1_fk_model_path=g1_fk_model_path,
+                g1_root_quat_order=g1_root_quat_order,
             )
         )
         audio_beats, audio_mask, audio_dist, audio_spacing = extract_audio_beats_librosa(

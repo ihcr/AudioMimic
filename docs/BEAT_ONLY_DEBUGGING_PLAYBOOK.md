@@ -42,20 +42,33 @@ We need both.
 
 ## Current Evidence
 
-### Evaluator anchor
+### 2026-04-30 safe `Lbeat` update
 
-Using the current dataset-eval path on the AIST++ test split:
+The old high-weight `Lbeat` run collapsed, so `Lbeat` is now treated as a cautious fine-tune on top of the working BeatDistance model.
 
-| Model | BAS | PFC |
-| --- | ---: | ---: |
-| Official EDGE `checkpoint.pt` | `0.1972` | `114.26` |
-| Current beat run `train-600.pt` | `0.1585` | `12579.20` |
+Safe defaults:
 
-Interpretation:
+1. start from a BeatDistance checkpoint
+2. use `lambda_beat=0.02`
+3. use `lambda_acc=0.1`
+4. train for `500` epochs
+5. save every `50` epochs
+6. start beat loss at epoch `25`
+7. warm beat loss over `200` epochs
+8. cap beat-loss contribution at `25%` of the normal motion loss
+9. require a beat-estimator checkpoint with finite validation loss no higher than `8.0`
 
-1. The current beat-conditioned checkpoint is genuinely worse than the official baseline under the same evaluator.
-2. The PFC gap is so large that this is not just a small metric wobble.
-3. Even if our absolute metric scale differs from the paper, the relative comparison is already bad.
+The safe Slurm preset screens checkpoints at `50,100,200,300,400,500`, then runs the full 186-clip eval only on the selected checkpoint. The selection report is written to `eval/lbeat_selection.json`.
+
+Important interpretation rule:
+
+- If `accepted=false`, the model was evaluated successfully but did not pass the quality gate.
+- A rejected model should be reported as rejected, not as an evaluator crash and not as a better model.
+- The helper only exits non-zero on rejection when `--fail_on_rejection` is explicitly passed.
+
+### Previous evaluator anchor
+
+Earlier evidence showed the old high-weight `Lbeat` path was genuinely worse than the stable BeatDistance path. The practical lesson remains: do not accept a beat-alignment gain without checking PFC and the full quality gate.
 
 ### Structural context
 
@@ -69,13 +82,12 @@ So we should describe the current work as a **beat-only ablation inspired by Bea
 
 ### Strongest quantitative warnings found so far
 
-1. The old beat estimator used for `Lbeat` was weak.
-   - It was only trained for `10` epochs.
-   - Sampled quality checks showed high error and near-zero correlation with target beat-distance curves.
-2. Generated motions from the bad beat run showed clear physical problems.
+1. The old `Lbeat` recipe used too much beat-loss weight too early.
+2. The beat estimator must pass validation before it is trusted for `Lbeat`.
+3. Generated motions from bad beat-loss runs showed physical problems.
    - Foot skating and motion scale looked much worse than GT.
-   - This is consistent with the huge PFC inflation.
-3. Stored `motion_dist` and `audio_dist` labels are only weakly aligned.
+   - This is consistent with PFC inflation.
+4. Stored `motion_dist` and `audio_dist` labels are only weakly aligned.
    - That makes beat-only control harder, especially without keyframes.
 
 ## What `Lbeat` Is
@@ -273,21 +285,22 @@ Interpretation:
 1. If this helps, the beat representation is promising.
 2. If this hurts badly, the conditioning path itself needs work.
 
-### Step 3. Test BeatDistance with fresh-estimator `Lbeat`
+### Step 3. Test safe BeatDistance fine-tune with `Lbeat`
 
 Goal:
 
-- determine whether `Lbeat` helps once the estimator is no longer obviously weak
+- determine whether `Lbeat` helps when it starts from a working BeatDistance checkpoint and cannot dominate training
 
 Success condition:
 
-- beats improve over no-`Lbeat`
-- PFC stays sane
+- full eval passes the safe `Lbeat` quality gate
+- PFC, Distg, and Distk stay within the gate thresholds
+- BAP or BAS improves enough to justify the extra loss
 
 Interpretation:
 
-1. If this helps, estimator-supervised beat loss is worth keeping.
-2. If this hurts relative to no-`Lbeat`, `Lbeat` is still suspect.
+1. If this passes, estimator-supervised beat loss is worth keeping as a fine-tune tool.
+2. If this is rejected, keep using BeatDistance as the stable model and report the best rejected checkpoint separately.
 
 ### Step 4. Only resume the promising run
 
@@ -305,15 +318,15 @@ Resume only if the `600`-epoch checkpoint is already promising on:
 
 This is the correct minimum set for the beat-only question:
 
-1. `edge_baseline_600_ablation1`
-2. `edge_beatdistance_600_ablation1`
-3. `edge_beatdistance_lbeat_600_ablation1`
+1. current trusted local baseline
+2. current trusted BeatDistance run
+3. safe `edge_beatdistance_lbeat` fine-tune from the trusted BeatDistance checkpoint
 
 Interpret them in this order:
 
 1. local baseline vs official checkpoint
 2. beat-distance no-`Lbeat` vs local baseline
-3. beat-distance with `Lbeat` vs beat-distance no-`Lbeat`
+3. safe `Lbeat` fine-tune vs beat-distance no-`Lbeat`
 
 ## Decision Table
 
@@ -337,15 +350,17 @@ Next action:
 
 - inspect beat representation, encoder fusion, and condition strength
 
-### Case C: local baseline is good, no-`Lbeat` is okay, `Lbeat` is bad
+### Case C: local baseline is good, no-`Lbeat` is okay, safe `Lbeat` is rejected
 
 Meaning:
 
-- the beat estimator or beat-loss design is the main problem
+- the beat loss still does not add enough value under the quality gate
 
 Next action:
 
-- improve estimator validation and inspect target curves before further diffusion runs
+- keep BeatDistance as the default model
+- inspect the best rejected checkpoint before spending more GPU time
+- change only one safe-control knob at a time if another `Lbeat` attempt is needed
 
 ### Case D: no-`Lbeat` and `Lbeat` both help
 
@@ -365,7 +380,7 @@ Avoid these until the ablation matrix is resolved:
 1. do not add keyframes just to rescue the current beat path
 2. do not rewrite beat labels before checking no-`Lbeat`
 3. do not claim Beat-It reproduction
-4. do not spend long GPU runs on variants that are already clearly bad at `600` epochs
+4. do not report a rejected safe `Lbeat` run as better just because eval completed
 
 ## Working Conclusion
 

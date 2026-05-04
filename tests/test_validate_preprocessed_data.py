@@ -30,6 +30,27 @@ def write_motion(path, min_height=1.2, max_height=1.8):
         pickle.dump({"pos": pos, "q": q}, handle, pickle.HIGHEST_PROTOCOL)
 
 
+def write_g1_motion(path, min_height=0.7, max_height=0.9):
+    root_pos = np.zeros((150, 3), dtype=np.float32)
+    root_pos[:, 2] = np.linspace(min_height, max_height, 150, dtype=np.float32)
+    root_rot = np.zeros((150, 4), dtype=np.float32)
+    root_rot[:, 0] = 1.0
+    dof_pos = np.zeros((150, 29), dtype=np.float32)
+    with open(path, "wb") as handle:
+        pickle.dump(
+            {
+                "motion_rep": "g1",
+                "root_pos": root_pos,
+                "root_rot": root_rot,
+                "dof_pos": dof_pos,
+                "pos": root_pos,
+                "q": np.concatenate((root_rot, dof_pos), axis=-1),
+            },
+            handle,
+            pickle.HIGHEST_PROTOCOL,
+        )
+
+
 def write_wav_placeholder(path):
     path.write_bytes(b"RIFF")
 
@@ -65,6 +86,24 @@ def build_minimal_dataset(root, feature_type="jukebox", use_beats=False):
 
         for name in names:
             write_motion(split_dir / "motions_sliced" / f"{name}.pkl")
+            write_wav_placeholder(split_dir / "wavs_sliced" / f"{name}.wav")
+            write_feature(split_dir / f"{feature_type}_feats" / f"{name}.npy", feature_type)
+            if use_beats:
+                write_beat(split_dir / "beat_feats" / f"{name}.npz")
+
+
+def build_minimal_g1_dataset(root, feature_type="jukebox", use_beats=False):
+    names = ["clip_a_slice0", "clip_b_slice0"]
+    for split in ("train", "test"):
+        split_dir = root / split
+        (split_dir / "motions_sliced").mkdir(parents=True)
+        (split_dir / "wavs_sliced").mkdir(parents=True)
+        (split_dir / f"{feature_type}_feats").mkdir(parents=True)
+        if use_beats:
+            (split_dir / "beat_feats").mkdir(parents=True)
+
+        for name in names:
+            write_g1_motion(split_dir / "motions_sliced" / f"{name}.pkl")
             write_wav_placeholder(split_dir / "wavs_sliced" / f"{name}.wav")
             write_feature(split_dir / f"{feature_type}_feats" / f"{name}.npy", feature_type)
             if use_beats:
@@ -115,6 +154,74 @@ class ValidatePreprocessedDataTests(unittest.TestCase):
                     beat_rep="distance",
                     sample_count=2,
                 )
+
+    def test_validate_preprocessed_dataset_accepts_g1_motion_format(self):
+        module = load_module()
+
+        with TemporaryDirectory() as tmpdir:
+            data_root = Path(tmpdir) / "data"
+            processed_root = Path(tmpdir) / "dataset_backups"
+            build_minimal_g1_dataset(data_root, feature_type="jukebox", use_beats=True)
+            processed_root.mkdir()
+
+            summary = module.validate_preprocessed_dataset(
+                data_path=data_root,
+                processed_data_dir=processed_root,
+                feature_type="jukebox",
+                use_beats=True,
+                beat_rep="distance",
+                sample_count=2,
+                motion_format="g1",
+            )
+
+        self.assertEqual(summary["cache_versions"]["motion_format"], "g1")
+        self.assertEqual(summary["train"]["count"], 2)
+
+    def test_validate_preprocessed_dataset_creates_fresh_processed_cache_dir(self):
+        module = load_module()
+
+        with TemporaryDirectory() as tmpdir:
+            data_root = Path(tmpdir) / "data"
+            processed_root = Path(tmpdir) / "fresh_dataset_backups"
+            build_minimal_g1_dataset(data_root, feature_type="jukebox", use_beats=True)
+
+            summary = module.validate_preprocessed_dataset(
+                data_path=data_root,
+                processed_data_dir=processed_root,
+                feature_type="jukebox",
+                use_beats=True,
+                beat_rep="distance",
+                sample_count=2,
+                motion_format="g1",
+            )
+
+            self.assertTrue(processed_root.is_dir())
+        self.assertEqual(summary["train"]["count"], 2)
+
+    def test_validate_preprocessed_dataset_accepts_negative_g1_root_axis_values(self):
+        module = load_module()
+
+        with TemporaryDirectory() as tmpdir:
+            data_root = Path(tmpdir) / "data"
+            processed_root = Path(tmpdir) / "dataset_backups"
+            build_minimal_g1_dataset(data_root, feature_type="jukebox", use_beats=False)
+            processed_root.mkdir()
+            for split in ("train", "test"):
+                motion = data_root / split / "motions_sliced" / "clip_a_slice0.pkl"
+                write_g1_motion(motion, min_height=-0.6, max_height=0.9)
+
+            summary = module.validate_preprocessed_dataset(
+                data_path=data_root,
+                processed_data_dir=processed_root,
+                feature_type="jukebox",
+                use_beats=False,
+                beat_rep="distance",
+                sample_count=2,
+                motion_format="g1",
+            )
+
+        self.assertEqual(summary["train"]["count"], 2)
+        self.assertLess(summary["train"]["root_height_min"], 0.0)
 
     def test_validate_preprocessed_dataset_rejects_legacy_matching_cache_files(self):
         module = load_module()

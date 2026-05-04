@@ -6,6 +6,7 @@ import jukemirlib
 import numpy as np
 import torch
 from tqdm import tqdm
+import jukemirlib.lib as jukemirlib_lib
 
 FPS = 30
 LAYER = 66
@@ -45,9 +46,29 @@ def _prefer_runtime_device():
 
 
 def _ensure_condition_cache_matches_batch_size(batch_size):
-    extract_globals = getattr(jukemirlib.extract, "__globals__", {})
-    x_cond = extract_globals.get("x_cond")
-    y_cond = extract_globals.get("y_cond")
+    for condition_store in _jukemirlib_condition_stores():
+        _ensure_condition_store_matches_batch_size(condition_store, batch_size)
+
+
+def _jukemirlib_condition_stores():
+    seen = set()
+    for condition_store in (
+        getattr(jukemirlib.extract, "__globals__", {}),
+        jukemirlib_lib.__dict__,
+        jukemirlib.__dict__,
+    ):
+        store_id = id(condition_store)
+        if store_id in seen:
+            continue
+        seen.add(store_id)
+        yield condition_store
+
+
+def _ensure_condition_store_matches_batch_size(condition_store, batch_size):
+    if "x_cond" not in condition_store and "y_cond" not in condition_store:
+        return
+    x_cond = condition_store.get("x_cond")
+    y_cond = condition_store.get("y_cond")
     if x_cond is None and y_cond is None:
         return
     if (
@@ -55,10 +76,10 @@ def _ensure_condition_cache_matches_batch_size(batch_size):
         and getattr(y_cond, "shape", (None,))[0] == batch_size
     ):
         return
-    if "x_cond" in extract_globals:
-        extract_globals["x_cond"] = None
-    if "y_cond" in extract_globals:
-        extract_globals["y_cond"] = None
+    if "x_cond" in condition_store:
+        condition_store["x_cond"] = None
+    if "y_cond" in condition_store:
+        condition_store["y_cond"] = None
 
 
 def _cleanup_incomplete_jukemirlib_downloads(cache_dir):
@@ -162,11 +183,13 @@ def extract_batch(fpaths, dest_dir="aist_juke_feats", skip_completed=True):
     audios = [jukemirlib.load_audio(str(fpath)) for fpath in pending_paths]
 
     if len(audios) == 1:
-        _ensure_condition_cache_matches_batch_size(1)
+        _ensure_condition_cache_matches_batch_size(2)
         reps = jukemirlib.extract(
-            audios[0], layers=[LAYER], downsample_target_rate=FPS
+            audio=[audios[0], audios[0]],
+            layers=[LAYER],
+            downsample_target_rate=FPS,
         )[LAYER]
-        return [(reps, outputs[0][1])]
+        return [(reps[0], outputs[0][1])]
 
     _ensure_condition_cache_matches_batch_size(len(audios))
     reps = jukemirlib.extract(

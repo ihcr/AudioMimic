@@ -1,6 +1,7 @@
 import os
 import pickle
 import time
+import math
 from pathlib import Path
 
 import torch
@@ -12,6 +13,12 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from dataset.dance_dataset import AISTPPDataset
+from dataset.motion_representation import (
+    G1_MOTION_FORMAT,
+    SMPL_MOTION_FORMAT,
+    motion_repr_dim,
+    validate_motion_format,
+)
 from dataset.preprocess import increment_path
 from model.adan import Adan
 from model.beat_estimator import BeatDistanceEstimator
@@ -40,19 +47,59 @@ def atomic_pickle_dump(payload, path):
     tmp_path.replace(path)
 
 
-def tensor_dataset_cache_name(split, feature_type, use_beats, beat_rep):
+def tensor_dataset_cache_name(
+    split,
+    feature_type,
+    use_beats,
+    beat_rep,
+    motion_format=SMPL_MOTION_FORMAT,
+    feature_cache_mode="off",
+    feature_cache_dtype="float32",
+):
+    validate_motion_format(motion_format)
     beat_tag = "beat" if use_beats else "nobeat"
+    feature_cache_tag = (
+        ""
+        if feature_cache_mode == "off"
+        else f"featcache_{feature_cache_mode}_{feature_cache_dtype}_"
+    )
+    if motion_format == SMPL_MOTION_FORMAT:
+        return (
+            f"{split}_tensor_dataset_{feature_type}_{beat_tag}_{beat_rep}_"
+            f"{feature_cache_tag}{TENSOR_DATASET_CACHE_VERSION}.pkl"
+        )
     return (
-        f"{split}_tensor_dataset_{feature_type}_{beat_tag}_{beat_rep}_"
-        f"{TENSOR_DATASET_CACHE_VERSION}.pkl"
+        f"{split}_tensor_dataset_{motion_format}_{feature_type}_{beat_tag}_{beat_rep}_"
+        f"{feature_cache_tag}{TENSOR_DATASET_CACHE_VERSION}.pkl"
     )
 
 
-def prune_legacy_tensor_dataset_caches(processed_data_dir, split, feature_type, use_beats, beat_rep):
+def prune_legacy_tensor_dataset_caches(
+    processed_data_dir,
+    split,
+    feature_type,
+    use_beats,
+    beat_rep,
+    motion_format=SMPL_MOTION_FORMAT,
+    feature_cache_mode="off",
+    feature_cache_dtype="float32",
+):
+    validate_motion_format(motion_format)
     processed_data_dir = Path(processed_data_dir)
     beat_tag = "beat" if use_beats else "nobeat"
-    current_name = tensor_dataset_cache_name(split, feature_type, use_beats, beat_rep)
-    pattern = f"{split}_tensor_dataset_{feature_type}_{beat_tag}_{beat_rep}*.pkl"
+    current_name = tensor_dataset_cache_name(
+        split,
+        feature_type,
+        use_beats,
+        beat_rep,
+        motion_format=motion_format,
+        feature_cache_mode=feature_cache_mode,
+        feature_cache_dtype=feature_cache_dtype,
+    )
+    if motion_format == SMPL_MOTION_FORMAT:
+        pattern = f"{split}_tensor_dataset_{feature_type}_{beat_tag}_{beat_rep}*.pkl"
+    else:
+        pattern = f"{split}_tensor_dataset_{motion_format}_{feature_type}_{beat_tag}_{beat_rep}*.pkl"
     for cache_path in processed_data_dir.glob(pattern):
         if cache_path.name == current_name:
             continue
@@ -84,6 +131,7 @@ DEFAULT_MODEL_CONFIG = {
     "feature_type": "jukebox",
     "use_beats": False,
     "beat_rep": "distance",
+    "motion_format": SMPL_MOTION_FORMAT,
 }
 DEFAULT_NON_BEAT_LEARNING_RATE = 2e-4
 DEFAULT_BEAT_LEARNING_RATE = 2e-4
@@ -123,16 +171,24 @@ def load_trusted_checkpoint(checkpoint_path, map_location):
     return torch.load(checkpoint_path, map_location=map_location, weights_only=False)
 
 
-def resolve_model_config(feature_type, use_beats, beat_rep, checkpoint_config=None):
+def resolve_model_config(
+    feature_type,
+    use_beats,
+    beat_rep,
+    motion_format=SMPL_MOTION_FORMAT,
+    checkpoint_config=None,
+):
+    motion_format = validate_motion_format(motion_format)
     resolved = {
         "feature_type": feature_type,
         "use_beats": use_beats,
         "beat_rep": beat_rep,
+        "motion_format": motion_format,
     }
     if checkpoint_config is None:
         return resolved
 
-    for key in ("feature_type", "use_beats", "beat_rep"):
+    for key in ("feature_type", "use_beats", "beat_rep", "motion_format"):
         if key not in checkpoint_config:
             continue
         checkpoint_value = checkpoint_config[key]
@@ -168,11 +224,25 @@ def build_checkpoint_config(
     weight_decay,
     lambda_acc,
     lambda_beat,
+    beat_loss_start_epoch=0,
+    beat_loss_warmup_epochs=0,
+    beat_loss_max_fraction=0.0,
+    beat_estimator_ckpt="",
+    beat_estimator_config=None,
+    motion_format=SMPL_MOTION_FORMAT,
+    repr_dim=None,
+    feature_cache_mode="off",
+    feature_cache_dtype="float32",
 ):
+    motion_format = validate_motion_format(motion_format)
     return {
         "feature_type": feature_type,
         "use_beats": use_beats,
         "beat_rep": beat_rep,
+        "motion_format": motion_format,
+        "repr_dim": motion_repr_dim(motion_format) if repr_dim is None else repr_dim,
+        "feature_cache_mode": feature_cache_mode,
+        "feature_cache_dtype": feature_cache_dtype,
         "batch_size": batch_size,
         "gradient_accumulation_steps": gradient_accumulation_steps,
         "effective_batch_size": effective_batch_size(
@@ -184,6 +254,11 @@ def build_checkpoint_config(
         "weight_decay": weight_decay,
         "lambda_acc": lambda_acc,
         "lambda_beat": lambda_beat,
+        "beat_loss_start_epoch": beat_loss_start_epoch,
+        "beat_loss_warmup_epochs": beat_loss_warmup_epochs,
+        "beat_loss_max_fraction": beat_loss_max_fraction,
+        "beat_estimator_ckpt": beat_estimator_ckpt,
+        "beat_estimator_config": beat_estimator_config or {},
     }
 
 
@@ -213,6 +288,7 @@ def resolve_runtime_training_config(
     use_beats,
     beat_rep,
     learning_rate,
+    motion_format=SMPL_MOTION_FORMAT,
     learning_rate_was_explicit=False,
     checkpoint_config=None,
 ):
@@ -220,6 +296,7 @@ def resolve_runtime_training_config(
         feature_type=feature_type,
         use_beats=use_beats,
         beat_rep=beat_rep,
+        motion_format=motion_format,
         checkpoint_config=checkpoint_config,
     )
     if not learning_rate_was_explicit:
@@ -247,9 +324,34 @@ def restore_checkpoint_state(
         optim.load_state_dict(checkpoint["optimizer_state_dict"])
 
 
-def build_beat_estimator_from_checkpoint(checkpoint_path, device):
+def validate_beat_estimator_config(config, max_val_loss=8.0):
+    if "best_val_loss" not in config:
+        raise ValueError("Beat estimator checkpoint is missing validation loss.")
+    try:
+        best_val_loss = float(config["best_val_loss"])
+    except (TypeError, ValueError) as exc:
+        raise ValueError("Beat estimator checkpoint is missing validation loss.") from exc
+    if not math.isfinite(best_val_loss):
+        raise ValueError("Beat estimator validation loss must be finite.")
+    if best_val_loss > max_val_loss:
+        raise ValueError(
+            f"Beat estimator validation loss {best_val_loss} exceeds limit {max_val_loss}."
+        )
+    return {
+        "best_val_loss": best_val_loss,
+        "best_epoch": config.get("best_epoch"),
+        "val_split": config.get("val_split"),
+        "max_val_loss": max_val_loss,
+    }
+
+
+def build_beat_estimator_from_checkpoint(checkpoint_path, device, max_val_loss=8.0):
     checkpoint = load_trusted_checkpoint(checkpoint_path, map_location=device)
     config = checkpoint.get("config", {})
+    checkpoint_summary = validate_beat_estimator_config(
+        config,
+        max_val_loss=max_val_loss,
+    )
     model_kwargs = {
         key: config[key]
         for key in ("input_dim", "hidden_dim", "num_heads", "num_layers", "ff_dim", "dropout")
@@ -257,6 +359,7 @@ def build_beat_estimator_from_checkpoint(checkpoint_path, device):
     }
     model = BeatDistanceEstimator(**model_kwargs)
     model.load_state_dict(checkpoint["model_state_dict"])
+    model.checkpoint_config_summary = checkpoint_summary
     return model.to(device)
 
 
@@ -291,7 +394,17 @@ def _format_loss_value(value):
     return f"{float(value.detach().cpu() if torch.is_tensor(value) else value):.4f}"
 
 
-def build_train_postfix(loss, acc_loss, beat_loss, use_beats, beat_rep, lambda_beat):
+def build_train_postfix(
+    loss,
+    acc_loss,
+    beat_loss,
+    use_beats,
+    beat_rep,
+    lambda_beat,
+    beat_weight=None,
+    beat_contribution=None,
+    beat_capped=None,
+):
     if not use_beats:
         beat_mode = "none"
         beat_loss_value = "n/a"
@@ -302,12 +415,22 @@ def build_train_postfix(loss, acc_loss, beat_loss, use_beats, beat_rep, lambda_b
         beat_mode = f"{beat_rep}:cond"
         beat_loss_value = "off"
 
-    return {
+    postfix = {
         "loss": _format_loss_value(loss),
         "acc_loss": _format_loss_value(acc_loss),
         "beat_mode": beat_mode,
         "beat_loss": beat_loss_value,
     }
+    if lambda_beat > 0 and beat_weight is not None:
+        postfix["beat_weight"] = f"{float(beat_weight):.4f}"
+    if lambda_beat > 0 and beat_contribution is not None:
+        postfix["beat_contrib"] = _format_loss_value(beat_contribution)
+    if lambda_beat > 0 and beat_capped is not None:
+        capped_value = bool(
+            beat_capped.detach().cpu().item() if torch.is_tensor(beat_capped) else beat_capped
+        )
+        postfix["beat_capped"] = "yes" if capped_value else "no"
+    return postfix
 
 
 class EDGE:
@@ -327,9 +450,14 @@ class EDGE:
         beat_a=10.0,
         beat_c=0.1,
         beat_estimator_ckpt="",
+        beat_estimator_max_val_loss=8.0,
+        beat_loss_start_epoch=0,
+        beat_loss_warmup_epochs=0,
+        beat_loss_max_fraction=0.0,
         gradient_accumulation_steps=1,
         mixed_precision="bf16",
         resume_training_state=False,
+        motion_format=SMPL_MOTION_FORMAT,
     ):
         configure_cuda_math()
         ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
@@ -353,11 +481,15 @@ class EDGE:
         self.beat_a = beat_a
         self.beat_c = beat_c
         self.beat_estimator_ckpt = beat_estimator_ckpt
+        self.beat_estimator_max_val_loss = beat_estimator_max_val_loss
+        self.beat_loss_start_epoch = beat_loss_start_epoch
+        self.beat_loss_warmup_epochs = beat_loss_warmup_epochs
+        self.beat_loss_max_fraction = beat_loss_max_fraction
+        self.beat_estimator_config = {}
         self.resume_training_state = resume_training_state
+        self.motion_format = validate_motion_format(motion_format)
 
-        pos_dim = 3
-        rot_dim = 24 * 6  # 24 joints, 6dof
-        self.repr_dim = repr_dim = pos_dim + rot_dim + 4
+        self.repr_dim = repr_dim = motion_repr_dim(self.motion_format)
 
         horizon_seconds = 5
         FPS = 30
@@ -376,6 +508,7 @@ class EDGE:
             feature_type=feature_type,
             use_beats=use_beats,
             beat_rep=beat_rep,
+            motion_format=self.motion_format,
             learning_rate=learning_rate,
             learning_rate_was_explicit=learning_rate_was_explicit,
             checkpoint_config=checkpoint.get("config") if checkpoint is not None else None,
@@ -383,8 +516,13 @@ class EDGE:
         feature_type = resolved["feature_type"]
         use_beats = resolved["use_beats"]
         beat_rep = resolved["beat_rep"]
+        self.motion_format = resolved["motion_format"]
+        repr_dim = self.repr_dim = motion_repr_dim(self.motion_format)
         learning_rate = resolved["learning_rate"]
         self.grad_clip_norm = resolved["grad_clip_norm"]
+
+        if self.motion_format != SMPL_MOTION_FORMAT and self.lambda_beat > 0:
+            raise ValueError("G1 training supports beat conditioning only; set lambda_beat to 0.")
 
         if checkpoint is not None and not learning_rate_was_explicit:
             checkpoint_uses_beats = checkpoint.get("config", {}).get("use_beats")
@@ -415,13 +553,22 @@ class EDGE:
             model_kwargs["beat_rep"] = self.beat_rep
         model = model_cls(**model_kwargs)
 
-        smpl = SMPLSkeleton(self.accelerator.device)
+        smpl = (
+            None
+            if self.motion_format == G1_MOTION_FORMAT
+            else SMPLSkeleton(self.accelerator.device)
+        )
         beat_estimator = None
         if self.use_beats and self.lambda_beat > 0:
             if not self.beat_estimator_ckpt:
                 raise ValueError("Beat-enabled training with lambda_beat > 0 requires --beat_estimator_ckpt")
             beat_estimator = build_beat_estimator_from_checkpoint(
-                self.beat_estimator_ckpt, self.accelerator.device
+                self.beat_estimator_ckpt,
+                self.accelerator.device,
+                max_val_loss=self.beat_estimator_max_val_loss,
+            )
+            self.beat_estimator_config = getattr(
+                beat_estimator, "checkpoint_config_summary", {}
             )
         diffusion = GaussianDiffusion(
             model,
@@ -440,6 +587,10 @@ class EDGE:
             lambda_beat=self.lambda_beat,
             beat_a=self.beat_a,
             beat_c=self.beat_c,
+            beat_loss_start_epoch=self.beat_loss_start_epoch,
+            beat_loss_warmup_epochs=self.beat_loss_warmup_epochs,
+            beat_loss_max_fraction=self.beat_loss_max_fraction,
+            motion_format=self.motion_format,
         )
 
         print(
@@ -472,6 +623,8 @@ class EDGE:
         return self.accelerator.prepare(*objects)
 
     def train_loop(self, opt):
+        feature_cache_mode = getattr(opt, "feature_cache_mode", "off")
+        feature_cache_dtype = getattr(opt, "feature_cache_dtype", "float32")
         training_recipe = build_checkpoint_config(
             feature_type=self.feature_type,
             use_beats=self.use_beats,
@@ -483,6 +636,15 @@ class EDGE:
             weight_decay=self.weight_decay,
             lambda_acc=self.lambda_acc,
             lambda_beat=self.lambda_beat,
+            beat_loss_start_epoch=self.beat_loss_start_epoch,
+            beat_loss_warmup_epochs=self.beat_loss_warmup_epochs,
+            beat_loss_max_fraction=self.beat_loss_max_fraction,
+            beat_estimator_ckpt=self.beat_estimator_ckpt,
+            beat_estimator_config=self.beat_estimator_config,
+            motion_format=self.motion_format,
+            repr_dim=self.repr_dim,
+            feature_cache_mode=feature_cache_mode,
+            feature_cache_dtype=feature_cache_dtype,
         )
         if self.accelerator.is_main_process:
             beat_mode = (
@@ -495,6 +657,7 @@ class EDGE:
             print(
                 "Training config: "
                 f"feature_type={self.feature_type} "
+                f"motion_format={self.motion_format} "
                 f"use_beats={self.use_beats} "
                 f"beat_mode={beat_mode} "
                 f"batch_size={training_recipe['batch_size']} "
@@ -508,19 +671,49 @@ class EDGE:
         # load datasets
         train_tensor_dataset_path = os.path.join(
             opt.processed_data_dir,
-            tensor_dataset_cache_name("train", self.feature_type, self.use_beats, self.beat_rep),
+            tensor_dataset_cache_name(
+                "train",
+                self.feature_type,
+                self.use_beats,
+                self.beat_rep,
+                motion_format=self.motion_format,
+                feature_cache_mode=feature_cache_mode,
+                feature_cache_dtype=feature_cache_dtype,
+            ),
         )
         test_tensor_dataset_path = os.path.join(
             opt.processed_data_dir,
-            tensor_dataset_cache_name("test", self.feature_type, self.use_beats, self.beat_rep),
+            tensor_dataset_cache_name(
+                "test",
+                self.feature_type,
+                self.use_beats,
+                self.beat_rep,
+                motion_format=self.motion_format,
+                feature_cache_mode=feature_cache_mode,
+                feature_cache_dtype=feature_cache_dtype,
+            ),
         )
         processed_cache_dir = Path(opt.processed_data_dir)
         processed_cache_dir.mkdir(parents=True, exist_ok=True)
         prune_legacy_tensor_dataset_caches(
-            processed_cache_dir, "train", self.feature_type, self.use_beats, self.beat_rep
+            processed_cache_dir,
+            "train",
+            self.feature_type,
+            self.use_beats,
+            self.beat_rep,
+            motion_format=self.motion_format,
+            feature_cache_mode=feature_cache_mode,
+            feature_cache_dtype=feature_cache_dtype,
         )
         prune_legacy_tensor_dataset_caches(
-            processed_cache_dir, "test", self.feature_type, self.use_beats, self.beat_rep
+            processed_cache_dir,
+            "test",
+            self.feature_type,
+            self.use_beats,
+            self.beat_rep,
+            motion_format=self.motion_format,
+            feature_cache_mode=feature_cache_mode,
+            feature_cache_dtype=feature_cache_dtype,
         )
         if (
             not opt.no_cache
@@ -540,6 +733,9 @@ class EDGE:
                 force_reload=opt.force_reload,
                 use_beats=self.use_beats,
                 beat_rep=self.beat_rep,
+                motion_format=self.motion_format,
+                feature_cache_mode=feature_cache_mode,
+                feature_cache_dtype=feature_cache_dtype,
             )
             test_dataset = AISTPPDataset(
                 data_path=opt.data_path,
@@ -550,6 +746,9 @@ class EDGE:
                 force_reload=opt.force_reload,
                 use_beats=self.use_beats,
                 beat_rep=self.beat_rep,
+                motion_format=self.motion_format,
+                feature_cache_mode=feature_cache_mode,
+                feature_cache_dtype=feature_cache_dtype,
             )
             # cache the dataset in case
             if self.accelerator.is_main_process:
@@ -590,11 +789,14 @@ class EDGE:
                 f"train_num_workers={opt.train_num_workers} "
                 f"test_num_workers={opt.test_num_workers} "
                 f"mixed_precision={self.mixed_precision} "
+                f"feature_cache_mode={feature_cache_mode} "
+                f"feature_cache_dtype={feature_cache_dtype} "
                 f"tensor_cache_reused={tensor_cache_reused}"
             )
 
         self.accelerator.wait_for_everyone()
         for epoch in range(1, opt.epochs + 1):
+            self.diffusion.set_training_epoch(epoch)
             epoch_start = time.perf_counter()
             if self.accelerator.device.type == "cuda":
                 torch.cuda.reset_peak_memory_stats(self.accelerator.device)
@@ -604,6 +806,8 @@ class EDGE:
             avg_footloss = 0
             avg_accloss = 0
             avg_beatloss = 0
+            avg_beatcontrib = 0
+            avg_beatcap_hits = 0
             # train
             self.train()
             train_loop = train_data_loader
@@ -651,6 +855,17 @@ class EDGE:
                     avg_footloss += foot_loss.detach().cpu().numpy()
                     avg_accloss += acc_loss.detach().cpu().numpy()
                     avg_beatloss += beat_loss.detach().cpu().numpy()
+                    beat_stats = getattr(self.diffusion, "last_beat_loss_stats", {})
+                    beat_contribution = beat_stats.get(
+                        "beat_contribution",
+                        torch.zeros((), device=beat_loss.device),
+                    )
+                    beat_capped = beat_stats.get(
+                        "beat_capped",
+                        torch.zeros((), dtype=torch.bool, device=beat_loss.device),
+                    )
+                    avg_beatcontrib += float(beat_contribution.detach().cpu())
+                    avg_beatcap_hits += float(beat_capped.detach().cpu())
                     if hasattr(train_loop, "set_postfix"):
                         train_loop.set_postfix(
                             **build_train_postfix(
@@ -660,6 +875,9 @@ class EDGE:
                                 use_beats=self.use_beats,
                                 beat_rep=self.beat_rep,
                                 lambda_beat=self.lambda_beat,
+                                beat_weight=beat_stats.get("effective_lambda_beat"),
+                                beat_contribution=beat_contribution,
+                                beat_capped=beat_capped,
                             )
                         )
             if self.accelerator.is_main_process:
@@ -689,6 +907,8 @@ class EDGE:
                     avg_footloss /= len(train_data_loader)
                     avg_accloss /= len(train_data_loader)
                     avg_beatloss /= len(train_data_loader)
+                    avg_beatcontrib /= len(train_data_loader)
+                    avg_beatcap_hits /= len(train_data_loader)
                     log_dict = {
                         "Train Loss": avg_loss,
                         "V Loss": avg_vloss,
@@ -696,6 +916,11 @@ class EDGE:
                         "Foot Loss": avg_footloss,
                         "Acc Loss": avg_accloss,
                         "Beat Loss": avg_beatloss,
+                        "Beat Weight": self.diffusion.last_beat_loss_stats.get(
+                            "effective_lambda_beat", 0.0
+                        ),
+                        "Beat Contribution": avg_beatcontrib,
+                        "Beat Cap Hit Rate": avg_beatcap_hits,
                     }
                     if wandb_run is not None:
                         wandb.log(log_dict)

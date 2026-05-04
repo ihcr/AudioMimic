@@ -36,6 +36,7 @@ def parse_args():
     parser.add_argument("--seed", default=1234, type=int)
     parser.add_argument("--use_beats", action="store_true")
     parser.add_argument("--beat_rep", choices=("distance", "pulse"), default="distance")
+    parser.add_argument("--max_eval_clips", default=0, type=int)
     return parser.parse_args()
 
 
@@ -79,6 +80,13 @@ def render_dataset_batch(model, batch, render_dir, motion_dir, label="eval_datas
     )
 
 
+def iter_limited_batches(loader, max_eval_clips=0):
+    for idx, batch in enumerate(loader):
+        if max_eval_clips and idx >= max_eval_clips:
+            break
+        yield batch
+
+
 def run_dataset_evaluation(args):
     set_seed(args.seed)
     motion_dir = clear_motion_dir(args.motion_save_dir)
@@ -105,7 +113,11 @@ def run_dataset_evaluation(args):
     )
     loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)
 
-    for batch in tqdm(loader, desc="Dataset eval", unit="clip"):
+    for batch in tqdm(
+        iter_limited_batches(loader, max_eval_clips=args.max_eval_clips),
+        desc="Dataset eval",
+        unit="clip",
+    ):
         render_dataset_batch(model, batch, args.render_dir, motion_dir)
 
     method_name = Path(args.checkpoint).stem

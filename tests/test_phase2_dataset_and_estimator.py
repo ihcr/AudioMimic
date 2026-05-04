@@ -134,6 +134,84 @@ class DatasetBeatSchemaTests(unittest.TestCase):
             self.assertTrue(torch.equal(cond["beat"], torch.arange(150, dtype=torch.int64)))
             self.assertEqual(load_calls, [(str(feature_path), "r")])
 
+    def test_getitem_can_load_music_from_memmap_feature_cache(self):
+        dataset_cls = self.dataset_module.AISTPPDataset
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            feature_a = np.ones((4, 3), dtype=np.float32)
+            feature_b = np.full((4, 3), 2.0, dtype=np.float32)
+            feature_path_a = tmp_path / "clip_a.npy"
+            feature_path_b = tmp_path / "clip_b.npy"
+            np.save(feature_path_a, feature_a)
+            np.save(feature_path_b, feature_b)
+            fake_data = {
+                "pos": np.zeros((2, 150, 3), dtype=np.float32),
+                "q": np.zeros((2, 150, 72), dtype=np.float32),
+                "filenames": [str(feature_path_a), str(feature_path_b)],
+                "wavs": ["clip_a.wav", "clip_b.wav"],
+            }
+            fake_pose = torch.zeros((2, 150, 151), dtype=torch.float32)
+
+            with patch.object(dataset_cls, "load_aistpp", return_value=fake_data), patch.object(
+                dataset_cls, "process_dataset", return_value=fake_pose
+            ):
+                dataset = dataset_cls(
+                    data_path="unused",
+                    backup_path=tmpdir,
+                    train=True,
+                    feature_type="baseline",
+                    force_reload=True,
+                    feature_cache_mode="memmap",
+                )
+
+            self.assertTrue(Path(dataset.feature_store_path).is_file())
+            original_np_load = self.dataset_module.np.load
+            load_calls = []
+
+            def tracked_np_load(path, *args, **kwargs):
+                load_calls.append((str(path), kwargs.get("mmap_mode")))
+                return original_np_load(path, *args, **kwargs)
+
+            with patch.object(self.dataset_module.np, "load", side_effect=tracked_np_load):
+                _, cond, _, _ = dataset[1]
+
+            self.assertTrue(torch.equal(cond, torch.from_numpy(feature_b)))
+            self.assertEqual(load_calls, [(str(dataset.feature_store_path), "r")])
+
+    def test_memmap_feature_cache_reopens_after_dataset_pickle_roundtrip(self):
+        dataset_cls = self.dataset_module.AISTPPDataset
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            feature_path = tmp_path / "clip.npy"
+            feature = np.full((4, 3), 3.0, dtype=np.float32)
+            np.save(feature_path, feature)
+            fake_data = {
+                "pos": np.zeros((1, 150, 3), dtype=np.float32),
+                "q": np.zeros((1, 150, 72), dtype=np.float32),
+                "filenames": [str(feature_path)],
+                "wavs": ["clip.wav"],
+            }
+            fake_pose = torch.zeros((1, 150, 151), dtype=torch.float32)
+
+            with patch.object(dataset_cls, "load_aistpp", return_value=fake_data), patch.object(
+                dataset_cls, "process_dataset", return_value=fake_pose
+            ):
+                dataset = dataset_cls(
+                    data_path="unused",
+                    backup_path=tmpdir,
+                    train=True,
+                    feature_type="baseline",
+                    force_reload=True,
+                    feature_cache_mode="memmap",
+                )
+
+            _, before, _, _ = dataset[0]
+            reloaded = pickle.loads(pickle.dumps(dataset))
+            _, after, _, _ = reloaded[0]
+
+            self.assertTrue(torch.equal(before, torch.from_numpy(feature)))
+            self.assertTrue(torch.equal(after, torch.from_numpy(feature)))
+
     def test_getitem_returns_tensor_condition_when_beats_disabled(self):
         dataset_cls = self.dataset_module.AISTPPDataset
         with TemporaryDirectory() as tmpdir:

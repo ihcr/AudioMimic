@@ -12,8 +12,57 @@ REPO_ROOT = SCRIPT_ROOT.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from EDGE import tensor_dataset_cache_name
-from dataset.dance_dataset import DATASET_CACHE_VERSION, processed_dataset_cache_name
+DATASET_CACHE_VERSION = "v4"
+TENSOR_DATASET_CACHE_VERSION = "v5"
+SMPL_MOTION_FORMAT = "smpl"
+G1_MOTION_FORMAT = "g1"
+VALID_MOTION_FORMATS = (SMPL_MOTION_FORMAT, G1_MOTION_FORMAT)
+G1_DOF_DIM = 29
+
+
+def validate_motion_format(motion_format):
+    if motion_format not in VALID_MOTION_FORMATS:
+        raise ValueError(
+            f"Unsupported motion_format {motion_format!r}; expected one of {VALID_MOTION_FORMATS}"
+        )
+    return motion_format
+
+
+def processed_dataset_cache_name(
+    split_name,
+    feature_type,
+    use_beats,
+    beat_rep,
+    motion_format=SMPL_MOTION_FORMAT,
+):
+    validate_motion_format(motion_format)
+    beat_tag = "beat" if use_beats else "nobeat"
+    if motion_format == SMPL_MOTION_FORMAT:
+        return f"processed_{split_name}_{feature_type}_{beat_tag}_{beat_rep}_{DATASET_CACHE_VERSION}.pkl"
+    return (
+        f"processed_{split_name}_{motion_format}_{feature_type}_{beat_tag}_{beat_rep}_"
+        f"{DATASET_CACHE_VERSION}.pkl"
+    )
+
+
+def tensor_dataset_cache_name(
+    split,
+    feature_type,
+    use_beats,
+    beat_rep,
+    motion_format=SMPL_MOTION_FORMAT,
+):
+    validate_motion_format(motion_format)
+    beat_tag = "beat" if use_beats else "nobeat"
+    if motion_format == SMPL_MOTION_FORMAT:
+        return (
+            f"{split}_tensor_dataset_{feature_type}_{beat_tag}_{beat_rep}_"
+            f"{TENSOR_DATASET_CACHE_VERSION}.pkl"
+        )
+    return (
+        f"{split}_tensor_dataset_{motion_format}_{feature_type}_{beat_tag}_{beat_rep}_"
+        f"{TENSOR_DATASET_CACHE_VERSION}.pkl"
+    )
 
 
 EXPECTED_RAW_FRAMES = 300
@@ -24,6 +73,8 @@ EXPECTED_FEATURE_DIMS = {
 }
 ROOT_HEIGHT_MIN = 0.0
 ROOT_HEIGHT_MAX = 4.0
+G1_ROOT_HEIGHT_MIN = -5.0
+G1_ROOT_HEIGHT_MAX = 5.0
 
 
 def parse_args(argv=None):
@@ -33,6 +84,7 @@ def parse_args(argv=None):
     parser.add_argument("--data_path", default="data")
     parser.add_argument("--processed_data_dir", default="data/dataset_backups")
     parser.add_argument("--feature_type", choices=("baseline", "jukebox"), required=True)
+    parser.add_argument("--motion_format", choices=("smpl", "g1"), default="smpl")
     parser.add_argument("--use_beats", action="store_true")
     parser.add_argument("--beat_rep", choices=("distance", "pulse"), default="distance")
     parser.add_argument("--sample_count", type=int, default=64)
@@ -58,13 +110,7 @@ def require(condition, message):
         raise ValueError(message)
 
 
-def validate_motion_file(path):
-    try:
-        with open(path, "rb") as handle:
-            payload = pickle.load(handle)
-    except Exception as exc:
-        raise ValueError(f"{path}: could not read motion pickle ({type(exc).__name__}: {exc}).") from exc
-
+def validate_smpl_motion_file(path, payload):
     require(set(payload) == {"pos", "q"}, f"{path}: expected pos/q motion payload.")
     pos = np.asarray(payload["pos"], dtype=np.float32)
     q = np.asarray(payload["q"], dtype=np.float32)
@@ -72,16 +118,54 @@ def validate_motion_file(path):
     require(q.shape == (EXPECTED_RAW_FRAMES, 72), f"{path}: expected q shape {(EXPECTED_RAW_FRAMES, 72)}, got {q.shape}.")
     require(np.isfinite(pos).all(), f"{path}: motion pos contains non-finite values.")
     require(np.isfinite(q).all(), f"{path}: motion q contains non-finite values.")
+    root_height = pos[:, 1]
+    return root_height
 
-    root_height_min = float(pos[:, 1].min())
-    root_height_max = float(pos[:, 1].max())
+
+def validate_g1_motion_file(path, payload):
+    required_keys = {"root_pos", "root_rot", "dof_pos"}
+    require(required_keys.issubset(payload), f"{path}: expected G1 root_pos/root_rot/dof_pos payload.")
+    root_pos = np.asarray(payload["root_pos"], dtype=np.float32)
+    root_rot = np.asarray(payload["root_rot"], dtype=np.float32)
+    dof_pos = np.asarray(payload["dof_pos"], dtype=np.float32)
+    require(root_pos.shape == (EXPECTED_MODEL_FRAMES, 3), f"{path}: expected root_pos shape {(EXPECTED_MODEL_FRAMES, 3)}, got {root_pos.shape}.")
+    require(root_rot.shape == (EXPECTED_MODEL_FRAMES, 4), f"{path}: expected root_rot shape {(EXPECTED_MODEL_FRAMES, 4)}, got {root_rot.shape}.")
+    require(dof_pos.shape == (EXPECTED_MODEL_FRAMES, G1_DOF_DIM), f"{path}: expected dof_pos shape {(EXPECTED_MODEL_FRAMES, G1_DOF_DIM)}, got {dof_pos.shape}.")
+    require(np.isfinite(root_pos).all(), f"{path}: root_pos contains non-finite values.")
+    require(np.isfinite(root_rot).all(), f"{path}: root_rot contains non-finite values.")
+    require(np.isfinite(dof_pos).all(), f"{path}: dof_pos contains non-finite values.")
+    quat_norm = np.linalg.norm(root_rot, axis=-1)
+    require(np.allclose(quat_norm, 1.0, atol=1e-3), f"{path}: root_rot quaternions are not unit length.")
+    if "q" in payload:
+        q = np.asarray(payload["q"], dtype=np.float32)
+        require(q.shape == (EXPECTED_MODEL_FRAMES, 4 + G1_DOF_DIM), f"{path}: expected q shape {(EXPECTED_MODEL_FRAMES, 4 + G1_DOF_DIM)}, got {q.shape}.")
+    return root_pos[:, 2]
+
+
+def validate_motion_file(path, motion_format=SMPL_MOTION_FORMAT):
+    motion_format = validate_motion_format(motion_format)
+    try:
+        with open(path, "rb") as handle:
+            payload = pickle.load(handle)
+    except Exception as exc:
+        raise ValueError(f"{path}: could not read motion pickle ({type(exc).__name__}: {exc}).") from exc
+
+    if motion_format == G1_MOTION_FORMAT:
+        root_height_values = validate_g1_motion_file(path, payload)
+    else:
+        root_height_values = validate_smpl_motion_file(path, payload)
+
+    root_height_min = float(root_height_values.min())
+    root_height_max = float(root_height_values.max())
+    min_bound = G1_ROOT_HEIGHT_MIN if motion_format == G1_MOTION_FORMAT else ROOT_HEIGHT_MIN
+    max_bound = G1_ROOT_HEIGHT_MAX if motion_format == G1_MOTION_FORMAT else ROOT_HEIGHT_MAX
     require(
-        ROOT_HEIGHT_MIN <= root_height_min <= ROOT_HEIGHT_MAX,
-        f"{path}: root height min {root_height_min:.4f} is outside [{ROOT_HEIGHT_MIN}, {ROOT_HEIGHT_MAX}].",
+        min_bound <= root_height_min <= max_bound,
+        f"{path}: root height min {root_height_min:.4f} is outside [{min_bound}, {max_bound}].",
     )
     require(
-        ROOT_HEIGHT_MIN <= root_height_max <= ROOT_HEIGHT_MAX,
-        f"{path}: root height max {root_height_max:.4f} is outside [{ROOT_HEIGHT_MIN}, {ROOT_HEIGHT_MAX}].",
+        min_bound <= root_height_max <= max_bound,
+        f"{path}: root height max {root_height_max:.4f} is outside [{min_bound}, {max_bound}].",
     )
     return {
         "root_height_min": root_height_min,
@@ -120,30 +204,58 @@ def validate_beat_file(path):
             require(np.isfinite(values).all(), f"{path}: {key} contains non-finite values.")
 
 
-def find_legacy_caches(processed_data_dir, feature_type, use_beats, beat_rep):
+def find_legacy_caches(
+    processed_data_dir,
+    feature_type,
+    use_beats,
+    beat_rep,
+    motion_format=SMPL_MOTION_FORMAT,
+):
+    motion_format = validate_motion_format(motion_format)
     beat_tag = "beat" if use_beats else "nobeat"
     processed_data_dir = Path(processed_data_dir)
     stale = []
     for split in ("train", "test"):
         current_processed_name = processed_dataset_cache_name(
-            split, feature_type, use_beats, beat_rep
+            split,
+            feature_type,
+            use_beats,
+            beat_rep,
+            motion_format=motion_format,
         )
-        processed_pattern = f"processed_{split}_{feature_type}_{beat_tag}_{beat_rep}*.pkl"
+        if motion_format == SMPL_MOTION_FORMAT:
+            processed_pattern = f"processed_{split}_{feature_type}_{beat_tag}_{beat_rep}*.pkl"
+        else:
+            processed_pattern = f"processed_{split}_{motion_format}_{feature_type}_{beat_tag}_{beat_rep}*.pkl"
         for cache_path in processed_data_dir.glob(processed_pattern):
             if cache_path.name != current_processed_name:
                 stale.append(cache_path.name)
 
         current_tensor_name = tensor_dataset_cache_name(
-            split, feature_type, use_beats, beat_rep
+            split,
+            feature_type,
+            use_beats,
+            beat_rep,
+            motion_format=motion_format,
         )
-        tensor_pattern = f"{split}_tensor_dataset_{feature_type}_{beat_tag}_{beat_rep}*.pkl"
+        if motion_format == SMPL_MOTION_FORMAT:
+            tensor_pattern = f"{split}_tensor_dataset_{feature_type}_{beat_tag}_{beat_rep}*.pkl"
+        else:
+            tensor_pattern = f"{split}_tensor_dataset_{motion_format}_{feature_type}_{beat_tag}_{beat_rep}*.pkl"
         for cache_path in processed_data_dir.glob(tensor_pattern):
             if cache_path.name != current_tensor_name:
                 stale.append(cache_path.name)
     return sorted(set(stale))
 
 
-def validate_split(split_name, data_path, feature_type, use_beats, sample_count):
+def validate_split(
+    split_name,
+    data_path,
+    feature_type,
+    use_beats,
+    sample_count,
+    motion_format=SMPL_MOTION_FORMAT,
+):
     split_dir = Path(data_path) / split_name
     motion_dir = split_dir / "motions_sliced"
     wav_dir = split_dir / "wavs_sliced"
@@ -169,7 +281,10 @@ def validate_split(split_name, data_path, feature_type, use_beats, sample_count)
     height_mins = []
     height_maxes = []
     for stem in motion_stems:
-        motion_stats = validate_motion_file(motion_dir / f"{stem}.pkl")
+        motion_stats = validate_motion_file(
+            motion_dir / f"{stem}.pkl",
+            motion_format=motion_format,
+        )
         height_mins.append(motion_stats["root_height_min"])
         height_maxes.append(motion_stats["root_height_max"])
 
@@ -199,17 +314,20 @@ def validate_preprocessed_dataset(
     use_beats=False,
     beat_rep="distance",
     sample_count=64,
+    motion_format=SMPL_MOTION_FORMAT,
 ):
+    motion_format = validate_motion_format(motion_format)
     data_path = Path(data_path)
     processed_data_dir = Path(processed_data_dir)
     require(data_path.is_dir(), f"{data_path}: data path does not exist.")
-    require(processed_data_dir.is_dir(), f"{processed_data_dir}: processed_data_dir does not exist.")
+    processed_data_dir.mkdir(parents=True, exist_ok=True)
 
     stale_caches = find_legacy_caches(
         processed_data_dir=processed_data_dir,
         feature_type=feature_type,
         use_beats=use_beats,
         beat_rep=beat_rep,
+        motion_format=motion_format,
     )
     require(
         not stale_caches,
@@ -220,7 +338,14 @@ def validate_preprocessed_dataset(
     summary = {
         "cache_versions": {
             "processed": DATASET_CACHE_VERSION,
-            "tensor": tensor_dataset_cache_name("train", feature_type, use_beats, beat_rep).rsplit("_", 1)[-1].removesuffix(".pkl"),
+            "tensor": tensor_dataset_cache_name(
+                "train",
+                feature_type,
+                use_beats,
+                beat_rep,
+                motion_format=motion_format,
+            ).rsplit("_", 1)[-1].removesuffix(".pkl"),
+            "motion_format": motion_format,
         }
     }
     for split in ("train", "test"):
@@ -230,6 +355,7 @@ def validate_preprocessed_dataset(
             feature_type=feature_type,
             use_beats=use_beats,
             sample_count=sample_count,
+            motion_format=motion_format,
         )
     return summary
 
@@ -237,6 +363,7 @@ def validate_preprocessed_dataset(
 def format_summary(summary):
     lines = [
         "Preprocessed data validation passed.",
+        f"Motion format: {summary['cache_versions']['motion_format']}",
         f"Processed cache version: {summary['cache_versions']['processed']}",
         f"Tensor cache version: {summary['cache_versions']['tensor']}",
     ]
@@ -259,6 +386,7 @@ def main(argv=None):
         use_beats=args.use_beats,
         beat_rep=args.beat_rep,
         sample_count=args.sample_count,
+        motion_format=args.motion_format,
     )
     print(format_summary(summary))
 

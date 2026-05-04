@@ -12,6 +12,12 @@ from einops import reduce
 from p_tqdm import p_map
 from tqdm import tqdm
 
+from dataset.motion_representation import (
+    G1_MOTION_FORMAT,
+    SMPL_MOTION_FORMAT,
+    decode_g1_motion,
+    validate_motion_format,
+)
 from dataset.quaternion import ax_from_6v, quat_slerp
 from rotation_transforms import (axis_angle_to_quaternion,
                                  quaternion_to_axis_angle)
@@ -111,6 +117,71 @@ def build_saved_motion_metadata(cond, sample_idx, audio_path=None, beat_rep=None
     return metadata
 
 
+def build_long_saved_motion_metadata(cond, audio_path=None, beat_rep=None, stride_frames=75):
+    metadata = {}
+    if audio_path is not None:
+        metadata["audio_path"] = audio_path
+
+    if not isinstance(cond, dict) or "beat" not in cond:
+        return metadata
+
+    beat_value = cond["beat"]
+    resolved_beat_rep = beat_rep
+    stitched_beats = []
+    num_slices = cond_batch_size(cond)
+    for sample_idx in range(num_slices):
+        if torch.is_tensor(beat_value):
+            beat_track = beat_value[sample_idx]
+        else:
+            beat_track = np.asarray(beat_value)[sample_idx]
+        if resolved_beat_rep is None:
+            beat_shape = (
+                beat_track.shape
+                if hasattr(beat_track, "shape")
+                else np.asarray(beat_track).shape
+            )
+            resolved_beat_rep = (
+                "pulse" if len(beat_shape) > 1 and beat_shape[-1] == 1 else "distance"
+            )
+        slice_beats = designated_beat_frames_from_track(beat_track, resolved_beat_rep)
+        stitched_beats.extend((slice_beats + sample_idx * stride_frames).tolist())
+
+    metadata["designated_beat_frames"] = np.unique(
+        np.asarray(stitched_beats, dtype=np.int64)
+    )
+    metadata["beat_rep"] = resolved_beat_rep
+    return metadata
+
+
+def effective_beat_loss_weight(epoch, lambda_beat, start_epoch=0, warmup_epochs=0):
+    if lambda_beat <= 0:
+        return 0.0
+    if epoch < start_epoch:
+        return 0.0
+    if warmup_epochs <= 0:
+        return float(lambda_beat)
+    progress = (epoch - start_epoch + 1) / float(warmup_epochs)
+    return float(lambda_beat) * min(max(progress, 0.0), 1.0)
+
+
+def compute_beat_loss_contribution(
+    base_loss,
+    beat_loss,
+    effective_lambda_beat,
+    max_fraction=0.0,
+):
+    raw_contribution = beat_loss * effective_lambda_beat
+    if max_fraction <= 0:
+        cap = torch.full_like(raw_contribution, float("inf"))
+        capped = torch.zeros_like(raw_contribution, dtype=torch.bool)
+        return raw_contribution, capped, cap
+
+    cap = base_loss.detach() * float(max_fraction)
+    capped = raw_contribution > cap
+    contribution = torch.where(capped, cap, raw_contribution)
+    return contribution, capped, cap
+
+
 class EMA:
     def __init__(self, beta):
         super().__init__()
@@ -149,10 +220,15 @@ class GaussianDiffusion(nn.Module):
         lambda_beat=0.5,
         beat_a=10.0,
         beat_c=0.1,
+        beat_loss_start_epoch=0,
+        beat_loss_warmup_epochs=0,
+        beat_loss_max_fraction=0.0,
+        motion_format=SMPL_MOTION_FORMAT,
     ):
         super().__init__()
         self.horizon = horizon
         self.transition_dim = repr_dim
+        self.motion_format = validate_motion_format(motion_format)
         self.model = model
         self.ema = EMA(0.9999)
         self.master_model = copy.deepcopy(self.model)
@@ -162,6 +238,11 @@ class GaussianDiffusion(nn.Module):
         self.lambda_beat = lambda_beat
         self.beat_a = beat_a
         self.beat_c = beat_c
+        self.beat_loss_start_epoch = beat_loss_start_epoch
+        self.beat_loss_warmup_epochs = beat_loss_warmup_epochs
+        self.beat_loss_max_fraction = beat_loss_max_fraction
+        self.current_epoch = 1
+        self.last_beat_loss_stats = {}
         self.beat_estimator = beat_estimator
         if self.beat_estimator is not None:
             for param in self.beat_estimator.parameters():
@@ -235,6 +316,9 @@ class GaussianDiffusion(nn.Module):
 
         ## get loss coefficients and initialize objective
         self.loss_fn = F.mse_loss if loss_type == "l2" else F.l1_loss
+
+    def set_training_epoch(self, epoch):
+        self.current_epoch = int(epoch)
 
     # ------------------------------------------ sampling ------------------------------------------#
 
@@ -591,6 +675,30 @@ class GaussianDiffusion(nn.Module):
         loss = reduce(loss, "b ... -> b (...)", "mean")
         loss = loss * extract(self.p2_loss_weight, t, loss.shape)
 
+        if self.motion_format == G1_MOTION_FORMAT:
+            target_v = target[:, 1:] - target[:, :-1]
+            model_out_v = model_out[:, 1:] - model_out[:, :-1]
+            v_loss = self.loss_fn(model_out_v, target_v, reduction="none")
+            v_loss = reduce(v_loss, "b ... -> b (...)", "mean")
+            v_loss = v_loss * extract(self.p2_loss_weight, t, v_loss.shape)
+
+            zero = torch.zeros((), device=x_start.device)
+            acc_loss = zero
+            if model_out.shape[1] > 2:
+                target_a = target[:, 2:] - 2 * target[:, 1:-1] + target[:, :-2]
+                model_a = model_out[:, 2:] - 2 * model_out[:, 1:-1] + model_out[:, :-2]
+                acc_loss = F.mse_loss(model_a, target_a)
+
+            base_loss = loss.mean() + v_loss.mean()
+            self.last_beat_loss_stats = {
+                "effective_lambda_beat": 0.0,
+                "beat_contribution": zero.detach(),
+                "beat_capped": torch.zeros((), dtype=torch.bool, device=x_start.device),
+                "beat_cap": torch.full_like(zero, float("inf")),
+            }
+            total_loss = base_loss + self.lambda_acc * acc_loss
+            return total_loss, (loss.mean(), v_loss.mean(), zero, zero, acc_loss, zero)
+
         # split off contact from the rest
         model_contact, model_out = torch.split(
             model_out, (4, model_out.shape[2] - 4), dim=2
@@ -674,8 +782,27 @@ class GaussianDiffusion(nn.Module):
             0.646 * fk_loss.mean(),
             10.942 * foot_loss.mean(),
         )
-        total_loss = sum(base_losses)
-        total_loss = total_loss + self.lambda_acc * acc_loss + self.lambda_beat * beat_loss
+        base_loss = sum(base_losses)
+        effective_lambda_beat = effective_beat_loss_weight(
+            epoch=self.current_epoch,
+            lambda_beat=self.lambda_beat,
+            start_epoch=self.beat_loss_start_epoch,
+            warmup_epochs=self.beat_loss_warmup_epochs,
+        )
+        beat_contribution, beat_capped, beat_cap = compute_beat_loss_contribution(
+            base_loss=base_loss,
+            beat_loss=beat_loss,
+            effective_lambda_beat=effective_lambda_beat,
+            max_fraction=self.beat_loss_max_fraction,
+        )
+        self.last_beat_loss_stats = {
+            "effective_lambda_beat": effective_lambda_beat,
+            "beat_contribution": beat_contribution.detach(),
+            "beat_capped": beat_capped.detach(),
+            "beat_cap": beat_cap.detach(),
+        }
+        total_loss = base_loss
+        total_loss = total_loss + self.lambda_acc * acc_loss + beat_contribution
         losses = base_losses + (acc_loss, beat_loss)
         return total_loss, losses
 
@@ -699,6 +826,145 @@ class GaussianDiffusion(nn.Module):
         t = torch.full((batch_size,), timestep, device=x.device).long()
         return self.q_sample(x, t) if timestep > 0 else x
 
+    def _g1_output_name(self, epoch, num, filename=None, mode="normal"):
+        if filename is None:
+            stem = f"sample{num}"
+        else:
+            stem = Path(filename).stem
+        if mode == "long":
+            parts = stem.split("_")
+            if len(parts) > 1:
+                stem = "_".join(parts[:-1]) or stem
+        return f"{epoch}_{num}_{stem}_g1.pkl"
+
+    def _g1_payload(self, root_pos, root_rot, dof_pos, metadata=None):
+        root_pos_np = root_pos.detach().cpu().numpy()
+        root_rot_np = root_rot.detach().cpu().numpy()
+        dof_pos_np = dof_pos.detach().cpu().numpy()
+        payload = {
+            "motion_format": G1_MOTION_FORMAT,
+            "fps": 30.0,
+            "root_pos": root_pos_np,
+            "root_rot": root_rot_np,
+            "dof_pos": dof_pos_np,
+            "pos": root_pos_np,
+            "q": np.concatenate((root_rot_np, dof_pos_np), axis=-1),
+        }
+        if metadata:
+            payload.update(metadata)
+        return payload
+
+    def _stitch_g1_samples(self, decoded):
+        pos = decoded["root_pos"]
+        root_rot = decoded["root_rot"]
+        dof_pos = decoded["dof_pos"]
+        b, s, _ = pos.shape
+        if b == 1:
+            return pos[0], root_rot[0], dof_pos[0]
+
+        assert s % 2 == 0
+        half = s // 2
+        fade_out = torch.ones((1, s, 1), device=pos.device, dtype=pos.dtype)
+        fade_in = torch.ones((1, s, 1), device=pos.device, dtype=pos.dtype)
+        fade_out[:, half:, :] = torch.linspace(1, 0, half, device=pos.device, dtype=pos.dtype)[
+            None, :, None
+        ]
+        fade_in[:, :half, :] = torch.linspace(0, 1, half, device=pos.device, dtype=pos.dtype)[
+            None, :, None
+        ]
+
+        blended_pos = pos.clone()
+        blended_dof = dof_pos.clone()
+        blended_pos[:-1] *= fade_out
+        blended_pos[1:] *= fade_in
+        blended_dof[:-1] *= fade_out
+        blended_dof[1:] *= fade_in
+
+        full_len = s + half * (b - 1)
+        full_pos = torch.zeros((full_len, 3), device=pos.device, dtype=pos.dtype)
+        full_dof = torch.zeros((full_len, dof_pos.shape[-1]), device=pos.device, dtype=dof_pos.dtype)
+        idx = 0
+        for pos_slice, dof_slice in zip(blended_pos, blended_dof):
+            full_pos[idx : idx + s] += pos_slice
+            full_dof[idx : idx + s] += dof_slice
+            idx += half
+
+        slerp_weight = torch.linspace(0, 1, half, device=pos.device, dtype=pos.dtype)[
+            None, :, None
+        ]
+        merged_rot = quat_slerp(
+            root_rot[:-1, half:].clone().unsqueeze(2),
+            root_rot[1:, :half].clone().unsqueeze(2),
+            slerp_weight,
+        ).squeeze(2)
+        full_rot = torch.zeros((full_len, 4), device=pos.device, dtype=root_rot.dtype)
+        full_rot[:half] = root_rot[0, :half]
+        idx = half
+        for rot_slice in merged_rot:
+            full_rot[idx : idx + half] = rot_slice
+            idx += half
+        full_rot[idx : idx + half] = root_rot[-1, half:]
+        return full_pos, full_rot, full_dof
+
+    def render_g1_sample(
+        self,
+        samples,
+        cond,
+        epoch,
+        render_out,
+        fk_out=None,
+        name=None,
+        mode="normal",
+        metadata_audio_path=None,
+        metadata_stride_frames=75,
+    ):
+        output_dir = Path(fk_out or render_out)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        decoded = decode_g1_motion(samples)
+        beat_rep = getattr(self.model, "beat_rep", None)
+
+        if mode == "long":
+            root_pos, root_rot, dof_pos = self._stitch_g1_samples(decoded)
+            audio_path = metadata_audio_path or (name[0] if name else None)
+            metadata = build_long_saved_motion_metadata(
+                cond,
+                audio_path=audio_path,
+                beat_rep=beat_rep,
+                stride_frames=metadata_stride_frames,
+            )
+            outname = self._g1_output_name(
+                epoch,
+                0,
+                filename=name[0] if name else None,
+                mode=mode,
+            )
+            with open(output_dir / outname, "wb") as handle:
+                pickle.dump(
+                    self._g1_payload(root_pos, root_rot, dof_pos, metadata=metadata),
+                    handle,
+                )
+            return
+
+        for num in range(decoded["root_pos"].shape[0]):
+            filename = name[num] if name is not None else None
+            metadata = build_saved_motion_metadata(
+                cond,
+                sample_idx=num,
+                audio_path=filename,
+                beat_rep=beat_rep,
+            )
+            outname = self._g1_output_name(epoch, num, filename=filename, mode=mode)
+            with open(output_dir / outname, "wb") as handle:
+                pickle.dump(
+                    self._g1_payload(
+                        decoded["root_pos"][num],
+                        decoded["root_rot"][num],
+                        decoded["dof_pos"][num],
+                        metadata=metadata,
+                    ),
+                    handle,
+                )
+
     def render_sample(
         self,
         shape,
@@ -714,7 +980,9 @@ class GaussianDiffusion(nn.Module):
         constraint=None,
         sound_folder="ood_sliced",
         start_point=None,
-        render=True
+        render=True,
+        metadata_audio_path=None,
+        metadata_stride_frames=75,
     ):
         sound = sound and render
         cond = move_cond_to_device(cond, self.betas.device)
@@ -742,6 +1010,20 @@ class GaussianDiffusion(nn.Module):
             samples = shape
 
         samples = normalizer.unnormalize(samples)
+
+        if self.motion_format == G1_MOTION_FORMAT:
+            self.render_g1_sample(
+                samples,
+                cond,
+                epoch,
+                render_out,
+                fk_out=fk_out,
+                name=name,
+                mode=mode,
+                metadata_audio_path=metadata_audio_path,
+                metadata_stride_frames=metadata_stride_frames,
+            )
+            return
 
         if samples.shape[2] == 151:
             sample_contact, samples = torch.split(
@@ -826,14 +1108,21 @@ class GaussianDiffusion(nn.Module):
             if fk_out is not None:
                 outname = f'{epoch}_{"_".join(os.path.splitext(os.path.basename(name[0]))[0].split("_")[:-1])}.pkl'
                 Path(fk_out).mkdir(parents=True, exist_ok=True)
-                pickle.dump(
-                    {
-                        "smpl_poses": full_q.squeeze(0).reshape((-1, 72)).cpu().numpy(),
-                        "smpl_trans": full_pos.squeeze(0).cpu().numpy(),
-                        "full_pose": full_pose[0],
-                    },
-                    open(os.path.join(fk_out, outname), "wb"),
+                beat_rep = getattr(self.model, "beat_rep", None)
+                payload = {
+                    "smpl_poses": full_q.squeeze(0).reshape((-1, 72)).cpu().numpy(),
+                    "smpl_trans": full_pos.squeeze(0).cpu().numpy(),
+                    "full_pose": full_pose[0],
+                }
+                payload.update(
+                    build_long_saved_motion_metadata(
+                        cond,
+                        audio_path=metadata_audio_path,
+                        beat_rep=beat_rep,
+                        stride_frames=metadata_stride_frames,
+                    )
                 )
+                pickle.dump(payload, open(os.path.join(fk_out, outname), "wb"))
             return
 
         poses = self.smpl.forward(q, pos).detach().cpu().numpy()

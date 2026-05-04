@@ -67,6 +67,9 @@ def parse_train_opt(argv=None):
 
     parser.add_argument("--feature_type", type=str, default="jukebox")
     parser.add_argument(
+        "--motion_format", type=str, choices=("smpl", "g1"), default="smpl"
+    )
+    parser.add_argument(
         "--wandb_pj_name", type=str, default="EDGE", help="project name"
     )
     parser.add_argument("--batch_size", type=int, default=DEFAULT_BATCH_SIZE, help="batch size")
@@ -110,6 +113,15 @@ def parse_train_opt(argv=None):
     parser.add_argument("--beat_a", type=float, default=10.0)
     parser.add_argument("--beat_c", type=float, default=0.1)
     parser.add_argument("--beat_estimator_ckpt", type=str, default="")
+    parser.add_argument("--beat_estimator_max_val_loss", type=float, default=8.0)
+    parser.add_argument("--beat_loss_start_epoch", type=int, default=0)
+    parser.add_argument("--beat_loss_warmup_epochs", type=int, default=0)
+    parser.add_argument("--beat_loss_max_fraction", type=float, default=0.0)
+    parser.add_argument(
+        "--finetune_from_checkpoint",
+        action="store_true",
+        help="Load checkpoint weights with a fresh optimizer state.",
+    )
     parser.add_argument(
         "--gradient_accumulation_steps",
         type=int,
@@ -122,6 +134,20 @@ def parse_train_opt(argv=None):
         choices=("no", "bf16"),
         default="bf16",
         help="Autocast/accelerator mixed precision mode for training.",
+    )
+    parser.add_argument(
+        "--feature_cache_mode",
+        type=str,
+        choices=("off", "memmap"),
+        default="off",
+        help="Disk-backed training feature cache mode.",
+    )
+    parser.add_argument(
+        "--feature_cache_dtype",
+        type=str,
+        choices=("float32", "float16"),
+        default="float32",
+        help="Storage dtype for the disk-backed feature cache.",
     )
     opt = parser.parse_args(raw_argv)
     opt.learning_rate_was_explicit = opt.learning_rate is not None
@@ -142,6 +168,9 @@ def parse_train_opt(argv=None):
 def parse_test_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument("--feature_type", type=str, default="jukebox")
+    parser.add_argument(
+        "--motion_format", type=str, choices=("smpl", "g1"), default="smpl"
+    )
     parser.add_argument(
         "--out_length",
         type=float,

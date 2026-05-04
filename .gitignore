@@ -1,6 +1,14 @@
 train/
 test/
 edge_aistpp/
+data/finedance_aistpp/
+data/aist_finedance/
+data/aist_finedance_dataset_backups/
+data/g1_aistpp/
+data/g1_aistpp_full/
+data/g1_aistpp_full_fkbeats/
+data/g1_aistpp_full_dataset_backups/
+data/g1_aistpp_full_fkbeats_dataset_backups/
 dataset_backups/
 runs/
 wandb/

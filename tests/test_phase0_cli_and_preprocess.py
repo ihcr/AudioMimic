@@ -54,6 +54,10 @@ class TrainArgParserTests(unittest.TestCase):
         self.assertEqual(baseline_opt.gradient_accumulation_steps, 1)
         self.assertEqual(beat_opt.lambda_acc, 0.0)
         self.assertEqual(baseline_opt.lambda_acc, 0.0)
+        self.assertEqual(beat_opt.motion_format, "smpl")
+        self.assertEqual(baseline_opt.motion_format, "smpl")
+        self.assertEqual(beat_opt.feature_cache_mode, "off")
+        self.assertEqual(beat_opt.feature_cache_dtype, "float32")
         self.assertFalse(beat_opt.learning_rate_was_explicit)
         self.assertFalse(baseline_opt.learning_rate_was_explicit)
 
@@ -98,6 +102,15 @@ class TrainArgParserTests(unittest.TestCase):
             "0.2",
             "--beat_estimator_ckpt",
             "weights/beat_estimator.pt",
+            "--beat_estimator_max_val_loss",
+            "7.5",
+            "--beat_loss_start_epoch",
+            "25",
+            "--beat_loss_warmup_epochs",
+            "200",
+            "--beat_loss_max_fraction",
+            "0.25",
+            "--finetune_from_checkpoint",
             "--train_num_workers",
             "3",
             "--test_num_workers",
@@ -106,6 +119,12 @@ class TrainArgParserTests(unittest.TestCase):
             "3",
             "--mixed_precision",
             "bf16",
+            "--motion_format",
+            "g1",
+            "--feature_cache_mode",
+            "memmap",
+            "--feature_cache_dtype",
+            "float32",
         ):
             opt = args.parse_train_opt()
 
@@ -118,10 +137,18 @@ class TrainArgParserTests(unittest.TestCase):
         self.assertEqual(opt.beat_a, 12.0)
         self.assertEqual(opt.beat_c, 0.2)
         self.assertEqual(opt.beat_estimator_ckpt, "weights/beat_estimator.pt")
+        self.assertEqual(opt.beat_estimator_max_val_loss, 7.5)
+        self.assertEqual(opt.beat_loss_start_epoch, 25)
+        self.assertEqual(opt.beat_loss_warmup_epochs, 200)
+        self.assertEqual(opt.beat_loss_max_fraction, 0.25)
+        self.assertTrue(opt.finetune_from_checkpoint)
         self.assertEqual(opt.train_num_workers, 3)
         self.assertEqual(opt.test_num_workers, 1)
         self.assertEqual(opt.gradient_accumulation_steps, 3)
         self.assertEqual(opt.mixed_precision, "bf16")
+        self.assertEqual(opt.motion_format, "g1")
+        self.assertEqual(opt.feature_cache_mode, "memmap")
+        self.assertEqual(opt.feature_cache_dtype, "float32")
 
     def test_test_parser_accepts_phase0_beat_arguments(self):
         with argv_context(
@@ -157,10 +184,16 @@ class TrainWiringTests(unittest.TestCase):
             beat_a=10.0,
             beat_c=0.1,
             beat_estimator_ckpt="weights/beat_estimator.pt",
+            beat_estimator_max_val_loss=8.0,
+            beat_loss_start_epoch=25,
+            beat_loss_warmup_epochs=200,
+            beat_loss_max_fraction=0.25,
+            finetune_from_checkpoint=True,
             gradient_accumulation_steps=4,
             mixed_precision="bf16",
             train_num_workers=0,
             test_num_workers=0,
+            motion_format="smpl",
         )
         fake_model = MagicMock()
         fake_edge_ctor = MagicMock(return_value=fake_model)
@@ -182,9 +215,14 @@ class TrainWiringTests(unittest.TestCase):
             beat_a=opt.beat_a,
             beat_c=opt.beat_c,
             beat_estimator_ckpt=opt.beat_estimator_ckpt,
+            beat_estimator_max_val_loss=opt.beat_estimator_max_val_loss,
+            beat_loss_start_epoch=opt.beat_loss_start_epoch,
+            beat_loss_warmup_epochs=opt.beat_loss_warmup_epochs,
+            beat_loss_max_fraction=opt.beat_loss_max_fraction,
             gradient_accumulation_steps=opt.gradient_accumulation_steps,
             mixed_precision=opt.mixed_precision,
-            resume_training_state=True,
+            resume_training_state=False,
+            motion_format=opt.motion_format,
         )
         fake_model.train_loop.assert_called_once_with(opt)
 

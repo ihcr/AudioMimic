@@ -302,6 +302,7 @@ def test(opt):
         use_beats=opt.use_beats,
         beat_rep=opt.beat_rep,
         lambda_beat=0.0,
+        motion_format=opt.motion_format,
     )
     model.eval()
 

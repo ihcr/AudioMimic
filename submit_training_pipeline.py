@@ -22,6 +22,10 @@ SCRIPT_ROOT = Path(__file__).resolve().parent
 SHARED_ROOT = resolve_shared_root(SCRIPT_ROOT)
 DEFAULT_BATCH_SIZE = 128
 DEFAULT_LEARNING_RATE = 2e-4
+DEFAULT_LBEAT_REFERENCE_EVAL_DIR = (
+    "/lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/diffusion/"
+    "slurm/pipelines/20260424-090100-edge_beatdistance_20260424_shmfix/eval"
+)
 
 
 def default_lambda_acc(use_beats):
@@ -76,17 +80,94 @@ PRESET_DEFAULTS = {
         "feature_type": "jukebox",
         "use_beats": True,
         "beat_rep": "distance",
+        "lambda_acc": 0.1,
+        "lambda_beat": 0.02,
+        "batch_size": DEFAULT_BATCH_SIZE,
+        "gradient_accumulation_steps": 4,
+        "epochs": 500,
+        "save_interval": 50,
+        "learning_rate": DEFAULT_LEARNING_RATE,
+        "beat_loss_start_epoch": 25,
+        "beat_loss_warmup_epochs": 200,
+        "beat_loss_max_fraction": 0.25,
+        "finetune_from_checkpoint": True,
+    },
+    "g1_beatdistance": {
+        "motion_format": "g1",
+        "data_path": "data/g1_aistpp_full",
+        "processed_data_dir": "data/g1_aistpp_full_dataset_backups",
+        "feature_type": "jukebox",
+        "use_beats": True,
+        "beat_rep": "distance",
         "lambda_acc": 0.0,
-        "lambda_beat": 0.5,
+        "lambda_beat": 0.0,
         "batch_size": DEFAULT_BATCH_SIZE,
         "gradient_accumulation_steps": 4,
         "epochs": 2000,
         "save_interval": 100,
         "learning_rate": DEFAULT_LEARNING_RATE,
+        "feature_cache_mode": "memmap",
+        "feature_cache_dtype": "float32",
+        "skip_preprocess": True,
+    },
+    "g1_beatdistance_fkbeats": {
+        "motion_format": "g1",
+        "data_path": "data/g1_aistpp_full_fkbeats",
+        "processed_data_dir": "data/g1_aistpp_full_fkbeats_dataset_backups",
+        "feature_type": "jukebox",
+        "use_beats": True,
+        "beat_rep": "distance",
+        "lambda_acc": 0.0,
+        "lambda_beat": 0.0,
+        "batch_size": DEFAULT_BATCH_SIZE,
+        "gradient_accumulation_steps": 4,
+        "epochs": 2000,
+        "save_interval": 100,
+        "learning_rate": DEFAULT_LEARNING_RATE,
+        "feature_cache_mode": "memmap",
+        "feature_cache_dtype": "float32",
+        "skip_preprocess": True,
+        "enable_g1_fk_metrics": True,
+    },
+    "g1_baseline": {
+        "motion_format": "g1",
+        "data_path": "data/g1_aistpp_full",
+        "processed_data_dir": "data/g1_aistpp_full_dataset_backups",
+        "feature_type": "jukebox",
+        "use_beats": False,
+        "lambda_acc": 0.0,
+        "lambda_beat": 0.0,
+        "batch_size": DEFAULT_BATCH_SIZE,
+        "gradient_accumulation_steps": 4,
+        "epochs": 2000,
+        "save_interval": 100,
+        "learning_rate": DEFAULT_LEARNING_RATE,
+        "feature_cache_mode": "memmap",
+        "feature_cache_dtype": "float32",
+        "skip_preprocess": True,
+    },
+    "aist_finedance_beatdistance": {
+        "motion_format": "smpl",
+        "data_path": "data/aist_finedance",
+        "processed_data_dir": "data/aist_finedance_dataset_backups",
+        "feature_type": "jukebox",
+        "use_beats": True,
+        "beat_rep": "distance",
+        "lambda_acc": 0.0,
+        "lambda_beat": 0.0,
+        "batch_size": DEFAULT_BATCH_SIZE,
+        "gradient_accumulation_steps": 4,
+        "epochs": 2000,
+        "save_interval": 100,
+        "learning_rate": DEFAULT_LEARNING_RATE,
+        "skip_preprocess": True,
     },
 }
 
 PRESET_TRACKED_ARGS = (
+    "motion_format",
+    "data_path",
+    "processed_data_dir",
     "feature_type",
     "use_beats",
     "beat_rep",
@@ -97,6 +178,14 @@ PRESET_TRACKED_ARGS = (
     "epochs",
     "save_interval",
     "learning_rate",
+    "beat_loss_start_epoch",
+    "beat_loss_warmup_epochs",
+    "beat_loss_max_fraction",
+    "finetune_from_checkpoint",
+    "feature_cache_mode",
+    "feature_cache_dtype",
+    "skip_preprocess",
+    "skip_eval",
 )
 
 
@@ -137,6 +226,7 @@ def parse_args(argv=None):
     parser.add_argument(
         "--feature_type", choices=("baseline", "jukebox"), default="baseline"
     )
+    parser.add_argument("--motion_format", choices=("smpl", "g1"), default="smpl")
     parser.add_argument("--use_beats", action="store_true")
     parser.add_argument(
         "--beat_rep", choices=("distance", "pulse"), default="distance"
@@ -144,6 +234,21 @@ def parse_args(argv=None):
     parser.add_argument("--lambda_beat", type=float, default=0.5)
     parser.add_argument("--lambda_acc", type=float, default=None)
     parser.add_argument("--beat_estimator_ckpt", default="", help="Reuse an existing estimator checkpoint.")
+    parser.add_argument("--beat_estimator_max_val_loss", type=float, default=8.0)
+    parser.add_argument("--beat_loss_start_epoch", type=int, default=0)
+    parser.add_argument("--beat_loss_warmup_epochs", type=int, default=0)
+    parser.add_argument("--beat_loss_max_fraction", type=float, default=0.0)
+    parser.add_argument("--checkpoint", default="", help="Training checkpoint to load before this run.")
+    parser.add_argument(
+        "--finetune_from_checkpoint",
+        action="store_true",
+        help="Load checkpoint weights with a fresh optimizer state.",
+    )
+    parser.add_argument(
+        "--allow_lbeat_from_scratch",
+        action="store_true",
+        help="Allow lbeat training without a base beat-distance checkpoint.",
+    )
     parser.add_argument("--data_path", default="data")
     parser.add_argument("--processed_data_dir", default="data/dataset_backups")
     parser.add_argument("--project", default="runs/train")
@@ -167,6 +272,16 @@ def parse_args(argv=None):
         "--train_mixed_precision",
         choices=("no", "bf16"),
         default="bf16",
+    )
+    parser.add_argument(
+        "--feature_cache_mode",
+        choices=("off", "memmap"),
+        default="off",
+    )
+    parser.add_argument(
+        "--feature_cache_dtype",
+        choices=("float32", "float16"),
+        default="float32",
     )
     parser.add_argument(
         "--estimator_mixed_precision",
@@ -197,6 +312,25 @@ def parse_args(argv=None):
     parser.add_argument("--validate_sample_count", type=int, default=64)
     parser.add_argument("--eval_music_dir", default="data/test/wavs")
     parser.add_argument("--eval_seed", type=int, default=1234)
+    parser.add_argument("--enable_g1_fk_metrics", action="store_true")
+    parser.add_argument(
+        "--g1_fk_model_path",
+        default="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
+    )
+    parser.add_argument(
+        "--g1_root_quat_order",
+        choices=("wxyz", "xyzw"),
+        default="wxyz",
+    )
+    parser.add_argument(
+        "--eval_mode",
+        choices=("dataset", "full_song"),
+        default="dataset",
+        help="Evaluate sliced test clips or one stitched motion per full test song.",
+    )
+    parser.add_argument("--checkpoint_screen_epochs", default="50,100,200,300,400,500")
+    parser.add_argument("--screen_eval_clips", type=int, default=16)
+    parser.add_argument("--quality_reference_eval_dir", default=DEFAULT_LBEAT_REFERENCE_EVAL_DIR)
     parser.add_argument("--run_id", default="", help="Fixed Slurm pipeline run id.")
     parser.add_argument(
         "--initial_dependency",
@@ -243,6 +377,34 @@ def apply_dynamic_defaults(args):
     args.estimator_mixed_precision = resolve_stage_mixed_precision(
         args.estimator_mixed_precision, args.estimator_gpus
     )
+    return args
+
+
+def is_lbeat_run(args):
+    return args.preset == "edge_beatdistance_lbeat"
+
+
+def validate_pipeline_config(args):
+    if args.allow_lbeat_from_scratch and not args.checkpoint:
+        args.finetune_from_checkpoint = False
+    if (
+        args.preset == "edge_beatdistance_lbeat"
+        and not args.checkpoint
+        and not args.allow_lbeat_from_scratch
+    ):
+        raise ValueError(
+            "Safe lbeat preset requires --checkpoint unless --allow_lbeat_from_scratch is set."
+        )
+    if args.finetune_from_checkpoint and not args.checkpoint:
+        raise ValueError("--finetune_from_checkpoint requires --checkpoint.")
+    if args.beat_loss_max_fraction < 0:
+        raise ValueError("--beat_loss_max_fraction must be non-negative.")
+    if args.beat_estimator_max_val_loss <= 0:
+        raise ValueError("--beat_estimator_max_val_loss must be positive.")
+    if args.motion_format == "g1" and args.lambda_beat > 0:
+        raise ValueError("G1 training supports beat conditioning only; set --lambda_beat 0.")
+    if args.motion_format == "g1" and args.eval_mode != "dataset":
+        raise ValueError("G1 evaluation currently supports --eval_mode dataset only.")
     return args
 
 
@@ -302,6 +464,8 @@ def build_validation_command(args):
         args.processed_data_dir,
         "--feature_type",
         args.feature_type,
+        "--motion_format",
+        args.motion_format,
         "--sample_count",
         args.validate_sample_count,
     ]
@@ -322,6 +486,8 @@ def build_train_command(args, beat_estimator_ckpt=None):
         "train.py",
         "--feature_type",
         args.feature_type,
+        "--motion_format",
+        args.motion_format,
     ]
     if args.use_beats:
         command.extend(
@@ -335,8 +501,26 @@ def build_train_command(args, beat_estimator_ckpt=None):
                 args.lambda_acc,
             ]
         )
+        command.extend(
+            [
+                "--beat_loss_start_epoch",
+                args.beat_loss_start_epoch,
+                "--beat_loss_warmup_epochs",
+                args.beat_loss_warmup_epochs,
+                "--beat_loss_max_fraction",
+                args.beat_loss_max_fraction,
+                "--beat_estimator_max_val_loss",
+                args.beat_estimator_max_val_loss,
+            ]
+        )
         if beat_estimator_ckpt:
             command.extend(["--beat_estimator_ckpt", beat_estimator_ckpt])
+    elif args.motion_format == "g1":
+        command.extend(["--lambda_beat", args.lambda_beat])
+    if args.checkpoint:
+        command.extend(["--checkpoint", args.checkpoint])
+    if args.finetune_from_checkpoint:
+        command.append("--finetune_from_checkpoint")
     command.extend(
         [
             "--data_path",
@@ -369,6 +553,10 @@ def build_train_command(args, beat_estimator_ckpt=None):
             args.test_num_workers,
             "--mixed_precision",
             args.train_mixed_precision,
+            "--feature_cache_mode",
+            args.feature_cache_mode,
+            "--feature_cache_dtype",
+            args.feature_cache_dtype,
         ]
     )
     return shell_join(command)
@@ -389,17 +577,20 @@ def build_eval_command(
     paper_report_path=None,
     pfc_audit_path=None,
 ):
+    eval_script = (
+        "eval/run_full_song_eval.py"
+        if args.eval_mode == "full_song"
+        else "eval/run_dataset_eval.py"
+    )
     command = [
         "python",
-        "eval/run_dataset_eval.py",
+        eval_script,
         "--checkpoint",
         checkpoint_path,
         "--feature_type",
         args.feature_type,
         "--data_path",
         args.data_path,
-        "--processed_data_dir",
-        args.processed_data_dir,
         "--render_dir",
         render_dir,
         "--motion_save_dir",
@@ -417,6 +608,13 @@ def build_eval_command(
         "--seed",
         args.eval_seed,
     ]
+    if args.eval_mode == "dataset":
+        command.extend(
+            [
+                "--processed_data_dir",
+                args.processed_data_dir,
+            ]
+        )
     if args.use_beats:
         command.extend(
             [
@@ -425,6 +623,97 @@ def build_eval_command(
                 args.beat_rep,
             ]
         )
+        if args.eval_mode == "full_song":
+            command.extend(["--beat_source", "audio"])
+    return shell_join(command)
+
+
+def build_g1_eval_command(
+    args,
+    checkpoint_path,
+    motion_dir,
+    metrics_path,
+    render_dir,
+    g1_table_path=None,
+    paper_report_path=None,
+    motion_audit_path=None,
+):
+    command = [
+        "python",
+        "eval/run_g1_dataset_eval.py",
+        "--checkpoint",
+        checkpoint_path,
+        "--feature_type",
+        args.feature_type,
+        "--data_path",
+        args.data_path,
+        "--processed_data_dir",
+        args.processed_data_dir,
+        "--render_dir",
+        render_dir,
+        "--motion_save_dir",
+        motion_dir,
+        "--metrics_path",
+        metrics_path,
+        "--g1_table_path",
+        g1_table_path or (Path(metrics_path).parent / "g1_table.json"),
+        "--motion_audit_path",
+        motion_audit_path or (Path(metrics_path).parent / "motion_audit.json"),
+        "--paper_report_path",
+        paper_report_path or (Path(metrics_path).parent / "paper_report.md"),
+        "--seed",
+        args.eval_seed,
+    ]
+    if args.use_beats:
+        command.extend(
+            [
+                "--use_beats",
+                "--beat_rep",
+                args.beat_rep,
+            ]
+        )
+    if args.enable_g1_fk_metrics:
+        command.extend(
+            [
+                "--enable_fk_metrics",
+                "--g1_fk_model_path",
+                args.g1_fk_model_path,
+                "--g1_root_quat_order",
+                args.g1_root_quat_order,
+            ]
+        )
+    return shell_join(command)
+
+
+def build_lbeat_screen_command(args, eval_dir):
+    command = [
+        "python",
+        "eval/screen_lbeat_checkpoints.py",
+        "--project",
+        args.project,
+        "--train_name",
+        args.train_name,
+        "--checkpoint_epochs",
+        args.checkpoint_screen_epochs,
+        "--screen_eval_clips",
+        args.screen_eval_clips,
+        "--output_dir",
+        eval_dir,
+        "--reference_eval_dir",
+        args.quality_reference_eval_dir,
+        "--feature_type",
+        args.feature_type,
+        "--data_path",
+        args.data_path,
+        "--processed_data_dir",
+        args.processed_data_dir,
+        "--render_dir",
+        eval_dir / "renders",
+        "--seed",
+        args.eval_seed,
+        "--beat_rep",
+        args.beat_rep,
+    ]
     return shell_join(command)
 
 
@@ -523,6 +812,7 @@ def build_submit_log(run_dir, job_ids):
 
 def submit_pipeline(args, repo_root=None, sbatch_submitter=submit_sbatch):
     args = apply_dynamic_defaults(args)
+    validate_pipeline_config(args)
     repo_root = Path(repo_root or SCRIPT_ROOT).resolve()
     run_id = args.run_id or default_run_id(args.train_name)
     run_dir = repo_root / "slurm" / "pipelines" / run_id
@@ -599,19 +889,36 @@ def submit_pipeline(args, repo_root=None, sbatch_submitter=submit_sbatch):
 
     if not args.skip_eval:
         eval_dir = run_dir / "eval"
-        submit_stage(
-            "evaluate",
-            build_eval_command(
+        if args.motion_format == "g1":
+            eval_command = build_g1_eval_command(
                 args,
                 checkpoint_path=final_checkpoint_path(args),
                 motion_dir=eval_dir / "motions",
                 metrics_path=eval_dir / "metrics.json",
                 render_dir=eval_dir / "renders",
-                edge_table_path=eval_dir / "edge_table.json",
-                beatit_table_path=eval_dir / "beatit_table.json",
+                g1_table_path=eval_dir / "g1_table.json",
                 paper_report_path=eval_dir / "paper_report.md",
-                pfc_audit_path=eval_dir / "pfc_audit.json",
-            ),
+                motion_audit_path=eval_dir / "motion_audit.json",
+            )
+        else:
+            eval_command = (
+                build_lbeat_screen_command(args, eval_dir)
+                if is_lbeat_run(args)
+                else build_eval_command(
+                    args,
+                    checkpoint_path=final_checkpoint_path(args),
+                    motion_dir=eval_dir / "motions",
+                    metrics_path=eval_dir / "metrics.json",
+                    render_dir=eval_dir / "renders",
+                    edge_table_path=eval_dir / "edge_table.json",
+                    beatit_table_path=eval_dir / "beatit_table.json",
+                    paper_report_path=eval_dir / "paper_report.md",
+                    pfc_audit_path=eval_dir / "pfc_audit.json",
+                )
+            )
+        submit_stage(
+            "evaluate",
+            eval_command,
             args.eval_time,
             args.eval_cpus,
             args.eval_mem,

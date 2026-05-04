@@ -321,6 +321,24 @@ class AccumulationTrainingHelperTests(unittest.TestCase):
         self.assertEqual(len(loader), 1)
         self.assertEqual(batch[0].shape[0], 186)
 
+    def test_tensor_dataset_cache_name_tracks_feature_cache_mode(self):
+        edge_module = reload_module("EDGE")
+
+        cache_name = edge_module.tensor_dataset_cache_name(
+            "train",
+            "jukebox",
+            True,
+            "distance",
+            motion_format="g1",
+            feature_cache_mode="memmap",
+            feature_cache_dtype="float32",
+        )
+
+        self.assertEqual(
+            cache_name,
+            "train_tensor_dataset_g1_jukebox_beat_distance_featcache_memmap_float32_v5.pkl",
+        )
+
     def test_build_dataloader_kwargs_enables_prefetching_when_workers_present(self):
         edge_module = reload_module("EDGE")
 
@@ -434,13 +452,19 @@ class TrainingProgressFormattingTests(unittest.TestCase):
             loss=torch.tensor(0.05234),
             acc_loss=torch.tensor(0.0049),
             beat_loss=torch.tensor(2.2187),
+            beat_weight=0.02,
+            beat_contribution=torch.tensor(0.013),
+            beat_capped=torch.tensor(1.0),
             use_beats=True,
             beat_rep="distance",
-            lambda_beat=0.5,
+            lambda_beat=0.02,
         )
 
         self.assertEqual(postfix["beat_mode"], "distance:cond+lbeat")
         self.assertEqual(postfix["beat_loss"], "2.2187")
+        self.assertEqual(postfix["beat_weight"], "0.0200")
+        self.assertEqual(postfix["beat_contrib"], "0.0130")
+        self.assertEqual(postfix["beat_capped"], "yes")
         self.assertEqual(postfix["acc_loss"], "0.0049")
 
 
@@ -457,6 +481,23 @@ class CheckpointLoadCompatibilityTests(unittest.TestCase):
             map_location="cpu",
             weights_only=False,
         )
+
+    def test_beat_estimator_checkpoint_requires_good_validation_loss(self):
+        edge_module = reload_module("EDGE")
+        checkpoint = {
+            "model_state_dict": {},
+            "config": {
+                "best_val_loss": 9.5,
+            },
+        }
+
+        with patch.object(edge_module, "load_trusted_checkpoint", return_value=checkpoint):
+            with self.assertRaisesRegex(ValueError, "validation loss"):
+                edge_module.build_beat_estimator_from_checkpoint(
+                    "weights/beat_estimator.pt",
+                    device="cpu",
+                    max_val_loss=8.0,
+                )
 
 
 class CheckpointRestoreTests(unittest.TestCase):
@@ -485,6 +526,30 @@ class CheckpointRestoreTests(unittest.TestCase):
         diffusion.master_model.load_state_dict.assert_called_once_with({"ema": 1})
         optim.load_state_dict.assert_called_once_with({"optim": 3})
 
+    def test_restore_checkpoint_state_can_finetune_without_optimizer_state(self):
+        edge_module = reload_module("EDGE")
+        model = MagicMock()
+        diffusion = MagicMock()
+        optim = MagicMock()
+        checkpoint = {
+            "ema_state_dict": {"ema": 1},
+            "model_state_dict": {"model": 2},
+            "optimizer_state_dict": {"optim": 3},
+        }
+
+        edge_module.restore_checkpoint_state(
+            model,
+            diffusion,
+            optim,
+            checkpoint,
+            use_ema_weights=True,
+            num_processes=1,
+            restore_optimizer=False,
+        )
+
+        model.load_state_dict.assert_called_once_with({"ema": 1})
+        optim.load_state_dict.assert_not_called()
+
 
 class DummyModel(nn.Module):
     def forward(self, x, cond, t, cond_drop_prob=0.0):
@@ -511,6 +576,52 @@ class IdentityNormalizer:
 
 
 class DiffusionBeatLossTests(unittest.TestCase):
+    def test_beat_loss_warmup_starts_late_and_reaches_target(self):
+        diffusion_module = reload_module("model.diffusion")
+
+        self.assertEqual(
+            diffusion_module.effective_beat_loss_weight(
+                epoch=24,
+                lambda_beat=0.02,
+                start_epoch=25,
+                warmup_epochs=200,
+            ),
+            0.0,
+        )
+        self.assertAlmostEqual(
+            diffusion_module.effective_beat_loss_weight(
+                epoch=125,
+                lambda_beat=0.02,
+                start_epoch=25,
+                warmup_epochs=200,
+            ),
+            0.0101,
+            places=4,
+        )
+        self.assertEqual(
+            diffusion_module.effective_beat_loss_weight(
+                epoch=225,
+                lambda_beat=0.02,
+                start_epoch=25,
+                warmup_epochs=200,
+            ),
+            0.02,
+        )
+
+    def test_beat_loss_contribution_is_capped_by_motion_loss_fraction(self):
+        diffusion_module = reload_module("model.diffusion")
+
+        contribution, capped, cap = diffusion_module.compute_beat_loss_contribution(
+            base_loss=torch.tensor(1.0),
+            beat_loss=torch.tensor(100.0),
+            effective_lambda_beat=0.02,
+            max_fraction=0.25,
+        )
+
+        self.assertAlmostEqual(float(contribution), 0.25)
+        self.assertTrue(bool(capped))
+        self.assertAlmostEqual(float(cap), 0.25)
+
     def test_gaussian_diffusion_returns_acc_and_beat_losses_for_dict_cond(self):
         diffusion_module = reload_module("model.diffusion")
         estimator = DummyBeatEstimator()

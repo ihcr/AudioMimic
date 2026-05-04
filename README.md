@@ -36,6 +36,10 @@ This repo is intended to run from the local `.venv311` environment:
 ```.bash
 source .venv311/bin/activate
 ```
+From the `diffusion` worktree, use the shared repo environment if `.venv311` is not present in the worktree itself:
+```.bash
+source ../../.venv311/bin/activate
+```
 For the full paper-style evaluation suite, also install:
 ```.bash
 pip install -r requirements-eval.txt
@@ -63,6 +67,79 @@ python data/create_dataset.py --extract-baseline --extract-jukebox --extract-bea
 ```
 The first command builds baseline features plus beat metadata. The second command additionally materializes Jukebox features and is the recommended setup for the experiment presets below.
 
+### Add FineDance as supplementary training data
+FineDance can be converted to the same body-only training format used by EDGE. The converter drops hand-only joints, applies the official FineDance split and ignore list, filters low-motion training clips, and writes a separate prepared tree before building an AIST+FineDance mixed tree:
+```.bash
+python data/prepare_finedance_dataset.py \
+  --finedance_root /path/to/finedance \
+  --output_root data/finedance_aistpp \
+  --feature_type jukebox \
+  --extract_beats \
+  --build_mixed \
+  --aist_root data \
+  --mixed_output_root data/aist_finedance
+```
+The mixed tree trains on AIST train plus FineDance train. Its main test split remains AIST test for fair comparison with existing EDGE runs; FineDance test clips are kept separately under `data/aist_finedance/finedance_test`.
+
+The verified local 2026-05-03 preparation produced `47,817` FineDance train clips, `3,265` FineDance test clips, and `65,550` mixed train clips with matching motion, audio, Jukebox, and beat files. See `docs/DATASET_PREPARATION.md` for the exact local paths, counts, and recovery notes.
+
+After preparation, launch the mixed-data beat-distance run with:
+```.bash
+scripts/train_aist_finedance_beatdistance.sh aist_finedance_beatdistance_run
+```
+
+### Train G1 with FK-based beat labels
+G1 robot-native training uses a separate prepared tree so older partial G1 data
+does not mix with the full AIST retarget. The current full AIST retarget source
+is:
+```.bash
+/projects/u6ed/yukun/EDGE/aist-g1-retargeted
+```
+Prepare the FK-beat tree from the diffusion worktree with:
+```.bash
+srun --partition=workq --time=02:00:00 --ntasks=1 --cpus-per-task=8 --mem=32G bash -lc \
+  'cd /projects/u6ed/yukun/EDGE/.worktrees/diffusion && \
+   source ../../.venv311/bin/activate && \
+   python data/prepare_g1_aist_dataset.py \
+     --g1_motion_dir /projects/u6ed/yukun/EDGE/aist-g1-retargeted \
+     --aist_data_root data \
+     --output_root data/g1_aistpp_full_fkbeats \
+     --feature_type jukebox \
+     --clean \
+     --extract_beats \
+     --g1_motion_beat_source fk \
+     --g1_fk_model_path third_party/unitree_g1_description/g1_29dof_rev_1_0.xml \
+     --g1_root_quat_order wxyz'
+```
+This tree uses the official EDGE AIST split, skips the AIST ignore list, ignores
+FineDance, reuses the unchanged AIST wavs and Jukebox features, and extracts G1
+motion beats from Unitree G1 forward kinematics.
+
+Validate the prepared tree before training:
+```.bash
+srun --partition=workq --time=00:30:00 --ntasks=1 --cpus-per-task=4 --mem=16G bash -lc \
+  'cd /projects/u6ed/yukun/EDGE/.worktrees/diffusion && \
+   source ../../.venv311/bin/activate && \
+   python data/validate_preprocessed_data.py \
+     --data_path data/g1_aistpp_full_fkbeats \
+     --processed_data_dir data/g1_aistpp_full_fkbeats_dataset_backups \
+     --feature_type jukebox \
+     --motion_format g1 \
+     --sample_count 64 \
+     --use_beats \
+     --beat_rep distance'
+```
+Launch the FK-beat G1 BeatDistance run with:
+```.bash
+python submit_training_pipeline.py \
+  --preset g1_beatdistance_fkbeats \
+  --train_name g1_aist_beatdistance_fkbeats \
+  --run_id 20260504-g1-aist-beatdistance-fkbeats \
+  --partition workq \
+  --train_time 24:00:00 \
+  --eval_time 04:00:00
+```
+
 ### Train the beat estimator
 If you want to enable the beat loss (`lambda_beat > 0`), first train the standalone beat estimator:
 ```.bash
@@ -88,11 +165,22 @@ These presets map to the implementation plan milestone experiments:
 * `edge_baseline`: Jukebox-only EDGE
 * `edge_beatpulse`: beat-conditioned EDGE with pulse beats
 * `edge_beatdistance`: beat-conditioned EDGE with distance beats
-* `edge_beatdistance_lbeat`: distance beats plus beat loss
+* `edge_beatdistance_lbeat`: safe fine-tune from a beat-distance checkpoint, with distance beats plus a capped beat loss
 
-You can override any preset default by appending extra flags, e.g.
+The `edge_beatdistance_lbeat` preset is intentionally not a from-scratch recipe. It requires a base beat-distance checkpoint unless you explicitly pass `--allow_lbeat_from_scratch`. The safe default uses a small beat loss, delays and warms that loss up, caps its contribution, and screens saved checkpoints before running the full benchmark:
 ```.bash
-scripts/train_edge_beatdistance_lbeat.sh my_run --epochs 500 --batch_size 32
+scripts/train_edge_beatdistance_lbeat.sh edge_beatdistance_lbeat_safe \
+  --checkpoint runs/train/edge_beatdistance_20260424_shmfix/weights/train-2000.pt \
+  --beat_estimator_ckpt slurm/pipelines/20260423-111418-edge_beatdistance_lbeat_20260423_restart/weights/beat_estimator.pt
+```
+The screening stage evaluates checkpoints at `50,100,200,300,400,500` on a small clip set, then runs the full dataset eval on the selected checkpoint. A rejected model still writes `eval/lbeat_selection.json`; rejection means the model is not accepted as better, not that evaluation crashed.
+
+You can override other preset defaults by appending extra flags, e.g.
+```.bash
+scripts/train_edge_beatdistance_lbeat.sh my_run \
+  --checkpoint runs/train/edge_beatdistance_20260424_shmfix/weights/train-2000.pt \
+  --beat_estimator_ckpt slurm/pipelines/20260423-111418-edge_beatdistance_lbeat_20260423_restart/weights/beat_estimator.pt \
+  --epochs 500 --batch_size 32
 ```
 If you prefer a manual single-process launch for smoke testing, `train.py` still works directly:
 ```.bash
@@ -119,7 +207,7 @@ Physical Foot Contact (PFC), Beat Alignment Score (BAS), Beat Assignment Precisi
 1. Generate motions with `--save_motions`
 2. Run the benchmark suite:
 ```.bash
-python eval/run_benchmark_eval.py \
+python -m eval.run_benchmark_eval \
   --motion_path eval/motions \
   --metrics_path eval/metrics.json \
   --edge_table_path eval/edge_table.json \
@@ -129,6 +217,25 @@ python eval/run_benchmark_eval.py \
   --method_name my_eval
 ```
 The current PFC value should be treated as an internal ranking metric until the paper-anchor audit is resolved. The benchmark runner writes both EDGE-style and Beat-It-style table rows from the same saved motions.
+
+Generated checkpoint eval can be run directly from a model checkpoint. Use `--max_eval_clips` for a small screening run:
+```.bash
+python -m eval.run_dataset_eval \
+  --checkpoint runs/train/<run>/weights/train-500.pt \
+  --feature_type jukebox \
+  --motion_save_dir eval/motions \
+  --metrics_path eval/metrics.json \
+  --max_eval_clips 16
+```
+For the safe `lbeat` pipeline, prefer the automated screening helper created by the Slurm preset:
+```.bash
+python eval/screen_lbeat_checkpoints.py \
+  --project runs/train \
+  --train_name edge_beatdistance_lbeat_safe \
+  --output_dir slurm/pipelines/<run_id>/eval \
+  --reference_eval_dir slurm/pipelines/20260424-090100-edge_beatdistance_20260424_shmfix/eval
+```
+By default this helper exits successfully when eval completes, even if the quality gate rejects the model. Pass `--fail_on_rejection` only when a rejected model should fail the surrounding job.
 
 Standalone metric scripts are still available when you only want one score:
 ```.bash
@@ -146,6 +253,27 @@ python eval/audit_pfc.py \
 For qualitative debugging of velocity peaks versus detected beats:
 ```.bash
 python eval/plot_velocity_vs_beats.py --motion_file eval/motions/sample.pkl
+```
+
+### G1 evaluation
+Robot-native G1 evaluation uses `eval/run_g1_dataset_eval.py` and writes G1
+reports instead of SMPL-only metric tables. FK metrics are opt-in and use the
+local Unitree model under `third_party/unitree_g1_description`:
+```.bash
+python -m eval.run_g1_dataset_eval \
+  --checkpoint runs/train/<run>/weights/train-2000.pt \
+  --feature_type jukebox \
+  --data_path data/g1_aistpp_full_fkbeats \
+  --processed_data_dir data/g1_aistpp_full_fkbeats_dataset_backups \
+  --motion_save_dir eval/g1_motions \
+  --metrics_path eval/g1_metrics.json \
+  --g1_table_path eval/g1_table.json \
+  --motion_audit_path eval/g1_motion_audit.json \
+  --paper_report_path eval/g1_paper_report.md \
+  --render_dir eval/g1_renders \
+  --use_beats \
+  --beat_rep distance \
+  --enable_fk_metrics
 ```
 ## Blender 3D rendering
 In order to render generated dances in 3D, we convert them into FBX files to be used in Blender. We provide a sample rig, `SMPL-to-FBX/ybot.fbx`.
