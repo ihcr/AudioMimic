@@ -108,13 +108,18 @@ python stream_inference.py \
   --precache_features
 ```
 
+> ⚠️ 注意：使用的权重文件 `train-2000.pt` **仅兼容** Jukebox 特征和 BeatDistance 的节拍表示，运行参数必须保持 `--feature_type jukebox` 与 `--beat_rep distance`，否则会导致模型不兼容或效果极差。
+
 > ⚠️ 注意：添加 `--precache_features` 参数会在开始前一次性提取所有的 Jukebox 特征（需要一定时间）。提取完成后，DDIM 生成与 30 FPS 播放将同步进行，避免动作卡顿。如果不加该参数，则为完全实时流式模式，但由于 Jukebox 提取耗时较长，动作播放会逐渐落后于音频。
 
 > 💡 **关于流式生成的平滑性与对齐优化：**
-> 在流式推理中，动作是按 2.5 秒的 Chunk 分段生成的。为了保证动作连续且与音乐完美对齐，系统内置了以下优化：
-> 1. **Crossfade 线性过渡混合**：在两个相邻 Chunk 的重叠区域，对关节位置（DOF）进行线性插值，对根节点旋转（Root Quaternion）进行平滑过渡，消除分段拼接处的硬切和动作跳变。
+> 在流式推理中，动作是按 **5 秒的滑动窗口（Window）** 生成的，每次步进 **2.5 秒（Stride）**。为了保证动作连续且与音乐完美对齐，系统内置了以下优化：
+> 1. **Crossfade 线性过渡混合**：在两个相邻 Chunk 间存在 2.5 秒的重叠区域（Overlap）。系统会对该区域的关节位置（DOF）进行线性插值，对根节点旋转（Root Quaternion）进行平滑过渡，消除分段拼接处的硬切和动作跳变。
 > 2. **`--precache_features` 预加载**：剥离耗时的 Jukebox 特征提取，使得 DDIM 扩散模型能以足够的速度实时产出动作，避免缓冲区排空导致的画面定格和音乐错位。
 > 3. **首帧对齐修复**：修复了 ZMQ Consumer 吞掉第一帧导致的持续性 33ms 时序偏移。
+
+> 💡 **关于帧率（FPS）与控制频率：**
+> AudioMimic 生成的参考动作和流式传输频率固定为 **30 FPS**，而 SONIC 控制器底层的实际控制频率远高于此（通常为几百 Hz）。SONIC 会在内部自动对 30 FPS 的参考轨迹进行平滑插值，因此参考帧率较低不会影响机器人底层物理控制的平滑度。
 
 ---
 
@@ -181,6 +186,8 @@ python test.py \
   --out_length 15
 ```
 
+> ⚠️ 注意：同样地，这里的 `train-2000.pt` 仅支持 Jukebox + BeatDistance。
+
 生成的 `.pkl` 文件在 `~/AudioMimic/eval/g1_motions/` 目录下。
 
 ---
@@ -203,7 +210,8 @@ cd ~/GR00T-WholeBodyControl && source .venv_sim/bin/activate && python gear_soni
 ### Terminal 2 — 直接回放
 
 ```bash
-e
+cd ~/GR00T-WholeBodyControl && source .venv_sim/bin/activate && \
+python playback_audiomimic_direct.py --pkl ~/AudioMimic/eval/g1_motions/test_0_test_beat_g1.pkl
 ```
 
 **可选参数：**
@@ -239,6 +247,65 @@ e
 
 ### Q: TensorRT 版本警告
 **A:** 当前系统安装的是 TensorRT 10.16（DEB 包），官方要求 10.13。编译和推理可以工作，但如果动作效果异常，需要下载 TAR 包版本 10.13。
+
+---
+
+## 10. 数据调试与检查 (pkl schema)
+
+如果发现机器人运动姿态异常，可以使用以下检查脚本快速验证 `.pkl` 文件的 Schema、关节顺序（MuJoCo vs IsaacLab）以及四元数格式（XYzw vs wxyz）。
+
+**检查脚本 (`check_pkl.py`)**：
+```python
+import pickle
+import numpy as np
+import sys
+
+def check_pkl(pkl_path):
+    with open(pkl_path, "rb") as f:
+        data = pickle.load(f)
+    print(f"=== 检查文件: {pkl_path} ===")
+    
+    # 1. 检查 Schema
+    expected_keys = {"dof_pos", "root_rot"}
+    missing = expected_keys - set(data.keys())
+    if missing:
+        print(f"❌ 缺少必须的键: {missing}")
+    else:
+        print("✅ Schema 包含 dof_pos 和 root_rot")
+    
+    # 2. 检查 Shape
+    dof_pos = np.array(data.get("dof_pos", []))
+    root_rot = np.array(data.get("root_rot", []))
+    print(f"   dof_pos shape: {dof_pos.shape}")
+    print(f"   root_rot shape: {root_rot.shape}")
+    
+    if root_rot.shape[-1] == 4:
+        # 3. 检查四元数格式 (通常根节点倾角不大时 w 接近 1 或 -1)
+        # MuJoCo/AudioMimic 默认 [x, y, z, w]
+        # IsaacLab/SONIC 预期 [w, x, y, z]
+        first_quat = root_rot[0]
+        if abs(first_quat[3]) > abs(first_quat[0]):
+            print(f"⚠️ 四元数大概率是 [x, y, z, w] 格式。在发送给 SONIC 时需要转换为 [w, x, y, z] (流式脚本会自动处理)。")
+        else:
+            print(f"✅ 四元数大概率已经是 [w, x, y, z] 格式。")
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        check_pkl(sys.argv[1])
+    else:
+        print("请提供 .pkl 文件路径")
+```
+
+---
+
+## 11. 运行后评估指标（Evaluation Metrics）
+
+在完成实机或仿真运行后，我们关注以下几个核心指标来评估动作效果和系统性能：
+
+1. **Tracking (位姿追踪误差)**：对比 AudioMimic 发送的参考关节角（Reference DOF）与 SONIC 执行的实际关节角（Executed DOF）。较小的 RMSE 代表底盘和 WBC 策略能够完美还原生成的动作。
+2. **Stability (稳定性指标)**：统计仿真/实机中的摔倒次数、根节点的高度方差或异常姿态。用以评估生成的唯美舞蹈动作在面临物理重力、碰撞约束时的**可行性**。
+3. **Latency (端到端延迟)**：评估从 AudioMimic 网络生成完成、ZMQ 流式传输网络开销，到 SONIC 接收命令并产生底层电机控制力矩的总延迟时间。
+4. **BAS_executed (执行后节拍对齐分数)**：基于机器人**实际执行**的轨迹序列（而非网络直接输出的理论轨迹），重新计算 Forward Kinematics (FK) 并提取动作节拍，再与音乐节拍对比计算 Beat Alignment Score。这能真实反映舞蹈动作经过物理世界摩擦、惯性平滑后的**卡点效果**。
 
 ---
 
