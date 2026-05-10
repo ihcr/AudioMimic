@@ -169,17 +169,35 @@ def compute_beat_loss_contribution(
     beat_loss,
     effective_lambda_beat,
     max_fraction=0.0,
+    cap_mode="hard",
 ):
     raw_contribution = beat_loss * effective_lambda_beat
     if max_fraction <= 0:
         cap = torch.full_like(raw_contribution, float("inf"))
         capped = torch.zeros_like(raw_contribution, dtype=torch.bool)
         return raw_contribution, capped, cap
+    if cap_mode not in ("hard", "soft"):
+        raise ValueError("beat_loss_cap_mode must be 'hard' or 'soft'")
 
     cap = base_loss.detach() * float(max_fraction)
     capped = raw_contribution > cap
+    if cap_mode == "soft":
+        safe_cap = torch.clamp(cap, min=torch.finfo(raw_contribution.dtype).eps)
+        contribution = cap * torch.tanh(raw_contribution / safe_cap)
+        return contribution, capped, cap
+
     contribution = torch.where(capped, cap, raw_contribution)
     return contribution, capped, cap
+
+
+def transform_beat_target_for_estimator(beat_target, beat_spacing, estimator_config):
+    target_transform = (estimator_config or {}).get("target_transform", "raw_distance")
+    if target_transform == "raw_distance":
+        return beat_target.float()
+    if target_transform == "relative_distance":
+        spacing = torch.clamp(beat_spacing.float(), min=1.0)
+        return torch.clamp(beat_target.float() / spacing, min=0.0, max=1.0)
+    raise ValueError(f"Unsupported beat estimator target_transform: {target_transform}")
 
 
 class EMA:
@@ -223,6 +241,7 @@ class GaussianDiffusion(nn.Module):
         beat_loss_start_epoch=0,
         beat_loss_warmup_epochs=0,
         beat_loss_max_fraction=0.0,
+        beat_loss_cap_mode="hard",
         motion_format=SMPL_MOTION_FORMAT,
     ):
         super().__init__()
@@ -241,9 +260,17 @@ class GaussianDiffusion(nn.Module):
         self.beat_loss_start_epoch = beat_loss_start_epoch
         self.beat_loss_warmup_epochs = beat_loss_warmup_epochs
         self.beat_loss_max_fraction = beat_loss_max_fraction
+        if beat_loss_cap_mode not in ("hard", "soft"):
+            raise ValueError("beat_loss_cap_mode must be 'hard' or 'soft'")
+        self.beat_loss_cap_mode = beat_loss_cap_mode
         self.current_epoch = 1
         self.last_beat_loss_stats = {}
         self.beat_estimator = beat_estimator
+        self.beat_estimator_config = (
+            getattr(beat_estimator, "checkpoint_config_summary", {})
+            if beat_estimator is not None
+            else {}
+        )
         if self.beat_estimator is not None:
             for param in self.beat_estimator.parameters():
                 param.requires_grad = False
@@ -683,6 +710,30 @@ class GaussianDiffusion(nn.Module):
             v_loss = v_loss * extract(self.p2_loss_weight, t, v_loss.shape)
 
             zero = torch.zeros((), device=x_start.device)
+            beat_loss = zero
+            if isinstance(cond, dict) and self.beat_estimator is not None:
+                pred_beat_dist = self.beat_estimator(model_out)
+                raw_gt_beat_dist = cond["beat_target"].to(model_out.device).float()
+                beat_spacing = cond["beat_spacing"].to(model_out.device).float()
+                gt_beat_dist = transform_beat_target_for_estimator(
+                    raw_gt_beat_dist,
+                    beat_spacing,
+                    self.beat_estimator_config,
+                )
+                gt_safe = torch.clamp(gt_beat_dist, min=1.0)
+                abs_error = torch.abs(gt_beat_dist - pred_beat_dist)
+                w_s = 1.0 / (
+                    1.0
+                    + torch.exp(
+                        self.beat_a
+                        * (self.beat_c - (abs_error / gt_safe))
+                    )
+                )
+                w_b = torch.exp(
+                    -2.0 * raw_gt_beat_dist / torch.clamp(beat_spacing, min=1.0)
+                )
+                beat_loss = (w_s * w_b * (pred_beat_dist - gt_beat_dist).pow(2)).mean()
+
             acc_loss = zero
             if model_out.shape[1] > 2:
                 target_a = target[:, 2:] - 2 * target[:, 1:-1] + target[:, :-2]
@@ -690,14 +741,27 @@ class GaussianDiffusion(nn.Module):
                 acc_loss = F.mse_loss(model_a, target_a)
 
             base_loss = loss.mean() + v_loss.mean()
+            effective_lambda_beat = effective_beat_loss_weight(
+                epoch=self.current_epoch,
+                lambda_beat=self.lambda_beat,
+                start_epoch=self.beat_loss_start_epoch,
+                warmup_epochs=self.beat_loss_warmup_epochs,
+            )
+            beat_contribution, beat_capped, beat_cap = compute_beat_loss_contribution(
+                base_loss=base_loss,
+                beat_loss=beat_loss,
+                effective_lambda_beat=effective_lambda_beat,
+                max_fraction=self.beat_loss_max_fraction,
+                cap_mode=self.beat_loss_cap_mode,
+            )
             self.last_beat_loss_stats = {
-                "effective_lambda_beat": 0.0,
-                "beat_contribution": zero.detach(),
-                "beat_capped": torch.zeros((), dtype=torch.bool, device=x_start.device),
-                "beat_cap": torch.full_like(zero, float("inf")),
+                "effective_lambda_beat": effective_lambda_beat,
+                "beat_contribution": beat_contribution.detach(),
+                "beat_capped": beat_capped.detach(),
+                "beat_cap": beat_cap.detach(),
             }
-            total_loss = base_loss + self.lambda_acc * acc_loss
-            return total_loss, (loss.mean(), v_loss.mean(), zero, zero, acc_loss, zero)
+            total_loss = base_loss + self.lambda_acc * acc_loss + beat_contribution
+            return total_loss, (loss.mean(), v_loss.mean(), zero, zero, acc_loss, beat_loss)
 
         # split off contact from the rest
         model_contact, model_out = torch.split(
@@ -760,8 +824,13 @@ class GaussianDiffusion(nn.Module):
         beat_loss = torch.zeros((), device=x_start.device)
         if isinstance(cond, dict) and self.beat_estimator is not None:
             pred_beat_dist = self.beat_estimator(model_xp)
-            gt_beat_dist = cond["beat_target"].to(model_xp.device).float()
+            raw_gt_beat_dist = cond["beat_target"].to(model_xp.device).float()
             beat_spacing = cond["beat_spacing"].to(model_xp.device).float()
+            gt_beat_dist = transform_beat_target_for_estimator(
+                raw_gt_beat_dist,
+                beat_spacing,
+                self.beat_estimator_config,
+            )
             gt_safe = torch.clamp(gt_beat_dist, min=1.0)
             abs_error = torch.abs(gt_beat_dist - pred_beat_dist)
             w_s = 1.0 / (
@@ -772,7 +841,7 @@ class GaussianDiffusion(nn.Module):
                 )
             )
             w_b = torch.exp(
-                -2.0 * gt_beat_dist / torch.clamp(beat_spacing, min=1.0)
+                -2.0 * raw_gt_beat_dist / torch.clamp(beat_spacing, min=1.0)
             )
             beat_loss = (w_s * w_b * (pred_beat_dist - gt_beat_dist).pow(2)).mean()
 
@@ -794,6 +863,7 @@ class GaussianDiffusion(nn.Module):
             beat_loss=beat_loss,
             effective_lambda_beat=effective_lambda_beat,
             max_fraction=self.beat_loss_max_fraction,
+            cap_mode=self.beat_loss_cap_mode,
         )
         self.last_beat_loss_stats = {
             "effective_lambda_beat": effective_lambda_beat,
@@ -917,14 +987,30 @@ class GaussianDiffusion(nn.Module):
         mode="normal",
         metadata_audio_path=None,
         metadata_stride_frames=75,
+        metadata_total_frames=None,
+        render=False,
+        sound=False,
+        g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
+        g1_root_quat_order="xyzw",
+        g1_render_backend="mujoco",
+        g1_render_width=960,
+        g1_render_height=720,
+        g1_mujoco_gl="egl",
     ):
         output_dir = Path(fk_out or render_out)
         output_dir.mkdir(parents=True, exist_ok=True)
         decoded = decode_g1_motion(samples)
         beat_rep = getattr(self.model, "beat_rep", None)
+        render_g1_motion = None
+        if render:
+            from eval.g1_visualization import render_g1_motion
 
         if mode == "long":
             root_pos, root_rot, dof_pos = self._stitch_g1_samples(decoded)
+            if metadata_total_frames is not None:
+                root_pos = root_pos[:metadata_total_frames]
+                root_rot = root_rot[:metadata_total_frames]
+                dof_pos = dof_pos[:metadata_total_frames]
             audio_path = metadata_audio_path or (name[0] if name else None)
             metadata = build_long_saved_motion_metadata(
                 cond,
@@ -939,9 +1025,30 @@ class GaussianDiffusion(nn.Module):
                 mode=mode,
             )
             with open(output_dir / outname, "wb") as handle:
-                pickle.dump(
-                    self._g1_payload(root_pos, root_rot, dof_pos, metadata=metadata),
-                    handle,
+                payload = self._g1_payload(
+                    root_pos,
+                    root_rot,
+                    dof_pos,
+                    metadata=metadata,
+                )
+                pickle.dump(payload, handle)
+            if render:
+                render_name = metadata_audio_path or name
+                render_g1_motion(
+                    payload,
+                    out=render_out,
+                    epoch=epoch,
+                    num=0,
+                    name=render_name,
+                    sound=sound,
+                    stitch=False if metadata_audio_path else True,
+                    model_path=g1_fk_model_path,
+                    root_quat_order=g1_root_quat_order,
+                    render_backend=g1_render_backend,
+                    width=g1_render_width,
+                    height=g1_render_height,
+                    mujoco_gl=g1_mujoco_gl,
+                    output_name=name,
                 )
             return
 
@@ -955,14 +1062,28 @@ class GaussianDiffusion(nn.Module):
             )
             outname = self._g1_output_name(epoch, num, filename=filename, mode=mode)
             with open(output_dir / outname, "wb") as handle:
-                pickle.dump(
-                    self._g1_payload(
-                        decoded["root_pos"][num],
-                        decoded["root_rot"][num],
-                        decoded["dof_pos"][num],
-                        metadata=metadata,
-                    ),
-                    handle,
+                payload = self._g1_payload(
+                    decoded["root_pos"][num],
+                    decoded["root_rot"][num],
+                    decoded["dof_pos"][num],
+                    metadata=metadata,
+                )
+                pickle.dump(payload, handle)
+            if render:
+                render_g1_motion(
+                    payload,
+                    out=render_out,
+                    epoch=epoch,
+                    num=num,
+                    name=filename,
+                    sound=sound,
+                    stitch=False,
+                    model_path=g1_fk_model_path,
+                    root_quat_order=g1_root_quat_order,
+                    render_backend=g1_render_backend,
+                    width=g1_render_width,
+                    height=g1_render_height,
+                    mujoco_gl=g1_mujoco_gl,
                 )
 
     def render_sample(
@@ -983,6 +1104,13 @@ class GaussianDiffusion(nn.Module):
         render=True,
         metadata_audio_path=None,
         metadata_stride_frames=75,
+        metadata_total_frames=None,
+        g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
+        g1_root_quat_order="xyzw",
+        g1_render_backend="mujoco",
+        g1_render_width=960,
+        g1_render_height=720,
+        g1_mujoco_gl="egl",
     ):
         sound = sound and render
         cond = move_cond_to_device(cond, self.betas.device)
@@ -1022,6 +1150,15 @@ class GaussianDiffusion(nn.Module):
                 mode=mode,
                 metadata_audio_path=metadata_audio_path,
                 metadata_stride_frames=metadata_stride_frames,
+                metadata_total_frames=metadata_total_frames,
+                render=render,
+                sound=sound,
+                g1_fk_model_path=g1_fk_model_path,
+                g1_root_quat_order=g1_root_quat_order,
+                g1_render_backend=g1_render_backend,
+                g1_render_width=g1_render_width,
+                g1_render_height=g1_render_height,
+                g1_mujoco_gl=g1_mujoco_gl,
             )
             return
 

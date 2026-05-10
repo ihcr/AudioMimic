@@ -44,6 +44,15 @@ For the full paper-style evaluation suite, also install:
 ```.bash
 pip install -r requirements-eval.txt
 ```
+For G1 FK metrics and native MuJoCo rendering, install the G1 dependency set
+from the diffusion worktree:
+```.bash
+pip install -r requirements-g1-fk.txt
+```
+Native G1 rendering defaults to MuJoCo with `MUJOCO_GL=egl` on the cluster.
+The Matplotlib stick-figure renderer remains available only as the explicit
+debug backend.
+
 For preprocessing, training, and rendering on Isambard or a similar cluster, request a GPU allocation with `srun` or use the Slurm submission wrappers in `scripts/`.
 
 ### Load custom music
@@ -109,7 +118,7 @@ srun --partition=workq --time=02:00:00 --ntasks=1 --cpus-per-task=8 --mem=32G ba
      --extract_beats \
      --g1_motion_beat_source fk \
      --g1_fk_model_path third_party/unitree_g1_description/g1_29dof_rev_1_0.xml \
-     --g1_root_quat_order wxyz'
+     --g1_root_quat_order xyzw'
 ```
 This tree uses the official EDGE AIST split, skips the AIST ignore list, ignores
 FineDance, reuses the unchanged AIST wavs and Jukebox features, and extracts G1
@@ -125,6 +134,8 @@ srun --partition=workq --time=00:30:00 --ntasks=1 --cpus-per-task=4 --mem=16G ba
      --processed_data_dir data/g1_aistpp_full_fkbeats_dataset_backups \
      --feature_type jukebox \
      --motion_format g1 \
+     --feature_cache_mode memmap \
+     --feature_cache_dtype float32 \
      --sample_count 64 \
      --use_beats \
      --beat_rep distance'
@@ -139,6 +150,55 @@ python submit_training_pipeline.py \
   --train_time 24:00:00 \
   --eval_time 04:00:00
 ```
+
+After that checkpoint is available, launch the cautious G1 beat-loss fine-tune
+with the robot-native estimator path:
+```.bash
+python submit_training_pipeline.py \
+  --preset g1_beatdistance_fkbeats_lbeat \
+  --train_name g1_aist_beatdistance_fkbeats_lbeat \
+  --run_id 20260505-g1-aist-beatdistance-fkbeats-lbeat \
+  --partition workq \
+  --train_time 24:00:00 \
+  --eval_time 04:00:00
+```
+This preset trains a G1 beat estimator on normalized `[T,38]` robot motion
+using FK-derived `motion_dist` labels, then fine-tunes from
+`runs/train/g1_aist_beatdistance_fkbeats/weights/train-2000.pt` with
+`lambda_beat=0.01`, a delayed warmup, and `beat_loss_cap_mode=soft`.
+It keeps the SMPL beat-estimator path unchanged and rejects estimator
+checkpoints whose saved `motion_format` does not match the diffusion run.
+
+The strongest completed G1 beat-loss experiment as of 2026-05-07 used the same
+normalized estimator path but overrode the cautious preset with
+`lambda_beat=0.2`, `beat_loss_max_fraction=1.0`, `beat_loss_start_epoch=50`,
+and `beat_loss_warmup_epochs=300`:
+```.bash
+python submit_training_pipeline.py \
+  --preset g1_beatdistance_fkbeats_lbeat \
+  --train_name g1_aist_fkbeats_lbeat_relative_lam020_cap1_finetune \
+  --run_id 20260507-g1-aist-fkbeats-lbeat-relative-finetune-lam020-cap1 \
+  --beat_estimator_ckpt slurm/pipelines/20260506-g1-aist-fkbeats-lbeat-relative-scratch-cap1/weights/beat_estimator.pt \
+  --checkpoint runs/train/g1_aist_beatdistance_fkbeats/weights/train-2000.pt \
+  --finetune_from_checkpoint \
+  --lambda_beat 0.2 \
+  --beat_loss_max_fraction 1.0 \
+  --beat_loss_cap_mode soft \
+  --beat_loss_start_epoch 50 \
+  --beat_loss_warmup_epochs 300 \
+  --epochs 500 \
+  --save_interval 50 \
+  --enable_g1_fk_metrics \
+  --g1_fk_model_path third_party/unitree_g1_description/g1_29dof_rev_1_0.xml
+```
+That run improved G1 rhythm metrics over FKBeat no-lbeat
+(`G1BAS 0.5446 -> 0.5956`, `G1FKBAS 0.5502 -> 0.5978`,
+`G1BeatF1 0.3333 -> 0.4372`) without the root-motion collapse seen in the
+from-scratch `lambda_beat=0.2` run. It is still not the default deployable G1
+checkpoint because foot sliding and ground penetration worsened
+(`G1FootSliding 0.6112 -> 0.7102`, `G1GroundPenetration 0.0665 -> 0.0979`).
+Treat it as the best lbeat direction so far, not as a clean replacement for the
+stable FKBeat no-lbeat checkpoint.
 
 ### Train the beat estimator
 If you want to enable the beat loss (`lambda_beat > 0`), first train the standalone beat estimator:
@@ -166,6 +226,7 @@ These presets map to the implementation plan milestone experiments:
 * `edge_beatpulse`: beat-conditioned EDGE with pulse beats
 * `edge_beatdistance`: beat-conditioned EDGE with distance beats
 * `edge_beatdistance_lbeat`: safe fine-tune from a beat-distance checkpoint, with distance beats plus a capped beat loss
+* `g1_beatdistance_fkbeats_lbeat`: G1 FK-beat fine-tune with a G1-native beat estimator and soft-capped beat loss
 
 The `edge_beatdistance_lbeat` preset is intentionally not a from-scratch recipe. It requires a base beat-distance checkpoint unless you explicitly pass `--allow_lbeat_from_scratch`. The safe default uses a small beat loss, delays and warms that loss up, caps its contribution, and screens saved checkpoints before running the full benchmark:
 ```.bash
@@ -201,6 +262,20 @@ Beat-conditioned inference from user-specified beats:
 python test.py --music_dir custom_music/ --checkpoint checkpoint.pt --use_beats --beat_rep distance --beat_source user --beat_file beats.json --no_render
 ```
 The user beat JSON should contain either `{"fps": 30, "beat_times_sec": [...]}` or `{"fps": 30, "beat_frames": [...]}`.
+
+G1 robot-native inference writes `.pkl` motion payloads when `--no_render` is
+set. With rendering enabled, it uses the native MuJoCo mesh renderer by default
+and muxes the matching audio into the `.mp4`:
+```.bash
+MUJOCO_GL=egl python test.py \
+  --motion_format g1 \
+  --music_dir custom_music/ \
+  --checkpoint runs/train/<run>/weights/train-2000.pt \
+  --g1_fk_model_path third_party/unitree_g1_description/g1_29dof_rev_1_0.xml \
+  --g1_root_quat_order xyzw \
+  --g1_render_backend mujoco
+```
+Use `--g1_render_backend stick` only for diagnostic stick-figure videos.
 
 ### Evaluation
 Physical Foot Contact (PFC), Beat Alignment Score (BAS), Beat Assignment Precision (BAP), and diversity:
@@ -275,6 +350,26 @@ python -m eval.run_g1_dataset_eval \
   --beat_rep distance \
   --enable_fk_metrics
 ```
+
+For qualitative whole-song G1 videos, use the raw full AIST music directory,
+not the choreography-trimmed `test/wavs` tree and not the 5-second model slices:
+```.bash
+MUJOCO_GL=egl python -m eval.run_full_song_eval \
+  --checkpoint runs/train/<run>/weights/train-2000.pt \
+  --motion_format g1 \
+  --feature_type jukebox \
+  --data_path data/g1_aistpp_full_fkbeats \
+  --processed_data_dir data/g1_aistpp_full_fkbeats_dataset_backups \
+  --full_music_dir /projects/u6ed/yukun/Music2Dance/Code/aist_plusplus_datasets/audio \
+  --render \
+  --g1_fk_model_path third_party/unitree_g1_description/g1_29dof_rev_1_0.xml \
+  --g1_root_quat_order xyzw \
+  --g1_render_backend mujoco
+```
+`--full_wav_dir` uses choreography-trimmed wavs, so videos can be much shorter
+than the source song. `--full_music_dir` maps each test motion to its raw music
+ID, such as `mHO5.mp3`, and generates enough 5-second windows to cover that
+raw track.
 ## Blender 3D rendering
 In order to render generated dances in 3D, we convert them into FBX files to be used in Blender. We provide a sample rig, `SMPL-to-FBX/ybot.fbx`.
 After generating dances with the `--save-motions` flag enabled, move the relevant saved `.pkl` files to a folder, e.g. `smpl_samples`

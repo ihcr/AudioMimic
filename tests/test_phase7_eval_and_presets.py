@@ -70,7 +70,7 @@ class SavedMotionMetadataTests(unittest.TestCase):
 
 
 class EvalBasBapTests(unittest.TestCase):
-    def test_compute_bas_scores_motion_beats_against_music_beats(self):
+    def test_compute_bas_scores_music_beats_against_motion_beats(self):
         eval_module = reload_module("eval.eval_bas_bap")
 
         result = eval_module.compute_bas_score(
@@ -78,7 +78,7 @@ class EvalBasBapTests(unittest.TestCase):
             motion_beats=np.array([10], dtype=np.int64),
         )
 
-        self.assertAlmostEqual(result, 1.0, places=6)
+        self.assertAlmostEqual(result, 0.5, places=6)
 
     def test_evaluate_motion_dir_reports_bas_and_bap(self):
         eval_module = reload_module("eval.eval_bas_bap")
@@ -133,15 +133,15 @@ class EvalBasBapTests(unittest.TestCase):
         self.assertTrue(np.isnan(result["BAP_precision"]))
         self.assertTrue(np.isnan(result["BAP_recall"]))
 
-    def test_compute_bas_score_matches_aist_motion_to_music_direction(self):
+    def test_compute_bas_score_matches_paper_table_music_to_motion_direction(self):
         eval_module = reload_module("eval.eval_bas_bap")
 
         score = eval_module.compute_bas_score(
-            music_beats=np.array([0, 5], dtype=np.int64),
+            music_beats=np.array([0, 1000], dtype=np.int64),
             motion_beats=np.array([0], dtype=np.int64),
         )
 
-        self.assertAlmostEqual(score, 1.0, places=6)
+        self.assertAlmostEqual(score, 0.5, places=6)
 
 
 class EvalPfcAuditTests(unittest.TestCase):

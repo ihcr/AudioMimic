@@ -83,9 +83,9 @@ def compute_bas_score(music_beats, motion_beats, sigma_squared=DEFAULT_BAS_SIGMA
         return 0.0
 
     total = 0.0
-    for beat in motion_beats:
-        total += np.exp(-np.min((music_beats - beat) ** 2) / (2.0 * sigma_squared))
-    return float(total / len(motion_beats))
+    for beat in music_beats:
+        total += np.exp(-np.min((motion_beats - beat) ** 2) / (2.0 * sigma_squared))
+    return float(total / len(music_beats))
 
 
 def greedy_match_count(generated_beats, designated_beats, tolerance=DEFAULT_BAP_TOLERANCE):

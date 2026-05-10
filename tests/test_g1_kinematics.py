@@ -54,6 +54,30 @@ class G1KinematicsTests(unittest.TestCase):
 
         np.testing.assert_allclose(qpos[0, 3:7], [1.0, 0.0, 0.0, 0.0])
 
+    def test_forward_kinematics_defaults_to_g1_dataset_xyzw_quaternions(self):
+        kinematics = reload_module("eval.g1_kinematics")
+        model_path = Path("third_party/unitree_g1_description/g1_29dof_rev_1_0.xml")
+        if not model_path.is_file():
+            self.skipTest(f"missing G1 MuJoCo model: {model_path}")
+        motion = {
+            "root_pos": np.array([[0.0, 0.0, 0.843]], dtype=np.float32),
+            "root_rot": np.array(
+                [[-0.01130852, -0.0805865, -0.7949351, 0.6012122]],
+                dtype=np.float32,
+            ),
+            "dof_pos": np.zeros((1, 29), dtype=np.float32),
+        }
+
+        fk_result = kinematics.forward_g1_kinematics(motion, model_path)
+        names = fk_result["body_names"]
+        frame = fk_result["bodies"][0]
+        pelvis_z = frame[names.index("pelvis"), 2]
+        left_foot_z = frame[names.index("left_ankle_roll_link"), 2]
+        right_foot_z = frame[names.index("right_ankle_roll_link"), 2]
+
+        self.assertLess(left_foot_z, pelvis_z)
+        self.assertLess(right_foot_z, pelvis_z)
+
     def test_validate_g1_joint_order_rejects_mismatched_order(self):
         kinematics = reload_module("eval.g1_kinematics")
         wrong = list(kinematics.EXPECTED_G1_29DOF_JOINTS)

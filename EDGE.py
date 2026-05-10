@@ -21,7 +21,7 @@ from dataset.motion_representation import (
 )
 from dataset.preprocess import increment_path
 from model.adan import Adan
-from model.beat_estimator import BeatDistanceEstimator
+from model.beat_estimator import BeatDistanceEstimator, G1BeatDistanceEstimator
 from model.diffusion import (GaussianDiffusion, cond_batch_size, move_cond_to_device,
                              slice_cond)
 from model.model import BeatDanceDecoder, DanceDecoder
@@ -227,6 +227,7 @@ def build_checkpoint_config(
     beat_loss_start_epoch=0,
     beat_loss_warmup_epochs=0,
     beat_loss_max_fraction=0.0,
+    beat_loss_cap_mode="hard",
     beat_estimator_ckpt="",
     beat_estimator_config=None,
     motion_format=SMPL_MOTION_FORMAT,
@@ -257,6 +258,7 @@ def build_checkpoint_config(
         "beat_loss_start_epoch": beat_loss_start_epoch,
         "beat_loss_warmup_epochs": beat_loss_warmup_epochs,
         "beat_loss_max_fraction": beat_loss_max_fraction,
+        "beat_loss_cap_mode": beat_loss_cap_mode,
         "beat_estimator_ckpt": beat_estimator_ckpt,
         "beat_estimator_config": beat_estimator_config or {},
     }
@@ -324,7 +326,21 @@ def restore_checkpoint_state(
         optim.load_state_dict(checkpoint["optimizer_state_dict"])
 
 
-def validate_beat_estimator_config(config, max_val_loss=8.0):
+def validate_beat_estimator_config(
+    config,
+    max_val_loss=8.0,
+    expected_motion_format=SMPL_MOTION_FORMAT,
+):
+    expected_motion_format = validate_motion_format(expected_motion_format)
+    checkpoint_motion_format = validate_motion_format(
+        config.get("motion_format", SMPL_MOTION_FORMAT)
+    )
+    if checkpoint_motion_format != expected_motion_format:
+        raise ValueError(
+            "Beat estimator checkpoint motion_format "
+            f"{checkpoint_motion_format!r} does not match training motion_format "
+            f"{expected_motion_format!r}."
+        )
     if "best_val_loss" not in config:
         raise ValueError("Beat estimator checkpoint is missing validation loss.")
     try:
@@ -338,26 +354,48 @@ def validate_beat_estimator_config(config, max_val_loss=8.0):
             f"Beat estimator validation loss {best_val_loss} exceeds limit {max_val_loss}."
         )
     return {
+        "motion_format": checkpoint_motion_format,
         "best_val_loss": best_val_loss,
         "best_epoch": config.get("best_epoch"),
         "val_split": config.get("val_split"),
         "max_val_loss": max_val_loss,
+        "target_transform": config.get("target_transform", "raw_distance"),
+        "output_activation": config.get("output_activation", "softplus"),
     }
 
 
-def build_beat_estimator_from_checkpoint(checkpoint_path, device, max_val_loss=8.0):
+def build_beat_estimator_from_checkpoint(
+    checkpoint_path,
+    device,
+    max_val_loss=8.0,
+    expected_motion_format=SMPL_MOTION_FORMAT,
+):
     checkpoint = load_trusted_checkpoint(checkpoint_path, map_location=device)
     config = checkpoint.get("config", {})
     checkpoint_summary = validate_beat_estimator_config(
         config,
         max_val_loss=max_val_loss,
+        expected_motion_format=expected_motion_format,
     )
     model_kwargs = {
         key: config[key]
-        for key in ("input_dim", "hidden_dim", "num_heads", "num_layers", "ff_dim", "dropout")
+        for key in (
+            "input_dim",
+            "hidden_dim",
+            "num_heads",
+            "num_layers",
+            "ff_dim",
+            "dropout",
+            "output_activation",
+        )
         if key in config
     }
-    model = BeatDistanceEstimator(**model_kwargs)
+    if checkpoint_summary["motion_format"] != G1_MOTION_FORMAT:
+        model_kwargs.pop("output_activation", None)
+    if checkpoint_summary["motion_format"] == G1_MOTION_FORMAT:
+        model = G1BeatDistanceEstimator(**model_kwargs)
+    else:
+        model = BeatDistanceEstimator(**model_kwargs)
     model.load_state_dict(checkpoint["model_state_dict"])
     model.checkpoint_config_summary = checkpoint_summary
     return model.to(device)
@@ -454,6 +492,7 @@ class EDGE:
         beat_loss_start_epoch=0,
         beat_loss_warmup_epochs=0,
         beat_loss_max_fraction=0.0,
+        beat_loss_cap_mode="hard",
         gradient_accumulation_steps=1,
         mixed_precision="bf16",
         resume_training_state=False,
@@ -485,6 +524,7 @@ class EDGE:
         self.beat_loss_start_epoch = beat_loss_start_epoch
         self.beat_loss_warmup_epochs = beat_loss_warmup_epochs
         self.beat_loss_max_fraction = beat_loss_max_fraction
+        self.beat_loss_cap_mode = beat_loss_cap_mode
         self.beat_estimator_config = {}
         self.resume_training_state = resume_training_state
         self.motion_format = validate_motion_format(motion_format)
@@ -520,9 +560,6 @@ class EDGE:
         repr_dim = self.repr_dim = motion_repr_dim(self.motion_format)
         learning_rate = resolved["learning_rate"]
         self.grad_clip_norm = resolved["grad_clip_norm"]
-
-        if self.motion_format != SMPL_MOTION_FORMAT and self.lambda_beat > 0:
-            raise ValueError("G1 training supports beat conditioning only; set lambda_beat to 0.")
 
         if checkpoint is not None and not learning_rate_was_explicit:
             checkpoint_uses_beats = checkpoint.get("config", {}).get("use_beats")
@@ -566,6 +603,7 @@ class EDGE:
                 self.beat_estimator_ckpt,
                 self.accelerator.device,
                 max_val_loss=self.beat_estimator_max_val_loss,
+                expected_motion_format=self.motion_format,
             )
             self.beat_estimator_config = getattr(
                 beat_estimator, "checkpoint_config_summary", {}
@@ -590,6 +628,7 @@ class EDGE:
             beat_loss_start_epoch=self.beat_loss_start_epoch,
             beat_loss_warmup_epochs=self.beat_loss_warmup_epochs,
             beat_loss_max_fraction=self.beat_loss_max_fraction,
+            beat_loss_cap_mode=self.beat_loss_cap_mode,
             motion_format=self.motion_format,
         )
 
@@ -639,6 +678,7 @@ class EDGE:
             beat_loss_start_epoch=self.beat_loss_start_epoch,
             beat_loss_warmup_epochs=self.beat_loss_warmup_epochs,
             beat_loss_max_fraction=self.beat_loss_max_fraction,
+            beat_loss_cap_mode=self.beat_loss_cap_mode,
             beat_estimator_ckpt=self.beat_estimator_ckpt,
             beat_estimator_config=self.beat_estimator_config,
             motion_format=self.motion_format,
@@ -955,7 +995,19 @@ class EDGE:
             wandb_run.finish()
 
     def render_sample(
-        self, data_tuple, label, render_dir, render_count=-1, fk_out=None, render=True
+        self,
+        data_tuple,
+        label,
+        render_dir,
+        render_count=-1,
+        fk_out=None,
+        render=True,
+        g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
+        g1_root_quat_order="xyzw",
+        g1_render_backend="mujoco",
+        g1_render_width=960,
+        g1_render_height=720,
+        g1_mujoco_gl="egl",
     ):
         _, cond, wavname = data_tuple
         if render_count < 0:
@@ -972,5 +1024,11 @@ class EDGE:
             sound=True,
             mode="long",
             fk_out=fk_out,
-            render=render
+            render=render,
+            g1_fk_model_path=g1_fk_model_path,
+            g1_root_quat_order=g1_root_quat_order,
+            g1_render_backend=g1_render_backend,
+            g1_render_width=g1_render_width,
+            g1_render_height=g1_render_height,
+            g1_mujoco_gl=g1_mujoco_gl,
         )

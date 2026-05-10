@@ -499,6 +499,43 @@ class CheckpointLoadCompatibilityTests(unittest.TestCase):
                     max_val_loss=8.0,
                 )
 
+    def test_beat_estimator_checkpoint_rejects_motion_format_mismatch(self):
+        edge_module = reload_module("EDGE")
+        checkpoint = {
+            "model_state_dict": {},
+            "config": {
+                "motion_format": "smpl",
+                "best_val_loss": 1.0,
+            },
+        }
+
+        with patch.object(edge_module, "load_trusted_checkpoint", return_value=checkpoint):
+            with self.assertRaisesRegex(ValueError, "motion_format"):
+                edge_module.build_beat_estimator_from_checkpoint(
+                    "weights/beat_estimator.pt",
+                    device="cpu",
+                    max_val_loss=8.0,
+                    expected_motion_format="g1",
+                )
+
+    def test_beat_estimator_checkpoint_summary_keeps_target_transform(self):
+        edge_module = reload_module("EDGE")
+        config = {
+            "motion_format": "g1",
+            "best_val_loss": 0.1,
+            "target_transform": "relative_distance",
+            "output_activation": "sigmoid",
+        }
+
+        summary = edge_module.validate_beat_estimator_config(
+            config,
+            max_val_loss=8.0,
+            expected_motion_format="g1",
+        )
+
+        self.assertEqual(summary["target_transform"], "relative_distance")
+        self.assertEqual(summary["output_activation"], "sigmoid")
+
 
 class CheckpointRestoreTests(unittest.TestCase):
     def test_restore_checkpoint_state_loads_model_optimizer_and_ema(self):
@@ -570,6 +607,25 @@ class DummyBeatEstimator(nn.Module):
         return F.softplus(joints[..., 0].mean(dim=2) * self.scale)
 
 
+class DummyG1BeatEstimator(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.scale = nn.Parameter(torch.tensor(1.0))
+
+    def forward(self, pose):
+        return F.softplus(pose[..., 0] * self.scale)
+
+
+class ZeroG1BeatEstimator(nn.Module):
+    def __init__(self, checkpoint_config_summary=None):
+        super().__init__()
+        self.scale = nn.Parameter(torch.tensor(1.0))
+        self.checkpoint_config_summary = checkpoint_config_summary or {}
+
+    def forward(self, pose):
+        return pose[..., 0] * 0.0 * self.scale
+
+
 class IdentityNormalizer:
     def unnormalize(self, tensor):
         return tensor
@@ -622,6 +678,23 @@ class DiffusionBeatLossTests(unittest.TestCase):
         self.assertTrue(bool(capped))
         self.assertAlmostEqual(float(cap), 0.25)
 
+    def test_soft_beat_loss_contribution_is_bounded_but_keeps_gradient(self):
+        diffusion_module = reload_module("model.diffusion")
+        beat_loss = torch.tensor(100.0, requires_grad=True)
+
+        contribution, capped, cap = diffusion_module.compute_beat_loss_contribution(
+            base_loss=torch.tensor(1.0),
+            beat_loss=beat_loss,
+            effective_lambda_beat=0.02,
+            max_fraction=0.25,
+            cap_mode="soft",
+        )
+        contribution.backward()
+
+        self.assertLessEqual(float(contribution.detach()), float(cap.detach()))
+        self.assertTrue(bool(capped))
+        self.assertGreater(float(beat_loss.grad), 0.0)
+
     def test_gaussian_diffusion_returns_acc_and_beat_losses_for_dict_cond(self):
         diffusion_module = reload_module("model.diffusion")
         estimator = DummyBeatEstimator()
@@ -659,6 +732,89 @@ class DiffusionBeatLossTests(unittest.TestCase):
         self.assertTrue(torch.isfinite(losses[-1]))
         self.assertFalse(estimator.scale.requires_grad)
         self.assertIsNone(estimator.scale.grad)
+
+    def test_g1_gaussian_diffusion_uses_g1_beat_estimator_without_smpl_fk(self):
+        diffusion_module = reload_module("model.diffusion")
+        estimator = DummyG1BeatEstimator()
+        diffusion = diffusion_module.GaussianDiffusion(
+            DummyModel(),
+            horizon=150,
+            repr_dim=38,
+            smpl=None,
+            schedule="cosine",
+            n_timestep=10,
+            predict_epsilon=False,
+            loss_type="l2",
+            cond_drop_prob=0.0,
+            beat_estimator=estimator,
+            lambda_acc=0.0,
+            lambda_beat=0.01,
+            beat_loss_start_epoch=0,
+            beat_loss_warmup_epochs=0,
+            beat_loss_max_fraction=0.10,
+            beat_loss_cap_mode="soft",
+            motion_format="g1",
+        )
+        x = torch.randn(2, 150, 38, requires_grad=True)
+        cond = {
+            "music": torch.randn(2, 150, 35),
+            "beat": torch.randint(0, 151, (2, 150)),
+            "beat_target": torch.randint(0, 10, (2, 150)).float(),
+            "beat_spacing": torch.full((2, 150), 20.0),
+            "audio_mask": torch.zeros(2, 150),
+        }
+        t = torch.zeros(2, dtype=torch.long)
+
+        total_loss, losses = diffusion.p_losses(x, cond, t)
+        total_loss.backward()
+
+        self.assertTrue(torch.isfinite(total_loss))
+        self.assertEqual(len(losses), 6)
+        self.assertEqual(float(losses[2]), 0.0)
+        self.assertEqual(float(losses[3]), 0.0)
+        self.assertTrue(torch.isfinite(losses[-1]))
+        self.assertGreater(float(losses[-1].detach()), 0.0)
+        self.assertFalse(estimator.scale.requires_grad)
+        self.assertIsNone(estimator.scale.grad)
+
+    def test_g1_diffusion_uses_relative_distance_beat_target_transform(self):
+        diffusion_module = reload_module("model.diffusion")
+        estimator = ZeroG1BeatEstimator(
+            checkpoint_config_summary={"target_transform": "relative_distance"}
+        )
+        diffusion = diffusion_module.GaussianDiffusion(
+            DummyModel(),
+            horizon=150,
+            repr_dim=38,
+            smpl=None,
+            schedule="cosine",
+            n_timestep=10,
+            predict_epsilon=False,
+            loss_type="l2",
+            cond_drop_prob=0.0,
+            beat_estimator=estimator,
+            lambda_acc=0.0,
+            lambda_beat=0.01,
+            beat_loss_start_epoch=0,
+            beat_loss_warmup_epochs=0,
+            beat_loss_max_fraction=1.0,
+            beat_loss_cap_mode="soft",
+            motion_format="g1",
+        )
+        x = torch.zeros(2, 150, 38, requires_grad=True)
+        cond = {
+            "music": torch.randn(2, 150, 35),
+            "beat": torch.randint(0, 151, (2, 150)),
+            "beat_target": torch.full((2, 150), 10.0),
+            "beat_spacing": torch.full((2, 150), 20.0),
+            "audio_mask": torch.zeros(2, 150),
+        }
+        t = torch.zeros(2, dtype=torch.long)
+
+        _, losses = diffusion.p_losses(x, cond, t)
+
+        self.assertLess(float(losses[-1].detach()), 1.0)
+        self.assertGreater(float(losses[-1].detach()), 0.0)
 
     def test_gaussian_diffusion_keeps_zero_beat_terms_without_beats(self):
         diffusion_module = reload_module("model.diffusion")

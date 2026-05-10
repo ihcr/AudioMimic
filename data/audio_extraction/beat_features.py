@@ -353,7 +353,7 @@ def extract_motion_beats_from_motion_pkl(
     seq_len=150,
     g1_motion_beat_source="proxy",
     g1_fk_model_path=None,
-    g1_root_quat_order="wxyz",
+    g1_root_quat_order="xyzw",
 ):
     with open(motion_pkl_path, "rb") as handle:
         motion = pickle.load(handle)
@@ -423,7 +423,7 @@ def extract_folder(
     seq_len=150,
     g1_motion_beat_source="proxy",
     g1_fk_model_path=None,
-    g1_root_quat_order="wxyz",
+    g1_root_quat_order="xyzw",
 ):
     motion_paths = sorted(glob.glob(os.path.join(motion_dir, "*.pkl")))
     wav_paths = sorted(glob.glob(os.path.join(wav_dir, "*.wav")))

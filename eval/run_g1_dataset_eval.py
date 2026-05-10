@@ -45,8 +45,16 @@ def parse_args():
     parser.add_argument(
         "--g1_root_quat_order",
         choices=("wxyz", "xyzw"),
-        default="wxyz",
+        default="xyzw",
     )
+    parser.add_argument(
+        "--g1_render_backend",
+        choices=("mujoco", "stick"),
+        default="mujoco",
+    )
+    parser.add_argument("--g1_render_width", default=960, type=int)
+    parser.add_argument("--g1_render_height", default=720, type=int)
+    parser.add_argument("--g1_mujoco_gl", default="egl", type=str)
     return parser.parse_args()
 
 

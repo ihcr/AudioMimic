@@ -345,7 +345,7 @@ def compute_fk_foot_diagnostics(fk_result, fps, contact_height_margin=0.03):
     }
 
 
-def evaluate_g1_fk_metrics(motion, fk_model_path, root_quat_order="wxyz", bap_tolerance=DEFAULT_BAP_TOLERANCE):
+def evaluate_g1_fk_metrics(motion, fk_model_path, root_quat_order="xyzw", bap_tolerance=DEFAULT_BAP_TOLERANCE):
     audio_path = motion.get("audio_path")
     if not audio_path:
         return None
@@ -840,7 +840,7 @@ def run_g1_motion_evaluation(
     sample_limit=None,
     enable_fk_metrics=False,
     fk_model_path=None,
-    root_quat_order="wxyz",
+    root_quat_order="xyzw",
 ):
     motion_files, motions, bad_files = load_motion_dir(
         motion_path,
