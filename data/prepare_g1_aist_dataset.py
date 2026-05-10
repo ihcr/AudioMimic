@@ -221,7 +221,7 @@ def prepare_g1_aist_dataset(
     extract_beats=False,
     g1_motion_beat_source="proxy",
     g1_fk_model_path=None,
-    g1_root_quat_order="wxyz",
+    g1_root_quat_order="xyzw",
 ):
     g1_motion_dir = Path(g1_motion_dir)
     aist_data_root = Path(aist_data_root)
@@ -334,7 +334,7 @@ def parse_args(argv=None):
     parser.add_argument(
         "--g1_root_quat_order",
         choices=("wxyz", "xyzw"),
-        default="wxyz",
+        default="xyzw",
     )
     return parser.parse_args(argv)
 

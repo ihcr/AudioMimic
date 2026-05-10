@@ -51,17 +51,24 @@ def tensor_dataset_cache_name(
     use_beats,
     beat_rep,
     motion_format=SMPL_MOTION_FORMAT,
+    feature_cache_mode="off",
+    feature_cache_dtype="float32",
 ):
     validate_motion_format(motion_format)
     beat_tag = "beat" if use_beats else "nobeat"
+    feature_cache_tag = (
+        ""
+        if feature_cache_mode == "off"
+        else f"featcache_{feature_cache_mode}_{feature_cache_dtype}_"
+    )
     if motion_format == SMPL_MOTION_FORMAT:
         return (
             f"{split}_tensor_dataset_{feature_type}_{beat_tag}_{beat_rep}_"
-            f"{TENSOR_DATASET_CACHE_VERSION}.pkl"
+            f"{feature_cache_tag}{TENSOR_DATASET_CACHE_VERSION}.pkl"
         )
     return (
         f"{split}_tensor_dataset_{motion_format}_{feature_type}_{beat_tag}_{beat_rep}_"
-        f"{TENSOR_DATASET_CACHE_VERSION}.pkl"
+        f"{feature_cache_tag}{TENSOR_DATASET_CACHE_VERSION}.pkl"
     )
 
 
@@ -87,7 +94,11 @@ def parse_args(argv=None):
     parser.add_argument("--motion_format", choices=("smpl", "g1"), default="smpl")
     parser.add_argument("--use_beats", action="store_true")
     parser.add_argument("--beat_rep", choices=("distance", "pulse"), default="distance")
+    parser.add_argument("--feature_cache_mode", choices=("off", "memmap"), default="off")
+    parser.add_argument("--feature_cache_dtype", choices=("float32", "float16"), default="float32")
     parser.add_argument("--sample_count", type=int, default=64)
+    parser.add_argument("--root_height_min", type=float, default=None)
+    parser.add_argument("--root_height_max", type=float, default=None)
     return parser.parse_args(argv)
 
 
@@ -142,7 +153,12 @@ def validate_g1_motion_file(path, payload):
     return root_pos[:, 2]
 
 
-def validate_motion_file(path, motion_format=SMPL_MOTION_FORMAT):
+def validate_motion_file(
+    path,
+    motion_format=SMPL_MOTION_FORMAT,
+    root_height_min=None,
+    root_height_max=None,
+):
     motion_format = validate_motion_format(motion_format)
     try:
         with open(path, "rb") as handle:
@@ -155,21 +171,25 @@ def validate_motion_file(path, motion_format=SMPL_MOTION_FORMAT):
     else:
         root_height_values = validate_smpl_motion_file(path, payload)
 
-    root_height_min = float(root_height_values.min())
-    root_height_max = float(root_height_values.max())
+    observed_height_min = float(root_height_values.min())
+    observed_height_max = float(root_height_values.max())
     min_bound = G1_ROOT_HEIGHT_MIN if motion_format == G1_MOTION_FORMAT else ROOT_HEIGHT_MIN
     max_bound = G1_ROOT_HEIGHT_MAX if motion_format == G1_MOTION_FORMAT else ROOT_HEIGHT_MAX
+    if root_height_min is not None:
+        min_bound = root_height_min
+    if root_height_max is not None:
+        max_bound = root_height_max
     require(
-        min_bound <= root_height_min <= max_bound,
-        f"{path}: root height min {root_height_min:.4f} is outside [{min_bound}, {max_bound}].",
+        min_bound <= observed_height_min <= max_bound,
+        f"{path}: root height min {observed_height_min:.4f} is outside [{min_bound}, {max_bound}].",
     )
     require(
-        min_bound <= root_height_max <= max_bound,
-        f"{path}: root height max {root_height_max:.4f} is outside [{min_bound}, {max_bound}].",
+        min_bound <= observed_height_max <= max_bound,
+        f"{path}: root height max {observed_height_max:.4f} is outside [{min_bound}, {max_bound}].",
     )
     return {
-        "root_height_min": root_height_min,
-        "root_height_max": root_height_max,
+        "root_height_min": observed_height_min,
+        "root_height_max": observed_height_max,
     }
 
 
@@ -210,6 +230,8 @@ def find_legacy_caches(
     use_beats,
     beat_rep,
     motion_format=SMPL_MOTION_FORMAT,
+    feature_cache_mode="off",
+    feature_cache_dtype="float32",
 ):
     motion_format = validate_motion_format(motion_format)
     beat_tag = "beat" if use_beats else "nobeat"
@@ -237,6 +259,8 @@ def find_legacy_caches(
             use_beats,
             beat_rep,
             motion_format=motion_format,
+            feature_cache_mode=feature_cache_mode,
+            feature_cache_dtype=feature_cache_dtype,
         )
         if motion_format == SMPL_MOTION_FORMAT:
             tensor_pattern = f"{split}_tensor_dataset_{feature_type}_{beat_tag}_{beat_rep}*.pkl"
@@ -255,6 +279,8 @@ def validate_split(
     use_beats,
     sample_count,
     motion_format=SMPL_MOTION_FORMAT,
+    root_height_min=None,
+    root_height_max=None,
 ):
     split_dir = Path(data_path) / split_name
     motion_dir = split_dir / "motions_sliced"
@@ -284,6 +310,8 @@ def validate_split(
         motion_stats = validate_motion_file(
             motion_dir / f"{stem}.pkl",
             motion_format=motion_format,
+            root_height_min=root_height_min,
+            root_height_max=root_height_max,
         )
         height_mins.append(motion_stats["root_height_min"])
         height_maxes.append(motion_stats["root_height_max"])
@@ -315,6 +343,10 @@ def validate_preprocessed_dataset(
     beat_rep="distance",
     sample_count=64,
     motion_format=SMPL_MOTION_FORMAT,
+    feature_cache_mode="off",
+    feature_cache_dtype="float32",
+    root_height_min=None,
+    root_height_max=None,
 ):
     motion_format = validate_motion_format(motion_format)
     data_path = Path(data_path)
@@ -328,6 +360,8 @@ def validate_preprocessed_dataset(
         use_beats=use_beats,
         beat_rep=beat_rep,
         motion_format=motion_format,
+        feature_cache_mode=feature_cache_mode,
+        feature_cache_dtype=feature_cache_dtype,
     )
     require(
         not stale_caches,
@@ -344,8 +378,12 @@ def validate_preprocessed_dataset(
                 use_beats,
                 beat_rep,
                 motion_format=motion_format,
+                feature_cache_mode=feature_cache_mode,
+                feature_cache_dtype=feature_cache_dtype,
             ).rsplit("_", 1)[-1].removesuffix(".pkl"),
             "motion_format": motion_format,
+            "feature_cache_mode": feature_cache_mode,
+            "feature_cache_dtype": feature_cache_dtype,
         }
     }
     for split in ("train", "test"):
@@ -356,6 +394,8 @@ def validate_preprocessed_dataset(
             use_beats=use_beats,
             sample_count=sample_count,
             motion_format=motion_format,
+            root_height_min=root_height_min,
+            root_height_max=root_height_max,
         )
     return summary
 
@@ -387,6 +427,10 @@ def main(argv=None):
         beat_rep=args.beat_rep,
         sample_count=args.sample_count,
         motion_format=args.motion_format,
+        feature_cache_mode=args.feature_cache_mode,
+        feature_cache_dtype=args.feature_cache_dtype,
+        root_height_min=args.root_height_min,
+        root_height_max=args.root_height_max,
     )
     print(format_summary(summary))
 

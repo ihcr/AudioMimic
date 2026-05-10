@@ -315,7 +315,18 @@ def test(opt):
     for i in range(len(all_cond)):
         data_tuple = None, all_cond[i], all_filenames[i]
         model.render_sample(
-            data_tuple, "test", opt.render_dir, render_count=-1, fk_out=fk_out, render=not opt.no_render
+            data_tuple,
+            "test",
+            opt.render_dir,
+            render_count=-1,
+            fk_out=fk_out,
+            render=not opt.no_render,
+            g1_fk_model_path=opt.g1_fk_model_path,
+            g1_root_quat_order=opt.g1_root_quat_order,
+            g1_render_backend=opt.g1_render_backend,
+            g1_render_width=opt.g1_render_width,
+            g1_render_height=opt.g1_render_height,
+            g1_mujoco_gl=opt.g1_mujoco_gl,
         )
     print("Done")
     torch.cuda.empty_cache()

@@ -129,7 +129,7 @@ srun --partition=workq --time=02:00:00 --ntasks=1 --cpus-per-task=8 --mem=32G ba
      --extract_beats \
      --g1_motion_beat_source fk \
      --g1_fk_model_path third_party/unitree_g1_description/g1_29dof_rev_1_0.xml \
-     --g1_root_quat_order wxyz'
+     --g1_root_quat_order xyzw'
 ```
 
 Validate the tree before training:
@@ -143,6 +143,8 @@ srun --partition=workq --time=00:30:00 --ntasks=1 --cpus-per-task=4 --mem=16G ba
      --processed_data_dir data/g1_aistpp_full_fkbeats_dataset_backups \
      --feature_type jukebox \
      --motion_format g1 \
+     --feature_cache_mode memmap \
+     --feature_cache_dtype float32 \
      --sample_count 64 \
      --use_beats \
      --beat_rep distance'
@@ -163,7 +165,7 @@ Additional metadata from `data/g1_aistpp_full_fkbeats/metadata.json`:
 - official test names: `20`
 - unused files outside the official EDGE split: `391`
 - FK model: `third_party/unitree_g1_description/g1_29dof_rev_1_0.xml`
-- root quaternion order: `wxyz`
+- root quaternion order: `xyzw`
 
 The matching fresh processed-cache path is:
 
@@ -179,3 +181,91 @@ slurm/pipelines/20260504-g1-aist-beatdistance-fkbeats
 
 It uses the `g1_beatdistance_fkbeats` preset, trains with beat conditioning but
 no auxiliary beat loss, and runs FK-enabled G1 evaluation after training.
+
+The follow-up cautious beat-loss fine-tune uses:
+
+```text
+g1_beatdistance_fkbeats_lbeat
+```
+
+That preset keeps the same prepared tree and cache, trains a G1-native beat
+estimator from normalized 38-D robot motion with FK-derived `motion_dist`
+targets, then fine-tunes from:
+
+```text
+runs/train/g1_aist_beatdistance_fkbeats/weights/train-2000.pt
+```
+
+It uses a weak delayed beat loss (`lambda_beat=0.01`) with a soft cap so the
+auxiliary term stays bounded without becoming fully gradient-dead when capped.
+
+The 2026-05-05 submitted pipeline is:
+
+```text
+slurm/pipelines/20260505-g1-aist-beatdistance-fkbeats-lbeat
+```
+
+The chain validates the FK-beat tree, trains the G1 beat estimator, fine-tunes
+the diffusion checkpoint, then runs FK-enabled G1 evaluation. The validation
+stage must pass `--feature_cache_mode memmap --feature_cache_dtype float32`;
+without those flags the validator will correctly reject the current memmap
+tensor caches as non-matching legacy caches.
+
+## G1 Lbeat Experiment Results
+
+The G1 beat-loss path is separate from SMPL `Lbeat`. The normalized estimator
+uses `relative_distance = clamp(motion_dist / motion_spacing, 0, 1)` and a
+sigmoid output head, then diffusion transforms `cond["beat_target"]` into the
+same target space before applying the auxiliary beat loss.
+
+The first normalized-target scale check showed why old weights are not directly
+comparable: raw FK `motion_dist` had mean-square scale about `13.7263`, while
+relative distance was about `0.10598`, a roughly `129.5x` MSE-scale drop.
+
+Completed G1 FK-beat runs to use as current anchors:
+
+| Run | Path | Decision | Key metrics |
+| --- | --- | --- | --- |
+| FKBeat no lbeat | `slurm/pipelines/20260504-g1-aist-beatdistance-fkbeats` | stable default | `G1BAS=0.5446`, `G1FKBAS=0.5502`, `G1BeatF1=0.3333`, `G1FootSliding=0.6112`, `G1Dist=6.87` |
+| Raw lbeat fine-tune | `slurm/pipelines/20260505-g1-aist-beatdistance-fkbeats-lbeat` | weak rhythm gain, not clearly better | `G1BAS=0.5697`, `G1FKBAS=0.5538`, `G1BeatF1=0.3289`, `G1FootSliding=0.6577`, `G1Dist=7.02` |
+| Relative lbeat scratch `lambda_beat=0.2` | `slurm/pipelines/20260506-g1-aist-fkbeats-lbeat-relative-scratch-lam020-cap1c` | rejected | `G1BAS=0.7300`, `G1FKBAS=0.8792`, `G1BeatF1=0.8716`, `G1FootSliding=3.0399`, `G1Dist=56.26` |
+| Relative lbeat fine-tune `lambda_beat=0.2` | `slurm/pipelines/20260507-g1-aist-fkbeats-lbeat-relative-finetune-lam020-cap1` | best lbeat direction so far, not a clean replacement | `G1BAS=0.5956`, `G1FKBAS=0.5978`, `G1BeatF1=0.4372`, `G1FootSliding=0.7102`, `G1GroundPenetration=0.0979`, `G1Dist=7.59` |
+
+Interpretation: normalized lbeat fine-tuning can improve G1 rhythm without the
+scratch-run root-motion collapse, but the current loss still buys beat score by
+worsening contact quality. Before treating any lbeat checkpoint as the deployable
+G1 model, compare beat metrics against foot sliding, ground penetration, root
+velocity, root jerk, and distribution distance.
+
+## G1 Full-Song Audio Sources
+
+G1 generation still runs through 5-second model windows internally. That does
+not mean the final render should be a 5-second clip. Full-song evaluation
+creates enough overlapping windows to cover the selected audio, stitches the
+generated robot motion, and then renders one `.mp4` for the stitched motion.
+
+There are three different audio surfaces, and they should not be mixed up:
+
+- Raw full AIST music, for example
+  `/projects/u6ed/yukun/Music2Dance/Code/aist_plusplus_datasets/audio/mHO5.mp3`.
+  Use this with `--full_music_dir` when the goal is a video for the whole song.
+- Choreography-trimmed test wavs under a prepared dataset, for example
+  `data/g1_aistpp_full_fkbeats/test/wavs`. Use these only when the goal is to
+  match the existing trimmed test choreography span.
+- 5-second sliced wavs under `wavs_sliced`. These are model input windows and
+  metric/eval artifacts, not whole-song audio.
+
+For whole-song qualitative renders, use:
+
+```bash
+python -m eval.run_full_song_eval \
+  --data_path data/g1_aistpp_full_fkbeats \
+  --full_music_dir /projects/u6ed/yukun/Music2Dance/Code/aist_plusplus_datasets/audio \
+  --motion_format g1 \
+  --render \
+  --g1_render_backend mujoco \
+  --g1_root_quat_order xyzw
+```
+
+Do not combine `--full_music_dir` with `--use_precomputed_test_slices`; those
+precomputed slices were derived from the shorter choreography-trimmed wav tree.

@@ -30,6 +30,7 @@ def train(opt):
         beat_loss_start_epoch=opt.beat_loss_start_epoch,
         beat_loss_warmup_epochs=opt.beat_loss_warmup_epochs,
         beat_loss_max_fraction=opt.beat_loss_max_fraction,
+        beat_loss_cap_mode=opt.beat_loss_cap_mode,
         gradient_accumulation_steps=opt.gradient_accumulation_steps,
         mixed_precision=opt.mixed_precision,
         resume_training_state=bool(opt.checkpoint) and not opt.finetune_from_checkpoint,

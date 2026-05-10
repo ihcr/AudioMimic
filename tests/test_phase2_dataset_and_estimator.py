@@ -362,6 +362,39 @@ class BeatEstimatorTests(unittest.TestCase):
         self.assertEqual(output.shape, (2, 150))
         self.assertTrue(torch.all(output >= 0))
 
+    def test_g1_beat_estimator_accepts_normalized_pose_and_backpropagates(self):
+        beat_estimator = reload_module("model.beat_estimator")
+        model = beat_estimator.G1BeatDistanceEstimator()
+        pose = torch.randn(2, 150, 38, requires_grad=True)
+
+        output = model(pose)
+        output.mean().backward()
+
+        self.assertEqual(output.shape, (2, 150))
+        self.assertTrue(torch.all(output >= 0))
+        self.assertIsNotNone(pose.grad)
+        self.assertGreater(float(pose.grad.abs().sum()), 0.0)
+
+    def test_g1_beat_estimator_sigmoid_mode_outputs_bounded_targets(self):
+        beat_estimator = reload_module("model.beat_estimator")
+        model = beat_estimator.G1BeatDistanceEstimator(output_activation="sigmoid")
+        pose = torch.randn(2, 150, 38, requires_grad=True)
+
+        output = model(pose)
+        output.mean().backward()
+
+        self.assertEqual(output.shape, (2, 150))
+        self.assertTrue(torch.all(output >= 0))
+        self.assertTrue(torch.all(output <= 1))
+        self.assertGreater(float(pose.grad.abs().sum()), 0.0)
+
+    def test_g1_beat_estimator_rejects_wrong_feature_size(self):
+        beat_estimator = reload_module("model.beat_estimator")
+        model = beat_estimator.G1BeatDistanceEstimator()
+
+        with self.assertRaisesRegex(ValueError, r"\[B, T, 38\]"):
+            model(torch.randn(2, 150, 37))
+
     def test_motion_beat_dataset_pairs_motion_and_beats(self):
         train_module = reload_module("train_beat_estimator")
 
@@ -418,7 +451,45 @@ class BeatEstimatorTests(unittest.TestCase):
 
             self.assertEqual(len(dataset), 1)
             self.assertTrue(
-                (cache_dir / "beat_estimator_train_fps30_seq150_v2.pt").is_file()
+                (cache_dir / "beat_estimator_train_fps30_seq150_raw_distance_v2.pt").is_file()
+            )
+
+    def test_motion_beat_dataset_can_use_relative_distance_targets(self):
+        train_module = reload_module("train_beat_estimator")
+
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            motion_dir = tmp_path / "train" / "motions_sliced"
+            beat_dir = tmp_path / "train" / "beat_feats"
+            cache_dir = tmp_path / "dataset_backups"
+            motion_dir.mkdir(parents=True)
+            beat_dir.mkdir(parents=True)
+
+            (motion_dir / "clipA.pkl").write_bytes(b"motion")
+            np.savez(
+                beat_dir / "clipA.npz",
+                motion_dist=np.array([0, 5, 10, 30], dtype=np.int64),
+                motion_spacing=np.array([10.0, 10.0, 20.0, 20.0], dtype=np.float32),
+            )
+
+            with patch.object(
+                train_module,
+                "load_motion_joints",
+                return_value=torch.zeros(4, 24, 3, dtype=torch.float32),
+            ):
+                dataset = train_module.MotionBeatDataset(
+                    str(motion_dir),
+                    str(beat_dir),
+                    seq_len=4,
+                    cache_dir=cache_dir,
+                    target_transform="relative_distance",
+                )
+
+            _, target = dataset[0]
+
+            self.assertTrue(torch.allclose(target, torch.tensor([0.0, 0.5, 0.5, 1.0])))
+            self.assertTrue(
+                (cache_dir / "beat_estimator_train_fps30_seq4_relative_distance_v2.pt").is_file()
             )
 
     def test_motion_beat_dataset_reuses_cache_without_reloading_motion_files(self):
@@ -464,6 +535,66 @@ class BeatEstimatorTests(unittest.TestCase):
 
             self.assertEqual(joints.shape, (150, 24, 3))
             self.assertEqual(target.shape, (150,))
+
+    def test_g1_motion_beat_dataset_uses_normalized_pose_and_motion_dist_targets(self):
+        train_module = reload_module("train_beat_estimator")
+
+        class TinyAISTPPDataset(Dataset):
+            def __init__(self, *args, **kwargs):
+                self.kwargs = kwargs
+                self.data = {
+                    "pose": torch.full((2, 150, 38), 0.25, dtype=torch.float32),
+                    "motion_dist": torch.arange(300, dtype=torch.int64).reshape(2, 150),
+                    "motion_spacing": torch.full((2, 150), 30.0),
+                }
+
+            def __len__(self):
+                return 2
+
+        with patch.object(train_module, "AISTPPDataset", TinyAISTPPDataset):
+            dataset = train_module.G1MotionBeatDataset(
+                data_path="data/g1_aistpp_full_fkbeats",
+                backup_path="data/g1_aistpp_full_fkbeats_dataset_backups",
+                feature_type="jukebox",
+                force_reload=False,
+            )
+
+        pose, target = dataset[1]
+
+        self.assertEqual(pose.shape, (150, 38))
+        self.assertEqual(target.shape, (150,))
+        self.assertEqual(pose.dtype, torch.float32)
+        self.assertEqual(target.dtype, torch.float32)
+        self.assertTrue(torch.equal(target, torch.arange(150, 300, dtype=torch.float32)))
+        self.assertEqual(dataset.source_dataset.kwargs["motion_format"], "g1")
+        self.assertTrue(dataset.source_dataset.kwargs["use_beats"])
+        self.assertEqual(dataset.source_dataset.kwargs["beat_rep"], "distance")
+
+    def test_g1_motion_beat_dataset_can_use_relative_distance_targets(self):
+        train_module = reload_module("train_beat_estimator")
+
+        class TinyAISTPPDataset(Dataset):
+            def __init__(self, *args, **kwargs):
+                self.data = {
+                    "pose": torch.full((1, 4, 38), 0.25, dtype=torch.float32),
+                    "motion_dist": torch.tensor([[0, 5, 10, 30]], dtype=torch.int64),
+                    "motion_spacing": torch.tensor([[10.0, 10.0, 20.0, 20.0]]),
+                }
+
+            def __len__(self):
+                return 1
+
+        with patch.object(train_module, "AISTPPDataset", TinyAISTPPDataset):
+            dataset = train_module.G1MotionBeatDataset(
+                data_path="data/g1_aistpp_full_fkbeats",
+                backup_path="data/g1_aistpp_full_fkbeats_dataset_backups",
+                feature_type="jukebox",
+                target_transform="relative_distance",
+            )
+
+        _, target = dataset[0]
+
+        self.assertTrue(torch.allclose(target, torch.tensor([0.0, 0.5, 0.5, 1.0])))
 
     def test_save_checkpoint_roundtrip(self):
         beat_estimator = reload_module("model.beat_estimator")
@@ -525,6 +656,76 @@ class BeatEstimatorTests(unittest.TestCase):
         self.assertEqual(args.num_workers, 5)
         self.assertEqual(args.mixed_precision, "no")
         self.assertTrue(args.force_rebuild_cache)
+
+    def test_parse_args_accepts_g1_motion_format_and_dataset_paths(self):
+        train_module = reload_module("train_beat_estimator")
+
+        with patch.object(
+            sys,
+            "argv",
+            [
+                "train_beat_estimator.py",
+                "--motion_dir",
+                "data/g1_aistpp_full_fkbeats/train/motions_sliced",
+                "--beat_dir",
+                "data/g1_aistpp_full_fkbeats/train/beat_feats",
+                "--motion_format",
+                "g1",
+                "--data_path",
+                "data/g1_aistpp_full_fkbeats",
+                "--processed_data_dir",
+                "data/g1_aistpp_full_fkbeats_dataset_backups",
+                "--feature_type",
+                "jukebox",
+            ],
+        ):
+            args = train_module.parse_args()
+
+        self.assertEqual(args.motion_format, "g1")
+        self.assertEqual(args.data_path, "data/g1_aistpp_full_fkbeats")
+        self.assertEqual(args.processed_data_dir, "data/g1_aistpp_full_fkbeats_dataset_backups")
+
+    def test_parse_args_accepts_g1_target_transform(self):
+        train_module = reload_module("train_beat_estimator")
+
+        with patch.object(
+            sys,
+            "argv",
+            [
+                "train_beat_estimator.py",
+                "--motion_dir",
+                "motions",
+                "--beat_dir",
+                "beats",
+                "--motion_format",
+                "g1",
+                "--g1_target_transform",
+                "relative_distance",
+            ],
+        ):
+            args = train_module.parse_args()
+
+        self.assertEqual(args.g1_target_transform, "relative_distance")
+
+    def test_parse_args_accepts_generic_beat_target_transform(self):
+        train_module = reload_module("train_beat_estimator")
+
+        with patch.object(
+            sys,
+            "argv",
+            [
+                "train_beat_estimator.py",
+                "--motion_dir",
+                "motions",
+                "--beat_dir",
+                "beats",
+                "--beat_target_transform",
+                "relative_distance",
+            ],
+        ):
+            args = train_module.parse_args()
+
+        self.assertEqual(args.beat_target_transform, "relative_distance")
 
     def test_build_dataloader_kwargs_enables_prefetching_for_estimator(self):
         train_module = reload_module("train_beat_estimator")
@@ -669,6 +870,66 @@ class BeatEstimatorTests(unittest.TestCase):
                 "Beat estimator val 2/2",
             ],
         )
+
+    def test_train_selects_g1_dataset_and_estimator_for_g1_motion_format(self):
+        train_module = reload_module("train_beat_estimator")
+
+        class TinyDataset(Dataset):
+            def __len__(self):
+                return 2
+
+            def __getitem__(self, idx):
+                return torch.zeros(150, 38), torch.zeros(150)
+
+        class TinyG1Model(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.bias = torch.nn.Parameter(torch.zeros(1))
+
+            def forward(self, pose):
+                batch, seq_len = pose.shape[:2]
+                return self.bias.expand(batch, seq_len)
+
+        class FakeProgress:
+            def __init__(self, iterable, **kwargs):
+                self._iterable = iterable
+
+            def __iter__(self):
+                return iter(self._iterable)
+
+            def set_postfix(self, **kwargs):
+                self.postfix = kwargs
+
+        with patch.object(
+            train_module, "G1MotionBeatDataset", return_value=TinyDataset()
+        ) as dataset_cls, patch.object(
+            train_module, "save_checkpoint"
+        ) as save_checkpoint, patch.object(
+            train_module, "G1BeatDistanceEstimator", return_value=TinyG1Model()
+        ) as model_cls, patch.object(
+            train_module, "tqdm", side_effect=lambda iterable, **kwargs: FakeProgress(iterable), create=True
+        ):
+            train_module.train(
+                motion_dir="data/g1_aistpp_full_fkbeats/train/motions_sliced",
+                beat_dir="data/g1_aistpp_full_fkbeats/train/beat_feats",
+                data_path="data/g1_aistpp_full_fkbeats",
+                processed_data_dir="data/g1_aistpp_full_fkbeats_dataset_backups",
+                output_path="unused.pt",
+                epochs=1,
+                batch_size=1,
+                val_split=0.0,
+                device="cpu",
+                motion_format="g1",
+                beat_target_transform="relative_distance",
+            )
+
+        dataset_cls.assert_called_once()
+        model_cls.assert_called_once()
+        _, _, config = save_checkpoint.call_args.args
+        self.assertEqual(config["motion_format"], "g1")
+        self.assertEqual(config["input_dim"], 38)
+        self.assertEqual(config["target_transform"], "relative_distance")
+        self.assertEqual(config["output_activation"], "sigmoid")
 
 
 if __name__ == "__main__":

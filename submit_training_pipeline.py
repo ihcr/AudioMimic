@@ -26,6 +26,9 @@ DEFAULT_LBEAT_REFERENCE_EVAL_DIR = (
     "/lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/diffusion/"
     "slurm/pipelines/20260424-090100-edge_beatdistance_20260424_shmfix/eval"
 )
+DEFAULT_G1_FKBEAT_CHECKPOINT = (
+    "runs/train/g1_aist_beatdistance_fkbeats/weights/train-2000.pt"
+)
 
 
 def default_lambda_acc(use_beats):
@@ -129,6 +132,32 @@ PRESET_DEFAULTS = {
         "skip_preprocess": True,
         "enable_g1_fk_metrics": True,
     },
+    "g1_beatdistance_fkbeats_lbeat": {
+        "motion_format": "g1",
+        "data_path": "data/g1_aistpp_full_fkbeats",
+        "processed_data_dir": "data/g1_aistpp_full_fkbeats_dataset_backups",
+        "feature_type": "jukebox",
+        "use_beats": True,
+        "beat_rep": "distance",
+        "lambda_acc": 0.0,
+        "lambda_beat": 0.01,
+        "batch_size": DEFAULT_BATCH_SIZE,
+        "gradient_accumulation_steps": 4,
+        "epochs": 500,
+        "save_interval": 50,
+        "learning_rate": DEFAULT_LEARNING_RATE,
+        "beat_loss_start_epoch": 50,
+        "beat_loss_warmup_epochs": 300,
+        "beat_loss_max_fraction": 0.10,
+        "beat_loss_cap_mode": "soft",
+        "g1_target_transform": "relative_distance",
+        "checkpoint": DEFAULT_G1_FKBEAT_CHECKPOINT,
+        "finetune_from_checkpoint": True,
+        "feature_cache_mode": "memmap",
+        "feature_cache_dtype": "float32",
+        "skip_preprocess": True,
+        "enable_g1_fk_metrics": True,
+    },
     "g1_baseline": {
         "motion_format": "g1",
         "data_path": "data/g1_aistpp_full",
@@ -181,9 +210,15 @@ PRESET_TRACKED_ARGS = (
     "beat_loss_start_epoch",
     "beat_loss_warmup_epochs",
     "beat_loss_max_fraction",
+    "beat_loss_cap_mode",
+    "beat_target_transform",
+    "g1_target_transform",
+    "checkpoint",
     "finetune_from_checkpoint",
     "feature_cache_mode",
     "feature_cache_dtype",
+    "root_height_min",
+    "root_height_max",
     "skip_preprocess",
     "skip_eval",
 )
@@ -238,6 +273,21 @@ def parse_args(argv=None):
     parser.add_argument("--beat_loss_start_epoch", type=int, default=0)
     parser.add_argument("--beat_loss_warmup_epochs", type=int, default=0)
     parser.add_argument("--beat_loss_max_fraction", type=float, default=0.0)
+    parser.add_argument(
+        "--beat_loss_cap_mode",
+        choices=("hard", "soft"),
+        default="hard",
+    )
+    parser.add_argument(
+        "--g1_target_transform",
+        choices=("raw_distance", "relative_distance"),
+        default="raw_distance",
+    )
+    parser.add_argument(
+        "--beat_target_transform",
+        choices=("raw_distance", "relative_distance"),
+        default="raw_distance",
+    )
     parser.add_argument("--checkpoint", default="", help="Training checkpoint to load before this run.")
     parser.add_argument(
         "--finetune_from_checkpoint",
@@ -310,6 +360,8 @@ def parse_args(argv=None):
     parser.add_argument("--train_gpus", type=int, default=1)
     parser.add_argument("--eval_gpus", type=int, default=1)
     parser.add_argument("--validate_sample_count", type=int, default=64)
+    parser.add_argument("--root_height_min", type=float, default=None)
+    parser.add_argument("--root_height_max", type=float, default=None)
     parser.add_argument("--eval_music_dir", default="data/test/wavs")
     parser.add_argument("--eval_seed", type=int, default=1234)
     parser.add_argument("--enable_g1_fk_metrics", action="store_true")
@@ -320,7 +372,7 @@ def parse_args(argv=None):
     parser.add_argument(
         "--g1_root_quat_order",
         choices=("wxyz", "xyzw"),
-        default="wxyz",
+        default="xyzw",
     )
     parser.add_argument(
         "--eval_mode",
@@ -388,7 +440,7 @@ def validate_pipeline_config(args):
     if args.allow_lbeat_from_scratch and not args.checkpoint:
         args.finetune_from_checkpoint = False
     if (
-        args.preset == "edge_beatdistance_lbeat"
+        args.preset in ("edge_beatdistance_lbeat", "g1_beatdistance_fkbeats_lbeat")
         and not args.checkpoint
         and not args.allow_lbeat_from_scratch
     ):
@@ -401,8 +453,6 @@ def validate_pipeline_config(args):
         raise ValueError("--beat_loss_max_fraction must be non-negative.")
     if args.beat_estimator_max_val_loss <= 0:
         raise ValueError("--beat_estimator_max_val_loss must be positive.")
-    if args.motion_format == "g1" and args.lambda_beat > 0:
-        raise ValueError("G1 training supports beat conditioning only; set --lambda_beat 0.")
     if args.motion_format == "g1" and args.eval_mode != "dataset":
         raise ValueError("G1 evaluation currently supports --eval_mode dataset only.")
     return args
@@ -450,6 +500,18 @@ def build_estimator_command(args, output_path):
             args.estimator_mixed_precision,
             "--device",
             "cuda" if args.estimator_gpus > 0 else "cpu",
+            "--motion_format",
+            args.motion_format,
+            "--data_path",
+            args.data_path,
+            "--processed_data_dir",
+            args.processed_data_dir,
+            "--feature_type",
+            args.feature_type,
+            "--beat_target_transform",
+            args.beat_target_transform,
+            "--g1_target_transform",
+            args.g1_target_transform,
         ]
     )
 
@@ -466,6 +528,10 @@ def build_validation_command(args):
         args.feature_type,
         "--motion_format",
         args.motion_format,
+        "--feature_cache_mode",
+        args.feature_cache_mode,
+        "--feature_cache_dtype",
+        args.feature_cache_dtype,
         "--sample_count",
         args.validate_sample_count,
     ]
@@ -477,6 +543,10 @@ def build_validation_command(args):
                 args.beat_rep,
             ]
         )
+    if args.root_height_min is not None:
+        command.extend(["--root_height_min", args.root_height_min])
+    if args.root_height_max is not None:
+        command.extend(["--root_height_max", args.root_height_max])
     return shell_join(command)
 
 
@@ -509,6 +579,8 @@ def build_train_command(args, beat_estimator_ckpt=None):
                 args.beat_loss_warmup_epochs,
                 "--beat_loss_max_fraction",
                 args.beat_loss_max_fraction,
+                "--beat_loss_cap_mode",
+                args.beat_loss_cap_mode,
                 "--beat_estimator_max_val_loss",
                 args.beat_estimator_max_val_loss,
             ]

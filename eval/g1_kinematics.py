@@ -105,7 +105,7 @@ def validate_g1_joint_order(model_or_joint_names):
     return joint_names
 
 
-def build_g1_qpos(root_pos, root_rot, dof_pos, root_quat_order="wxyz"):
+def build_g1_qpos(root_pos, root_rot, dof_pos, root_quat_order="xyzw"):
     root_pos = _as_float_array(root_pos, "root_pos", ndim=2)
     root_rot = _as_float_array(root_rot, "root_rot", ndim=2)
     dof_pos = _as_float_array(dof_pos, "dof_pos", ndim=2)
@@ -169,7 +169,7 @@ def _extract_keypoints(model, data, body_ids):
     return np.asarray(keypoints, dtype=np.float32), left_foot, right_foot, keypoint_names
 
 
-def forward_g1_kinematics(motion, model_path, root_quat_order="wxyz"):
+def forward_g1_kinematics(motion, model_path, root_quat_order="xyzw"):
     model = load_g1_mujoco_model(model_path)
     mujoco = _require_mujoco()
     qpos = build_g1_qpos(
@@ -183,6 +183,7 @@ def forward_g1_kinematics(motion, model_path, root_quat_order="wxyz"):
 
     data = mujoco.MjData(model)
     body_names = _names_for_objects(model, mujoco.mjtObj.mjOBJ_BODY, model.nbody)
+    body_parent_ids = model.body_parentid.copy().astype(np.int64)
     geom_names = _names_for_objects(model, mujoco.mjtObj.mjOBJ_GEOM, model.ngeom)
     body_ids = {name: _body_id(model, name) for name in DEFAULT_KEYPOINT_BODIES}
 
@@ -209,6 +210,7 @@ def forward_g1_kinematics(motion, model_path, root_quat_order="wxyz"):
     return {
         "bodies": np.asarray(bodies, dtype=np.float32),
         "body_names": body_names,
+        "body_parent_ids": body_parent_ids,
         "geoms": np.asarray(geoms, dtype=np.float32),
         "geom_names": geom_names,
         "keypoints": np.asarray(keypoints, dtype=np.float32),

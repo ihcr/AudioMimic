@@ -182,6 +182,104 @@ class G1DiffusionTests(unittest.TestCase):
         self.assertEqual(payload["q"].shape, (150, 33))
         self.assertNotIn("full_pose", payload)
 
+    def test_g1_render_sample_calls_g1_visualizer_when_render_enabled(self):
+        diffusion_module = reload_module("model.diffusion")
+        diffusion = diffusion_module.GaussianDiffusion(
+            DummyModel(),
+            horizon=150,
+            repr_dim=38,
+            smpl=None,
+            schedule="cosine",
+            n_timestep=10,
+            predict_epsilon=False,
+            loss_type="l2",
+            cond_drop_prob=0.0,
+            motion_format="g1",
+        )
+        samples = torch.zeros(1, 150, 38)
+        samples[..., 3:9] = torch.tensor([1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
+        cond = torch.randn(1, 150, 35)
+
+        with TemporaryDirectory() as tmpdir, patch(
+            "eval.g1_visualization.render_g1_motion"
+        ) as mock_render:
+            diffusion.render_sample(
+                samples,
+                cond,
+                IdentityNormalizer(),
+                epoch="sample",
+                render_out=tmpdir,
+                fk_out=tmpdir,
+                name=["song_slice0.wav"],
+                sound=True,
+                render=True,
+                g1_fk_model_path="robot.xml",
+                g1_root_quat_order="xyzw",
+                g1_render_backend="stick",
+                g1_render_width=640,
+                g1_render_height=480,
+                g1_mujoco_gl="glfw",
+            )
+
+        mock_render.assert_called_once()
+        _, kwargs = mock_render.call_args
+        self.assertEqual(kwargs["out"], tmpdir)
+        self.assertEqual(kwargs["epoch"], "sample")
+        self.assertEqual(kwargs["num"], 0)
+        self.assertEqual(kwargs["name"], "song_slice0.wav")
+        self.assertTrue(kwargs["sound"])
+        self.assertEqual(kwargs["model_path"], "robot.xml")
+        self.assertEqual(kwargs["root_quat_order"], "xyzw")
+        self.assertEqual(kwargs["render_backend"], "stick")
+        self.assertEqual(kwargs["width"], 640)
+        self.assertEqual(kwargs["height"], 480)
+        self.assertEqual(kwargs["mujoco_gl"], "glfw")
+        self.assertEqual(mock_render.call_args.args[0]["motion_format"], "g1")
+
+    def test_g1_long_render_uses_original_full_song_audio_when_available(self):
+        diffusion_module = reload_module("model.diffusion")
+        diffusion = diffusion_module.GaussianDiffusion(
+            DummyModel(),
+            horizon=150,
+            repr_dim=38,
+            smpl=None,
+            schedule="cosine",
+            n_timestep=10,
+            predict_epsilon=False,
+            loss_type="l2",
+            cond_drop_prob=0.0,
+            motion_format="g1",
+        )
+        samples = torch.zeros(2, 150, 38)
+        samples[..., 3:9] = torch.tensor([1.0, 0.0, 0.0, 0.0, 1.0, 0.0])
+        cond = torch.randn(2, 150, 35)
+
+        with TemporaryDirectory() as tmpdir, patch(
+            "eval.g1_visualization.render_g1_motion"
+        ) as mock_render:
+            diffusion.render_sample(
+                samples,
+                cond,
+                IdentityNormalizer(),
+                epoch="fullsong",
+                render_out=tmpdir,
+                fk_out=tmpdir,
+                name=["song_slice0.wav", "song_slice1.wav"],
+                sound=True,
+                mode="long",
+                render=True,
+                metadata_audio_path="song.wav",
+                metadata_total_frames=160,
+                g1_render_backend="mujoco",
+            )
+
+        _, kwargs = mock_render.call_args
+        self.assertEqual(kwargs["name"], "song.wav")
+        self.assertFalse(kwargs["stitch"])
+        self.assertEqual(kwargs["render_backend"], "mujoco")
+        self.assertEqual(kwargs["output_name"], ["song_slice0.wav", "song_slice1.wav"])
+        self.assertEqual(mock_render.call_args.args[0]["root_pos"].shape[0], 160)
+
 
 if __name__ == "__main__":
     unittest.main()

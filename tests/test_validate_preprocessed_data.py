@@ -155,6 +155,29 @@ class ValidatePreprocessedDataTests(unittest.TestCase):
                     sample_count=2,
                 )
 
+    def test_validate_preprocessed_dataset_accepts_explicit_root_height_min(self):
+        module = load_module()
+
+        with TemporaryDirectory() as tmpdir:
+            data_root = Path(tmpdir) / "data"
+            processed_root = Path(tmpdir) / "dataset_backups"
+            build_minimal_dataset(data_root, feature_type="jukebox", use_beats=False)
+            processed_root.mkdir()
+            bad_motion = data_root / "train" / "motions_sliced" / "clip_a_slice0.pkl"
+            write_motion(bad_motion, min_height=-0.5, max_height=0.1)
+
+            summary = module.validate_preprocessed_dataset(
+                data_path=data_root,
+                processed_data_dir=processed_root,
+                feature_type="jukebox",
+                use_beats=False,
+                beat_rep="distance",
+                sample_count=2,
+                root_height_min=-1.0,
+            )
+
+        self.assertLess(summary["train"]["root_height_min"], 0.0)
+
     def test_validate_preprocessed_dataset_accepts_g1_motion_format(self):
         module = load_module()
 
@@ -176,6 +199,41 @@ class ValidatePreprocessedDataTests(unittest.TestCase):
 
         self.assertEqual(summary["cache_versions"]["motion_format"], "g1")
         self.assertEqual(summary["train"]["count"], 2)
+
+    def test_validate_preprocessed_dataset_accepts_current_memmap_tensor_cache(self):
+        module = load_module()
+
+        with TemporaryDirectory() as tmpdir:
+            data_root = Path(tmpdir) / "data"
+            processed_root = Path(tmpdir) / "dataset_backups"
+            build_minimal_g1_dataset(data_root, feature_type="jukebox", use_beats=True)
+            processed_root.mkdir()
+            for split in ("train", "test"):
+                cache_name = module.tensor_dataset_cache_name(
+                    split,
+                    "jukebox",
+                    True,
+                    "distance",
+                    motion_format="g1",
+                    feature_cache_mode="memmap",
+                    feature_cache_dtype="float32",
+                )
+                (processed_root / cache_name).write_bytes(b"current")
+
+            summary = module.validate_preprocessed_dataset(
+                data_path=data_root,
+                processed_data_dir=processed_root,
+                feature_type="jukebox",
+                use_beats=True,
+                beat_rep="distance",
+                sample_count=2,
+                motion_format="g1",
+                feature_cache_mode="memmap",
+                feature_cache_dtype="float32",
+            )
+
+        self.assertEqual(summary["cache_versions"]["feature_cache_mode"], "memmap")
+        self.assertEqual(summary["cache_versions"]["feature_cache_dtype"], "float32")
 
     def test_validate_preprocessed_dataset_creates_fresh_processed_cache_dir(self):
         module = load_module()

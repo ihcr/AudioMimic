@@ -118,6 +118,11 @@ def parse_train_opt(argv=None):
     parser.add_argument("--beat_loss_warmup_epochs", type=int, default=0)
     parser.add_argument("--beat_loss_max_fraction", type=float, default=0.0)
     parser.add_argument(
+        "--beat_loss_cap_mode",
+        choices=("hard", "soft"),
+        default="hard",
+    )
+    parser.add_argument(
         "--finetune_from_checkpoint",
         action="store_true",
         help="Load checkpoint weights with a fresh optimizer state.",
@@ -171,6 +176,26 @@ def parse_test_opt():
     parser.add_argument(
         "--motion_format", type=str, choices=("smpl", "g1"), default="smpl"
     )
+    parser.add_argument(
+        "--g1_fk_model_path",
+        type=str,
+        default="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
+    )
+    parser.add_argument(
+        "--g1_root_quat_order",
+        type=str,
+        choices=("wxyz", "xyzw"),
+        default="xyzw",
+    )
+    parser.add_argument(
+        "--g1_render_backend",
+        type=str,
+        choices=("mujoco", "stick"),
+        default="mujoco",
+    )
+    parser.add_argument("--g1_render_width", type=int, default=960)
+    parser.add_argument("--g1_render_height", type=int, default=720)
+    parser.add_argument("--g1_mujoco_gl", type=str, default="egl")
     parser.add_argument(
         "--out_length",
         type=float,

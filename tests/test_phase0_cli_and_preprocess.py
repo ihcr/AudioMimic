@@ -110,6 +110,8 @@ class TrainArgParserTests(unittest.TestCase):
             "200",
             "--beat_loss_max_fraction",
             "0.25",
+            "--beat_loss_cap_mode",
+            "soft",
             "--finetune_from_checkpoint",
             "--train_num_workers",
             "3",
@@ -141,6 +143,7 @@ class TrainArgParserTests(unittest.TestCase):
         self.assertEqual(opt.beat_loss_start_epoch, 25)
         self.assertEqual(opt.beat_loss_warmup_epochs, 200)
         self.assertEqual(opt.beat_loss_max_fraction, 0.25)
+        self.assertEqual(opt.beat_loss_cap_mode, "soft")
         self.assertTrue(opt.finetune_from_checkpoint)
         self.assertEqual(opt.train_num_workers, 3)
         self.assertEqual(opt.test_num_workers, 1)
@@ -168,6 +171,47 @@ class TrainArgParserTests(unittest.TestCase):
         self.assertEqual(opt.beat_source, "user")
         self.assertEqual(opt.beat_file, "beats/example.json")
 
+    def test_test_parser_accepts_g1_render_arguments(self):
+        with argv_context(
+            "test.py",
+            "--motion_format",
+            "g1",
+            "--g1_fk_model_path",
+            "third_party/unitree_g1_description/g1.xml",
+            "--g1_root_quat_order",
+            "xyzw",
+            "--g1_render_backend",
+            "stick",
+            "--g1_render_width",
+            "640",
+            "--g1_render_height",
+            "480",
+            "--g1_mujoco_gl",
+            "glfw",
+        ):
+            opt = args.parse_test_opt()
+
+        self.assertEqual(opt.motion_format, "g1")
+        self.assertEqual(
+            opt.g1_fk_model_path,
+            "third_party/unitree_g1_description/g1.xml",
+        )
+        self.assertEqual(opt.g1_root_quat_order, "xyzw")
+        self.assertEqual(opt.g1_render_backend, "stick")
+        self.assertEqual(opt.g1_render_width, 640)
+        self.assertEqual(opt.g1_render_height, 480)
+        self.assertEqual(opt.g1_mujoco_gl, "glfw")
+
+    def test_test_parser_defaults_g1_root_quaternion_order_to_dataset_xyzw(self):
+        with argv_context("test.py", "--motion_format", "g1"):
+            opt = args.parse_test_opt()
+
+        self.assertEqual(opt.g1_root_quat_order, "xyzw")
+        self.assertEqual(opt.g1_render_backend, "mujoco")
+        self.assertEqual(opt.g1_render_width, 960)
+        self.assertEqual(opt.g1_render_height, 720)
+        self.assertEqual(opt.g1_mujoco_gl, "egl")
+
 
 class TrainWiringTests(unittest.TestCase):
     def test_train_passes_phase0_options_into_edge(self):
@@ -188,6 +232,7 @@ class TrainWiringTests(unittest.TestCase):
             beat_loss_start_epoch=25,
             beat_loss_warmup_epochs=200,
             beat_loss_max_fraction=0.25,
+            beat_loss_cap_mode="hard",
             finetune_from_checkpoint=True,
             gradient_accumulation_steps=4,
             mixed_precision="bf16",
@@ -219,6 +264,7 @@ class TrainWiringTests(unittest.TestCase):
             beat_loss_start_epoch=opt.beat_loss_start_epoch,
             beat_loss_warmup_epochs=opt.beat_loss_warmup_epochs,
             beat_loss_max_fraction=opt.beat_loss_max_fraction,
+            beat_loss_cap_mode=opt.beat_loss_cap_mode,
             gradient_accumulation_steps=opt.gradient_accumulation_steps,
             mixed_precision=opt.mixed_precision,
             resume_training_state=False,

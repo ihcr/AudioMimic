@@ -94,7 +94,7 @@ So we should describe the current work as a **beat-only ablation inspired by Bea
 
 `Lbeat` is the auxiliary beat-alignment loss used during diffusion training.
 
-In this branch:
+For SMPL motion in this branch:
 
 1. the model generates motion
 2. FK converts that motion to joints
@@ -110,6 +110,30 @@ That is why the most important ablation is:
 - **BeatDistance without `Lbeat`**
 
 If that helps over baseline, but adding `Lbeat` hurts, then the beat representation may be fine and the estimator-supervised loss is the real problem.
+
+For G1 robot-native motion, the 2026-05-05 FK-beat path is deliberately
+separate. It trains `G1BeatDistanceEstimator` on normalized `[T,38]` G1 motion
+vectors from `AISTPPDataset` and FK-derived `motion_dist` labels from
+`data/g1_aistpp_full_fkbeats`. It does not reuse the SMPL estimator shape path,
+and diffusion training rejects estimator checkpoints whose saved
+`motion_format` is not `g1`. The current G1 cautious recipe uses
+`lambda_beat=0.01`, starts the auxiliary beat loss at epoch `50`, warms it over
+`300` epochs, and uses `beat_loss_cap_mode=soft`.
+
+The stronger normalized G1 lbeat experiments changed the lesson but not the
+acceptance rule. A from-scratch `lambda_beat=0.2` run made beat metrics very high
+(`G1BeatF1=0.8716`, `G1FKBAS=0.8792`) by creating excessive root/foot motion
+(`G1FootSliding=3.0399`, `RootSmoothnessJerkMean=3454.9`, `G1Dist=56.26`), so it
+is rejected. A fine-tune from the FKBeat no-lbeat checkpoint with the same
+normalized `lambda_beat=0.2` schedule improved rhythm more safely
+(`G1BeatF1=0.4372`, `G1FKBAS=0.5978`) but still worsened contact metrics
+(`G1FootSliding=0.7102`, `G1GroundPenetration=0.0979`). Treat it as the best
+G1 lbeat direction so far, not as the deployable default.
+
+Practical next step for G1 is no longer "make the estimator stronger." It is to
+add robot-feasibility pressure: checkpoint screening, Pareto candidate selection,
+upper-body/torso-only beat loss, root energy guards, and FK contact losses.
+Without those guards, a beat-score gain can be a motion-energy exploit.
 
 ## Most Likely Failure Causes
 

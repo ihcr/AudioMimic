@@ -125,6 +125,42 @@ class CommandBuilderTests(unittest.TestCase):
         self.assertTrue(args.enable_g1_fk_metrics)
         self.assertTrue(args.skip_preprocess)
 
+    def test_g1_fkbeat_lbeat_preset_uses_cautious_finetune_defaults(self):
+        submit_module = reload_module()
+
+        args = submit_module.parse_args(
+            [
+                "--preset",
+                "g1_beatdistance_fkbeats_lbeat",
+                "--train_name",
+                "g1_fkbeats_lbeat_demo",
+            ]
+        )
+        submit_module.apply_dynamic_defaults(args)
+
+        self.assertEqual(args.motion_format, "g1")
+        self.assertEqual(args.data_path, "data/g1_aistpp_full_fkbeats")
+        self.assertEqual(args.processed_data_dir, "data/g1_aistpp_full_fkbeats_dataset_backups")
+        self.assertTrue(args.use_beats)
+        self.assertEqual(args.beat_rep, "distance")
+        self.assertEqual(args.lambda_beat, 0.01)
+        self.assertEqual(args.lambda_acc, 0.0)
+        self.assertEqual(args.epochs, 500)
+        self.assertEqual(args.save_interval, 50)
+        self.assertEqual(args.beat_loss_start_epoch, 50)
+        self.assertEqual(args.beat_loss_warmup_epochs, 300)
+        self.assertEqual(args.beat_loss_max_fraction, 0.10)
+        self.assertEqual(args.beat_loss_cap_mode, "soft")
+        self.assertEqual(args.g1_target_transform, "relative_distance")
+        self.assertEqual(args.beat_target_transform, "raw_distance")
+        self.assertEqual(
+            args.checkpoint,
+            "runs/train/g1_aist_beatdistance_fkbeats/weights/train-2000.pt",
+        )
+        self.assertTrue(args.finetune_from_checkpoint)
+        self.assertTrue(args.enable_g1_fk_metrics)
+        self.assertTrue(args.skip_preprocess)
+
     def test_g1_baseline_preset_uses_same_optimized_data_path_without_beats(self):
         submit_module = reload_module()
 
@@ -343,6 +379,7 @@ class CommandBuilderTests(unittest.TestCase):
         self.assertIn("--beat_loss_start_epoch 25", command)
         self.assertIn("--beat_loss_warmup_epochs 200", command)
         self.assertIn("--beat_loss_max_fraction 0.25", command)
+        self.assertIn("--beat_loss_cap_mode hard", command)
         self.assertIn("--beat_estimator_max_val_loss 8.0", command)
 
     def test_g1_no_beat_train_command_threads_zero_beat_loss(self):
@@ -369,6 +406,38 @@ class CommandBuilderTests(unittest.TestCase):
 
         self.assertIn("--motion_format g1", command)
         self.assertIn("--lambda_beat 0.0", command)
+
+    def test_g1_lbeat_train_command_threads_proxy_estimator_and_soft_cap(self):
+        submit_module = reload_module()
+        args = submit_module.parse_args(
+            [
+                "--preset",
+                "g1_beatdistance_fkbeats_lbeat",
+                "--train_name",
+                "g1_lbeat",
+                "--checkpoint",
+                "runs/train/g1_aist_beatdistance_fkbeats/weights/train-2000.pt",
+            ]
+        )
+        submit_module.apply_dynamic_defaults(args)
+
+        command = submit_module.build_train_command(
+            args,
+            beat_estimator_ckpt=Path("slurm/pipelines/run/weights/beat_estimator.pt"),
+        )
+
+        self.assertIn("--motion_format g1", command)
+        self.assertIn("--use_beats", command)
+        self.assertIn("--beat_rep distance", command)
+        self.assertIn("--lambda_beat 0.01", command)
+        self.assertIn("--lambda_acc 0.0", command)
+        self.assertIn("--beat_loss_start_epoch 50", command)
+        self.assertIn("--beat_loss_warmup_epochs 300", command)
+        self.assertIn("--beat_loss_max_fraction 0.1", command)
+        self.assertIn("--beat_loss_cap_mode soft", command)
+        self.assertIn("--beat_estimator_ckpt slurm/pipelines/run/weights/beat_estimator.pt", command)
+        self.assertIn("--checkpoint runs/train/g1_aist_beatdistance_fkbeats/weights/train-2000.pt", command)
+        self.assertIn("--finetune_from_checkpoint", command)
 
     def test_estimator_command_threads_explicit_stage_args(self):
         submit_module = reload_module()
@@ -411,6 +480,53 @@ class CommandBuilderTests(unittest.TestCase):
         self.assertIn("--num_workers 5", command)
         self.assertIn("--mixed_precision no", command)
         self.assertIn("--device cpu", command)
+
+    def test_g1_estimator_command_threads_motion_format_and_dataset_paths(self):
+        submit_module = reload_module()
+        args = submit_module.parse_args(
+            [
+                "--preset",
+                "g1_beatdistance_fkbeats_lbeat",
+                "--train_name",
+                "g1_lbeat",
+                "--checkpoint",
+                "runs/train/g1_aist_beatdistance_fkbeats/weights/train-2000.pt",
+                "--estimator_gpus",
+                "0",
+            ]
+        )
+        submit_module.apply_dynamic_defaults(args)
+
+        command = submit_module.build_estimator_command(
+            args, Path("slurm/pipelines/run/weights/beat_estimator.pt")
+        )
+
+        self.assertIn("--motion_format g1", command)
+        self.assertIn("--data_path data/g1_aistpp_full_fkbeats", command)
+        self.assertIn("--processed_data_dir data/g1_aistpp_full_fkbeats_dataset_backups", command)
+        self.assertIn("--feature_type jukebox", command)
+        self.assertIn("--beat_target_transform raw_distance", command)
+        self.assertIn("--g1_target_transform relative_distance", command)
+        self.assertIn("--device cpu", command)
+
+    def test_estimator_command_threads_generic_relative_beat_target(self):
+        submit_module = reload_module()
+        args = submit_module.parse_args(
+            [
+                "--train_name",
+                "finedance_relative",
+                "--use_beats",
+                "--beat_target_transform",
+                "relative_distance",
+            ]
+        )
+        submit_module.apply_dynamic_defaults(args)
+
+        command = submit_module.build_estimator_command(
+            args, Path("slurm/pipelines/run/weights/beat_estimator.pt")
+        )
+
+        self.assertIn("--beat_target_transform relative_distance", command)
 
     def test_build_eval_command_targets_final_checkpoint_and_dataset_test_split(self):
         submit_module = reload_module()
@@ -554,6 +670,8 @@ class CommandBuilderTests(unittest.TestCase):
                 "custom_data",
                 "--processed_data_dir",
                 "custom_cache",
+                "--root_height_min",
+                "-1.0",
             ]
         )
         submit_module.apply_dynamic_defaults(args)
@@ -567,6 +685,24 @@ class CommandBuilderTests(unittest.TestCase):
         self.assertIn("--motion_format smpl", command)
         self.assertIn("--use_beats", command)
         self.assertIn("--beat_rep distance", command)
+        self.assertIn("--root_height_min -1.0", command)
+
+    def test_validation_command_threads_feature_cache_mode(self):
+        submit_module = reload_module()
+        args = submit_module.parse_args(
+            [
+                "--preset",
+                "g1_beatdistance_fkbeats_lbeat",
+                "--train_name",
+                "g1_lbeat",
+            ]
+        )
+        submit_module.apply_dynamic_defaults(args)
+
+        command = submit_module.build_validation_command(args)
+
+        self.assertIn("--feature_cache_mode memmap", command)
+        self.assertIn("--feature_cache_dtype float32", command)
 
     def test_submit_sbatch_reports_slurm_stderr_on_failure(self):
         submit_module = reload_module()
@@ -639,7 +775,7 @@ class SubmissionFlowTests(unittest.TestCase):
         self.assertIn("stdbuf -oL -eL python data/create_dataset.py --extract-baseline --extract-beats", preprocess_script)
 
         self.assertIn(
-            "stdbuf -oL -eL python data/validate_preprocessed_data.py --data_path data --processed_data_dir data/dataset_backups --feature_type baseline --motion_format smpl --sample_count 64 --use_beats --beat_rep distance",
+            "stdbuf -oL -eL python data/validate_preprocessed_data.py --data_path data --processed_data_dir data/dataset_backups --feature_type baseline --motion_format smpl --feature_cache_mode off --feature_cache_dtype float32 --sample_count 64 --use_beats --beat_rep distance",
             validate_script,
         )
         self.assertIn("stdbuf -oL -eL python train_beat_estimator.py", estimator_script)
@@ -681,6 +817,88 @@ class SubmissionFlowTests(unittest.TestCase):
 
             with self.assertRaisesRegex(ValueError, "requires --checkpoint"):
                 submit_module.submit_pipeline(args, repo_root=repo_root, sbatch_submitter=lambda _: "1")
+
+    def test_g1_lbeat_pipeline_uses_default_starting_checkpoint(self):
+        submit_module = reload_module()
+
+        with TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir)
+            args = submit_module.parse_args(
+                [
+                    "--preset",
+                    "g1_beatdistance_fkbeats_lbeat",
+                    "--train_name",
+                    "g1_lbeat",
+                    "--run_id",
+                    "20260505-g1-lbeat",
+                    "--skip_eval",
+                ]
+            )
+
+            result = submit_module.submit_pipeline(
+                args,
+                repo_root=repo_root,
+                sbatch_submitter=lambda _: "1",
+            )
+
+            train_script = (
+                repo_root
+                / "slurm"
+                / "pipelines"
+                / "20260505-g1-lbeat"
+                / "train.sbatch"
+            ).read_text()
+
+        self.assertIn("train", result.job_ids)
+        self.assertIn(
+            "--checkpoint runs/train/g1_aist_beatdistance_fkbeats/weights/train-2000.pt",
+            train_script,
+        )
+
+    def test_submit_pipeline_wires_g1_lbeat_estimator_and_fk_eval(self):
+        submit_module = reload_module()
+        calls = []
+
+        def fake_sbatch(cmd):
+            calls.append(cmd)
+            return str(900 + len(calls))
+
+        with TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir)
+            args = submit_module.parse_args(
+                [
+                    "--preset",
+                    "g1_beatdistance_fkbeats_lbeat",
+                    "--train_name",
+                    "g1_lbeat",
+                    "--run_id",
+                    "20260505-g1-lbeat",
+                    "--checkpoint",
+                    "runs/train/g1_aist_beatdistance_fkbeats/weights/train-2000.pt",
+                ]
+            )
+
+            result = submit_module.submit_pipeline(
+                args,
+                repo_root=repo_root,
+                sbatch_submitter=fake_sbatch,
+            )
+
+            run_dir = repo_root / "slurm" / "pipelines" / "20260505-g1-lbeat"
+            estimator_script = (run_dir / "beat_estimator.sbatch").read_text()
+            train_script = (run_dir / "train.sbatch").read_text()
+            eval_script = (run_dir / "evaluate.sbatch").read_text()
+
+        self.assertEqual(result.job_ids["validate_preprocessed_data"], "901")
+        self.assertEqual(result.job_ids["beat_estimator"], "902")
+        self.assertEqual(result.job_ids["train"], "903")
+        self.assertEqual(result.job_ids["evaluate"], "904")
+        self.assertIn("--motion_format g1", estimator_script)
+        self.assertIn("--motion_format g1", train_script)
+        self.assertIn("--lambda_beat 0.01", train_script)
+        self.assertIn("--beat_loss_cap_mode soft", train_script)
+        self.assertIn("python eval/run_g1_dataset_eval.py", eval_script)
+        self.assertIn("--enable_fk_metrics", eval_script)
 
     def test_submit_pipeline_wires_g1_robot_native_eval_stage(self):
         submit_module = reload_module()

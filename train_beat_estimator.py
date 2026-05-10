@@ -12,18 +12,37 @@ from torch.utils.data import DataLoader, Dataset, random_split
 from tqdm import tqdm
 
 from args import resolve_worker_count
-from model.beat_estimator import BeatDistanceEstimator
+from dataset.dance_dataset import AISTPPDataset
+from dataset.motion_representation import (
+    G1_MOTION_FORMAT,
+    G1_REPR_DIM,
+    SMPL_MOTION_FORMAT,
+    validate_motion_format,
+)
+from model.beat_estimator import BeatDistanceEstimator, G1BeatDistanceEstimator
 from rotation_transforms import (RotateAxisAngle, axis_angle_to_quaternion,
                                  quaternion_multiply,
                                  quaternion_to_axis_angle)
 from vis import SMPLSkeleton
 
 BEAT_ESTIMATOR_CACHE_VERSION = "v2"
+RAW_DISTANCE_TARGET = "raw_distance"
+RELATIVE_DISTANCE_TARGET = "relative_distance"
+TARGET_TRANSFORMS = (RAW_DISTANCE_TARGET, RELATIVE_DISTANCE_TARGET)
+G1_TARGET_TRANSFORMS = TARGET_TRANSFORMS
 
 
-def beat_estimator_cache_name(motion_dir, fps=30, seq_len=150):
+def beat_estimator_cache_name(
+    motion_dir,
+    fps=30,
+    seq_len=150,
+    target_transform=RAW_DISTANCE_TARGET,
+):
     split_name = Path(motion_dir).resolve().parent.name
-    return f"beat_estimator_{split_name}_fps{fps}_seq{seq_len}_{BEAT_ESTIMATOR_CACHE_VERSION}.pt"
+    return (
+        f"beat_estimator_{split_name}_fps{fps}_seq{seq_len}_"
+        f"{target_transform}_{BEAT_ESTIMATOR_CACHE_VERSION}.pt"
+    )
 
 
 def default_cache_dir(motion_dir):
@@ -42,6 +61,21 @@ def build_dataloader_kwargs(num_workers, pin_memory):
         kwargs["persistent_workers"] = True
         kwargs["prefetch_factor"] = 1
     return kwargs
+
+
+def transform_beat_targets(motion_dist, motion_spacing, target_transform):
+    if target_transform == RAW_DISTANCE_TARGET:
+        return motion_dist.float()
+    if target_transform not in TARGET_TRANSFORMS:
+        raise ValueError(f"Unsupported beat target transform: {target_transform}")
+    if motion_spacing is None:
+        raise ValueError("relative_distance targets require motion_spacing")
+    spacing = torch.clamp(motion_spacing.float(), min=1.0)
+    return torch.clamp(motion_dist.float() / spacing, min=0.0, max=1.0)
+
+
+def transform_g1_beat_targets(motion_dist, motion_spacing, target_transform):
+    return transform_beat_targets(motion_dist, motion_spacing, target_transform)
 
 
 def resolve_runtime_mixed_precision(mixed_precision, device):
@@ -103,7 +137,11 @@ class MotionBeatDataset(Dataset):
         seq_len=150,
         cache_dir=None,
         force_rebuild_cache=False,
+        target_transform=RAW_DISTANCE_TARGET,
     ):
+        if target_transform not in TARGET_TRANSFORMS:
+            raise ValueError(f"target_transform must be one of {TARGET_TRANSFORMS}")
+        self.target_transform = target_transform
         motion_map = {
             Path(path).stem: path for path in sorted(glob.glob(str(Path(motion_dir) / "*.pkl")))
         }
@@ -121,7 +159,10 @@ class MotionBeatDataset(Dataset):
         cache_root = Path(cache_dir) if cache_dir is not None else default_cache_dir(motion_dir)
         cache_root.mkdir(parents=True, exist_ok=True)
         self.cache_path = cache_root / beat_estimator_cache_name(
-            motion_dir, fps=fps, seq_len=seq_len
+            motion_dir,
+            fps=fps,
+            seq_len=seq_len,
+            target_transform=target_transform,
         )
 
         if not force_rebuild_cache and self.cache_path.is_file():
@@ -132,6 +173,7 @@ class MotionBeatDataset(Dataset):
 
         joints = []
         targets = []
+        spacings = []
         for motion_path, beat_path in self.samples:
             joints.append(
                 load_motion_joints(motion_path, fps=self.fps, seq_len=self.seq_len)
@@ -140,10 +182,25 @@ class MotionBeatDataset(Dataset):
                 targets.append(
                     torch.from_numpy(beat_data["motion_dist"].astype(np.float32))
                 )
+                spacings.append(
+                    torch.from_numpy(beat_data["motion_spacing"].astype(np.float32))
+                    if "motion_spacing" in beat_data
+                    else None
+                )
 
         if joints:
             self.joints = torch.stack(joints, dim=0).float()
-            self.targets = torch.stack(targets, dim=0).float()
+            raw_targets = torch.stack(targets, dim=0).float()
+            spacing = (
+                None
+                if any(item is None for item in spacings)
+                else torch.stack(spacings, dim=0).float()
+            )
+            self.targets = transform_beat_targets(
+                raw_targets,
+                spacing,
+                target_transform,
+            )
         else:
             self.joints = torch.empty((0, seq_len, 24, 3), dtype=torch.float32)
             self.targets = torch.empty((0, seq_len), dtype=torch.float32)
@@ -154,6 +211,7 @@ class MotionBeatDataset(Dataset):
                 "targets": self.targets,
                 "fps": fps,
                 "seq_len": seq_len,
+                "target_transform": target_transform,
             },
             self.cache_path,
         )
@@ -163,6 +221,46 @@ class MotionBeatDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.joints[idx], self.targets[idx]
+
+
+class G1MotionBeatDataset(Dataset):
+    def __init__(
+        self,
+        data_path,
+        backup_path,
+        feature_type="jukebox",
+        force_reload=False,
+        target_transform=RAW_DISTANCE_TARGET,
+    ):
+        if target_transform not in G1_TARGET_TRANSFORMS:
+            raise ValueError(f"target_transform must be one of {G1_TARGET_TRANSFORMS}")
+        self.target_transform = target_transform
+        self.source_dataset = AISTPPDataset(
+            data_path=data_path,
+            backup_path=backup_path,
+            train=True,
+            feature_type=feature_type,
+            use_beats=True,
+            beat_rep="distance",
+            motion_format=G1_MOTION_FORMAT,
+            force_reload=force_reload,
+        )
+        self.pose = self.source_dataset.data["pose"].float()
+        self.targets = transform_g1_beat_targets(
+            self.source_dataset.data["motion_dist"],
+            self.source_dataset.data.get("motion_spacing"),
+            target_transform,
+        )
+        if self.pose.ndim != 3 or self.pose.shape[-1] != G1_REPR_DIM:
+            raise ValueError(f"G1 estimator dataset expected pose [N, T, {G1_REPR_DIM}]")
+        if self.targets.shape != self.pose.shape[:2]:
+            raise ValueError("G1 beat targets must match pose batch and frame dimensions")
+
+    def __len__(self):
+        return self.pose.shape[0]
+
+    def __getitem__(self, idx):
+        return self.pose[idx], self.targets[idx]
 
 
 def save_checkpoint(model, path, config):
@@ -207,8 +305,8 @@ def run_epoch(model, dataloader, device, desc, optimizer=None, mixed_precision="
         unit="batch",
     )
     with torch.set_grad_enabled(optimizer is not None):
-        for joints, target in batch_loop:
-            joints = joints.to(device_obj, non_blocking=autocast_enabled)
+        for motion, target in batch_loop:
+            motion = motion.to(device_obj, non_blocking=autocast_enabled)
             target = target.to(device_obj, non_blocking=autocast_enabled)
 
             with torch.autocast(
@@ -216,7 +314,7 @@ def run_epoch(model, dataloader, device, desc, optimizer=None, mixed_precision="
                 dtype=torch.bfloat16,
                 enabled=autocast_enabled,
             ):
-                pred_dist = model(joints)
+                pred_dist = model(motion)
                 loss = F.mse_loss(pred_dist, target)
 
             if optimizer is not None:
@@ -233,6 +331,10 @@ def run_epoch(model, dataloader, device, desc, optimizer=None, mixed_precision="
 def train(
     motion_dir,
     beat_dir,
+    data_path=None,
+    processed_data_dir=None,
+    feature_type="jukebox",
+    motion_format=SMPL_MOTION_FORMAT,
     output_path="weights/beat_estimator.pt",
     epochs=50,
     batch_size=16,
@@ -245,8 +347,18 @@ def train(
     num_workers=None,
     mixed_precision="bf16",
     force_rebuild_cache=False,
+    beat_target_transform=RAW_DISTANCE_TARGET,
+    g1_target_transform=RAW_DISTANCE_TARGET,
     device=None,
 ):
+    motion_format = validate_motion_format(motion_format)
+    target_transform = beat_target_transform
+    if (
+        motion_format == G1_MOTION_FORMAT
+        and beat_target_transform == RAW_DISTANCE_TARGET
+        and g1_target_transform != RAW_DISTANCE_TARGET
+    ):
+        target_transform = g1_target_transform
     device = device or ("cuda" if torch.cuda.is_available() else "cpu")
     configure_cuda_math()
     mixed_precision = resolve_runtime_mixed_precision(mixed_precision, device)
@@ -256,13 +368,33 @@ def train(
         if num_workers is not None
         else (resolve_worker_count() if device_obj.type == "cuda" else 0)
     )
-    dataset = MotionBeatDataset(
-        motion_dir,
-        beat_dir,
-        fps=fps,
-        seq_len=seq_len,
-        force_rebuild_cache=force_rebuild_cache,
-    )
+    if motion_format == G1_MOTION_FORMAT:
+        resolved_data_path = (
+            Path(data_path)
+            if data_path is not None
+            else Path(motion_dir).resolve().parents[1]
+        )
+        resolved_processed_dir = (
+            Path(processed_data_dir)
+            if processed_data_dir is not None
+            else default_cache_dir(motion_dir)
+        )
+        dataset = G1MotionBeatDataset(
+            data_path=resolved_data_path,
+            backup_path=resolved_processed_dir,
+            feature_type=feature_type,
+            force_reload=force_rebuild_cache,
+            target_transform=target_transform,
+        )
+    else:
+        dataset = MotionBeatDataset(
+            motion_dir,
+            beat_dir,
+            fps=fps,
+            seq_len=seq_len,
+            force_rebuild_cache=force_rebuild_cache,
+            target_transform=target_transform,
+        )
     train_dataset, val_dataset = split_train_val_dataset(
         dataset, val_split=val_split, split_seed=split_seed
     )
@@ -287,12 +419,29 @@ def train(
         f"mixed_precision={mixed_precision} cache_path={getattr(dataset, 'cache_path', '<none>')}"
     )
 
-    model = BeatDistanceEstimator().to(device)
+    if motion_format == G1_MOTION_FORMAT:
+        output_activation = (
+            "sigmoid" if target_transform == RELATIVE_DISTANCE_TARGET else "softplus"
+        )
+        model = G1BeatDistanceEstimator(
+            input_dim=G1_REPR_DIM,
+            output_activation=output_activation,
+        ).to(device)
+        input_dim = G1_REPR_DIM
+    else:
+        input_dim = 24 * 3
+        output_activation = (
+            "sigmoid" if target_transform == RELATIVE_DISTANCE_TARGET else "softplus"
+        )
+        model = BeatDistanceEstimator(input_dim=input_dim).to(device)
     optimizer = torch.optim.AdamW(
         model.parameters(), lr=learning_rate, weight_decay=weight_decay
     )
 
     config = {
+        "motion_format": motion_format,
+        "input_dim": input_dim,
+        "feature_type": feature_type,
         "fps": fps,
         "seq_len": seq_len,
         "epochs": epochs,
@@ -307,6 +456,8 @@ def train(
         "num_heads": 4,
         "num_layers": 6,
         "ff_dim": 512,
+        "target_transform": target_transform,
+        "output_activation": output_activation,
     }
 
     best_epoch = None
@@ -387,6 +538,22 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Train the beat distance estimator.")
     parser.add_argument("--motion_dir", required=True, help="Path to motions_sliced directory.")
     parser.add_argument("--beat_dir", required=True, help="Path to beat_feats directory.")
+    parser.add_argument("--motion_format", choices=("smpl", "g1"), default="smpl")
+    parser.add_argument(
+        "--data_path",
+        default=None,
+        help="Prepared dataset root; required for exact G1 normalization if motion_dir is not canonical.",
+    )
+    parser.add_argument(
+        "--processed_data_dir",
+        default=None,
+        help="Processed dataset cache root used by AISTPPDataset for G1 estimator inputs.",
+    )
+    parser.add_argument(
+        "--feature_type",
+        choices=("baseline", "jukebox"),
+        default="jukebox",
+    )
     parser.add_argument(
         "--output_path",
         default="weights/beat_estimator.pt",
@@ -407,6 +574,16 @@ def parse_args():
         default="bf16",
     )
     parser.add_argument("--force_rebuild_cache", action="store_true")
+    parser.add_argument(
+        "--beat_target_transform",
+        choices=TARGET_TRANSFORMS,
+        default=RAW_DISTANCE_TARGET,
+    )
+    parser.add_argument(
+        "--g1_target_transform",
+        choices=G1_TARGET_TRANSFORMS,
+        default=RAW_DISTANCE_TARGET,
+    )
     parser.add_argument("--device", default=None, help="Explicit torch device override.")
     return parser.parse_args()
 
@@ -416,6 +593,10 @@ def main():
     train(
         motion_dir=args.motion_dir,
         beat_dir=args.beat_dir,
+        data_path=args.data_path,
+        processed_data_dir=args.processed_data_dir,
+        feature_type=args.feature_type,
+        motion_format=args.motion_format,
         output_path=args.output_path,
         epochs=args.epochs,
         batch_size=args.batch_size,
@@ -428,6 +609,8 @@ def main():
         num_workers=args.num_workers,
         mixed_precision=args.mixed_precision,
         force_rebuild_cache=args.force_rebuild_cache,
+        beat_target_transform=args.beat_target_transform,
+        g1_target_transform=args.g1_target_transform,
         device=args.device,
     )
 
