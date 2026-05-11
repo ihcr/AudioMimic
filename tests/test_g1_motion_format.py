@@ -59,6 +59,18 @@ class DummyModel(nn.Module):
         return x
 
 
+class FixedOutputModel(nn.Module):
+    def __init__(self, output):
+        super().__init__()
+        self.output = nn.Parameter(output)
+
+    def forward(self, x, cond, t, cond_drop_prob=0.0):
+        return self.output.expand_as(x)
+
+    def guided_forward(self, x, cond, t, weight):
+        return self.forward(x, cond, t)
+
+
 class IdentityNormalizer:
     def unnormalize(self, tensor):
         return tensor
@@ -135,6 +147,55 @@ class G1DiffusionTests(unittest.TestCase):
         self.assertEqual(len(losses), 6)
         self.assertEqual(float(losses[2]), 0.0)
         self.assertEqual(float(losses[3]), 0.0)
+
+    def test_g1_robot_losses_use_torch_fk_and_foot_proxy(self):
+        diffusion_module = reload_module("model.diffusion")
+        motion_module = reload_module("dataset.motion_representation")
+        frames = 150
+        root_pos = torch.zeros(1, frames, 3)
+        root_pos[..., 2] = 0.84
+        root_rot = torch.zeros(1, frames, 4)
+        root_rot[..., 3] = 1.0
+        dof_pos = torch.zeros(1, frames, 29)
+        target = motion_module.encode_g1_motion(root_pos, root_rot, dof_pos)
+
+        pred_root_pos = root_pos.clone()
+        pred_root_pos[..., 0] = torch.linspace(0.0, 0.4, frames)
+        pred = motion_module.encode_g1_motion(pred_root_pos, root_rot, dof_pos)
+        model = FixedOutputModel(pred)
+        diffusion = diffusion_module.GaussianDiffusion(
+            model,
+            horizon=frames,
+            repr_dim=38,
+            smpl=None,
+            schedule="cosine",
+            n_timestep=10,
+            predict_epsilon=False,
+            loss_type="l2",
+            cond_drop_prob=0.0,
+            motion_format="g1",
+            normalizer=IdentityNormalizer(),
+            lambda_g1_fk=0.1,
+            lambda_g1_fk_vel=0.5,
+            lambda_g1_fk_acc=0.05,
+            lambda_g1_foot=1.0,
+            g1_kin_loss_max_fraction=1.0,
+            g1_root_quat_order="xyzw",
+        )
+        cond = torch.randn(1, frames, 35)
+        t = torch.zeros(1, dtype=torch.long)
+
+        total_loss, losses = diffusion.p_losses(target, cond, t)
+        total_loss.backward()
+
+        g1_stats = diffusion.last_g1_kin_loss_stats
+        self.assertTrue(torch.isfinite(total_loss))
+        self.assertGreater(float(losses[2].detach()), 0.0)
+        self.assertGreater(float(losses[3].detach()), 0.0)
+        self.assertGreater(float(g1_stats["g1_fk_vel_loss"]), 0.0)
+        self.assertIn("g1_fk_acc_loss", g1_stats)
+        self.assertIsNotNone(model.output.grad)
+        self.assertTrue(torch.isfinite(model.output.grad).all())
 
     def test_g1_render_sample_saves_robot_motion_payload_without_smpl_render(self):
         diffusion_module = reload_module("model.diffusion")

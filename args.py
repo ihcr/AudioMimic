@@ -75,6 +75,12 @@ def parse_train_opt(argv=None):
     parser.add_argument("--batch_size", type=int, default=DEFAULT_BATCH_SIZE, help="batch size")
     parser.add_argument("--epochs", type=int, default=2000)
     parser.add_argument(
+        "--epoch_offset",
+        type=int,
+        default=0,
+        help="Epoch number offset used for continuation checkpoint labels.",
+    )
+    parser.add_argument(
         "--force_reload", action="store_true", help="force reloads the datasets"
     )
     parser.add_argument(
@@ -121,6 +127,24 @@ def parse_train_opt(argv=None):
         "--beat_loss_cap_mode",
         choices=("hard", "soft"),
         default="hard",
+    )
+    parser.add_argument("--lambda_g1_fk", type=float, default=0.0)
+    parser.add_argument("--lambda_g1_fk_vel", type=float, default=0.0)
+    parser.add_argument("--lambda_g1_fk_acc", type=float, default=0.0)
+    parser.add_argument("--lambda_g1_foot", type=float, default=0.0)
+    parser.add_argument("--lambda_g1_kin", type=float, default=1.0)
+    parser.add_argument("--g1_kin_loss_warmup_epochs", type=int, default=0)
+    parser.add_argument("--g1_kin_loss_max_fraction", type=float, default=0.0)
+    parser.add_argument(
+        "--g1_fk_model_path",
+        type=str,
+        default="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
+    )
+    parser.add_argument(
+        "--g1_root_quat_order",
+        type=str,
+        choices=("wxyz", "xyzw"),
+        default="xyzw",
     )
     parser.add_argument(
         "--finetune_from_checkpoint",

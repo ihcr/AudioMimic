@@ -112,6 +112,8 @@ class TrainArgParserTests(unittest.TestCase):
             "0.25",
             "--beat_loss_cap_mode",
             "soft",
+            "--epoch_offset",
+            "1000",
             "--finetune_from_checkpoint",
             "--train_num_workers",
             "3",
@@ -144,6 +146,7 @@ class TrainArgParserTests(unittest.TestCase):
         self.assertEqual(opt.beat_loss_warmup_epochs, 200)
         self.assertEqual(opt.beat_loss_max_fraction, 0.25)
         self.assertEqual(opt.beat_loss_cap_mode, "soft")
+        self.assertEqual(opt.epoch_offset, 1000)
         self.assertTrue(opt.finetune_from_checkpoint)
         self.assertEqual(opt.train_num_workers, 3)
         self.assertEqual(opt.test_num_workers, 1)
@@ -269,6 +272,15 @@ class TrainWiringTests(unittest.TestCase):
             mixed_precision=opt.mixed_precision,
             resume_training_state=False,
             motion_format=opt.motion_format,
+            lambda_g1_fk=0.0,
+            lambda_g1_fk_vel=0.0,
+            lambda_g1_fk_acc=0.0,
+            lambda_g1_foot=0.0,
+            lambda_g1_kin=1.0,
+            g1_kin_loss_warmup_epochs=0,
+            g1_kin_loss_max_fraction=0.0,
+            g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
+            g1_root_quat_order="xyzw",
         )
         fake_model.train_loop.assert_called_once_with(opt)
 

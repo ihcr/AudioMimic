@@ -122,13 +122,21 @@ and diffusion training rejects estimator checkpoints whose saved
 
 The stronger normalized G1 lbeat experiments changed the lesson but not the
 acceptance rule. A from-scratch `lambda_beat=0.2` run made beat metrics very high
-(`G1BeatF1=0.8716`, `G1FKBAS=0.8792`) by creating excessive root/foot motion
-(`G1FootSliding=3.0399`, `RootSmoothnessJerkMean=3454.9`, `G1Dist=56.26`), so it
-is rejected. A fine-tune from the FKBeat no-lbeat checkpoint with the same
-normalized `lambda_beat=0.2` schedule improved rhythm more safely
-(`G1BeatF1=0.4372`, `G1FKBAS=0.5978`) but still worsened contact metrics
-(`G1FootSliding=0.7102`, `G1GroundPenetration=0.0979`). Treat it as the best
-G1 lbeat direction so far, not as the deployable default.
+(`G1BeatF1=0.8716`, `G1FKBAS=0.8232`, `G1FKRoboPerformBAS=0.8792`) by
+creating excessive root/foot motion (`G1FootSliding=3.0399`,
+`RootSmoothnessJerkMean=3454.9`, `G1Dist=56.26`), so it is rejected. A fine-tune
+from the FKBeat no-lbeat checkpoint with the same normalized `lambda_beat=0.2`
+schedule improved rhythm more safely (`G1BeatF1=0.4372`, `G1FKBAS=0.4673`,
+`G1RoboPerformBAS=0.6211`, `G1FKRoboPerformBAS=0.5978`) but still worsened
+contact metrics (`G1FootSliding=0.7102`, `G1GroundPenetration=0.0979`). Treat it
+as the best G1 lbeat direction so far, not as the deployable default.
+
+The same acceptance rule applies to the 2026-05-09 FineDance G1 runs. The
+FineDance FKBeat no-lbeat run is the cleaner anchor (`G1RoboPerformBAS=0.5416`,
+`G1FKRoboPerformBAS=0.5142`, `G1Dist=8.63`). The FineDance relative-lbeat run is
+rejected even though its paper-style BAS is competitive, because the RoboPerform
+scores are lower (`G1RoboPerformBAS=0.5023`, `G1FKRoboPerformBAS=0.4940`) and
+`G1Dist=39.53` indicates much worse motion quality.
 
 Practical next step for G1 is no longer "make the estimator stronger." It is to
 add robot-feasibility pressure: checkpoint screening, Pareto candidate selection,
@@ -301,7 +309,7 @@ Goal:
 
 Success condition:
 
-- BAS improves or stays competitive with baseline
+- paper-style BAS and RoboPerform-style BAS improve or stay competitive with baseline
 - PFC does not collapse
 
 Interpretation:
@@ -319,7 +327,7 @@ Success condition:
 
 - full eval passes the safe `Lbeat` quality gate
 - PFC, Distg, and Distk stay within the gate thresholds
-- BAP or BAS improves enough to justify the extra loss
+- BAP, paper-style BAS, or RoboPerform-style BAS improves enough to justify the extra loss
 
 Interpretation:
 
@@ -334,7 +342,7 @@ Goal:
 
 Resume only if the `600`-epoch checkpoint is already promising on:
 
-1. BAS
+1. paper-style BAS and RoboPerform-style BAS
 2. PFC
 3. qualitative motion quality
 

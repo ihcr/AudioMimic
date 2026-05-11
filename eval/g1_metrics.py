@@ -11,7 +11,9 @@ from scipy.signal import argrelextrema
 from tqdm import tqdm
 
 from eval.eval_bas_bap import (DEFAULT_BAP_TOLERANCE,
-                               DEFAULT_BAS_SIGMA_SQUARED, compute_bas_score,
+                               DEFAULT_BAS_SIGMA_SQUARED, BAS_DIRECTION,
+                               ROBOPERFORM_BAS_DIRECTION, compute_bas_score,
+                               compute_roboperform_bas_score,
                                greedy_match_count, load_audio_beat_frames)
 from eval.g1_kinematics import forward_g1_kinematics
 
@@ -215,8 +217,23 @@ def compute_g1_motion_speed_curve(motion):
     return sum(_zscore_curve(component) for component in components).astype(np.float32)
 
 
+def compute_g1_joint_speed_curve(motion):
+    joint_velocity, _, _ = compute_joint_derivatives(motion)
+    if not joint_velocity.size:
+        return np.zeros(0, dtype=np.float32)
+    return np.mean(np.abs(joint_velocity), axis=-1).astype(np.float32)
+
+
 def detect_g1_motion_beat_frames(motion, sigma=5):
     speed = compute_g1_motion_speed_curve(motion)
+    if speed.size < 3:
+        return np.zeros(0, dtype=np.int64)
+    smoothed = gaussian_filter1d(speed, sigma=sigma)
+    return np.asarray(argrelextrema(smoothed, np.less)[0], dtype=np.int64)
+
+
+def detect_g1_roboperform_motion_beat_frames(motion, sigma=5):
+    speed = compute_g1_joint_speed_curve(motion)
     if speed.size < 3:
         return np.zeros(0, dtype=np.int64)
     smoothed = gaussian_filter1d(speed, sigma=sigma)
@@ -228,6 +245,7 @@ def evaluate_g1_beats(motion, bas_sigma_squared=DEFAULT_BAS_SIGMA_SQUARED, bap_t
     if not audio_path:
         return None
     motion_beats = detect_g1_motion_beat_frames(motion)
+    roboperform_motion_beats = detect_g1_roboperform_motion_beat_frames(motion)
     audio_beats = load_audio_beat_frames(
         audio_path,
         fps=int(round(motion["fps"])),
@@ -239,7 +257,13 @@ def evaluate_g1_beats(motion, bas_sigma_squared=DEFAULT_BAS_SIGMA_SQUARED, bap_t
             motion_beats=motion_beats,
             sigma_squared=bas_sigma_squared,
         ),
+        "G1RoboPerformBAS": compute_roboperform_bas_score(
+            music_beats=audio_beats,
+            motion_beats=roboperform_motion_beats,
+            sigma_squared=bas_sigma_squared,
+        ),
         "num_generated_beats": int(len(motion_beats)),
+        "num_roboperform_generated_beats": int(len(roboperform_motion_beats)),
         "num_audio_beats": int(len(audio_beats)),
     }
     designated_beats = motion.get("designated_beat_frames")
@@ -371,6 +395,11 @@ def evaluate_g1_fk_metrics(motion, fk_model_path, root_quat_order="xyzw", bap_to
     diagnostics = compute_fk_foot_diagnostics(fk_result, fps=motion["fps"])
     return {
         "G1FKBAS": compute_bas_score(
+            music_beats=audio_beats,
+            motion_beats=motion_beats,
+            sigma_squared=DEFAULT_BAS_SIGMA_SQUARED,
+        ),
+        "G1FKRoboPerformBAS": compute_roboperform_bas_score(
             music_beats=audio_beats,
             motion_beats=motion_beats,
             sigma_squared=DEFAULT_BAS_SIGMA_SQUARED,
@@ -570,25 +599,38 @@ def aggregate_beat_metrics(beat_records):
     if not beat_records:
         return {
             "G1BAS": 0.0,
+            "G1BAS_direction": BAS_DIRECTION,
+            "G1RoboPerformBAS": 0.0,
+            "G1RoboPerformBAS_direction": ROBOPERFORM_BAS_DIRECTION,
             "G1BAP": 0.0,
             "G1BAP_precision": 0.0,
             "G1BAP_recall": 0.0,
             "num_scored_files": 0,
             "num_generated_beats": 0,
+            "num_roboperform_generated_beats": 0,
             "num_audio_beats": 0,
             "num_designated_beats": 0,
         }
     generated_beats = sum(record["num_generated_beats"] for record in beat_records)
+    roboperform_generated_beats = sum(
+        record["num_roboperform_generated_beats"] for record in beat_records
+    )
     audio_beats = sum(record["num_audio_beats"] for record in beat_records)
     designated_beats = sum(record.get("num_designated_beats", 0) for record in beat_records)
     matched_designated = sum(record.get("matched_designated_beats", 0) for record in beat_records)
     return {
         "G1BAS": finite_mean([record["G1BAS"] for record in beat_records]),
+        "G1BAS_direction": BAS_DIRECTION,
+        "G1RoboPerformBAS": finite_mean(
+            [record["G1RoboPerformBAS"] for record in beat_records]
+        ),
+        "G1RoboPerformBAS_direction": ROBOPERFORM_BAS_DIRECTION,
         "G1BAP": matched_designated / max(generated_beats, 1),
         "G1BAP_precision": matched_designated / max(generated_beats, 1),
         "G1BAP_recall": matched_designated / max(designated_beats, 1),
         "num_scored_files": len(beat_records),
         "num_generated_beats": int(generated_beats),
+        "num_roboperform_generated_beats": int(roboperform_generated_beats),
         "num_audio_beats": int(audio_beats),
         "num_designated_beats": int(designated_beats),
     }
@@ -600,6 +642,11 @@ def aggregate_fk_metrics(fk_records):
         return {}
     return {
         "G1FKBAS": finite_mean([record["G1FKBAS"] for record in fk_records]),
+        "G1FKBAS_direction": BAS_DIRECTION,
+        "G1FKRoboPerformBAS": finite_mean(
+            [record["G1FKRoboPerformBAS"] for record in fk_records]
+        ),
+        "G1FKRoboPerformBAS_direction": ROBOPERFORM_BAS_DIRECTION,
         "G1BeatPrecision": finite_mean([record["G1BeatPrecision"] for record in fk_records]),
         "G1BeatRecall": finite_mean([record["G1BeatRecall"] for record in fk_records]),
         "G1BeatF1": finite_mean([record["G1BeatF1"] for record in fk_records]),
@@ -661,6 +708,7 @@ def build_g1_table(metrics, method_name):
         "Method": method_name,
         "Files": metrics["num_motion_files"],
         "G1 Beat Align.": metrics["G1BAS"],
+        "G1 RoboPerform BAS": metrics["G1RoboPerformBAS"],
         "G1 Beat Match": metrics["G1BAP_precision"],
         "Root Drift": metrics["RootDriftMean"],
         "Root Height Min": metrics["RootHeightMin"],
@@ -673,6 +721,7 @@ def build_g1_table(metrics, method_name):
         table.update(
             {
                 "G1 FK Beat Align.": metrics["G1FKBAS"],
+                "G1 FK RoboPerform BAS": metrics["G1FKRoboPerformBAS"],
                 "G1 Beat F1": metrics["G1BeatF1"],
                 "G1 Foot Sliding": metrics["G1FootSliding"],
             }
@@ -689,6 +738,7 @@ def render_g1_paper_report(metrics, table):
         f"- Generated clips: {metrics['num_motion_files']}",
         f"- Finite motion rate: {metrics['FiniteMotionRate']}",
         f"- Beat alignment: {metrics['G1BAS']}",
+        f"- RoboPerform BAS: {metrics['G1RoboPerformBAS']}",
         f"- Designated beat precision: {metrics['G1BAP_precision']}",
         f"- Designated beat recall: {metrics['G1BAP_recall']}",
         f"- Root drift mean: {metrics['RootDriftMean']}",
@@ -704,6 +754,7 @@ def render_g1_paper_report(metrics, table):
                 "## FK Metrics",
                 "",
                 f"- FK beat alignment: {metrics['G1FKBAS']}",
+                f"- FK RoboPerform BAS: {metrics['G1FKRoboPerformBAS']}",
                 f"- Beat F1: {metrics['G1BeatF1']}",
                 f"- Beat timing mean frames: {metrics['G1BeatTimingMeanFrames']}",
                 f"- Beat timing std frames: {metrics['G1BeatTimingStdFrames']}",

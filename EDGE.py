@@ -234,6 +234,16 @@ def build_checkpoint_config(
     repr_dim=None,
     feature_cache_mode="off",
     feature_cache_dtype="float32",
+    lambda_g1_fk=0.0,
+    lambda_g1_fk_vel=0.0,
+    lambda_g1_fk_acc=0.0,
+    lambda_g1_foot=0.0,
+    lambda_g1_kin=1.0,
+    g1_kin_loss_warmup_epochs=0,
+    g1_kin_loss_max_fraction=0.0,
+    g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
+    g1_root_quat_order="xyzw",
+    epoch_offset=0,
 ):
     motion_format = validate_motion_format(motion_format)
     return {
@@ -261,6 +271,16 @@ def build_checkpoint_config(
         "beat_loss_cap_mode": beat_loss_cap_mode,
         "beat_estimator_ckpt": beat_estimator_ckpt,
         "beat_estimator_config": beat_estimator_config or {},
+        "lambda_g1_fk": lambda_g1_fk,
+        "lambda_g1_fk_vel": lambda_g1_fk_vel,
+        "lambda_g1_fk_acc": lambda_g1_fk_acc,
+        "lambda_g1_foot": lambda_g1_foot,
+        "lambda_g1_kin": lambda_g1_kin,
+        "g1_kin_loss_warmup_epochs": g1_kin_loss_warmup_epochs,
+        "g1_kin_loss_max_fraction": g1_kin_loss_max_fraction,
+        "g1_fk_model_path": g1_fk_model_path,
+        "g1_root_quat_order": g1_root_quat_order,
+        "epoch_offset": epoch_offset,
     }
 
 
@@ -442,6 +462,7 @@ def build_train_postfix(
     beat_weight=None,
     beat_contribution=None,
     beat_capped=None,
+    g1_stats=None,
 ):
     if not use_beats:
         beat_mode = "none"
@@ -468,6 +489,20 @@ def build_train_postfix(
             beat_capped.detach().cpu().item() if torch.is_tensor(beat_capped) else beat_capped
         )
         postfix["beat_capped"] = "yes" if capped_value else "no"
+    if g1_stats:
+        postfix["g1_fk"] = _format_loss_value(g1_stats.get("g1_fk_loss", 0.0))
+        postfix["g1_fk_vel"] = _format_loss_value(g1_stats.get("g1_fk_vel_loss", 0.0))
+        postfix["g1_fk_acc"] = _format_loss_value(g1_stats.get("g1_fk_acc_loss", 0.0))
+        postfix["g1_foot"] = _format_loss_value(g1_stats.get("g1_foot_loss", 0.0))
+        postfix["g1_kin"] = _format_loss_value(g1_stats.get("g1_kin_contribution", 0.0))
+        if "g1_kin_capped" in g1_stats:
+            capped_value = g1_stats["g1_kin_capped"]
+            capped_value = bool(
+                capped_value.detach().cpu().item()
+                if torch.is_tensor(capped_value)
+                else capped_value
+            )
+            postfix["g1_cap"] = "yes" if capped_value else "no"
     return postfix
 
 
@@ -497,6 +532,15 @@ class EDGE:
         mixed_precision="bf16",
         resume_training_state=False,
         motion_format=SMPL_MOTION_FORMAT,
+        lambda_g1_fk=0.0,
+        lambda_g1_fk_vel=0.0,
+        lambda_g1_fk_acc=0.0,
+        lambda_g1_foot=0.0,
+        lambda_g1_kin=1.0,
+        g1_kin_loss_warmup_epochs=0,
+        g1_kin_loss_max_fraction=0.0,
+        g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
+        g1_root_quat_order="xyzw",
     ):
         configure_cuda_math()
         ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
@@ -528,6 +572,15 @@ class EDGE:
         self.beat_estimator_config = {}
         self.resume_training_state = resume_training_state
         self.motion_format = validate_motion_format(motion_format)
+        self.lambda_g1_fk = lambda_g1_fk
+        self.lambda_g1_fk_vel = lambda_g1_fk_vel
+        self.lambda_g1_fk_acc = lambda_g1_fk_acc
+        self.lambda_g1_foot = lambda_g1_foot
+        self.lambda_g1_kin = lambda_g1_kin
+        self.g1_kin_loss_warmup_epochs = g1_kin_loss_warmup_epochs
+        self.g1_kin_loss_max_fraction = g1_kin_loss_max_fraction
+        self.g1_fk_model_path = g1_fk_model_path
+        self.g1_root_quat_order = g1_root_quat_order
 
         self.repr_dim = repr_dim = motion_repr_dim(self.motion_format)
 
@@ -537,6 +590,7 @@ class EDGE:
 
         self.accelerator.wait_for_everyone()
 
+        self.normalizer = None
         checkpoint = None
         if checkpoint_path != "":
             checkpoint = load_trusted_checkpoint(
@@ -630,6 +684,16 @@ class EDGE:
             beat_loss_max_fraction=self.beat_loss_max_fraction,
             beat_loss_cap_mode=self.beat_loss_cap_mode,
             motion_format=self.motion_format,
+            normalizer=self.normalizer,
+            lambda_g1_fk=self.lambda_g1_fk,
+            lambda_g1_fk_vel=self.lambda_g1_fk_vel,
+            lambda_g1_fk_acc=self.lambda_g1_fk_acc,
+            lambda_g1_foot=self.lambda_g1_foot,
+            lambda_g1_kin=self.lambda_g1_kin,
+            g1_kin_loss_warmup_epochs=self.g1_kin_loss_warmup_epochs,
+            g1_kin_loss_max_fraction=self.g1_kin_loss_max_fraction,
+            g1_fk_model_path=self.g1_fk_model_path,
+            g1_root_quat_order=self.g1_root_quat_order,
         )
 
         print(
@@ -685,6 +749,15 @@ class EDGE:
             repr_dim=self.repr_dim,
             feature_cache_mode=feature_cache_mode,
             feature_cache_dtype=feature_cache_dtype,
+            lambda_g1_fk=self.lambda_g1_fk,
+            lambda_g1_fk_vel=self.lambda_g1_fk_vel,
+            lambda_g1_fk_acc=self.lambda_g1_fk_acc,
+            lambda_g1_foot=self.lambda_g1_foot,
+            lambda_g1_kin=self.lambda_g1_kin,
+            g1_kin_loss_warmup_epochs=self.g1_kin_loss_warmup_epochs,
+            g1_kin_loss_max_fraction=self.g1_kin_loss_max_fraction,
+            g1_fk_model_path=self.g1_fk_model_path,
+            g1_root_quat_order=self.g1_root_quat_order,
         )
         if self.accelerator.is_main_process:
             beat_mode = (
@@ -706,7 +779,12 @@ class EDGE:
                 f"learning_rate={training_recipe['learning_rate']} "
                 f"weight_decay={training_recipe['weight_decay']} "
                 f"lambda_beat={self.lambda_beat} "
-                f"lambda_acc={self.lambda_acc}"
+                f"lambda_acc={self.lambda_acc} "
+                f"lambda_g1_fk={self.lambda_g1_fk} "
+                f"lambda_g1_fk_vel={self.lambda_g1_fk_vel} "
+                f"lambda_g1_fk_acc={self.lambda_g1_fk_acc} "
+                f"lambda_g1_foot={self.lambda_g1_foot} "
+                f"lambda_g1_kin={self.lambda_g1_kin}"
             )
         # load datasets
         train_tensor_dataset_path = os.path.join(
@@ -797,6 +875,7 @@ class EDGE:
 
         # set normalizer
         self.normalizer = test_dataset.normalizer
+        self.diffusion.set_normalizer(self.normalizer)
 
         # data loaders
         pin_memory = self.accelerator.device.type == "cuda"
@@ -834,9 +913,14 @@ class EDGE:
                 f"tensor_cache_reused={tensor_cache_reused}"
             )
 
+        epoch_offset = int(getattr(opt, "epoch_offset", 0))
+        if epoch_offset < 0:
+            raise ValueError("--epoch_offset must be non-negative.")
+
         self.accelerator.wait_for_everyone()
         for epoch in range(1, opt.epochs + 1):
-            self.diffusion.set_training_epoch(epoch)
+            global_epoch = epoch_offset + epoch
+            self.diffusion.set_training_epoch(global_epoch)
             epoch_start = time.perf_counter()
             if self.accelerator.device.type == "cuda":
                 torch.cuda.reset_peak_memory_stats(self.accelerator.device)
@@ -848,6 +932,10 @@ class EDGE:
             avg_beatloss = 0
             avg_beatcontrib = 0
             avg_beatcap_hits = 0
+            avg_g1_fk_vel_loss = 0
+            avg_g1_fk_acc_loss = 0
+            avg_g1_kin_contrib = 0
+            avg_g1_kin_cap_hits = 0
             # train
             self.train()
             train_loop = train_data_loader
@@ -856,7 +944,11 @@ class EDGE:
                     train_data_loader,
                     total=len(train_data_loader),
                     position=1,
-                    desc=f"Train {epoch}/{opt.epochs}",
+                    desc=(
+                        f"Train {global_epoch}/{epoch_offset + opt.epochs}"
+                        if epoch_offset
+                        else f"Train {epoch}/{opt.epochs}"
+                    ),
                     unit="batch",
                 )
 
@@ -906,6 +998,27 @@ class EDGE:
                     )
                     avg_beatcontrib += float(beat_contribution.detach().cpu())
                     avg_beatcap_hits += float(beat_capped.detach().cpu())
+                    g1_stats = getattr(self.diffusion, "last_g1_kin_loss_stats", {})
+                    avg_g1_fk_vel_loss += float(
+                        g1_stats.get("g1_fk_vel_loss", torch.zeros(())).detach().cpu()
+                        if torch.is_tensor(g1_stats.get("g1_fk_vel_loss", None))
+                        else g1_stats.get("g1_fk_vel_loss", 0.0)
+                    )
+                    avg_g1_fk_acc_loss += float(
+                        g1_stats.get("g1_fk_acc_loss", torch.zeros(())).detach().cpu()
+                        if torch.is_tensor(g1_stats.get("g1_fk_acc_loss", None))
+                        else g1_stats.get("g1_fk_acc_loss", 0.0)
+                    )
+                    avg_g1_kin_contrib += float(
+                        g1_stats.get("g1_kin_contribution", torch.zeros(())).detach().cpu()
+                        if torch.is_tensor(g1_stats.get("g1_kin_contribution", None))
+                        else g1_stats.get("g1_kin_contribution", 0.0)
+                    )
+                    avg_g1_kin_cap_hits += float(
+                        g1_stats.get("g1_kin_capped", torch.zeros(())).detach().cpu()
+                        if torch.is_tensor(g1_stats.get("g1_kin_capped", None))
+                        else g1_stats.get("g1_kin_capped", 0.0)
+                    )
                     if hasattr(train_loop, "set_postfix"):
                         train_loop.set_postfix(
                             **build_train_postfix(
@@ -918,6 +1031,7 @@ class EDGE:
                                 beat_weight=beat_stats.get("effective_lambda_beat"),
                                 beat_contribution=beat_contribution,
                                 beat_capped=beat_capped,
+                                g1_stats=g1_stats,
                             )
                         )
             if self.accelerator.is_main_process:
@@ -928,7 +1042,7 @@ class EDGE:
                     else 0.0
                 )
                 print(
-                    f"train_epoch={epoch} seconds={epoch_duration:.2f} "
+                    f"train_epoch={global_epoch} seconds={epoch_duration:.2f} "
                     f"batches_per_second={len(train_data_loader) / epoch_duration:.2f} "
                     f"samples_per_second={len(train_dataset) / epoch_duration:.2f} "
                     f"peak_cuda_memory_mb={peak_cuda_memory_mb:.2f}"
@@ -949,6 +1063,10 @@ class EDGE:
                     avg_beatloss /= len(train_data_loader)
                     avg_beatcontrib /= len(train_data_loader)
                     avg_beatcap_hits /= len(train_data_loader)
+                    avg_g1_fk_vel_loss /= len(train_data_loader)
+                    avg_g1_fk_acc_loss /= len(train_data_loader)
+                    avg_g1_kin_contrib /= len(train_data_loader)
+                    avg_g1_kin_cap_hits /= len(train_data_loader)
                     log_dict = {
                         "Train Loss": avg_loss,
                         "V Loss": avg_vloss,
@@ -961,6 +1079,10 @@ class EDGE:
                         ),
                         "Beat Contribution": avg_beatcontrib,
                         "Beat Cap Hit Rate": avg_beatcap_hits,
+                        "G1 FK Vel Loss": avg_g1_fk_vel_loss,
+                        "G1 FK Acc Loss": avg_g1_fk_acc_loss,
+                        "G1 Kin Contribution": avg_g1_kin_contrib,
+                        "G1 Kin Cap Hit Rate": avg_g1_kin_cap_hits,
                     }
                     if wandb_run is not None:
                         wandb.log(log_dict)
@@ -973,7 +1095,7 @@ class EDGE:
                         "normalizer": self.normalizer,
                         "config": training_recipe,
                     }
-                    torch.save(ckpt, os.path.join(wdir, f"train-{epoch}.pt"))
+                    torch.save(ckpt, os.path.join(wdir, f"train-{global_epoch}.pt"))
                     # generate a sample
                     render_count = 2
                     shape = (render_count, self.horizon, self.repr_dim)
@@ -985,12 +1107,12 @@ class EDGE:
                         shape,
                         slice_cond(cond, slice(None, render_count)),
                         self.normalizer,
-                        epoch,
+                        global_epoch,
                         os.path.join(opt.render_dir, "train_" + opt.exp_name),
                         name=wavnames[:render_count],
                         sound=True,
                     )
-                    print(f"[MODEL SAVED at Epoch {epoch}]")
+                    print(f"[MODEL SAVED at Epoch {global_epoch}]")
         if self.accelerator.is_main_process and wandb_run is not None:
             wandb_run.finish()
 

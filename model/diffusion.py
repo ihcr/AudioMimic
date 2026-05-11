@@ -19,6 +19,7 @@ from dataset.motion_representation import (
     validate_motion_format,
 )
 from dataset.quaternion import ax_from_6v, quat_slerp
+from model.g1_torch_kinematics import G1TorchKinematics
 from rotation_transforms import (axis_angle_to_quaternion,
                                  quaternion_to_axis_angle)
 from vis import skeleton_render
@@ -190,6 +191,24 @@ def compute_beat_loss_contribution(
     return contribution, capped, cap
 
 
+def effective_warmup_scale(epoch, warmup_epochs=0):
+    if warmup_epochs <= 0:
+        return 1.0
+    return min(max(float(epoch) / float(warmup_epochs), 0.0), 1.0)
+
+
+def compute_capped_aux_contribution(base_loss, raw_contribution, max_fraction=0.0):
+    if max_fraction <= 0:
+        cap = torch.full_like(raw_contribution, float("inf"))
+        capped = torch.zeros_like(raw_contribution, dtype=torch.bool)
+        return raw_contribution, capped, cap
+    cap = base_loss.detach() * float(max_fraction)
+    capped = raw_contribution > cap
+    safe_cap = torch.clamp(cap, min=torch.finfo(raw_contribution.dtype).eps)
+    contribution = cap * torch.tanh(raw_contribution / safe_cap)
+    return contribution, capped, cap
+
+
 def transform_beat_target_for_estimator(beat_target, beat_spacing, estimator_config):
     target_transform = (estimator_config or {}).get("target_transform", "raw_distance")
     if target_transform == "raw_distance":
@@ -243,6 +262,16 @@ class GaussianDiffusion(nn.Module):
         beat_loss_max_fraction=0.0,
         beat_loss_cap_mode="hard",
         motion_format=SMPL_MOTION_FORMAT,
+        normalizer=None,
+        lambda_g1_fk=0.0,
+        lambda_g1_fk_vel=0.0,
+        lambda_g1_fk_acc=0.0,
+        lambda_g1_foot=0.0,
+        lambda_g1_kin=1.0,
+        g1_kin_loss_warmup_epochs=0,
+        g1_kin_loss_max_fraction=0.0,
+        g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
+        g1_root_quat_order="xyzw",
     ):
         super().__init__()
         self.horizon = horizon
@@ -263,8 +292,44 @@ class GaussianDiffusion(nn.Module):
         if beat_loss_cap_mode not in ("hard", "soft"):
             raise ValueError("beat_loss_cap_mode must be 'hard' or 'soft'")
         self.beat_loss_cap_mode = beat_loss_cap_mode
+        self.normalizer = normalizer
+        self.lambda_g1_fk = float(lambda_g1_fk)
+        self.lambda_g1_fk_vel = float(lambda_g1_fk_vel)
+        self.lambda_g1_fk_acc = float(lambda_g1_fk_acc)
+        self.lambda_g1_foot = float(lambda_g1_foot)
+        self.lambda_g1_kin = float(lambda_g1_kin)
+        self.g1_kin_loss_warmup_epochs = int(g1_kin_loss_warmup_epochs)
+        self.g1_kin_loss_max_fraction = float(g1_kin_loss_max_fraction)
+        self.g1_root_quat_order = g1_root_quat_order
+        g1_weights = (
+            self.lambda_g1_fk,
+            self.lambda_g1_fk_vel,
+            self.lambda_g1_fk_acc,
+            self.lambda_g1_foot,
+        )
+        if any(weight < 0 for weight in g1_weights):
+            raise ValueError("G1 robot loss weights must be non-negative.")
+        if self.lambda_g1_kin < 0:
+            raise ValueError("lambda_g1_kin must be non-negative.")
+        if self.g1_kin_loss_warmup_epochs < 0:
+            raise ValueError("g1_kin_loss_warmup_epochs must be non-negative.")
+        if self.g1_kin_loss_max_fraction < 0:
+            raise ValueError("g1_kin_loss_max_fraction must be non-negative.")
+        self.use_g1_kinematic_losses = self.lambda_g1_kin > 0 and any(
+            weight > 0 for weight in g1_weights
+        )
+        if self.use_g1_kinematic_losses and self.motion_format != G1_MOTION_FORMAT:
+            raise ValueError("G1 robot losses require motion_format='g1'.")
+        if self.use_g1_kinematic_losses and predict_epsilon:
+            raise ValueError("G1 robot losses require predict_epsilon=False.")
+        self.g1_kinematics = (
+            G1TorchKinematics(g1_fk_model_path, root_quat_order=g1_root_quat_order)
+            if self.use_g1_kinematic_losses
+            else None
+        )
         self.current_epoch = 1
         self.last_beat_loss_stats = {}
+        self.last_g1_kin_loss_stats = {}
         self.beat_estimator = beat_estimator
         self.beat_estimator_config = (
             getattr(beat_estimator, "checkpoint_config_summary", {})
@@ -343,6 +408,9 @@ class GaussianDiffusion(nn.Module):
 
         ## get loss coefficients and initialize objective
         self.loss_fn = F.mse_loss if loss_type == "l2" else F.l1_loss
+
+    def set_normalizer(self, normalizer):
+        self.normalizer = normalizer
 
     def set_training_epoch(self, epoch):
         self.current_epoch = int(epoch)
@@ -683,6 +751,98 @@ class GaussianDiffusion(nn.Module):
 
         return sample
 
+    def _decode_g1_for_kinematics(self, samples):
+        if self.normalizer is None:
+            raise ValueError("G1 robot losses require a fitted motion normalizer.")
+        decoded = decode_g1_motion(self.normalizer.unnormalize(samples.clone()).float())
+        return self.g1_kinematics(
+            decoded["root_pos"],
+            decoded["root_rot"],
+            decoded["dof_pos"],
+        )
+
+    @staticmethod
+    def _g1_target_contact_mask(target_feet, height_threshold=0.035, speed_threshold=0.025):
+        if target_feet.shape[1] < 2:
+            return target_feet.new_zeros(target_feet.shape[0], 0, target_feet.shape[2], 1)
+        horizontal_velocity = target_feet[:, 1:, :, :2] - target_feet[:, :-1, :, :2]
+        horizontal_speed = torch.linalg.vector_norm(horizontal_velocity, dim=-1)
+        min_height = target_feet[..., 2].amin(dim=1, keepdim=True)
+        near_ground = target_feet[:, :-1, :, 2] <= (min_height + height_threshold)
+        slow_target = horizontal_speed <= speed_threshold
+        return (near_ground & slow_target).float().unsqueeze(-1)
+
+    def _g1_robot_losses(self, model_out, target, base_loss):
+        zero = torch.zeros((), device=model_out.device, dtype=model_out.dtype)
+        empty_stats = {
+            "g1_fk_loss": zero,
+            "g1_fk_vel_loss": zero,
+            "g1_fk_acc_loss": zero,
+            "g1_foot_loss": zero,
+            "g1_kin_scale": 0.0,
+            "g1_kin_contribution": zero,
+            "g1_kin_capped": torch.zeros((), dtype=torch.bool, device=model_out.device),
+            "g1_kin_cap": torch.full((), float("inf"), device=model_out.device, dtype=model_out.dtype),
+        }
+        if not self.use_g1_kinematic_losses:
+            self.last_g1_kin_loss_stats = empty_stats
+            return zero, zero, zero
+
+        model_fk = self._decode_g1_for_kinematics(model_out)
+        target_fk = self._decode_g1_for_kinematics(target)
+        model_keypoints = model_fk["keypoints"]
+        target_keypoints = target_fk["keypoints"].detach()
+        model_feet = model_fk["feet"]
+        target_feet = target_fk["feet"].detach()
+
+        g1_fk_loss = F.mse_loss(model_keypoints, target_keypoints)
+        g1_fk_vel_loss = zero
+        if model_keypoints.shape[1] > 1:
+            model_v = model_keypoints[:, 1:] - model_keypoints[:, :-1]
+            target_v = target_keypoints[:, 1:] - target_keypoints[:, :-1]
+            g1_fk_vel_loss = F.mse_loss(model_v, target_v)
+
+        g1_fk_acc_loss = zero
+        if model_keypoints.shape[1] > 2:
+            model_a = model_keypoints[:, 2:] - 2 * model_keypoints[:, 1:-1] + model_keypoints[:, :-2]
+            target_a = target_keypoints[:, 2:] - 2 * target_keypoints[:, 1:-1] + target_keypoints[:, :-2]
+            g1_fk_acc_loss = F.mse_loss(model_a, target_a)
+
+        g1_foot_loss = zero
+        if model_feet.shape[1] > 1:
+            contact_mask = self._g1_target_contact_mask(target_feet)
+            model_foot_v = model_feet[:, 1:, :, :2] - model_feet[:, :-1, :, :2]
+            masked_velocity = model_foot_v * contact_mask
+            denom = torch.clamp(contact_mask.sum() * model_foot_v.shape[-1], min=1.0)
+            g1_foot_loss = masked_velocity.pow(2).sum() / denom
+
+        scale = effective_warmup_scale(
+            self.current_epoch,
+            self.g1_kin_loss_warmup_epochs,
+        )
+        raw_contribution = self.lambda_g1_kin * scale * (
+            self.lambda_g1_fk * g1_fk_loss
+            + self.lambda_g1_fk_vel * g1_fk_vel_loss
+            + self.lambda_g1_fk_acc * g1_fk_acc_loss
+            + self.lambda_g1_foot * g1_foot_loss
+        )
+        contribution, capped, cap = compute_capped_aux_contribution(
+            base_loss=base_loss,
+            raw_contribution=raw_contribution,
+            max_fraction=self.g1_kin_loss_max_fraction,
+        )
+        self.last_g1_kin_loss_stats = {
+            "g1_fk_loss": g1_fk_loss.detach(),
+            "g1_fk_vel_loss": g1_fk_vel_loss.detach(),
+            "g1_fk_acc_loss": g1_fk_acc_loss.detach(),
+            "g1_foot_loss": g1_foot_loss.detach(),
+            "g1_kin_scale": scale,
+            "g1_kin_contribution": contribution.detach(),
+            "g1_kin_capped": capped.detach(),
+            "g1_kin_cap": cap.detach(),
+        }
+        return contribution, g1_fk_loss, g1_foot_loss
+
     def p_losses(self, x_start, cond, t):
         noise = torch.randn_like(x_start)
         x_noisy = self.q_sample(x_start=x_start, t=t, noise=noise)
@@ -709,7 +869,7 @@ class GaussianDiffusion(nn.Module):
             v_loss = reduce(v_loss, "b ... -> b (...)", "mean")
             v_loss = v_loss * extract(self.p2_loss_weight, t, v_loss.shape)
 
-            zero = torch.zeros((), device=x_start.device)
+            zero = torch.zeros((), device=x_start.device, dtype=x_start.dtype)
             beat_loss = zero
             if isinstance(cond, dict) and self.beat_estimator is not None:
                 pred_beat_dist = self.beat_estimator(model_out)
@@ -760,8 +920,18 @@ class GaussianDiffusion(nn.Module):
                 "beat_capped": beat_capped.detach(),
                 "beat_cap": beat_cap.detach(),
             }
-            total_loss = base_loss + self.lambda_acc * acc_loss + beat_contribution
-            return total_loss, (loss.mean(), v_loss.mean(), zero, zero, acc_loss, beat_loss)
+            g1_kin_contribution, fk_loss, foot_loss = self._g1_robot_losses(
+                model_out,
+                target,
+                base_loss,
+            )
+            total_loss = (
+                base_loss
+                + self.lambda_acc * acc_loss
+                + beat_contribution
+                + g1_kin_contribution
+            )
+            return total_loss, (loss.mean(), v_loss.mean(), fk_loss, foot_loss, acc_loss, beat_loss)
 
         # split off contact from the rest
         model_contact, model_out = torch.split(

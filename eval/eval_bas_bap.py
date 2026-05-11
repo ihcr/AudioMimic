@@ -19,6 +19,8 @@ from eval.eval_pfc import load_full_pose
 FPS = 30
 DEFAULT_BAS_SIGMA_SQUARED = 9.0
 DEFAULT_BAP_TOLERANCE = 2
+BAS_DIRECTION = "music_to_motion"
+ROBOPERFORM_BAS_DIRECTION = "motion_to_music"
 
 
 def mean_joint_speed_curve(full_pose):
@@ -86,6 +88,22 @@ def compute_bas_score(music_beats, motion_beats, sigma_squared=DEFAULT_BAS_SIGMA
     for beat in music_beats:
         total += np.exp(-np.min((motion_beats - beat) ** 2) / (2.0 * sigma_squared))
     return float(total / len(music_beats))
+
+
+def compute_roboperform_bas_score(
+    music_beats,
+    motion_beats,
+    sigma_squared=DEFAULT_BAS_SIGMA_SQUARED,
+):
+    music_beats = np.asarray(music_beats, dtype=np.int64).reshape(-1)
+    motion_beats = np.asarray(motion_beats, dtype=np.int64).reshape(-1)
+    if music_beats.size == 0 or motion_beats.size == 0:
+        return 0.0
+
+    total = 0.0
+    for beat in motion_beats:
+        total += np.exp(-np.min((music_beats - beat) ** 2) / (2.0 * sigma_squared))
+    return float(total / len(motion_beats))
 
 
 def greedy_match_count(generated_beats, designated_beats, tolerance=DEFAULT_BAP_TOLERANCE):
@@ -178,6 +196,7 @@ def evaluate_motion_dir(motion_path, bas_sigma_squared=DEFAULT_BAS_SIGMA_SQUARED
 
     aggregate = {
         "BAS": float(np.mean(bas_scores)) if bas_scores else float("nan"),
+        "BAS_direction": BAS_DIRECTION,
         "BAP": (
             matched_designated / max(generated_beats, 1) if eligible_bap_files else float("nan")
         ),

@@ -194,11 +194,32 @@ Definition:
 - compute robot keypoint speed from FK keypoints
 - smooth the speed curve
 - detect local minima as robot motion beats
-- compare each robot motion beat to the nearest music beat with the same
-  AIST-style BAS formula already used by the repo
+- compare each music beat to the nearest robot motion beat with the same
+  paper-style AIST BAS formula used by the repo
 
-This keeps continuity with AIST/RoboPerform while making the motion beat source
-robot-geometry based.
+This keeps continuity with the EDGE/AIST reporting tables while making the
+motion beat source robot-geometry based.
+
+### FK RoboPerform Beat Alignment
+
+Name:
+
+```text
+G1FKRoboPerformBAS
+```
+
+Definition:
+
+- compute robot keypoint speed from FK keypoints
+- smooth the speed curve
+- detect local minima as robot motion beats
+- compare each robot motion beat to the nearest music beat with the
+  RoboPerform-style BAS direction and `sigma^2=9`
+
+Direct G1 reports also include `G1RoboPerformBAS`, which uses local minima from
+the G1 motor/joint velocity curve instead of FK keypoints. Keep both directions
+in reports: `G1BAS`/`G1FKBAS` are paper-style music-to-motion, while
+`G1RoboPerformBAS`/`G1FKRoboPerformBAS` are motion-to-music.
 
 ### Beat Timing Report
 

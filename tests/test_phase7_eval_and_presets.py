@@ -143,6 +143,16 @@ class EvalBasBapTests(unittest.TestCase):
 
         self.assertAlmostEqual(score, 0.5, places=6)
 
+    def test_compute_roboperform_bas_score_matches_motion_to_music_direction(self):
+        eval_module = reload_module("eval.eval_bas_bap")
+
+        score = eval_module.compute_roboperform_bas_score(
+            music_beats=np.array([0], dtype=np.int64),
+            motion_beats=np.array([0, 1000], dtype=np.int64),
+        )
+
+        self.assertAlmostEqual(score, 0.5, places=6)
+
 
 class EvalPfcAuditTests(unittest.TestCase):
     def test_compute_physical_score_can_return_component_details(self):
