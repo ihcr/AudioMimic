@@ -35,6 +35,19 @@ def train(opt):
         mixed_precision=opt.mixed_precision,
         resume_training_state=bool(opt.checkpoint) and not opt.finetune_from_checkpoint,
         motion_format=opt.motion_format,
+        lambda_g1_fk=getattr(opt, "lambda_g1_fk", 0.0),
+        lambda_g1_fk_vel=getattr(opt, "lambda_g1_fk_vel", 0.0),
+        lambda_g1_fk_acc=getattr(opt, "lambda_g1_fk_acc", 0.0),
+        lambda_g1_foot=getattr(opt, "lambda_g1_foot", 0.0),
+        lambda_g1_kin=getattr(opt, "lambda_g1_kin", 1.0),
+        g1_kin_loss_warmup_epochs=getattr(opt, "g1_kin_loss_warmup_epochs", 0),
+        g1_kin_loss_max_fraction=getattr(opt, "g1_kin_loss_max_fraction", 0.0),
+        g1_fk_model_path=getattr(
+            opt,
+            "g1_fk_model_path",
+            "third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
+        ),
+        g1_root_quat_order=getattr(opt, "g1_root_quat_order", "xyzw"),
     )
     model.train_loop(opt)
 

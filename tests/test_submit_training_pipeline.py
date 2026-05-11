@@ -161,6 +161,46 @@ class CommandBuilderTests(unittest.TestCase):
         self.assertTrue(args.enable_g1_fk_metrics)
         self.assertTrue(args.skip_preprocess)
 
+    def test_finedance_g1_librosa35_robotloss_preset_uses_robot_loss_defaults(self):
+        submit_module = reload_module()
+
+        args = submit_module.parse_args(
+            [
+                "--preset",
+                "g1_finedance_librosa35_lbeat_robotloss",
+                "--train_name",
+                "finedance_robotloss",
+            ]
+        )
+        submit_module.apply_dynamic_defaults(args)
+
+        self.assertEqual(args.motion_format, "g1")
+        self.assertEqual(args.data_path, "data/finedance_g1_fkbeats")
+        self.assertEqual(
+            args.processed_data_dir,
+            "data/finedance_g1_librosa35_lbeat_robotloss_dataset_backups",
+        )
+        self.assertEqual(args.feature_type, "baseline")
+        self.assertTrue(args.use_beats)
+        self.assertEqual(args.beat_rep, "distance")
+        self.assertEqual(args.lambda_beat, 0.05)
+        self.assertEqual(args.lambda_g1_fk, 0.1)
+        self.assertEqual(args.lambda_g1_fk_vel, 0.5)
+        self.assertEqual(args.lambda_g1_fk_acc, 0.05)
+        self.assertEqual(args.lambda_g1_foot, 1.0)
+        self.assertEqual(args.lambda_g1_kin, 0.1)
+        self.assertEqual(args.g1_kin_loss_warmup_epochs, 50)
+        self.assertEqual(args.g1_kin_loss_max_fraction, 1.0)
+        self.assertEqual(args.beat_loss_max_fraction, 1.0)
+        self.assertEqual(args.g1_target_transform, "relative_distance")
+        self.assertEqual(args.batch_size, 512)
+        self.assertEqual(args.gradient_accumulation_steps, 1)
+        self.assertEqual(args.feature_cache_mode, "memmap")
+        self.assertEqual(args.feature_cache_dtype, "float16")
+        self.assertTrue(args.finetune_from_checkpoint)
+        self.assertTrue(args.enable_g1_fk_metrics)
+        self.assertTrue(args.skip_preprocess)
+
     def test_g1_baseline_preset_uses_same_optimized_data_path_without_beats(self):
         submit_module = reload_module()
 
@@ -382,6 +422,47 @@ class CommandBuilderTests(unittest.TestCase):
         self.assertIn("--beat_loss_cap_mode hard", command)
         self.assertIn("--beat_estimator_max_val_loss 8.0", command)
 
+    def test_epoch_offset_labels_continuation_checkpoints_and_eval_target(self):
+        submit_module = reload_module()
+        calls = []
+
+        def fake_sbatch(cmd):
+            calls.append(cmd)
+            return str(900 + len(calls))
+
+        with TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir)
+            args = submit_module.parse_args(
+                [
+                    "--preset",
+                    "g1_baseline",
+                    "--train_name",
+                    "continued",
+                    "--run_id",
+                    "20260511-continued",
+                    "--checkpoint",
+                    "runs/train/base/weights/train-1000.pt",
+                    "--epoch_offset",
+                    "1000",
+                    "--epochs",
+                    "1000",
+                ]
+            )
+
+            result = submit_module.submit_pipeline(
+                args,
+                repo_root=repo_root,
+                sbatch_submitter=fake_sbatch,
+            )
+
+            run_dir = repo_root / "slurm" / "pipelines" / "20260511-continued"
+            train_script = (run_dir / "train.sbatch").read_text()
+            eval_script = (run_dir / "evaluate.sbatch").read_text()
+
+        self.assertEqual(result.job_ids["evaluate"], "903")
+        self.assertIn("--epoch_offset 1000", train_script)
+        self.assertIn("--checkpoint runs/train/continued/weights/train-2000.pt", eval_script)
+
     def test_g1_no_beat_train_command_threads_zero_beat_loss(self):
         submit_module = reload_module()
         args = submit_module.parse_args(
@@ -437,6 +518,40 @@ class CommandBuilderTests(unittest.TestCase):
         self.assertIn("--beat_loss_cap_mode soft", command)
         self.assertIn("--beat_estimator_ckpt slurm/pipelines/run/weights/beat_estimator.pt", command)
         self.assertIn("--checkpoint runs/train/g1_aist_beatdistance_fkbeats/weights/train-2000.pt", command)
+        self.assertIn("--finetune_from_checkpoint", command)
+
+    def test_finedance_g1_robotloss_train_command_threads_kinematic_args(self):
+        submit_module = reload_module()
+        args = submit_module.parse_args(
+            [
+                "--preset",
+                "g1_finedance_librosa35_lbeat_robotloss",
+                "--train_name",
+                "finedance_robotloss",
+                "--checkpoint",
+                "runs/train/finedance_g1_librosa35_motiondist_cond_1000/weights/train-100.pt",
+            ]
+        )
+        submit_module.apply_dynamic_defaults(args)
+
+        command = submit_module.build_train_command(
+            args,
+            beat_estimator_ckpt=Path("slurm/pipelines/run/weights/beat_estimator.pt"),
+        )
+
+        self.assertIn("--feature_type baseline", command)
+        self.assertIn("--motion_format g1", command)
+        self.assertIn("--lambda_beat 0.05", command)
+        self.assertIn("--lambda_g1_fk 0.1", command)
+        self.assertIn("--lambda_g1_fk_vel 0.5", command)
+        self.assertIn("--lambda_g1_fk_acc 0.05", command)
+        self.assertIn("--lambda_g1_foot 1.0", command)
+        self.assertIn("--lambda_g1_kin 0.1", command)
+        self.assertIn("--g1_kin_loss_warmup_epochs 50", command)
+        self.assertIn("--g1_kin_loss_max_fraction 1.0", command)
+        self.assertIn("--beat_loss_max_fraction 1.0", command)
+        self.assertIn("--g1_root_quat_order xyzw", command)
+        self.assertIn("--feature_cache_dtype float16", command)
         self.assertIn("--finetune_from_checkpoint", command)
 
     def test_estimator_command_threads_explicit_stage_args(self):
@@ -772,6 +887,7 @@ class SubmissionFlowTests(unittest.TestCase):
         self.assertIn(f"source {repo_root / '.venv311' / 'bin' / 'activate'}", preprocess_script)
         self.assertIn("export PYTHONUNBUFFERED=1", preprocess_script)
         self.assertIn("export TERM=xterm-256color", preprocess_script)
+        self.assertIn("export MUJOCO_GL=${MUJOCO_GL:-egl}", preprocess_script)
         self.assertIn("stdbuf -oL -eL python data/create_dataset.py --extract-baseline --extract-beats", preprocess_script)
 
         self.assertIn(
@@ -782,6 +898,7 @@ class SubmissionFlowTests(unittest.TestCase):
         self.assertIn("stdbuf -oL -eL python train.py --feature_type baseline --motion_format smpl --use_beats", train_script)
         self.assertIn("--mixed_precision bf16", estimator_script)
         self.assertIn("--mixed_precision bf16", train_script)
+        self.assertIn("--epoch_offset 0", train_script)
         self.assertIn("--gradient_accumulation_steps 1", train_script)
         self.assertIn("--feature_cache_mode off", train_script)
         self.assertIn("--feature_cache_dtype float32", train_script)
@@ -811,6 +928,26 @@ class SubmissionFlowTests(unittest.TestCase):
                     "demo",
                     "--run_id",
                     "20260430-safe-lbeat",
+                    "--skip_eval",
+                ]
+            )
+
+            with self.assertRaisesRegex(ValueError, "requires --checkpoint"):
+                submit_module.submit_pipeline(args, repo_root=repo_root, sbatch_submitter=lambda _: "1")
+
+    def test_finedance_g1_robotloss_pipeline_requires_starting_checkpoint(self):
+        submit_module = reload_module()
+
+        with TemporaryDirectory() as tmpdir:
+            repo_root = Path(tmpdir)
+            args = submit_module.parse_args(
+                [
+                    "--preset",
+                    "g1_finedance_librosa35_lbeat_robotloss",
+                    "--train_name",
+                    "finedance_robotloss",
+                    "--run_id",
+                    "20260511-finedance-robotloss",
                     "--skip_eval",
                 ]
             )

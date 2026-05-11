@@ -191,9 +191,12 @@ python submit_training_pipeline.py \
   --enable_g1_fk_metrics \
   --g1_fk_model_path third_party/unitree_g1_description/g1_29dof_rev_1_0.xml
 ```
-That run improved G1 rhythm metrics over FKBeat no-lbeat
-(`G1BAS 0.5446 -> 0.5956`, `G1FKBAS 0.5502 -> 0.5978`,
-`G1BeatF1 0.3333 -> 0.4372`) without the root-motion collapse seen in the
+That run improved G1 rhythm metrics over FKBeat no-lbeat under the
+music-to-motion BAS convention
+(`G1BAS 0.3320 -> 0.4484`, `G1FKBAS 0.3497 -> 0.4673`,
+`G1BeatF1 0.3333 -> 0.4372`) and under the RoboPerform-style motion-to-music
+rescore (`G1RoboPerformBAS 0.5894 -> 0.6211`,
+`G1FKRoboPerformBAS 0.5502 -> 0.5978`) without the root-motion collapse seen in the
 from-scratch `lambda_beat=0.2` run. It is still not the default deployable G1
 checkpoint because foot sliding and ground penetration worsened
 (`G1FootSliding 0.6112 -> 0.7102`, `G1GroundPenetration 0.0665 -> 0.0979`).
@@ -263,19 +266,75 @@ python test.py --music_dir custom_music/ --checkpoint checkpoint.pt --use_beats 
 ```
 The user beat JSON should contain either `{"fps": 30, "beat_times_sec": [...]}` or `{"fps": 30, "beat_frames": [...]}`.
 
-G1 robot-native inference writes `.pkl` motion payloads when `--no_render` is
-set. With rendering enabled, it uses the native MuJoCo mesh renderer by default
-and muxes the matching audio into the `.mp4`:
+### Visualize Generated G1 Robot Dances
+G1 robot-native checkpoints generate 38-D Unitree G1 motion, not SMPL motion.
+Use `--motion_format g1` and render with the local Unitree MJCF model:
+`third_party/unitree_g1_description/g1_29dof_rev_1_0.xml`.
+The saved G1 payload uses `root_quat_order=xyzw`, so keep
+`--g1_root_quat_order xyzw` unless the data was explicitly regenerated with a
+different convention.
+
+For a one-shot generate-and-render pass, put one or more `.wav` files under
+`custom_music/` and run:
 ```.bash
 MUJOCO_GL=egl python test.py \
   --motion_format g1 \
   --music_dir custom_music/ \
   --checkpoint runs/train/<run>/weights/train-2000.pt \
+  --feature_type jukebox \
+  --use_beats \
+  --beat_rep distance \
+  --beat_source audio \
+  --render_dir renders/g1_demo \
+  --save_motions \
+  --motion_save_dir renders/g1_demo_motions \
   --g1_fk_model_path third_party/unitree_g1_description/g1_29dof_rev_1_0.xml \
   --g1_root_quat_order xyzw \
   --g1_render_backend mujoco
 ```
-Use `--g1_render_backend stick` only for diagnostic stick-figure videos.
+This writes MuJoCo robot videos to `renders/g1_demo/` and the generated G1
+`.pkl` payloads to `renders/g1_demo_motions/`. The videos are muxed with the
+matching input audio. On the cluster, run this command inside an `srun` or
+`sbatch` job, not directly on the login node.
+
+For motion-only generation, keep the exact same model and conditioning flags but
+disable rendering:
+```.bash
+python test.py \
+  --motion_format g1 \
+  --music_dir custom_music/ \
+  --checkpoint runs/train/<run>/weights/train-2000.pt \
+  --feature_type jukebox \
+  --use_beats \
+  --beat_rep distance \
+  --beat_source audio \
+  --save_motions \
+  --motion_save_dir renders/g1_demo_motions \
+  --no_render
+```
+This is useful when generation and visualization should happen in separate
+jobs. To replay a saved G1 `.pkl` with the robot model:
+```.bash
+MUJOCO_GL=egl python - <<'PY'
+from eval.g1_visualization import render_g1_motion
+
+render_g1_motion(
+    "renders/g1_demo_motions/test_0_song_g1.pkl",
+    out="renders/g1_replay",
+    name="custom_music/song.wav",
+    model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
+    root_quat_order="xyzw",
+    render_backend="mujoco",
+    width=960,
+    height=720,
+)
+PY
+```
+Change the `.pkl` and `.wav` paths to the generated motion and its source audio.
+Use `--g1_render_backend stick`, or `render_backend="stick"` in the replay
+helper, only for diagnostic stick-figure videos. If MuJoCo fails to initialize
+on a headless node, confirm `requirements-g1-fk.txt` is installed in `.venv311`
+and keep `MUJOCO_GL=egl` in the job environment.
 
 ### Evaluation
 Physical Foot Contact (PFC), Beat Alignment Score (BAS), Beat Assignment Precision (BAP), and diversity:
@@ -350,6 +409,12 @@ python -m eval.run_g1_dataset_eval \
   --beat_rep distance \
   --enable_fk_metrics
 ```
+
+G1 beat-alignment reports contain two BAS directions. `G1BAS` and `G1FKBAS`
+are the paper-style music-to-motion scores used for continuity with the EDGE
+tables. `G1RoboPerformBAS` and `G1FKRoboPerformBAS` are RoboPerform-style
+motion-to-music scores with `sigma^2=9`; direct G1 uses motor/joint velocity
+minima, while FK G1 uses FK keypoint velocity minima.
 
 For qualitative whole-song G1 videos, use the raw full AIST music directory,
 not the choreography-trimmed `test/wavs` tree and not the 5-second model slices:

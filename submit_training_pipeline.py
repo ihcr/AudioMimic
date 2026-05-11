@@ -175,6 +175,38 @@ PRESET_DEFAULTS = {
         "feature_cache_dtype": "float32",
         "skip_preprocess": True,
     },
+    "g1_finedance_librosa35_lbeat_robotloss": {
+        "motion_format": "g1",
+        "data_path": "data/finedance_g1_fkbeats",
+        "processed_data_dir": "data/finedance_g1_librosa35_lbeat_robotloss_dataset_backups",
+        "feature_type": "baseline",
+        "use_beats": True,
+        "beat_rep": "distance",
+        "lambda_acc": 0.0,
+        "lambda_beat": 0.05,
+        "lambda_g1_fk": 0.1,
+        "lambda_g1_fk_vel": 0.5,
+        "lambda_g1_fk_acc": 0.05,
+        "lambda_g1_foot": 1.0,
+        "lambda_g1_kin": 0.1,
+        "g1_kin_loss_warmup_epochs": 50,
+        "g1_kin_loss_max_fraction": 1.0,
+        "batch_size": 512,
+        "gradient_accumulation_steps": 1,
+        "epochs": 1000,
+        "save_interval": 100,
+        "learning_rate": DEFAULT_LEARNING_RATE,
+        "beat_loss_start_epoch": 50,
+        "beat_loss_warmup_epochs": 300,
+        "beat_loss_max_fraction": 1.0,
+        "beat_loss_cap_mode": "soft",
+        "g1_target_transform": "relative_distance",
+        "finetune_from_checkpoint": True,
+        "feature_cache_mode": "memmap",
+        "feature_cache_dtype": "float16",
+        "skip_preprocess": True,
+        "enable_g1_fk_metrics": True,
+    },
     "aist_finedance_beatdistance": {
         "motion_format": "smpl",
         "data_path": "data/aist_finedance",
@@ -202,6 +234,13 @@ PRESET_TRACKED_ARGS = (
     "beat_rep",
     "lambda_acc",
     "lambda_beat",
+    "lambda_g1_fk",
+    "lambda_g1_fk_vel",
+    "lambda_g1_fk_acc",
+    "lambda_g1_foot",
+    "lambda_g1_kin",
+    "g1_kin_loss_warmup_epochs",
+    "g1_kin_loss_max_fraction",
     "batch_size",
     "gradient_accumulation_steps",
     "epochs",
@@ -215,6 +254,8 @@ PRESET_TRACKED_ARGS = (
     "g1_target_transform",
     "checkpoint",
     "finetune_from_checkpoint",
+    "g1_fk_model_path",
+    "g1_root_quat_order",
     "feature_cache_mode",
     "feature_cache_dtype",
     "root_height_min",
@@ -268,6 +309,13 @@ def parse_args(argv=None):
     )
     parser.add_argument("--lambda_beat", type=float, default=0.5)
     parser.add_argument("--lambda_acc", type=float, default=None)
+    parser.add_argument("--lambda_g1_fk", type=float, default=0.0)
+    parser.add_argument("--lambda_g1_fk_vel", type=float, default=0.0)
+    parser.add_argument("--lambda_g1_fk_acc", type=float, default=0.0)
+    parser.add_argument("--lambda_g1_foot", type=float, default=0.0)
+    parser.add_argument("--lambda_g1_kin", type=float, default=1.0)
+    parser.add_argument("--g1_kin_loss_warmup_epochs", type=int, default=0)
+    parser.add_argument("--g1_kin_loss_max_fraction", type=float, default=0.0)
     parser.add_argument("--beat_estimator_ckpt", default="", help="Reuse an existing estimator checkpoint.")
     parser.add_argument("--beat_estimator_max_val_loss", type=float, default=8.0)
     parser.add_argument("--beat_loss_start_epoch", type=int, default=0)
@@ -306,6 +354,7 @@ def parse_args(argv=None):
     parser.add_argument("--batch_size", type=int, default=DEFAULT_BATCH_SIZE)
     parser.add_argument("--gradient_accumulation_steps", type=int, default=1)
     parser.add_argument("--epochs", type=int, default=2000)
+    parser.add_argument("--epoch_offset", type=int, default=0)
     parser.add_argument("--save_interval", type=int, default=100)
     parser.add_argument("--ema_interval", type=int, default=1)
     parser.add_argument("--learning_rate", type=float, default=None)
@@ -439,8 +488,13 @@ def is_lbeat_run(args):
 def validate_pipeline_config(args):
     if args.allow_lbeat_from_scratch and not args.checkpoint:
         args.finetune_from_checkpoint = False
+    safe_lbeat_presets = (
+        "edge_beatdistance_lbeat",
+        "g1_beatdistance_fkbeats_lbeat",
+        "g1_finedance_librosa35_lbeat_robotloss",
+    )
     if (
-        args.preset in ("edge_beatdistance_lbeat", "g1_beatdistance_fkbeats_lbeat")
+        args.preset in safe_lbeat_presets
         and not args.checkpoint
         and not args.allow_lbeat_from_scratch
     ):
@@ -449,8 +503,26 @@ def validate_pipeline_config(args):
         )
     if args.finetune_from_checkpoint and not args.checkpoint:
         raise ValueError("--finetune_from_checkpoint requires --checkpoint.")
+    if args.epoch_offset < 0:
+        raise ValueError("--epoch_offset must be non-negative.")
     if args.beat_loss_max_fraction < 0:
         raise ValueError("--beat_loss_max_fraction must be non-negative.")
+    g1_loss_weights = (
+        args.lambda_g1_fk,
+        args.lambda_g1_fk_vel,
+        args.lambda_g1_fk_acc,
+        args.lambda_g1_foot,
+    )
+    if any(weight < 0 for weight in g1_loss_weights):
+        raise ValueError("G1 robot loss weights must be non-negative.")
+    if args.lambda_g1_kin < 0:
+        raise ValueError("--lambda_g1_kin must be non-negative.")
+    if args.g1_kin_loss_warmup_epochs < 0:
+        raise ValueError("--g1_kin_loss_warmup_epochs must be non-negative.")
+    if args.g1_kin_loss_max_fraction < 0:
+        raise ValueError("--g1_kin_loss_max_fraction must be non-negative.")
+    if any(weight > 0 for weight in g1_loss_weights) and args.motion_format != "g1":
+        raise ValueError("G1 robot losses require --motion_format g1.")
     if args.beat_estimator_max_val_loss <= 0:
         raise ValueError("--beat_estimator_max_val_loss must be positive.")
     if args.motion_format == "g1" and args.eval_mode != "dataset":
@@ -611,6 +683,8 @@ def build_train_command(args, beat_estimator_ckpt=None):
             args.gradient_accumulation_steps,
             "--epochs",
             args.epochs,
+            "--epoch_offset",
+            args.epoch_offset,
             "--save_interval",
             args.save_interval,
             "--ema_interval",
@@ -629,13 +703,36 @@ def build_train_command(args, beat_estimator_ckpt=None):
             args.feature_cache_mode,
             "--feature_cache_dtype",
             args.feature_cache_dtype,
+            "--lambda_g1_fk",
+            args.lambda_g1_fk,
+            "--lambda_g1_fk_vel",
+            args.lambda_g1_fk_vel,
+            "--lambda_g1_fk_acc",
+            args.lambda_g1_fk_acc,
+            "--lambda_g1_foot",
+            args.lambda_g1_foot,
+            "--lambda_g1_kin",
+            args.lambda_g1_kin,
+            "--g1_kin_loss_warmup_epochs",
+            args.g1_kin_loss_warmup_epochs,
+            "--g1_kin_loss_max_fraction",
+            args.g1_kin_loss_max_fraction,
+            "--g1_fk_model_path",
+            args.g1_fk_model_path,
+            "--g1_root_quat_order",
+            args.g1_root_quat_order,
         ]
     )
     return shell_join(command)
 
 
 def final_checkpoint_path(args):
-    return Path(args.project) / args.train_name / "weights" / f"train-{args.epochs}.pt"
+    return (
+        Path(args.project)
+        / args.train_name
+        / "weights"
+        / f"train-{args.epoch_offset + args.epochs}.pt"
+    )
 
 
 def build_eval_command(
@@ -820,6 +917,7 @@ def build_stage_script(repo_root, stage_name, command, log_path, partition, time
             "export OPENBLAS_NUM_THREADS=1",
             "export NUMEXPR_NUM_THREADS=1",
             "export MPLCONFIGDIR=/tmp/matplotlib",
+            "export MUJOCO_GL=${MUJOCO_GL:-egl}",
             "export WANDB_DISABLED=true",
             'echo \"[$(date -u +%Y-%m-%dT%H:%M:%SZ)] Starting stage\"',
             f"stdbuf -oL -eL {command}",

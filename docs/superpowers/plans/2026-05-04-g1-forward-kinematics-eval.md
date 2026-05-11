@@ -26,6 +26,10 @@ Completed outcomes:
   and `186` test clips.
 - `slurm/pipelines/20260504-g1-aist-beatdistance-fkbeats` was submitted with
   training job `4446773` and evaluation job `4446774`.
+- On 2026-05-10, G1 reports gained separate RoboPerform-style BAS fields:
+  `G1RoboPerformBAS` and `G1FKRoboPerformBAS`. The rescore summary at
+  `slurm/rescore_roboperform_bas_20260510/scores.json` covers `15` G1 run
+  summaries with `0` errors.
 
 ---
 

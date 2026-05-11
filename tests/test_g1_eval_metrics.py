@@ -139,9 +139,11 @@ class G1MetricTests(unittest.TestCase):
 
         self.assertNotIn("G1FKBAS", without_fk)
         self.assertIn("G1FKBAS", with_fk)
+        self.assertIn("G1FKRoboPerformBAS", with_fk)
         self.assertIn("G1BeatF1", with_fk)
         self.assertIn("G1FootSliding", with_fk)
         self.assertTrue(np.isfinite(with_fk["G1FKBAS"]))
+        self.assertAlmostEqual(with_fk["G1FKRoboPerformBAS"], 1.0)
         self.assertEqual(audit["fk_model_path"], "third_party/unitree_g1_description/g1_29dof_rev_1_0.xml")
 
     def test_g1_metrics_are_finite_and_do_not_report_smpl_only_names(self):
@@ -176,6 +178,10 @@ class G1MetricTests(unittest.TestCase):
             ), patch.object(
                 g1_module,
                 "detect_g1_motion_beat_frames",
+                return_value=np.array([1, 3], dtype=np.int64),
+            ), patch.object(
+                g1_module,
+                "detect_g1_roboperform_motion_beat_frames",
                 return_value=np.array([1, 3], dtype=np.int64),
             ), patch.object(
                 reload_module("eval.eval_bas_bap"),
@@ -214,6 +220,8 @@ class G1MetricTests(unittest.TestCase):
             if isinstance(value, (int, float)):
                 self.assertTrue(np.isfinite(value), value)
         self.assertGreaterEqual(saved_metrics["G1BAS"], 0.0)
+        self.assertEqual(saved_metrics["G1RoboPerformBAS"], 1.0)
+        self.assertEqual(saved_table["G1 RoboPerform BAS"], 1.0)
         self.assertEqual(saved_metrics["G1BAP_precision"], 1.0)
         self.assertTrue(wrote_render)
 

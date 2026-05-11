@@ -222,14 +222,24 @@ The first normalized-target scale check showed why old weights are not directly
 comparable: raw FK `motion_dist` had mean-square scale about `13.7263`, while
 relative distance was about `0.10598`, a roughly `129.5x` MSE-scale drop.
 
-Completed G1 FK-beat runs to use as current anchors:
+Completed G1 FK-beat runs to use as current anchors. `G1BAS` and `G1FKBAS`
+are paper-style music-to-motion scores. `G1RoboPerformBAS` and
+`G1FKRoboPerformBAS` are RoboPerform-style motion-to-music scores rescored on
+2026-05-10.
 
 | Run | Path | Decision | Key metrics |
 | --- | --- | --- | --- |
-| FKBeat no lbeat | `slurm/pipelines/20260504-g1-aist-beatdistance-fkbeats` | stable default | `G1BAS=0.5446`, `G1FKBAS=0.5502`, `G1BeatF1=0.3333`, `G1FootSliding=0.6112`, `G1Dist=6.87` |
-| Raw lbeat fine-tune | `slurm/pipelines/20260505-g1-aist-beatdistance-fkbeats-lbeat` | weak rhythm gain, not clearly better | `G1BAS=0.5697`, `G1FKBAS=0.5538`, `G1BeatF1=0.3289`, `G1FootSliding=0.6577`, `G1Dist=7.02` |
-| Relative lbeat scratch `lambda_beat=0.2` | `slurm/pipelines/20260506-g1-aist-fkbeats-lbeat-relative-scratch-lam020-cap1c` | rejected | `G1BAS=0.7300`, `G1FKBAS=0.8792`, `G1BeatF1=0.8716`, `G1FootSliding=3.0399`, `G1Dist=56.26` |
-| Relative lbeat fine-tune `lambda_beat=0.2` | `slurm/pipelines/20260507-g1-aist-fkbeats-lbeat-relative-finetune-lam020-cap1` | best lbeat direction so far, not a clean replacement | `G1BAS=0.5956`, `G1FKBAS=0.5978`, `G1BeatF1=0.4372`, `G1FootSliding=0.7102`, `G1GroundPenetration=0.0979`, `G1Dist=7.59` |
+| FKBeat no lbeat | `slurm/pipelines/20260504-g1-aist-beatdistance-fkbeats` | stable default | `G1BAS=0.3320`, `G1RoboPerformBAS=0.5894`, `G1FKBAS=0.3497`, `G1FKRoboPerformBAS=0.5502`, `G1BeatF1=0.3333`, `G1FootSliding=0.6112`, `G1Dist=6.87` |
+| Raw lbeat fine-tune | `slurm/pipelines/20260505-g1-aist-beatdistance-fkbeats-lbeat` | weak rhythm gain, not clearly better | `G1BAS=0.3530`, `G1RoboPerformBAS=0.6065`, `G1FKBAS=0.3538`, `G1FKRoboPerformBAS=0.5538`, `G1BeatF1=0.3289`, `G1FootSliding=0.6577`, `G1Dist=7.02` |
+| Relative lbeat scratch `lambda_beat=0.2` | `slurm/pipelines/20260506-g1-aist-fkbeats-lbeat-relative-scratch-lam020-cap1c` | rejected | `G1BAS=0.6580`, `G1RoboPerformBAS=0.5006`, `G1FKBAS=0.8232`, `G1FKRoboPerformBAS=0.8792`, `G1BeatF1=0.8716`, `G1FootSliding=3.0399`, `G1Dist=56.26` |
+| Relative lbeat fine-tune `lambda_beat=0.2` | `slurm/pipelines/20260507-g1-aist-fkbeats-lbeat-relative-finetune-lam020-cap1` | best lbeat direction so far, not a clean replacement | `G1BAS=0.4484`, `G1RoboPerformBAS=0.6211`, `G1FKBAS=0.4673`, `G1FKRoboPerformBAS=0.5978`, `G1BeatF1=0.4372`, `G1FootSliding=0.7102`, `G1GroundPenetration=0.0979`, `G1Dist=7.59` |
+
+Completed retargeted FineDance G1 runs:
+
+| Run | Path | Decision | Key metrics |
+| --- | --- | --- | --- |
+| FineDance FKBeat no lbeat | `slurm/pipelines/20260509-finedance-g1-fkbeatdistance-1000-r2` | cleaner FineDance G1 anchor | `G1BAS=0.3046`, `G1RoboPerformBAS=0.5416`, `G1FKBAS=0.3192`, `G1FKRoboPerformBAS=0.5142`, `G1BeatF1=0.2910`, `G1Dist=8.63` |
+| FineDance relative lbeat scratch `lambda_beat=0.1` | `slurm/pipelines/20260509-finedance-g1-relative-lbeat-scratch-lam010-1000-r2` | rejected as a deployable checkpoint | `G1BAS=0.3523`, `G1RoboPerformBAS=0.5023`, `G1FKBAS=0.3511`, `G1FKRoboPerformBAS=0.4940`, `G1BeatF1=0.2961`, `G1Dist=39.53` |
 
 Interpretation: normalized lbeat fine-tuning can improve G1 rhythm without the
 scratch-run root-motion collapse, but the current loss still buys beat score by
