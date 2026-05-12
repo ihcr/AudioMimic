@@ -1,0 +1,4 @@
+Repository: https://github.com/unitreerobotics/unitree_ros
+Raw base: https://raw.githubusercontent.com/unitreerobotics/unitree_ros/master
+Model: robots/g1_description/g1_29dof_rev_1_0.xml
+Meshes: 35

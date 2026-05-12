@@ -1,59 +1,43 @@
 import glob
 import os
 import pickle
-import wave
+from pathlib import Path
 
+import librosa as lr
 import numpy as np
+import soundfile as sf
 from tqdm import tqdm
 
 
-def _read_wav(audio_file):
-    with wave.open(audio_file, "rb") as wav_file:
-        sr = wav_file.getframerate()
-        channels = wav_file.getnchannels()
-        sample_width = wav_file.getsampwidth()
-        frames = wav_file.readframes(wav_file.getnframes())
-
-    if sample_width == 1:
-        audio = np.frombuffer(frames, dtype=np.uint8).astype(np.float32)
-        audio = (audio - 128.0) / 128.0
-    elif sample_width == 2:
-        audio = np.frombuffer(frames, dtype="<i2").astype(np.float32) / 32768.0
-    elif sample_width == 3:
-        raw = np.frombuffer(frames, dtype=np.uint8).reshape(-1, 3)
-        signed = (
-            raw[:, 0].astype(np.int32)
-            | (raw[:, 1].astype(np.int32) << 8)
-            | (raw[:, 2].astype(np.int32) << 16)
-        )
-        signed = np.where(signed & 0x800000, signed - 0x1000000, signed)
-        audio = signed.astype(np.float32) / 8388608.0
-    elif sample_width == 4:
-        audio = np.frombuffer(frames, dtype="<i4").astype(np.float32) / 2147483648.0
-    else:
-        raise ValueError(f"Unsupported WAV sample width: {sample_width}")
-
-    audio = audio.reshape(-1, channels)
-    if channels > 1:
-        audio = audio.mean(axis=1)
-    else:
-        audio = audio[:, 0]
-    return audio, sr
+def _valid_motion_slice(path, expected_frames):
+    path = Path(path)
+    if not path.exists() or path.stat().st_size == 0:
+        return False
+    try:
+        with open(path, "rb") as handle:
+            payload = pickle.load(handle)
+    except Exception:
+        return False
+    if set(payload) != {"pos", "q"}:
+        return False
+    pos = np.asarray(payload["pos"])
+    q = np.asarray(payload["q"])
+    return pos.shape == (expected_frames, 3) and q.shape == (expected_frames, 72)
 
 
-def _write_wav(audio_file, audio, sr):
-    audio = np.clip(audio, -1.0, 1.0)
-    pcm = (audio * 32767.0).astype(np.int16)
-    with wave.open(audio_file, "wb") as wav_file:
-        wav_file.setnchannels(1)
-        wav_file.setsampwidth(2)
-        wav_file.setframerate(sr)
-        wav_file.writeframes(pcm.tobytes())
+def _valid_audio_slice(path):
+    path = Path(path)
+    if not path.exists() or path.stat().st_size == 0:
+        return False
+    try:
+        return sf.info(path).frames > 0
+    except Exception:
+        return False
 
 
 def slice_audio(audio_file, stride, length, out_dir):
     # stride, length in seconds
-    audio, sr = _read_wav(audio_file)
+    audio, sr = lr.load(audio_file, sr=None)
     file_name = os.path.splitext(os.path.basename(audio_file))[0]
     start_idx = 0
     idx = 0
@@ -61,7 +45,14 @@ def slice_audio(audio_file, stride, length, out_dir):
     stride_step = int(stride * sr)
     while start_idx <= len(audio) - window:
         audio_slice = audio[start_idx : start_idx + window]
-        _write_wav(f"{out_dir}/{file_name}_slice{idx}.wav", audio_slice, sr)
+        out_path = Path(out_dir) / f"{file_name}_slice{idx}.wav"
+        if _valid_audio_slice(out_path):
+            start_idx += stride_step
+            idx += 1
+            continue
+        tmp_path = out_path.with_name(out_path.name + ".tmp.wav")
+        sf.write(tmp_path, audio_slice, sr)
+        tmp_path.replace(out_path)
         start_idx += stride_step
         idx += 1
     return idx
@@ -86,7 +77,15 @@ def slice_motion(motion_file, stride, length, num_slices, out_dir):
             q[start_idx : start_idx + window],
         )
         out = {"pos": pos_slice, "q": q_slice}
-        pickle.dump(out, open(f"{out_dir}/{file_name}_slice{slice_count}.pkl", "wb"))
+        out_path = Path(out_dir) / f"{file_name}_slice{slice_count}.pkl"
+        if _valid_motion_slice(out_path, expected_frames=window):
+            start_idx += stride_step
+            slice_count += 1
+            continue
+        tmp_path = out_path.with_suffix(out_path.suffix + ".tmp")
+        with open(tmp_path, "wb") as handle:
+            pickle.dump(out, handle, pickle.HIGHEST_PROTOCOL)
+        tmp_path.replace(out_path)
         start_idx += stride_step
         slice_count += 1
     return slice_count
@@ -100,7 +99,13 @@ def slice_aistpp(motion_dir, wav_dir, stride=0.5, length=5):
     os.makedirs(wav_out, exist_ok=True)
     os.makedirs(motion_out, exist_ok=True)
     assert len(wavs) == len(motions)
-    for wav, motion in tqdm(zip(wavs, motions)):
+    split_name = os.path.basename(motion_dir)
+    for wav, motion in tqdm(
+        zip(wavs, motions),
+        total=len(wavs),
+        desc=f"Slicing {split_name}",
+        unit="clip",
+    ):
         # make sure name is matching
         m_name = os.path.splitext(os.path.basename(motion))[0]
         w_name = os.path.splitext(os.path.basename(wav))[0]
@@ -117,5 +122,5 @@ def slice_audio_folder(wav_dir, stride=0.5, length=5):
     wavs = sorted(glob.glob(f"{wav_dir}/*.wav"))
     wav_out = wav_dir + "_sliced"
     os.makedirs(wav_out, exist_ok=True)
-    for wav in tqdm(wavs):
+    for wav in tqdm(wavs, total=len(wavs), desc="Slicing audio", unit="file"):
         audio_slices = slice_audio(wav, stride, length, wav_out)
