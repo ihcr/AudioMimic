@@ -4,6 +4,12 @@ This document records the nonstandard dataset preparation paths for this branch.
 The original EDGE AIST++ setup still follows the README. The notes below cover
 supplementary datasets that need conversion before training.
 
+Path portability: these commands were first run in a local worktree on the old
+server. In a direct branch clone, run from the repo root with
+`source .venv311/bin/activate`, and replace raw dataset placeholders with the
+current server's storage paths. The branch should not require another EDGE
+checkout for code or environment.
+
 ## FineDance Supplement
 
 FineDance can be added as extra training data for the beat-conditioned diffusion
@@ -21,11 +27,11 @@ drops hand-only joints and writes EDGE-compatible body motion with root position
 and 24 body joints. FineDance source clips are 30 fps; prepared motion clips are
 stored in the 60 fps container expected by EDGE.
 
-Use the shared raw FineDance folder when it is present:
+Use the raw FineDance folder for the current server:
 
 ```bash
-../../.venv311/bin/python data/prepare_finedance_dataset.py \
-  --finedance_root /lus/lfs1aip2/projects/u6ed/yukun/EDGE/data/finedance \
+python data/prepare_finedance_dataset.py \
+  --finedance_root /path/to/finedance \
   --output_root data/finedance_aistpp \
   --feature_type jukebox \
   --extract_beats \
@@ -96,10 +102,10 @@ pipeline launcher.
 The corrected G1 AIST data should be prepared into a new tree, separate from the
 older partial `data/g1_aistpp` and proxy-beat `data/g1_aistpp_full` trees.
 
-Use this raw source:
+Use this raw source, copied or symlinked for the current server:
 
 ```text
-/projects/u6ed/yukun/EDGE/aist-g1-retargeted
+/path/to/aist-g1-retargeted
 ```
 
 Use this prepared output:
@@ -118,10 +124,10 @@ Run long preparation on a compute node:
 
 ```bash
 srun --partition=workq --time=02:00:00 --ntasks=1 --cpus-per-task=8 --mem=32G bash -lc \
-  'cd /projects/u6ed/yukun/EDGE/.worktrees/diffusion && \
-   source ../../.venv311/bin/activate && \
+  'cd /path/to/EDGE-diffusion && \
+   source .venv311/bin/activate && \
    python data/prepare_g1_aist_dataset.py \
-     --g1_motion_dir /projects/u6ed/yukun/EDGE/aist-g1-retargeted \
+     --g1_motion_dir /path/to/aist-g1-retargeted \
      --aist_data_root data \
      --output_root data/g1_aistpp_full_fkbeats \
      --feature_type jukebox \
@@ -136,8 +142,8 @@ Validate the tree before training:
 
 ```bash
 srun --partition=workq --time=00:30:00 --ntasks=1 --cpus-per-task=4 --mem=16G bash -lc \
-  'cd /projects/u6ed/yukun/EDGE/.worktrees/diffusion && \
-   source ../../.venv311/bin/activate && \
+  'cd /path/to/EDGE-diffusion && \
+   source .venv311/bin/activate && \
    python data/validate_preprocessed_data.py \
      --data_path data/g1_aistpp_full_fkbeats \
      --processed_data_dir data/g1_aistpp_full_fkbeats_dataset_backups \
@@ -261,7 +267,7 @@ generated robot motion, and then renders one `.mp4` for the stitched motion.
 There are three different audio surfaces, and they should not be mixed up:
 
 - Raw full AIST music, for example
-  `/projects/u6ed/yukun/Music2Dance/Code/aist_plusplus_datasets/audio/mHO5.mp3`.
+  `/path/to/aist_plusplus_datasets/audio/mHO5.mp3`.
   Use this with `--full_music_dir` when the goal is a video for the whole song.
 - Choreography-trimmed test wavs under a prepared dataset, for example
   `data/g1_aistpp_full_fkbeats/test/wavs`. Use these only when the goal is to
@@ -274,7 +280,7 @@ For whole-song qualitative renders, use:
 ```bash
 python -m eval.run_full_song_eval \
   --data_path data/g1_aistpp_full_fkbeats \
-  --full_music_dir /projects/u6ed/yukun/Music2Dance/Code/aist_plusplus_datasets/audio \
+  --full_music_dir /path/to/aist_plusplus_datasets/audio \
   --motion_format g1 \
   --render \
   --g1_render_backend mujoco \

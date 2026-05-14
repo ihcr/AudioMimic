@@ -9,11 +9,13 @@ Continue the FineDance G1 diffusion ablation work in the `diffusion` worktree:
 - use matched robot renders to sanity-check whether high beat scores correspond to usable G1 motion;
 - avoid treating paper claims about Librosa35/DGFM as directly comparable without matching architecture, representation, and metrics.
 
-Active worktree:
+New-server checkout:
 
-- Path: `/projects/u6ed/yukun/EDGE/.worktrees/diffusion`
+- Clone/fetch this branch directly as a normal repo root; it does not require the
+  old EDGE `main` checkout for code or environment.
+- Suggested path: `/path/to/EDGE-diffusion`
 - Branch: `diffusion`
-- Repo-local env: `source /projects/u6ed/yukun/EDGE/.venv311/bin/activate`
+- Repo-local env: `source .venv311/bin/activate`
 - Long/heavy jobs must use Slurm (`srun`/`sbatch`), not the login node.
 
 ## Current Progress
@@ -21,8 +23,12 @@ Active worktree:
 Pack-up update, 2026-05-14:
 
 - This diffusion branch is being pushed together with the new `wav2clip-stft-beat` branch for migration to another server.
-- Stage A of the music-conditioning redesign moved to `.worktrees/wav2clip` on branch `wav2clip-stft-beat`.
-- The wav2clip branch completed Wav2CLIP/STFT/GaussianBeat feature extraction and trained the `stream_adapter` variant to 500 epochs, but `concat_norm` and eval are blocked by Slurm quota. Read `.worktrees/wav2clip/HANDOFF.md` before continuing Stage A.
+- Stage A of the music-conditioning redesign moved to the separate
+  `wav2clip-stft-beat` branch.
+- The wav2clip branch completed Wav2CLIP/STFT/GaussianBeat feature extraction
+  and trained the `stream_adapter` variant to 500 epochs, but `concat_norm` and
+  eval are blocked by Slurm quota. Clone/fetch `wav2clip-stft-beat` directly and
+  read its `HANDOFF.md` before continuing Stage A.
 - Runtime videos remain local under `videos/` and are ignored; do not commit them.
 
 The main experiment spec is finished and should be read first:
@@ -64,22 +70,9 @@ Qualitative render artifacts:
 
 The 30s model render Slurm job was `4570136`, completed `0:0`, and produced 9 non-empty MP4s. A later reference-render job `4571201` produced the GT/source videos.
 
-Current uncommitted source/doc changes include:
-
-- `EDGE.py`
-- `data/audio_extraction/baseline_features.py`
-- `data/create_dataset.py`
-- `data/prepare_finedance_dataset.py`
-- `data/prepare_finedance_g1_dataset.py`
-- `data/validate_preprocessed_data.py`
-- `eval/run_full_song_eval.py`
-- `submit_training_pipeline.py`
-- `tests/test_beat_features.py`
-- `tests/test_validate_preprocessed_data.py`
-- `docs/DATASET_PREPARATION.md`
-- untracked: `data/rebuild_finedance_librosa_features.py`
-- untracked: `docs/experiments/`
-- untracked: `videos/`
+The source/doc changes for this handoff have been committed and pushed. Runtime
+artifacts under `data/`, `runs/`, `slurm/`, and `videos/` remain local and should
+be copied explicitly when needed.
 
 ## What Worked
 
@@ -118,7 +111,8 @@ Current uncommitted source/doc changes include:
 3. Treat `Librosa35 full-context motiondist` as the current low-dimensional Librosa baseline, not the lbeat+robotloss run.
 4. Treat `Jukebox FKBeat no-lbeat` as the cleaner deployment anchor unless a qualitative/render review says otherwise.
 5. If continuing toward paper-aligned feature work, the next fair direction is probably Wav2CLIP + STFT or a rhythm-aware STFT/PRE-style feature module, not plain 35D Librosa alone.
-6. For new-server continuation of Wav2CLIP/STFT/GaussianBeat Stage A, switch to the pushed `wav2clip-stft-beat` branch and follow `.worktrees/wav2clip/HANDOFF.md`.
+6. For new-server continuation of Wav2CLIP/STFT/GaussianBeat Stage A, clone or
+   switch to the pushed `wav2clip-stft-beat` branch and follow its `HANDOFF.md`.
 7. Before any future push, review dirty source changes and keep runtime artifacts under `slurm/`, `data/`, `videos/`, and generated caches untracked. Do not commit checkpoints, dataset files, caches, renders, or Slurm logs.
 8. If preparing another PR/push, rerun focused tests that cover the changed code paths:
    - `python -m unittest tests.test_beat_features tests.test_validate_preprocessed_data`

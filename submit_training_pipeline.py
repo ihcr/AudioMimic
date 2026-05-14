@@ -22,9 +22,12 @@ SCRIPT_ROOT = Path(__file__).resolve().parent
 SHARED_ROOT = resolve_shared_root(SCRIPT_ROOT)
 DEFAULT_BATCH_SIZE = 128
 DEFAULT_LEARNING_RATE = 2e-4
-DEFAULT_LBEAT_REFERENCE_EVAL_DIR = (
-    "/lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/diffusion/"
-    "slurm/pipelines/20260424-090100-edge_beatdistance_20260424_shmfix/eval"
+DEFAULT_LBEAT_REFERENCE_EVAL_DIR = str(
+    SCRIPT_ROOT
+    / "slurm"
+    / "pipelines"
+    / "20260424-090100-edge_beatdistance_20260424_shmfix"
+    / "eval"
 )
 DEFAULT_G1_FKBEAT_CHECKPOINT = (
     "runs/train/g1_aist_beatdistance_fkbeats/weights/train-2000.pt"

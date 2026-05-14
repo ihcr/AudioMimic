@@ -7,7 +7,10 @@ Last Updated: 2026-05-14 UTC
 
 ## Evidence Scope
 
-This is an original proposal grounded in the current FineDance-G1 results, the dirty `diffusion` worktree, local paper notes under `/projects/u6ed/yukun/EDGE/docs/papers/markdown/`, and a fresh online check of EDGE, DGFM, Beat-It, Lodge, AIST++/FACT, and Wav2CLIP sources.
+This is an original proposal grounded in the current FineDance-G1 results, the
+dirty `diffusion` worktree, local paper notes under `docs/papers/markdown/`, and
+a fresh online check of EDGE, DGFM, Beat-It, Lodge, AIST++/FACT, and Wav2CLIP
+sources.
 
 ## Research Question
 
@@ -76,8 +79,8 @@ Stage C: optional planner/primitive layer after Stage A/B is stable.
 
 ## Implementation Scope
 
-- Original planning branch/worktree: `diffusion` / `.worktrees/diffusion`.
-- Stage A implementation branch/worktree: `wav2clip-stft-beat` / `.worktrees/wav2clip`.
+- Original planning branch: `diffusion`.
+- Stage A implementation branch: `wav2clip-stft-beat`.
 - Likely files:
   - `EDGE.py`
   - `args.py`
@@ -125,13 +128,15 @@ Stage C: optional planner/primitive layer after Stage A/B is stable.
 | Date | Run | Status | Evidence | Notes |
 |---|---|---|---|---|
 | 2026-05-12 | spec creation | spec | `docs/experiments/EXP-20260512-music-conditioning-redesign.md` | Proposed Wav2CLIP+STFT Stage A, two-stream conditioner Stage B, primitive/planner Stage C. |
-| 2026-05-14 | Stage A handoff | blocked | `.worktrees/wav2clip/docs/experiments/EXP-20260513-finedance-g1-wav2clip-stft-beat.md` | Stage A moved to the dedicated `wav2clip-stft-beat` branch. Feature extraction completed and `stream_adapter` trained to 500 epochs; `concat_norm` and eval are blocked by Slurm quota and should continue on another server/account. |
+| 2026-05-14 | Stage A handoff | blocked | `wav2clip-stft-beat` branch `docs/experiments/EXP-20260513-finedance-g1-wav2clip-stft-beat.md` | Stage A moved to the dedicated `wav2clip-stft-beat` branch. Feature extraction completed and `stream_adapter` trained to 500 epochs; `concat_norm` and eval are blocked by Slurm quota and should continue on another server/account. |
 
 ## Results
 
-- Metric files: none yet for Stage A; eval jobs were cancelled before running in `.worktrees/wav2clip`.
+- Metric files: none yet for Stage A; eval jobs were cancelled before running on
+  the previous server.
 - Render/report paths: none yet for Stage A.
-- Checkpoint paths: `.worktrees/wav2clip/runs/train/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/weights/train-500.pt`.
+- Checkpoint path in the `wav2clip-stft-beat` branch:
+  `runs/train/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/weights/train-500.pt`.
 - Key observations: current evidence argues against spending more effort on high-weight scratch lbeat or Librosa35-only swaps.
 
 ## Current Conclusion
@@ -140,4 +145,7 @@ Stage A has started on the separate `wav2clip-stft-beat` branch using Wav2CLIP+S
 
 ## Next Action
 
-Continue Stage A from `.worktrees/wav2clip`: copy the runtime artifacts listed in its `HANDOFF.md`, run `concat_norm`, evaluate both fusion variants, then compare against the clean Jukebox FKBeat and Librosa35 full-context motiondist anchors.
+Continue Stage A from a direct clone of the `wav2clip-stft-beat` branch: copy
+the runtime artifacts listed in its `HANDOFF.md`, run `concat_norm`, evaluate
+both fusion variants, then compare against the clean Jukebox FKBeat and
+Librosa35 full-context motiondist anchors.

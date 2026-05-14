@@ -65,7 +65,7 @@ Keep the existing clean checkpoints as anchors. For any new lbeat experiment, us
 ## Verification
 
 ```bash
-source /projects/u6ed/yukun/EDGE/.venv311/bin/activate
+source .venv311/bin/activate
 python -m unittest \
   tests.test_phase4_to_6_beat_integration.InferenceBeatUtilityTests.test_long_ddim_sample_falls_back_to_ddim_for_single_clip \
   tests.test_phase4_to_6_beat_integration.InferenceBeatUtilityTests.test_long_overlap_constraint_matches_original_edge_window_copy
