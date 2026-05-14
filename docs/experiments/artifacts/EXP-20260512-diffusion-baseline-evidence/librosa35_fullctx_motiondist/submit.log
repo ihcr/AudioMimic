@@ -1,0 +1,7 @@
+Pipeline directory: /lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/diffusion/slurm/pipelines/20260511-finedance-g1-librosa35-fullctx-motiondist-cond-2000
+Monitor with:
+squeue --jobs 4556033,4556034,4556035
+sacct -j 4556033,4556034,4556035 --format=JobID,JobName,State,Elapsed
+tail -f /lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/diffusion/slurm/pipelines/20260511-finedance-g1-librosa35-fullctx-motiondist-cond-2000/validate_preprocessed_data.out
+tail -f /lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/diffusion/slurm/pipelines/20260511-finedance-g1-librosa35-fullctx-motiondist-cond-2000/train.out
+tail -f /lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/diffusion/slurm/pipelines/20260511-finedance-g1-librosa35-fullctx-motiondist-cond-2000/evaluate.out

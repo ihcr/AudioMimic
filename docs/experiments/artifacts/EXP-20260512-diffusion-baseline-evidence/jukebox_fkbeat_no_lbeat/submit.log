@@ -1,0 +1,7 @@
+Pipeline directory: /lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/diffusion/slurm/pipelines/20260509-finedance-g1-fkbeatdistance-1000-r2
+Monitor with:
+squeue --jobs 4511492,4511493,4511494
+sacct -j 4511492,4511493,4511494 --format=JobID,JobName,State,Elapsed
+tail -f /lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/diffusion/slurm/pipelines/20260509-finedance-g1-fkbeatdistance-1000-r2/validate_preprocessed_data.out
+tail -f /lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/diffusion/slurm/pipelines/20260509-finedance-g1-fkbeatdistance-1000-r2/train.out
+tail -f /lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/diffusion/slurm/pipelines/20260509-finedance-g1-fkbeatdistance-1000-r2/evaluate.out

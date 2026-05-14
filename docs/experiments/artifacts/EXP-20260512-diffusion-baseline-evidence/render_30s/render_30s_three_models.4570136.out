@@ -1,0 +1,32 @@
+[2026-05-12T17:24:06+00:00] start jukebox_fkbeat_no_lbeat
+Using checkpoint-inferred beat defaults: learning_rate=0.0002
+Model has 50881190 parameters
+Importing jukebox and associated packages...
+Setting up the VQ-VAE...
+Loading vqvae in eval mode
+Setting up the top prior...
+Loading artist IDs from /lus/lfs1aip2/projects/u6ed/yukun/EDGE/third_party/jukebox/jukebox/data/ids/v2_artist_ids.txt
+Loading artist IDs from /lus/lfs1aip2/projects/u6ed/yukun/EDGE/third_party/jukebox/jukebox/data/ids/v2_genre_ids.txt
+Level:2, Cond downsample:None, Raw to tokens:128, Sample length:1048576
+Converting to fp16 params
+Loading prior in eval mode
+Loading the top prior weights into memory...
+[2026-05-12T17:25:45+00:00] done jukebox_fkbeat_no_lbeat
+[2026-05-12T17:25:45+00:00] start jukebox_lbeat_robotloss
+Using checkpoint-inferred beat defaults: learning_rate=0.0002
+Model has 50881190 parameters
+Importing jukebox and associated packages...
+Setting up the VQ-VAE...
+Loading vqvae in eval mode
+Setting up the top prior...
+Loading artist IDs from /lus/lfs1aip2/projects/u6ed/yukun/EDGE/third_party/jukebox/jukebox/data/ids/v2_artist_ids.txt
+Loading artist IDs from /lus/lfs1aip2/projects/u6ed/yukun/EDGE/third_party/jukebox/jukebox/data/ids/v2_genre_ids.txt
+Level:2, Cond downsample:None, Raw to tokens:128, Sample length:1048576
+Converting to fp16 params
+Loading prior in eval mode
+Loading the top prior weights into memory...
+[2026-05-12T17:27:17+00:00] done jukebox_lbeat_robotloss
+[2026-05-12T17:27:17+00:00] start librosa35_lbeat_robotloss
+Using checkpoint-inferred beat defaults: learning_rate=0.0002
+Model has 48441510 parameters
+[2026-05-12T17:28:04+00:00] done librosa35_lbeat_robotloss

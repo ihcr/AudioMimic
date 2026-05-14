@@ -1,0 +1,196 @@
+[
+  {
+    "sequence_id": "036",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/036.pkl",
+    "source_audio": "/projects/u6ed/yukun/EDGE/data/finedance/music_wav/036.wav",
+    "input_wav": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs_more7/036_30s.wav",
+    "source_video": "videos/finedance_g1_30s/source/fullsong_0_036_30s_g1.mp4",
+    "yaw_before_deg": -93.57779724961163,
+    "yaw_after_deg": -93.57779724961163,
+    "applied_yaw_correction_deg": 0.0
+  },
+  {
+    "sequence_id": "065",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/065.pkl",
+    "source_audio": "/projects/u6ed/yukun/EDGE/data/finedance/music_wav/065.wav",
+    "input_wav": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs_more7/065_30s.wav",
+    "source_video": "videos/finedance_g1_30s/source/fullsong_0_065_30s_g1.mp4",
+    "yaw_before_deg": -87.55035373171026,
+    "yaw_after_deg": -87.55035373171026,
+    "applied_yaw_correction_deg": 0.0
+  },
+  {
+    "sequence_id": "092",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/092.pkl",
+    "source_audio": "/projects/u6ed/yukun/EDGE/data/finedance/music_wav/092.wav",
+    "input_wav": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs_more7/092_30s.wav",
+    "source_video": "videos/finedance_g1_30s/source/fullsong_0_092_30s_g1.mp4",
+    "yaw_before_deg": -91.83348268055299,
+    "yaw_after_deg": -91.83348268055299,
+    "applied_yaw_correction_deg": 0.0
+  },
+  {
+    "sequence_id": "098",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/098.pkl",
+    "source_audio": "/projects/u6ed/yukun/EDGE/data/finedance/music_wav/098.wav",
+    "input_wav": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs_more7/098_30s.wav",
+    "source_video": "videos/finedance_g1_30s/source/fullsong_0_098_30s_g1.mp4",
+    "yaw_before_deg": -91.82120816372532,
+    "yaw_after_deg": -91.82120816372532,
+    "applied_yaw_correction_deg": 0.0
+  },
+  {
+    "sequence_id": "109",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/109.pkl",
+    "source_audio": "/projects/u6ed/yukun/EDGE/data/finedance/music_wav/109.wav",
+    "input_wav": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs_more7/109_30s.wav",
+    "source_video": "videos/finedance_g1_30s/source/fullsong_0_109_30s_g1.mp4",
+    "yaw_before_deg": 92.96597616704297,
+    "yaw_after_deg": -87.0340241833712,
+    "applied_yaw_correction_deg": 180.0
+  },
+  {
+    "sequence_id": "137",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/137.pkl",
+    "source_audio": "/projects/u6ed/yukun/EDGE/data/finedance/music_wav/137.wav",
+    "input_wav": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs_more7/137_30s.wav",
+    "source_video": "videos/finedance_g1_30s/source/fullsong_0_137_30s_g1.mp4",
+    "yaw_before_deg": -89.26504689574645,
+    "yaw_after_deg": -89.26504689574645,
+    "applied_yaw_correction_deg": 0.0
+  },
+  {
+    "sequence_id": "144",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/144.pkl",
+    "source_audio": "/projects/u6ed/yukun/EDGE/data/finedance/music_wav/144.wav",
+    "input_wav": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs_more7/144_30s.wav",
+    "source_video": "videos/finedance_g1_30s/source/fullsong_0_144_30s_g1.mp4",
+    "yaw_before_deg": -94.1781929487206,
+    "yaw_after_deg": -94.1781929487206,
+    "applied_yaw_correction_deg": 0.0
+  }
+]
+[2026-05-12T21:03:51+00:00] render jukebox_fkbeat_no_lbeat more7
+Using checkpoint-inferred beat defaults: learning_rate=0.0002
+Model has 50881190 parameters
+Importing jukebox and associated packages...
+Setting up the VQ-VAE...
+Loading vqvae in eval mode
+Setting up the top prior...
+Loading artist IDs from /lus/lfs1aip2/projects/u6ed/yukun/EDGE/third_party/jukebox/jukebox/data/ids/v2_artist_ids.txt
+Loading artist IDs from /lus/lfs1aip2/projects/u6ed/yukun/EDGE/third_party/jukebox/jukebox/data/ids/v2_genre_ids.txt
+Level:2, Cond downsample:None, Raw to tokens:128, Sample length:1048576
+Converting to fp16 params
+Loading prior in eval mode
+Loading the top prior weights into memory...
+[2026-05-12T21:06:45+00:00] render jukebox_lbeat_robotloss more7
+Using checkpoint-inferred beat defaults: learning_rate=0.0002
+Model has 50881190 parameters
+Importing jukebox and associated packages...
+Setting up the VQ-VAE...
+Loading vqvae in eval mode
+Setting up the top prior...
+Loading artist IDs from /lus/lfs1aip2/projects/u6ed/yukun/EDGE/third_party/jukebox/jukebox/data/ids/v2_artist_ids.txt
+Loading artist IDs from /lus/lfs1aip2/projects/u6ed/yukun/EDGE/third_party/jukebox/jukebox/data/ids/v2_genre_ids.txt
+Level:2, Cond downsample:None, Raw to tokens:128, Sample length:1048576
+Converting to fp16 params
+Loading prior in eval mode
+Loading the top prior weights into memory...
+[2026-05-12T21:09:34+00:00] render librosa35_fullctx_motiondist_cond more7
+Using checkpoint-inferred beat defaults: learning_rate=0.0002
+Model has 48441510 parameters
+[2026-05-12T21:11:15+00:00] render librosa35_lbeat_robotloss more7
+Using checkpoint-inferred beat defaults: learning_rate=0.0002
+Model has 48441510 parameters
+Added 28 generated/side-by-side videos for 7 new FineDance sequences
+videos/finedance_g1_30s/generated/jukebox_fkbeat_no_lbeat/fullsong_0_012_30s_g1.mp4 4026126 bytes
+videos/finedance_g1_30s/generated/jukebox_fkbeat_no_lbeat/fullsong_0_036_30s_g1.mp4 4023543 bytes
+videos/finedance_g1_30s/generated/jukebox_fkbeat_no_lbeat/fullsong_0_063_30s_g1.mp4 3900775 bytes
+videos/finedance_g1_30s/generated/jukebox_fkbeat_no_lbeat/fullsong_0_065_30s_g1.mp4 4123003 bytes
+videos/finedance_g1_30s/generated/jukebox_fkbeat_no_lbeat/fullsong_0_092_30s_g1.mp4 4069608 bytes
+videos/finedance_g1_30s/generated/jukebox_fkbeat_no_lbeat/fullsong_0_098_30s_g1.mp4 3965663 bytes
+videos/finedance_g1_30s/generated/jukebox_fkbeat_no_lbeat/fullsong_0_109_30s_g1.mp4 3942719 bytes
+videos/finedance_g1_30s/generated/jukebox_fkbeat_no_lbeat/fullsong_0_137_30s_g1.mp4 3864513 bytes
+videos/finedance_g1_30s/generated/jukebox_fkbeat_no_lbeat/fullsong_0_143_30s_g1.mp4 3697355 bytes
+videos/finedance_g1_30s/generated/jukebox_fkbeat_no_lbeat/fullsong_0_144_30s_g1.mp4 3949352 bytes
+videos/finedance_g1_30s/generated/jukebox_lbeat_robotloss/fullsong_0_012_30s_g1.mp4 4342641 bytes
+videos/finedance_g1_30s/generated/jukebox_lbeat_robotloss/fullsong_0_036_30s_g1.mp4 3961021 bytes
+videos/finedance_g1_30s/generated/jukebox_lbeat_robotloss/fullsong_0_063_30s_g1.mp4 4295131 bytes
+videos/finedance_g1_30s/generated/jukebox_lbeat_robotloss/fullsong_0_065_30s_g1.mp4 4185112 bytes
+videos/finedance_g1_30s/generated/jukebox_lbeat_robotloss/fullsong_0_092_30s_g1.mp4 4276951 bytes
+videos/finedance_g1_30s/generated/jukebox_lbeat_robotloss/fullsong_0_098_30s_g1.mp4 4126096 bytes
+videos/finedance_g1_30s/generated/jukebox_lbeat_robotloss/fullsong_0_109_30s_g1.mp4 4032509 bytes
+videos/finedance_g1_30s/generated/jukebox_lbeat_robotloss/fullsong_0_137_30s_g1.mp4 3901482 bytes
+videos/finedance_g1_30s/generated/jukebox_lbeat_robotloss/fullsong_0_143_30s_g1.mp4 3818952 bytes
+videos/finedance_g1_30s/generated/jukebox_lbeat_robotloss/fullsong_0_144_30s_g1.mp4 4168900 bytes
+videos/finedance_g1_30s/generated/librosa35_fullctx_motiondist_cond/fullsong_0_012_30s_g1.mp4 4089535 bytes
+videos/finedance_g1_30s/generated/librosa35_fullctx_motiondist_cond/fullsong_0_036_30s_g1.mp4 3868603 bytes
+videos/finedance_g1_30s/generated/librosa35_fullctx_motiondist_cond/fullsong_0_063_30s_g1.mp4 4360584 bytes
+videos/finedance_g1_30s/generated/librosa35_fullctx_motiondist_cond/fullsong_0_065_30s_g1.mp4 3898123 bytes
+videos/finedance_g1_30s/generated/librosa35_fullctx_motiondist_cond/fullsong_0_092_30s_g1.mp4 3934260 bytes
+videos/finedance_g1_30s/generated/librosa35_fullctx_motiondist_cond/fullsong_0_098_30s_g1.mp4 3623334 bytes
+videos/finedance_g1_30s/generated/librosa35_fullctx_motiondist_cond/fullsong_0_109_30s_g1.mp4 3710082 bytes
+videos/finedance_g1_30s/generated/librosa35_fullctx_motiondist_cond/fullsong_0_137_30s_g1.mp4 3697946 bytes
+videos/finedance_g1_30s/generated/librosa35_fullctx_motiondist_cond/fullsong_0_143_30s_g1.mp4 3642900 bytes
+videos/finedance_g1_30s/generated/librosa35_fullctx_motiondist_cond/fullsong_0_144_30s_g1.mp4 3992357 bytes
+videos/finedance_g1_30s/generated/librosa35_lbeat_robotloss/fullsong_0_012_30s_g1.mp4 4419121 bytes
+videos/finedance_g1_30s/generated/librosa35_lbeat_robotloss/fullsong_0_036_30s_g1.mp4 3715575 bytes
+videos/finedance_g1_30s/generated/librosa35_lbeat_robotloss/fullsong_0_063_30s_g1.mp4 4601751 bytes
+videos/finedance_g1_30s/generated/librosa35_lbeat_robotloss/fullsong_0_065_30s_g1.mp4 4393111 bytes
+videos/finedance_g1_30s/generated/librosa35_lbeat_robotloss/fullsong_0_092_30s_g1.mp4 4280968 bytes
+videos/finedance_g1_30s/generated/librosa35_lbeat_robotloss/fullsong_0_098_30s_g1.mp4 4152121 bytes
+videos/finedance_g1_30s/generated/librosa35_lbeat_robotloss/fullsong_0_109_30s_g1.mp4 4034637 bytes
+videos/finedance_g1_30s/generated/librosa35_lbeat_robotloss/fullsong_0_137_30s_g1.mp4 3885685 bytes
+videos/finedance_g1_30s/generated/librosa35_lbeat_robotloss/fullsong_0_143_30s_g1.mp4 3788290 bytes
+videos/finedance_g1_30s/generated/librosa35_lbeat_robotloss/fullsong_0_144_30s_g1.mp4 4318371 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_fkbeat_no_lbeat/012_source_vs_jukebox_fkbeat_no_lbeat.mp4 6441959 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_fkbeat_no_lbeat/036_source_vs_jukebox_fkbeat_no_lbeat.mp4 6851089 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_fkbeat_no_lbeat/063_source_vs_jukebox_fkbeat_no_lbeat.mp4 6970191 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_fkbeat_no_lbeat/065_source_vs_jukebox_fkbeat_no_lbeat.mp4 6297948 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_fkbeat_no_lbeat/092_source_vs_jukebox_fkbeat_no_lbeat.mp4 6326279 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_fkbeat_no_lbeat/098_source_vs_jukebox_fkbeat_no_lbeat.mp4 5761250 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_fkbeat_no_lbeat/109_source_vs_jukebox_fkbeat_no_lbeat.mp4 6855855 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_fkbeat_no_lbeat/137_source_vs_jukebox_fkbeat_no_lbeat.mp4 6556486 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_fkbeat_no_lbeat/143_source_vs_jukebox_fkbeat_no_lbeat.mp4 6057952 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_fkbeat_no_lbeat/144_source_vs_jukebox_fkbeat_no_lbeat.mp4 5622828 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_lbeat_robotloss/012_source_vs_jukebox_lbeat_robotloss.mp4 6857214 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_lbeat_robotloss/036_source_vs_jukebox_lbeat_robotloss.mp4 6689377 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_lbeat_robotloss/063_source_vs_jukebox_lbeat_robotloss.mp4 7335144 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_lbeat_robotloss/065_source_vs_jukebox_lbeat_robotloss.mp4 6535826 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_lbeat_robotloss/092_source_vs_jukebox_lbeat_robotloss.mp4 6200142 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_lbeat_robotloss/098_source_vs_jukebox_lbeat_robotloss.mp4 5841735 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_lbeat_robotloss/109_source_vs_jukebox_lbeat_robotloss.mp4 6917323 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_lbeat_robotloss/137_source_vs_jukebox_lbeat_robotloss.mp4 6516326 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_lbeat_robotloss/143_source_vs_jukebox_lbeat_robotloss.mp4 6089454 bytes
+videos/finedance_g1_30s/side_by_side/jukebox_lbeat_robotloss/144_source_vs_jukebox_lbeat_robotloss.mp4 6001345 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_fullctx_motiondist_cond/012_source_vs_librosa35_fullctx_motiondist_cond.mp4 6496434 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_fullctx_motiondist_cond/036_source_vs_librosa35_fullctx_motiondist_cond.mp4 6910101 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_fullctx_motiondist_cond/063_source_vs_librosa35_fullctx_motiondist_cond.mp4 7246854 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_fullctx_motiondist_cond/065_source_vs_librosa35_fullctx_motiondist_cond.mp4 6037950 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_fullctx_motiondist_cond/092_source_vs_librosa35_fullctx_motiondist_cond.mp4 5873373 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_fullctx_motiondist_cond/098_source_vs_librosa35_fullctx_motiondist_cond.mp4 5326981 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_fullctx_motiondist_cond/109_source_vs_librosa35_fullctx_motiondist_cond.mp4 6789799 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_fullctx_motiondist_cond/137_source_vs_librosa35_fullctx_motiondist_cond.mp4 6478113 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_fullctx_motiondist_cond/143_source_vs_librosa35_fullctx_motiondist_cond.mp4 6076492 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_fullctx_motiondist_cond/144_source_vs_librosa35_fullctx_motiondist_cond.mp4 5758990 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_lbeat_robotloss/012_source_vs_librosa35_lbeat_robotloss.mp4 6715648 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_lbeat_robotloss/036_source_vs_librosa35_lbeat_robotloss.mp4 6512602 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_lbeat_robotloss/063_source_vs_librosa35_lbeat_robotloss.mp4 7553574 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_lbeat_robotloss/065_source_vs_librosa35_lbeat_robotloss.mp4 6449245 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_lbeat_robotloss/092_source_vs_librosa35_lbeat_robotloss.mp4 6291520 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_lbeat_robotloss/098_source_vs_librosa35_lbeat_robotloss.mp4 6105200 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_lbeat_robotloss/109_source_vs_librosa35_lbeat_robotloss.mp4 6963733 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_lbeat_robotloss/137_source_vs_librosa35_lbeat_robotloss.mp4 6577818 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_lbeat_robotloss/143_source_vs_librosa35_lbeat_robotloss.mp4 6158451 bytes
+videos/finedance_g1_30s/side_by_side/librosa35_lbeat_robotloss/144_source_vs_librosa35_lbeat_robotloss.mp4 6343176 bytes
+videos/finedance_g1_30s/source/fullsong_0_012_30s_g1.mp4 4252978 bytes
+videos/finedance_g1_30s/source/fullsong_0_036_30s_g1.mp4 3719082 bytes
+videos/finedance_g1_30s/source/fullsong_0_063_30s_g1.mp4 5006801 bytes
+videos/finedance_g1_30s/source/fullsong_0_065_30s_g1.mp4 4273946 bytes
+videos/finedance_g1_30s/source/fullsong_0_092_30s_g1.mp4 3808661 bytes
+videos/finedance_g1_30s/source/fullsong_0_098_30s_g1.mp4 3699408 bytes
+videos/finedance_g1_30s/source/fullsong_0_109_30s_g1.mp4 3566225 bytes
+videos/finedance_g1_30s/source/fullsong_0_137_30s_g1.mp4 3489293 bytes
+videos/finedance_g1_30s/source/fullsong_0_143_30s_g1.mp4 3171089 bytes
+videos/finedance_g1_30s/source/fullsong_0_144_30s_g1.mp4 3691807 bytes
+videos/finedance_g1_30s/source/orientation_backups/fullsong_0_012_30s_g1_before_frontfix.mp4 4333529 bytes
