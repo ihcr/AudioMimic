@@ -93,6 +93,8 @@ Both use the current Transformer `DanceDecoder`, G1 motion format, 5-second hori
 - Checkpoints: `runs/train/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/weights/train-500.pt`.
 - Feature cache: `data/finedance_g1_fkbeats/train/wav2clip_stft_beat_feats` has `47817/47817`; `data/finedance_g1_fkbeats/test/wav2clip_stft_beat_feats` has `3265/3265`.
 - Current conclusion: feature extraction and validation passed; r02 trained cleanly. r01 is not blocked by code or data, but by the account-level Slurm CPU-minute quota.
+- Curated Slurm evidence committed for migration:
+  `docs/experiments/artifacts/EXP-20260513-finedance-g1-wav2clip-stft-beat/`.
 
 ## Next Action
 
