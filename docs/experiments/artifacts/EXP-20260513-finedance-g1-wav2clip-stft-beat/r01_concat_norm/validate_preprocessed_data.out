@@ -1,0 +1,8 @@
+[2026-05-13T01:07:43Z] Starting stage
+Preprocessed data validation passed.
+Motion format: g1
+Processed cache version: v4
+Tensor cache version: v5
+train: count=47817 sampled=64 feature_dir=wav2clip_stft_beat_feats beat_count=0 root_height=[-0.6856, 0.9517]
+test: count=3265 sampled=64 feature_dir=wav2clip_stft_beat_feats beat_count=0 root_height=[-0.2189, 0.9236]
+[2026-05-13T01:09:00Z] Stage complete
