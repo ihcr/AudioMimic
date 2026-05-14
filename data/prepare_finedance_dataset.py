@@ -402,12 +402,12 @@ def _load_feature_extractors(feature_type, use_beats):
     baseline_extract = None
     jukebox_extract = None
     beat_extract = None
-    if feature_type == "baseline":
+    if feature_type in ("baseline", "baseline34"):
         from data.audio_extraction.baseline_features import extract_folder as baseline_extract
     elif feature_type == "jukebox":
         from data.audio_extraction.jukebox_features import extract_folder as jukebox_extract
     else:
-        raise ValueError("feature_type must be 'baseline' or 'jukebox'")
+        raise ValueError("feature_type must be 'baseline', 'baseline34', or 'jukebox'")
 
     if use_beats:
         from data.audio_extraction.beat_features import extract_folder as beat_extract
@@ -431,6 +431,12 @@ def extract_prepared_features(output_root, feature_type="jukebox", use_beats=Tru
         wav_dir = split_root / "wavs_sliced"
         if feature_type == "baseline":
             baseline_extract(str(wav_dir), str(split_root / "baseline_feats"))
+        elif feature_type == "baseline34":
+            baseline_extract(
+                str(wav_dir),
+                str(split_root / "baseline34_feats"),
+                feature_dim=34,
+            )
         elif feature_type == "jukebox":
             jukebox_extract(str(wav_dir), str(split_root / "jukebox_feats"))
         if use_beats:
@@ -657,7 +663,7 @@ def parse_args(argv=None):
     parser.add_argument("--fps", type=int, default=DEFAULT_FPS)
     parser.add_argument("--min_motion_std", type=float, default=DEFAULT_MIN_MOTION_STD)
     parser.add_argument("--root_height_offset", type=float, default=0.0)
-    parser.add_argument("--feature_type", choices=("baseline", "jukebox"), default=None)
+    parser.add_argument("--feature_type", choices=("baseline", "baseline34", "jukebox"), default=None)
     parser.add_argument("--extract_beats", action="store_true")
     parser.add_argument("--build_mixed", action="store_true")
     parser.add_argument("--aist_root", default="data")

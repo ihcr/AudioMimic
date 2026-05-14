@@ -300,7 +300,7 @@ def parse_args(argv=None):
     )
     parser.add_argument("--train_name", required=True, help="Logical name for the training run.")
     parser.add_argument(
-        "--feature_type", choices=("baseline", "jukebox"), default="baseline"
+        "--feature_type", choices=("baseline", "baseline34", "jukebox"), default="baseline"
     )
     parser.add_argument("--motion_format", choices=("smpl", "g1"), default="smpl")
     parser.add_argument("--use_beats", action="store_true")
@@ -538,6 +538,8 @@ def build_preprocess_command(args):
     command = ["python", "data/create_dataset.py"]
     if args.feature_type == "baseline":
         command.append("--extract-baseline")
+    if args.feature_type == "baseline34":
+        command.append("--extract-baseline34")
     if args.feature_type == "jukebox":
         command.append("--extract-jukebox")
     if args.use_beats:

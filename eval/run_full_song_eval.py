@@ -23,7 +23,7 @@ STRIDE_FRAMES = int(STRIDE_SECONDS * FPS)
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--checkpoint", required=True, type=str)
-    parser.add_argument("--feature_type", choices=("baseline", "jukebox"), default="jukebox")
+    parser.add_argument("--feature_type", choices=("baseline", "baseline34", "jukebox"), default="jukebox")
     parser.add_argument("--motion_format", choices=("smpl", "g1"), default="smpl")
     parser.add_argument("--data_path", default="data", type=str)
     parser.add_argument("--full_wav_dir", default="", type=str)
@@ -37,6 +37,7 @@ def parse_args():
     parser.add_argument("--beatit_table_path", default="eval/full_song_beatit_table.json", type=str)
     parser.add_argument("--paper_report_path", default="eval/full_song_report.md", type=str)
     parser.add_argument("--pfc_audit_path", default="eval/full_song_pfc_audit.json", type=str)
+    parser.add_argument("--skip_metrics", action="store_true")
     parser.add_argument("--seed", default=1234, type=int)
     parser.add_argument("--use_beats", action="store_true")
     parser.add_argument("--beat_rep", choices=("distance", "pulse"), default="distance")
@@ -196,13 +197,21 @@ def feature_extractor(feature_type):
         from data.audio_extraction.jukebox_features import extract as jukebox_extract
 
         return jukebox_extract
+    if feature_type == "baseline34":
+        from functools import partial
+
+        from data.audio_extraction.baseline_features import extract as baseline_extract
+
+        return partial(baseline_extract, feature_dim=34)
     from data.audio_extraction.baseline_features import extract as baseline_extract
 
     return baseline_extract
 
 
 def _feature_dir_name(feature_type):
-    return "jukebox_feats" if feature_type == "jukebox" else "baseline_feats"
+    if feature_type == "jukebox":
+        return "jukebox_feats"
+    return f"{feature_type}_feats"
 
 
 def prepare_song_features(
@@ -360,6 +369,25 @@ def run_full_song_evaluation(args):
         cond = build_condition(args, wav_path, wav_slices, music_cond)
         render_full_song_motion(model, cond, wav_slices, wav_path, args)
         generated_frames[output_stem] = song_frame_count(wav_path)
+
+    if args.skip_metrics:
+        from eval.benchmark_report import write_json
+
+        metadata = {
+            "eval_mode": "full_song",
+            "metrics_skipped": True,
+            "num_full_songs": len(songs),
+            "window_seconds": WINDOW_SECONDS,
+            "stride_seconds": STRIDE_SECONDS,
+            "generated_frames": generated_frames,
+            "checkpoint": args.checkpoint,
+            "feature_type": args.feature_type,
+            "motion_format": args.motion_format,
+            "use_beats": args.use_beats,
+            "beat_rep": args.beat_rep if args.use_beats else "",
+        }
+        write_json(args.metrics_path, metadata)
+        return metadata
 
     if args.motion_format == "g1":
         from eval.g1_metrics import run_g1_motion_evaluation

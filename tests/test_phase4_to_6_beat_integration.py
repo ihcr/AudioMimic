@@ -936,6 +936,20 @@ class InferenceBeatUtilityTests(unittest.TestCase):
         mock_ddim.assert_called_once()
         self.assertTrue(torch.equal(output, expected))
 
+    def test_long_overlap_constraint_matches_original_edge_window_copy(self):
+        diffusion_module = reload_module("model.diffusion")
+        x = torch.zeros(3, 6, 2)
+        x[0, 3:] = 1.0
+        x[1, :3] = 7.0
+        x[1, 3:] = 2.0
+        x[2, :3] = 8.0
+
+        out = diffusion_module.GaussianDiffusion._enforce_long_overlap(x)
+
+        self.assertIs(out, x)
+        self.assertTrue(torch.equal(x[1, :3], x[0, 3:]))
+        self.assertTrue(torch.equal(x[2, :3], x[1, 3:]))
+
     def test_build_full_song_pulse_track_keeps_channel_dimension(self):
         test_module = reload_module("test")
 

@@ -238,8 +238,12 @@ Completed retargeted FineDance G1 runs:
 
 | Run | Path | Decision | Key metrics |
 | --- | --- | --- | --- |
+| FineDance GT/reference | `slurm/pipelines/20260511-finedance-g1-librosa-fullctx-gt/eval_with_audio/metrics.json` | reference context for future comparisons | `G1BAS=0.2130`, `G1RoboPerformBAS=0.4091`, `G1FKBAS=0.2160`, `G1FKRoboPerformBAS=0.4000`, `G1BeatF1=0.1770`, `G1FootSliding=0.2176`, `G1GroundPenetration=0.0392`, `G1Dist=0.00` |
 | FineDance FKBeat no lbeat | `slurm/pipelines/20260509-finedance-g1-fkbeatdistance-1000-r2` | cleaner FineDance G1 anchor | `G1BAS=0.3046`, `G1RoboPerformBAS=0.5416`, `G1FKBAS=0.3192`, `G1FKRoboPerformBAS=0.5142`, `G1BeatF1=0.2910`, `G1Dist=8.63` |
 | FineDance relative lbeat scratch `lambda_beat=0.1` | `slurm/pipelines/20260509-finedance-g1-relative-lbeat-scratch-lam010-1000-r2` | rejected as a deployable checkpoint | `G1BAS=0.3523`, `G1RoboPerformBAS=0.5023`, `G1FKBAS=0.3511`, `G1FKRoboPerformBAS=0.4940`, `G1BeatF1=0.2961`, `G1Dist=39.53` |
+| FineDance Jukebox lbeat + robot loss | `slurm/pipelines/20260511-finedance-g1-jukebox-lbeat-robotloss-b020-kin040-cap1-scratch-1000` | strong rhythm, still not clean motion | `G1BAS=0.3978`, `G1RoboPerformBAS=0.5699`, `G1FKBAS=0.7218`, `G1FKRoboPerformBAS=0.7781`, `G1BeatF1=0.7140`, `G1FootSliding=0.4741`, `G1GroundPenetration=0.0827`, `G1Dist=28.80` |
+| FineDance Librosa35 full-context motiondist | `slurm/pipelines/20260511-finedance-g1-librosa35-fullctx-motiondist-cond-2000` | best balanced Librosa run | `G1BAS=0.2498`, `G1RoboPerformBAS=0.4666`, `G1FKBAS=0.2653`, `G1FKRoboPerformBAS=0.4510`, `G1BeatF1=0.2255`, `G1FootSliding=0.5246`, `G1GroundPenetration=0.0323`, `G1Dist=8.92` |
+| FineDance Librosa35 full-context lbeat + robot loss | `slurm/pipelines/20260511-finedance-g1-librosa35-fullctx-lbeat-robotloss-b020-kin040-cap1-scratch-1000` | FK beat gains but quality regressions | `G1BAS=0.2123`, `G1RoboPerformBAS=0.5065`, `G1FKBAS=0.6298`, `G1FKRoboPerformBAS=0.6932`, `G1BeatF1=0.6220`, `G1FootSliding=0.5856`, `G1GroundPenetration=0.1715`, `G1Dist=14.86` |
 
 Interpretation: normalized lbeat fine-tuning can improve G1 rhythm without the
 scratch-run root-motion collapse, but the current loss still buys beat score by
