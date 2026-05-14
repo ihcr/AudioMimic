@@ -18,6 +18,7 @@ from data.slice import slice_audio
 EDGE = None
 baseline_extract = None
 juke_extract = None
+wav2clip_stft_beat_extract = None
 
 # sort filenames that look like songname_slice{number}.ext
 key_func = lambda x: int(os.path.splitext(x)[0].split("_")[-1].split("slice")[-1])
@@ -68,6 +69,25 @@ def _load_jukebox_extract():
 
         juke_extract = extract
     return juke_extract
+
+
+def _load_wav2clip_stft_beat_extract():
+    global wav2clip_stft_beat_extract
+    if wav2clip_stft_beat_extract is None:
+        from data.audio_extraction.wav2clip_stft_beat_features import extract
+
+        wav2clip_stft_beat_extract = extract
+    return wav2clip_stft_beat_extract
+
+
+def get_feature_func(feature_type):
+    if feature_type == "jukebox":
+        return _load_jukebox_extract()
+    if feature_type == "baseline":
+        return _load_baseline_extract()
+    if feature_type == "wav2clip_stft_beat":
+        return _load_wav2clip_stft_beat_extract()
+    raise ValueError(f"Unsupported feature_type: {feature_type}")
 
 
 def load_user_beat_frames(beat_file, target_fps=FPS):
@@ -190,11 +210,7 @@ def choose_slice_start(total_slices, sample_size, rng):
 
 
 def test(opt):
-    feature_func = (
-        _load_jukebox_extract()
-        if opt.feature_type == "jukebox"
-        else _load_baseline_extract()
-    )
+    feature_func = get_feature_func(opt.feature_type)
     rng = set_inference_seed(getattr(opt, "seed", -1)) or random
     sample_length = opt.out_length
     sample_size = int(sample_length / 2.5) - 1
@@ -303,6 +319,7 @@ def test(opt):
         beat_rep=opt.beat_rep,
         lambda_beat=0.0,
         motion_format=opt.motion_format,
+        feature_fusion=opt.feature_fusion,
     )
     model.eval()
 

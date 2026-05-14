@@ -23,6 +23,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--checkpoint", required=True, type=str)
     parser.add_argument("--feature_type", default="jukebox", type=str)
+    parser.add_argument("--feature_fusion", default="linear", type=str)
     parser.add_argument("--data_path", default="data/g1_aistpp", type=str)
     parser.add_argument("--processed_data_dir", default="data/g1_dataset_backups", type=str)
     parser.add_argument("--render_dir", default="eval/g1/renders", type=str)
@@ -113,6 +114,7 @@ def run_g1_dataset_evaluation(args):
         beat_rep=args.beat_rep,
         lambda_beat=0.0,
         motion_format="g1",
+        feature_fusion=args.feature_fusion,
     )
     model.eval()
 

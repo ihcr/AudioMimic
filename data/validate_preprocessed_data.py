@@ -12,6 +12,8 @@ REPO_ROOT = SCRIPT_ROOT.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from feature_config import FEATURE_DIMS
+
 DATASET_CACHE_VERSION = "v4"
 TENSOR_DATASET_CACHE_VERSION = "v5"
 SMPL_MOTION_FORMAT = "smpl"
@@ -74,10 +76,7 @@ def tensor_dataset_cache_name(
 
 EXPECTED_RAW_FRAMES = 300
 EXPECTED_MODEL_FRAMES = 150
-EXPECTED_FEATURE_DIMS = {
-    "baseline": 35,
-    "jukebox": 4800,
-}
+EXPECTED_FEATURE_DIMS = FEATURE_DIMS
 ROOT_HEIGHT_MIN = 0.0
 ROOT_HEIGHT_MAX = 4.0
 G1_ROOT_HEIGHT_MIN = -5.0
@@ -90,7 +89,7 @@ def parse_args(argv=None):
     )
     parser.add_argument("--data_path", default="data")
     parser.add_argument("--processed_data_dir", default="data/dataset_backups")
-    parser.add_argument("--feature_type", choices=("baseline", "jukebox"), required=True)
+    parser.add_argument("--feature_type", choices=tuple(sorted(FEATURE_DIMS)), required=True)
     parser.add_argument("--motion_format", choices=("smpl", "g1"), default="smpl")
     parser.add_argument("--use_beats", action="store_true")
     parser.add_argument("--beat_rep", choices=("distance", "pulse"), default="distance")

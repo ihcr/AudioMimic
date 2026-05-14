@@ -24,6 +24,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--checkpoint", required=True, type=str)
     parser.add_argument("--feature_type", default="jukebox", type=str)
+    parser.add_argument("--feature_fusion", default="linear", type=str)
     parser.add_argument("--data_path", default="data", type=str)
     parser.add_argument("--processed_data_dir", default="data/dataset_backups", type=str)
     parser.add_argument("--render_dir", default="renders/eval_dataset", type=str)
@@ -99,6 +100,7 @@ def run_dataset_evaluation(args):
         use_beats=args.use_beats,
         beat_rep=args.beat_rep,
         lambda_beat=0.0,
+        feature_fusion=args.feature_fusion,
     )
     model.eval()
 

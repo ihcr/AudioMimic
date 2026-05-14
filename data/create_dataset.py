@@ -11,6 +11,7 @@ baseline_extract = None
 jukebox_extract = None
 beat_extract = None
 jukebox_setup = None
+wav2clip_stft_beat_extract = None
 
 
 def _candidate_data_roots():
@@ -83,6 +84,15 @@ def _load_beat_extract():
     return beat_extract
 
 
+def _load_wav2clip_stft_beat_extract():
+    global wav2clip_stft_beat_extract
+    if wav2clip_stft_beat_extract is None:
+        wav2clip_stft_beat_extract = _load_audio_extraction_attr(
+            "wav2clip_stft_beat_features", "extract_folder"
+        )
+    return wav2clip_stft_beat_extract
+
+
 def create_dataset(opt):
     dataset_folder = _resolve_dataset_folder(opt.dataset_folder)
     train_motion_dir = DATA_DIR / "train" / "motions"
@@ -135,6 +145,16 @@ def create_dataset(opt):
             str(DATA_DIR / "test" / "wavs_sliced"),
             str(DATA_DIR / "test" / "beat_feats"),
         )
+    if opt.extract_wav2clip_stft_beat:
+        print("Extracting Wav2CLIP + STFT + GaussianBeat features")
+        _load_wav2clip_stft_beat_extract()(
+            str(DATA_DIR / "train" / "wavs_sliced"),
+            str(DATA_DIR / "train" / "wav2clip_stft_beat_feats"),
+        )
+        _load_wav2clip_stft_beat_extract()(
+            str(DATA_DIR / "test" / "wavs_sliced"),
+            str(DATA_DIR / "test" / "wav2clip_stft_beat_feats"),
+        )
 
 
 def parse_opt():
@@ -150,6 +170,7 @@ def parse_opt():
     parser.add_argument("--extract-baseline", action="store_true")
     parser.add_argument("--extract-jukebox", action="store_true")
     parser.add_argument("--extract-beats", action="store_true")
+    parser.add_argument("--extract-wav2clip-stft-beat", action="store_true")
     opt = parser.parse_args()
     return opt
 

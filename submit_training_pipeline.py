@@ -8,6 +8,12 @@ from datetime import datetime
 from pathlib import Path
 
 from args import resolve_train_test_workers, resolve_worker_count
+from feature_config import (
+    FEATURE_DIMS,
+    FEATURE_FUSIONS,
+    WAV2CLIP_STFT_BEAT_FEATURE_TYPE,
+    validate_feature_fusion,
+)
 
 
 def resolve_shared_root(path):
@@ -207,6 +213,44 @@ PRESET_DEFAULTS = {
         "skip_preprocess": True,
         "enable_g1_fk_metrics": True,
     },
+    "g1_finedance_wav2clip_stft_beat_concat_norm": {
+        "motion_format": "g1",
+        "data_path": "data/finedance_g1_fkbeats",
+        "processed_data_dir": "data/finedance_g1_wav2clip_stft_beat_concat_norm_dataset_backups",
+        "feature_type": WAV2CLIP_STFT_BEAT_FEATURE_TYPE,
+        "feature_fusion": "concat_norm",
+        "use_beats": False,
+        "lambda_acc": 0.0,
+        "lambda_beat": 0.0,
+        "batch_size": 512,
+        "gradient_accumulation_steps": 1,
+        "epochs": 500,
+        "save_interval": 50,
+        "learning_rate": DEFAULT_LEARNING_RATE,
+        "feature_cache_mode": "memmap",
+        "feature_cache_dtype": "float16",
+        "skip_preprocess": True,
+        "enable_g1_fk_metrics": True,
+    },
+    "g1_finedance_wav2clip_stft_beat_stream_adapter": {
+        "motion_format": "g1",
+        "data_path": "data/finedance_g1_fkbeats",
+        "processed_data_dir": "data/finedance_g1_wav2clip_stft_beat_stream_adapter_dataset_backups",
+        "feature_type": WAV2CLIP_STFT_BEAT_FEATURE_TYPE,
+        "feature_fusion": "stream_adapter",
+        "use_beats": False,
+        "lambda_acc": 0.0,
+        "lambda_beat": 0.0,
+        "batch_size": 512,
+        "gradient_accumulation_steps": 1,
+        "epochs": 500,
+        "save_interval": 50,
+        "learning_rate": DEFAULT_LEARNING_RATE,
+        "feature_cache_mode": "memmap",
+        "feature_cache_dtype": "float16",
+        "skip_preprocess": True,
+        "enable_g1_fk_metrics": True,
+    },
     "aist_finedance_beatdistance": {
         "motion_format": "smpl",
         "data_path": "data/aist_finedance",
@@ -230,6 +274,7 @@ PRESET_TRACKED_ARGS = (
     "data_path",
     "processed_data_dir",
     "feature_type",
+    "feature_fusion",
     "use_beats",
     "beat_rep",
     "lambda_acc",
@@ -299,9 +344,8 @@ def parse_args(argv=None):
         help="Apply one of the canonical experiment presets.",
     )
     parser.add_argument("--train_name", required=True, help="Logical name for the training run.")
-    parser.add_argument(
-        "--feature_type", choices=("baseline", "jukebox"), default="baseline"
-    )
+    parser.add_argument("--feature_type", choices=tuple(sorted(FEATURE_DIMS)), default="baseline")
+    parser.add_argument("--feature_fusion", choices=FEATURE_FUSIONS, default="linear")
     parser.add_argument("--motion_format", choices=("smpl", "g1"), default="smpl")
     parser.add_argument("--use_beats", action="store_true")
     parser.add_argument(
@@ -458,7 +502,8 @@ def resolve_stage_mixed_precision(requested_mode, gpus):
 def apply_dynamic_defaults(args):
     apply_preset_defaults(args)
     if args.preprocess_gpus is None:
-        args.preprocess_gpus = 1 if args.feature_type == "jukebox" else 0
+        needs_feature_gpu = args.feature_type in ("jukebox", WAV2CLIP_STFT_BEAT_FEATURE_TYPE)
+        args.preprocess_gpus = 1 if needs_feature_gpu else 0
     if args.learning_rate is None:
         args.learning_rate = DEFAULT_LEARNING_RATE
     if args.lambda_acc is None:
@@ -486,6 +531,7 @@ def is_lbeat_run(args):
 
 
 def validate_pipeline_config(args):
+    validate_feature_fusion(args.feature_type, args.feature_fusion)
     if args.allow_lbeat_from_scratch and not args.checkpoint:
         args.finetune_from_checkpoint = False
     safe_lbeat_presets = (
@@ -540,6 +586,8 @@ def build_preprocess_command(args):
         command.append("--extract-baseline")
     if args.feature_type == "jukebox":
         command.append("--extract-jukebox")
+    if args.feature_type == WAV2CLIP_STFT_BEAT_FEATURE_TYPE:
+        command.append("--extract-wav2clip-stft-beat")
     if args.use_beats:
         command.append("--extract-beats")
     return shell_join(command)
@@ -703,6 +751,8 @@ def build_train_command(args, beat_estimator_ckpt=None):
             args.feature_cache_mode,
             "--feature_cache_dtype",
             args.feature_cache_dtype,
+            "--feature_fusion",
+            args.feature_fusion,
             "--lambda_g1_fk",
             args.lambda_g1_fk,
             "--lambda_g1_fk_vel",
@@ -758,6 +808,8 @@ def build_eval_command(
         checkpoint_path,
         "--feature_type",
         args.feature_type,
+        "--feature_fusion",
+        args.feature_fusion,
         "--data_path",
         args.data_path,
         "--render_dir",
@@ -814,6 +866,8 @@ def build_g1_eval_command(
         checkpoint_path,
         "--feature_type",
         args.feature_type,
+        "--feature_fusion",
+        args.feature_fusion,
         "--data_path",
         args.data_path,
         "--processed_data_dir",

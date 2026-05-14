@@ -10,6 +10,7 @@ from torch.nn import functional as F
 
 from model.rotary_embedding_torch import RotaryEmbedding
 from model.utils import PositionalEncoding, SinusoidalPosEmb, prob_mask_like
+from feature_config import WAV2CLIP_STFT_BEAT_DIMS
 
 
 class DenseFiLM(nn.Module):
@@ -32,6 +33,60 @@ class DenseFiLM(nn.Module):
 def featurewise_affine(x, scale_shift):
     scale, shift = scale_shift
     return (scale + 1) * x + shift
+
+
+def _scaled_adapter_dims(latent_dim):
+    wav2clip_dim = latent_dim // 2
+    stft_dim = (latent_dim * 3) // 8
+    beat_dim = latent_dim - wav2clip_dim - stft_dim
+    return wav2clip_dim, stft_dim, beat_dim
+
+
+def _stream_input_norm(stream_dim):
+    if stream_dim == 1:
+        return nn.Identity()
+    return nn.LayerNorm(stream_dim)
+
+
+class Wav2ClipStftBeatFusion(nn.Module):
+    def __init__(self, fusion_mode, latent_dim):
+        super().__init__()
+        self.fusion_mode = fusion_mode
+        self.stream_dims = WAV2CLIP_STFT_BEAT_DIMS
+        if fusion_mode == "concat_norm":
+            self.stream_norms = nn.ModuleList(
+                [_stream_input_norm(stream_dim) for stream_dim in self.stream_dims]
+            )
+            self.projection = nn.Linear(sum(self.stream_dims), latent_dim)
+        elif fusion_mode == "stream_adapter":
+            adapter_dims = _scaled_adapter_dims(latent_dim)
+            self.adapters = nn.ModuleList(
+                [
+                    nn.Sequential(
+                        _stream_input_norm(stream_dim),
+                        nn.Linear(stream_dim, adapter_dim),
+                        nn.GELU(),
+                        nn.LayerNorm(adapter_dim),
+                    )
+                    for stream_dim, adapter_dim in zip(self.stream_dims, adapter_dims)
+                ]
+            )
+        else:
+            raise ValueError(f"Unsupported wav2clip_stft_beat fusion mode: {fusion_mode}")
+
+    def forward(self, cond_embed):
+        streams = torch.split(cond_embed, self.stream_dims, dim=-1)
+        if self.fusion_mode == "concat_norm":
+            streams = [
+                stream_norm(stream)
+                for stream_norm, stream in zip(self.stream_norms, streams)
+            ]
+            return self.projection(torch.cat(streams, dim=-1))
+        streams = [
+            adapter(stream)
+            for adapter, stream in zip(self.adapters, streams)
+        ]
+        return torch.cat(streams, dim=-1)
 
 
 class TransformerEncoderLayer(nn.Module):
@@ -246,6 +301,7 @@ class DanceDecoder(nn.Module):
         num_heads: int = 4,
         dropout: float = 0.1,
         cond_feature_dim: int = 4800,
+        cond_fusion: str = "linear",
         activation: Callable[[Tensor], Tensor] = F.gelu,
         use_rotary=True,
         **kwargs
@@ -302,7 +358,10 @@ class DanceDecoder(nn.Module):
                 )
             )
         # conditional projection
-        self.cond_projection = nn.Linear(cond_feature_dim, latent_dim)
+        if cond_fusion == "linear":
+            self.cond_projection = nn.Linear(cond_feature_dim, latent_dim)
+        else:
+            self.cond_projection = Wav2ClipStftBeatFusion(cond_fusion, latent_dim)
         self.non_attn_cond_projection = nn.Sequential(
             nn.LayerNorm(latent_dim),
             nn.Linear(latent_dim, latent_dim),

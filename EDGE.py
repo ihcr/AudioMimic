@@ -20,6 +20,7 @@ from dataset.motion_representation import (
     validate_motion_format,
 )
 from dataset.preprocess import increment_path
+from feature_config import get_cond_feature_dim, validate_feature_fusion
 from model.adan import Adan
 from model.beat_estimator import BeatDistanceEstimator, G1BeatDistanceEstimator
 from model.diffusion import (GaussianDiffusion, cond_batch_size, move_cond_to_device,
@@ -129,6 +130,7 @@ def build_sample_dataloader(dataset, batch_size, num_workers, pin_memory):
 
 DEFAULT_MODEL_CONFIG = {
     "feature_type": "jukebox",
+    "feature_fusion": "linear",
     "use_beats": False,
     "beat_rep": "distance",
     "motion_format": SMPL_MOTION_FORMAT,
@@ -175,20 +177,23 @@ def resolve_model_config(
     feature_type,
     use_beats,
     beat_rep,
+    feature_fusion="linear",
     motion_format=SMPL_MOTION_FORMAT,
     checkpoint_config=None,
 ):
     motion_format = validate_motion_format(motion_format)
     resolved = {
         "feature_type": feature_type,
+        "feature_fusion": feature_fusion,
         "use_beats": use_beats,
         "beat_rep": beat_rep,
         "motion_format": motion_format,
     }
     if checkpoint_config is None:
+        validate_feature_fusion(resolved["feature_type"], resolved["feature_fusion"])
         return resolved
 
-    for key in ("feature_type", "use_beats", "beat_rep", "motion_format"):
+    for key in ("feature_type", "feature_fusion", "use_beats", "beat_rep", "motion_format"):
         if key not in checkpoint_config:
             continue
         checkpoint_value = checkpoint_config[key]
@@ -198,6 +203,7 @@ def resolve_model_config(
                 f"Runtime {key}={runtime_value!r} conflicts with checkpoint {key}={checkpoint_value!r}"
             )
         resolved[key] = checkpoint_value
+    validate_feature_fusion(resolved["feature_type"], resolved["feature_fusion"])
     return resolved
 
 
@@ -230,6 +236,7 @@ def build_checkpoint_config(
     beat_loss_cap_mode="hard",
     beat_estimator_ckpt="",
     beat_estimator_config=None,
+    feature_fusion="linear",
     motion_format=SMPL_MOTION_FORMAT,
     repr_dim=None,
     feature_cache_mode="off",
@@ -248,6 +255,7 @@ def build_checkpoint_config(
     motion_format = validate_motion_format(motion_format)
     return {
         "feature_type": feature_type,
+        "feature_fusion": feature_fusion,
         "use_beats": use_beats,
         "beat_rep": beat_rep,
         "motion_format": motion_format,
@@ -310,12 +318,14 @@ def resolve_runtime_training_config(
     use_beats,
     beat_rep,
     learning_rate,
+    feature_fusion="linear",
     motion_format=SMPL_MOTION_FORMAT,
     learning_rate_was_explicit=False,
     checkpoint_config=None,
 ):
     resolved = resolve_model_config(
         feature_type=feature_type,
+        feature_fusion=feature_fusion,
         use_beats=use_beats,
         beat_rep=beat_rep,
         motion_format=motion_format,
@@ -541,6 +551,7 @@ class EDGE:
         g1_kin_loss_max_fraction=0.0,
         g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
         g1_root_quat_order="xyzw",
+        feature_fusion="linear",
     ):
         configure_cuda_math()
         ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
@@ -600,6 +611,7 @@ class EDGE:
 
         resolved = resolve_runtime_training_config(
             feature_type=feature_type,
+            feature_fusion=feature_fusion,
             use_beats=use_beats,
             beat_rep=beat_rep,
             motion_format=self.motion_format,
@@ -608,6 +620,7 @@ class EDGE:
             checkpoint_config=checkpoint.get("config") if checkpoint is not None else None,
         )
         feature_type = resolved["feature_type"]
+        feature_fusion = resolved["feature_fusion"]
         use_beats = resolved["use_beats"]
         beat_rep = resolved["beat_rep"]
         self.motion_format = resolved["motion_format"]
@@ -621,12 +634,12 @@ class EDGE:
                 print(f"Using checkpoint-inferred beat defaults: learning_rate={learning_rate}")
 
         self.feature_type = feature_type
+        self.feature_fusion = feature_fusion
         self.use_beats = use_beats
         self.beat_rep = beat_rep
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
-        use_baseline_feats = self.feature_type == "baseline"
-        feature_dim = 35 if use_baseline_feats else 4800
+        feature_dim = get_cond_feature_dim(self.feature_type)
 
         model_cls = BeatDanceDecoder if self.use_beats else DanceDecoder
         model_kwargs = dict(
@@ -638,6 +651,7 @@ class EDGE:
             num_heads=8,
             dropout=0.1,
             cond_feature_dim=feature_dim,
+            cond_fusion=self.feature_fusion,
             activation=F.gelu,
         )
         if self.use_beats:
@@ -730,6 +744,7 @@ class EDGE:
         feature_cache_dtype = getattr(opt, "feature_cache_dtype", "float32")
         training_recipe = build_checkpoint_config(
             feature_type=self.feature_type,
+            feature_fusion=self.feature_fusion,
             use_beats=self.use_beats,
             beat_rep=self.beat_rep,
             batch_size=opt.batch_size,
@@ -770,6 +785,7 @@ class EDGE:
             print(
                 "Training config: "
                 f"feature_type={self.feature_type} "
+                f"feature_fusion={self.feature_fusion} "
                 f"motion_format={self.motion_format} "
                 f"use_beats={self.use_beats} "
                 f"beat_mode={beat_mode} "

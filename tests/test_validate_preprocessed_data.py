@@ -56,7 +56,12 @@ def write_wav_placeholder(path):
 
 
 def write_feature(path, feature_type):
-    dim = 35 if feature_type == "baseline" else 4800
+    dims = {
+        "baseline": 35,
+        "jukebox": 4800,
+        "wav2clip_stft_beat": 706,
+    }
+    dim = dims[feature_type]
     np.save(path, np.zeros((150, dim), dtype=np.float32))
 
 

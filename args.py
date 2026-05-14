@@ -67,6 +67,13 @@ def parse_train_opt(argv=None):
 
     parser.add_argument("--feature_type", type=str, default="jukebox")
     parser.add_argument(
+        "--feature_fusion",
+        type=str,
+        default="linear",
+        choices=["linear", "concat_norm", "stream_adapter"],
+        help="conditioning fusion for feature stacks with multiple streams",
+    )
+    parser.add_argument(
         "--motion_format", type=str, choices=("smpl", "g1"), default="smpl"
     )
     parser.add_argument(
@@ -197,6 +204,13 @@ def parse_train_opt(argv=None):
 def parse_test_opt():
     parser = argparse.ArgumentParser()
     parser.add_argument("--feature_type", type=str, default="jukebox")
+    parser.add_argument(
+        "--feature_fusion",
+        type=str,
+        default="linear",
+        choices=["linear", "concat_norm", "stream_adapter"],
+        help="conditioning fusion for feature stacks with multiple streams",
+    )
     parser.add_argument(
         "--motion_format", type=str, choices=("smpl", "g1"), default="smpl"
     )

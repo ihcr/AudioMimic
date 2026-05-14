@@ -48,6 +48,7 @@ def train(opt):
             "third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
         ),
         g1_root_quat_order=getattr(opt, "g1_root_quat_order", "xyzw"),
+        feature_fusion=getattr(opt, "feature_fusion", "linear"),
     )
     model.train_loop(opt)
 
