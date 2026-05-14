@@ -138,6 +138,8 @@ Stage C: optional planner/primitive layer after Stage A/B is stable.
 - Checkpoint path in the `wav2clip-stft-beat` branch:
   `runs/train/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/weights/train-500.pt`.
 - Key observations: current evidence argues against spending more effort on high-weight scratch lbeat or Librosa35-only swaps.
+- Curated baseline/train/eval evidence committed for migration:
+  `docs/experiments/artifacts/EXP-20260512-diffusion-baseline-evidence/`.
 
 ## Current Conclusion
 

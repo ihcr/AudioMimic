@@ -1,0 +1,17 @@
+{
+  "beat_rep": "distance",
+  "checkpoint": "runs/train/finedance_g1_librosa35_fullctx_motiondist_cond_2000/weights/train-2000.pt",
+  "eval_mode": "full_song",
+  "feature_type": "baseline",
+  "generated_frames": {
+    "012_30s": 900,
+    "063_30s": 900,
+    "143_30s": 900
+  },
+  "metrics_skipped": true,
+  "motion_format": "g1",
+  "num_full_songs": 3,
+  "stride_seconds": 2.5,
+  "use_beats": true,
+  "window_seconds": 5.0
+}

@@ -1,0 +1,44 @@
+[
+  {
+    "dataset": "finedance-retargeted-data-reference",
+    "sequence_id": "012",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/012.pkl",
+    "cropped_motion": "slurm/pipelines/20260512-finedance-g1-30s-renders/data_reference/motions/012_30s.pkl",
+    "source_audio": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs/012_30s.wav",
+    "output_video": "slurm/pipelines/20260512-finedance-g1-30s-renders/data_reference/renders/fullsong_0_012_30s_g1.mp4",
+    "fps": 30.0,
+    "frames": 900,
+    "duration_sec": 30.0,
+    "root_quat_order": "xyzw",
+    "render_backend": "mujoco",
+    "matches_render_set": "slurm/pipelines/20260512-finedance-g1-30s-renders"
+  },
+  {
+    "dataset": "finedance-retargeted-data-reference",
+    "sequence_id": "063",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/063.pkl",
+    "cropped_motion": "slurm/pipelines/20260512-finedance-g1-30s-renders/data_reference/motions/063_30s.pkl",
+    "source_audio": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs/063_30s.wav",
+    "output_video": "slurm/pipelines/20260512-finedance-g1-30s-renders/data_reference/renders/fullsong_0_063_30s_g1.mp4",
+    "fps": 30.0,
+    "frames": 900,
+    "duration_sec": 30.0,
+    "root_quat_order": "xyzw",
+    "render_backend": "mujoco",
+    "matches_render_set": "slurm/pipelines/20260512-finedance-g1-30s-renders"
+  },
+  {
+    "dataset": "finedance-retargeted-data-reference",
+    "sequence_id": "143",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/143.pkl",
+    "cropped_motion": "slurm/pipelines/20260512-finedance-g1-30s-renders/data_reference/motions/143_30s.pkl",
+    "source_audio": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs/143_30s.wav",
+    "output_video": "slurm/pipelines/20260512-finedance-g1-30s-renders/data_reference/renders/fullsong_0_143_30s_g1.mp4",
+    "fps": 30.0,
+    "frames": 900,
+    "duration_sec": 30.0,
+    "root_quat_order": "xyzw",
+    "render_backend": "mujoco",
+    "matches_render_set": "slurm/pipelines/20260512-finedance-g1-30s-renders"
+  }
+]

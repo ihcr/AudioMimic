@@ -1,0 +1,52 @@
+# G1 Robot-Native Evaluation Report
+
+This report uses kinematic G1 metrics. SMPL-only physical and diversity metrics are not reported.
+
+- Generated clips: 3265
+- Finite motion rate: 1.0
+- Beat alignment: 0.24982936223798763
+- RoboPerform BAS: 0.4666039276708135
+- Designated beat precision: 0.33478358712774736
+- Designated beat recall: 0.1722766926580715
+- Root drift mean: 0.2351272925019983
+- Root height mean: 0.8445276940946009
+- Joint range violation rate: 0.0008521589128865888
+- G1 feature distance: 8.923905372619629
+- G1 diversity: 12.301973273399778
+
+## FK Metrics
+
+- FK beat alignment: 0.2652662669296232
+- FK RoboPerform BAS: 0.45097826642443245
+- Beat F1: 0.22554677566434642
+- Beat timing mean frames: 0.014007875738350467
+- Beat timing std frames: 0.37928568558342424
+- Foot sliding: 0.5245854009530446
+- Ground penetration: 0.03227996081113815
+
+## Table Row
+
+```json
+{
+  "Files": 3265,
+  "G1 Beat Align.": 0.24982936223798763,
+  "G1 Beat F1": 0.22554677566434642,
+  "G1 Beat Match": 0.33478358712774736,
+  "G1 FK Beat Align.": 0.2652662669296232,
+  "G1 FK RoboPerform BAS": 0.45097826642443245,
+  "G1 Foot Sliding": 0.5245854009530446,
+  "G1 RoboPerform BAS": 0.4666039276708135,
+  "G1Dist": 8.923905372619629,
+  "G1Div": 12.301973273399778,
+  "Joint Range Viol.": 0.0008521589128865888,
+  "Method": "G1 train-2000",
+  "Root Drift": 0.2351272925019983,
+  "Root Height Max": 0.8783075544772068,
+  "Root Height Min": 0.7954489933951525
+}
+```
+
+## Deferred Metrics
+
+- Contact quality, link tracking error, and simulator success need a controller rollout.
+- PFC, Distg, Distk, Divk, and Divm are SMPL-body metrics and are intentionally omitted here.

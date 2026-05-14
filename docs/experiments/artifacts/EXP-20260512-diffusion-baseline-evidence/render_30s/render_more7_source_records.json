@@ -1,0 +1,72 @@
+[
+  {
+    "sequence_id": "036",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/036.pkl",
+    "source_audio": "/projects/u6ed/yukun/EDGE/data/finedance/music_wav/036.wav",
+    "input_wav": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs_more7/036_30s.wav",
+    "source_video": "videos/finedance_g1_30s/source/fullsong_0_036_30s_g1.mp4",
+    "yaw_before_deg": -93.57779724961163,
+    "yaw_after_deg": -93.57779724961163,
+    "applied_yaw_correction_deg": 0.0
+  },
+  {
+    "sequence_id": "065",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/065.pkl",
+    "source_audio": "/projects/u6ed/yukun/EDGE/data/finedance/music_wav/065.wav",
+    "input_wav": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs_more7/065_30s.wav",
+    "source_video": "videos/finedance_g1_30s/source/fullsong_0_065_30s_g1.mp4",
+    "yaw_before_deg": -87.55035373171026,
+    "yaw_after_deg": -87.55035373171026,
+    "applied_yaw_correction_deg": 0.0
+  },
+  {
+    "sequence_id": "092",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/092.pkl",
+    "source_audio": "/projects/u6ed/yukun/EDGE/data/finedance/music_wav/092.wav",
+    "input_wav": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs_more7/092_30s.wav",
+    "source_video": "videos/finedance_g1_30s/source/fullsong_0_092_30s_g1.mp4",
+    "yaw_before_deg": -91.83348268055299,
+    "yaw_after_deg": -91.83348268055299,
+    "applied_yaw_correction_deg": 0.0
+  },
+  {
+    "sequence_id": "098",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/098.pkl",
+    "source_audio": "/projects/u6ed/yukun/EDGE/data/finedance/music_wav/098.wav",
+    "input_wav": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs_more7/098_30s.wav",
+    "source_video": "videos/finedance_g1_30s/source/fullsong_0_098_30s_g1.mp4",
+    "yaw_before_deg": -91.82120816372532,
+    "yaw_after_deg": -91.82120816372532,
+    "applied_yaw_correction_deg": 0.0
+  },
+  {
+    "sequence_id": "109",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/109.pkl",
+    "source_audio": "/projects/u6ed/yukun/EDGE/data/finedance/music_wav/109.wav",
+    "input_wav": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs_more7/109_30s.wav",
+    "source_video": "videos/finedance_g1_30s/source/fullsong_0_109_30s_g1.mp4",
+    "yaw_before_deg": 92.96597616704297,
+    "yaw_after_deg": -87.0340241833712,
+    "applied_yaw_correction_deg": 180.0
+  },
+  {
+    "sequence_id": "137",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/137.pkl",
+    "source_audio": "/projects/u6ed/yukun/EDGE/data/finedance/music_wav/137.wav",
+    "input_wav": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs_more7/137_30s.wav",
+    "source_video": "videos/finedance_g1_30s/source/fullsong_0_137_30s_g1.mp4",
+    "yaw_before_deg": -89.26504689574645,
+    "yaw_after_deg": -89.26504689574645,
+    "applied_yaw_correction_deg": 0.0
+  },
+  {
+    "sequence_id": "144",
+    "source_motion": "/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted/144.pkl",
+    "source_audio": "/projects/u6ed/yukun/EDGE/data/finedance/music_wav/144.wav",
+    "input_wav": "slurm/pipelines/20260512-finedance-g1-30s-renders/input_wavs_more7/144_30s.wav",
+    "source_video": "videos/finedance_g1_30s/source/fullsong_0_144_30s_g1.mp4",
+    "yaw_before_deg": -94.1781929487206,
+    "yaw_after_deg": -94.1781929487206,
+    "applied_yaw_correction_deg": 0.0
+  }
+]

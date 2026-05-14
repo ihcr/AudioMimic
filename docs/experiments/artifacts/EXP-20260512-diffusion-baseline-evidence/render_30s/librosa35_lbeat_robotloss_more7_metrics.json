@@ -1,0 +1,21 @@
+{
+  "beat_rep": "distance",
+  "checkpoint": "runs/train/finedance_g1_librosa35_fullctx_lbeat_robotloss_b020_kin040_cap1_scratch_1000/weights/train-1000.pt",
+  "eval_mode": "full_song",
+  "feature_type": "baseline",
+  "generated_frames": {
+    "036_30s": 900,
+    "065_30s": 900,
+    "092_30s": 900,
+    "098_30s": 900,
+    "109_30s": 900,
+    "137_30s": 900,
+    "144_30s": 900
+  },
+  "metrics_skipped": true,
+  "motion_format": "g1",
+  "num_full_songs": 7,
+  "stride_seconds": 2.5,
+  "use_beats": true,
+  "window_seconds": 5.0
+}
