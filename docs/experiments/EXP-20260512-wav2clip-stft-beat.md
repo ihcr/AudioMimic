@@ -51,7 +51,8 @@ The first experiment intentionally does not add Mamba, tokenization, beat gating
 
 ## Implementation Scope
 
-- Branch/worktree: `.worktrees/wav2clip` on branch `wav2clip-stft-beat`.
+- Branch: `wav2clip-stft-beat`; this archived AIST/SMPL attempt predated the
+  FineDance+G1 correction and should be read as historical context.
 - Files/modules expected to change:
   - `args.py`
   - `EDGE.py`
@@ -69,7 +70,7 @@ The first experiment intentionally does not add Mamba, tokenization, beat gating
 
 ## Training Or Execution Plan
 
-- Environment: `source ../../.venv311/bin/activate` from `.worktrees/wav2clip`.
+- Environment: `source .venv311/bin/activate` from a direct branch clone.
 - Command or script:
   - `sbatch slurm/EXP-20260512-wav2clip-stft-beat/preprocess.sbatch`
   - `sbatch --dependency=afterok:4575424 slurm/EXP-20260512-wav2clip-stft-beat/train_concat.sbatch`
@@ -149,7 +150,9 @@ These are explicitly deferred until the feature-only baseline is stable:
 
 ## Current Conclusion
 
-The AIST/SMPL launch was intentionally stopped after the target dataset/body was corrected. The implementation work carries forward, but the active run is now FineDance+G1 in the same `.worktrees/wav2clip` worktree.
+The AIST/SMPL launch was intentionally stopped after the target dataset/body was
+corrected. The implementation work carries forward, but the active run is now
+FineDance+G1 in the `wav2clip-stft-beat` branch.
 
 ## Next Action
 

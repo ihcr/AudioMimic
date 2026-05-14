@@ -6,7 +6,7 @@ Use this ledger as the source of truth for nontrivial research, ablations, train
 
 | ID | Status | Branch/Worktree | Core Change | Latest Artifact | Next Action |
 |---|---|---|---|---|---|
-| [EXP-20260513-finedance-g1-wav2clip-stft-beat](EXP-20260513-finedance-g1-wav2clip-stft-beat.md) | blocked | `.worktrees/wav2clip` / `wav2clip-stft-beat` | FineDance+G1 Wav2CLIP/STFT/GaussianBeat feature replacement, concat_norm vs stream_adapter | feature cache complete; r02 `train-500.pt`; r01 train `4576168` cancelled on `AssocGrpCPUMinutesLimit`; evals `4576166/4576169` cancelled | Move code/runtime artifacts to another server, then run r01 train and resubmit evals |
+| [EXP-20260513-finedance-g1-wav2clip-stft-beat](EXP-20260513-finedance-g1-wav2clip-stft-beat.md) | blocked | `wav2clip-stft-beat` branch | FineDance+G1 Wav2CLIP/STFT/GaussianBeat feature replacement, concat_norm vs stream_adapter | feature cache complete; r02 `train-500.pt`; r01 train `4576168` cancelled on `AssocGrpCPUMinutesLimit`; evals `4576166/4576169` cancelled | Move code/runtime artifacts to another server, then run r01 train and resubmit evals |
 
 ## Archived Experiments
 

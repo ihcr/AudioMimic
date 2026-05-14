@@ -29,9 +29,13 @@ Both use the current Transformer `DanceDecoder`, G1 motion format, 5-second hori
 
 ## Invariant Controls
 
-- Worktree/branch: `.worktrees/wav2clip` / `wav2clip-stft-beat`.
+- Branch: `wav2clip-stft-beat`; on a new server, clone this branch directly as
+  the repo root rather than depending on an existing EDGE worktree.
 - Dataset: `data/finedance_g1_fkbeats`.
-- Runtime source data: `motions_sliced`, `wavs_sliced`, `baseline_feats`, and `beat_feats` are symlinked from `.worktrees/diffusion/data/finedance_g1_fkbeats`.
+- Runtime source data: `motions_sliced`, `wavs_sliced`, `baseline_feats`, and
+  `beat_feats` were symlinked from the local diffusion worktree on this server.
+  For migration, copy them with `rsync -aL` into this branch so
+  `data/finedance_g1_fkbeats` is self-contained.
 - New feature cache: write `wav2clip_stft_beat_feats` in this worktree, not into the diffusion worktree.
 - Train clips: `47817`; test clips: `3265`.
 - Backbone: current Transformer diffusion, no Mamba or hybrid block.
@@ -49,7 +53,7 @@ Both use the current Transformer `DanceDecoder`, G1 motion format, 5-second hori
 
 ## Training Or Execution Plan
 
-- Environment: `source ../../.venv311/bin/activate`.
+- Environment: `source .venv311/bin/activate` from the branch repo root.
 - Feature preprocess script: `slurm/EXP-20260513-finedance-g1-wav2clip-stft-beat/preprocess_features.sbatch`.
 - Superseded single-process preprocess job: `4576095` was cancelled after measuring roughly 2.5 clips/sec.
 - Active preprocess array job: `4576163_[0-7]`.
@@ -92,22 +96,35 @@ Both use the current Transformer `DanceDecoder`, G1 motion format, 5-second hori
 
 ## Next Action
 
-On the next server or account, copy the runtime artifacts listed in `HANDOFF.md`, then run r01 first:
+On the next server or account, copy the runtime artifacts listed in
+`HANDOFF.md`, then run r01 first. Do not wait on old Slurm job `4576168`; it
+was cancelled on the previous account.
 
 ```bash
-squeue -j 4576168
-tail -f /lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/wav2clip/slurm/pipelines/EXP-20260513-finedance-g1-wav2clip-stft-beat_r01_concat_norm/train.out
+cd /path/to/EDGE-wav2clip
+source .venv311/bin/activate
+python submit_training_pipeline.py \
+  --preset g1_finedance_wav2clip_stft_beat_concat_norm \
+  --train_name EXP-20260513-finedance-g1-wav2clip-stft-beat_r01_concat_norm \
+  --run_id EXP-20260513-finedance-g1-wav2clip-stft-beat_r01_concat_norm \
+  --skip_preprocess \
+  --train_time 04:00:00 \
+  --eval_time 02:00:00
 ```
 
-If job `4576168` is cancelled or expires before running, resubmit with a short measured walltime:
+If you reuse the generated sbatch scripts instead of regenerating the pipeline,
+submit them from the branch repo root:
 
 ```bash
-sbatch --time=04:00:00 /lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/wav2clip/slurm/pipelines/EXP-20260513-finedance-g1-wav2clip-stft-beat_r01_concat_norm/train.sbatch
+sbatch --time=04:00:00 \
+  slurm/pipelines/EXP-20260513-finedance-g1-wav2clip-stft-beat_r01_concat_norm/train.sbatch
 ```
 
 After r01 finishes, resubmit both eval scripts with short walltimes:
 
 ```bash
-sbatch --time=02:00:00 /lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/wav2clip/slurm/pipelines/EXP-20260513-finedance-g1-wav2clip-stft-beat_r01_concat_norm/evaluate.sbatch
-sbatch --time=02:00:00 /lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/wav2clip/slurm/pipelines/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/evaluate.sbatch
+sbatch --time=02:00:00 \
+  slurm/pipelines/EXP-20260513-finedance-g1-wav2clip-stft-beat_r01_concat_norm/evaluate.sbatch
+sbatch --time=02:00:00 \
+  slurm/pipelines/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/evaluate.sbatch
 ```

@@ -4,11 +4,13 @@
 
 Continue the FineDance+G1 non-Jukebox feature experiment from the `wav2clip-stft-beat` branch on another server/account because the current Slurm account has hit the GPU/CPU-minute quota.
 
-Active checkout:
+New-server checkout:
 
-- Path here: `/projects/u6ed/yukun/EDGE/.worktrees/wav2clip`
+- Clone/fetch this branch directly as a normal repo root; it does not require the
+  old EDGE `main` checkout for code or environment.
+- Suggested path: `/path/to/EDGE-wav2clip`
 - Branch: `wav2clip-stft-beat`
-- Repo env here: `source /projects/u6ed/yukun/EDGE/.venv311/bin/activate`
+- Repo env: `source .venv311/bin/activate`
 - Main spec: `docs/experiments/EXP-20260513-finedance-g1-wav2clip-stft-beat.md`
 
 ## Current Progress
@@ -55,7 +57,7 @@ Required dataset and feature tree:
 ```bash
 rsync -aL --info=progress2 \
   OLD:/projects/u6ed/yukun/EDGE/.worktrees/wav2clip/data/finedance_g1_fkbeats/ \
-  NEW:/path/to/EDGE/.worktrees/wav2clip/data/finedance_g1_fkbeats/
+  NEW:/path/to/EDGE-wav2clip/data/finedance_g1_fkbeats/
 ```
 
 This copies symlinked source subdirectories plus the local `wav2clip_stft_beat_feats` directories. Observed size here:
@@ -68,11 +70,11 @@ Recommended cache and checkpoint:
 ```bash
 rsync -a --info=progress2 \
   OLD:/projects/u6ed/yukun/EDGE/.worktrees/wav2clip/data/finedance_g1_wav2clip_stft_beat_stream_adapter_dataset_backups/ \
-  NEW:/path/to/EDGE/.worktrees/wav2clip/data/finedance_g1_wav2clip_stft_beat_stream_adapter_dataset_backups/
+  NEW:/path/to/EDGE-wav2clip/data/finedance_g1_wav2clip_stft_beat_stream_adapter_dataset_backups/
 
 rsync -a --info=progress2 \
   OLD:/projects/u6ed/yukun/EDGE/.worktrees/wav2clip/runs/train/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/weights/train-500.pt \
-  NEW:/path/to/EDGE/.worktrees/wav2clip/runs/train/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/weights/train-500.pt
+  NEW:/path/to/EDGE-wav2clip/runs/train/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/weights/train-500.pt
 ```
 
 Observed sizes:
@@ -85,11 +87,11 @@ Optional evidence logs:
 ```bash
 rsync -a --info=progress2 \
   OLD:/projects/u6ed/yukun/EDGE/.worktrees/wav2clip/slurm/EXP-20260513-finedance-g1-wav2clip-stft-beat/ \
-  NEW:/path/to/EDGE/.worktrees/wav2clip/slurm/EXP-20260513-finedance-g1-wav2clip-stft-beat/
+  NEW:/path/to/EDGE-wav2clip/slurm/EXP-20260513-finedance-g1-wav2clip-stft-beat/
 
 rsync -a --info=progress2 \
   OLD:/projects/u6ed/yukun/EDGE/.worktrees/wav2clip/slurm/pipelines/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/ \
-  NEW:/path/to/EDGE/.worktrees/wav2clip/slurm/pipelines/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/
+  NEW:/path/to/EDGE-wav2clip/slurm/pipelines/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/
 ```
 
 ## What Worked
@@ -114,8 +116,8 @@ rsync -a --info=progress2 \
 4. Validate copied data:
 
 ```bash
-source /path/to/EDGE/.venv311/bin/activate
-cd /path/to/EDGE/.worktrees/wav2clip
+cd /path/to/EDGE-wav2clip
+source .venv311/bin/activate
 python data/validate_preprocessed_data.py \
   --data_path data/finedance_g1_fkbeats \
   --processed_data_dir data/finedance_g1_wav2clip_stft_beat_stream_adapter_dataset_backups \
@@ -129,7 +131,8 @@ python data/validate_preprocessed_data.py \
 5. Run `concat_norm` first, because it never started:
 
 ```bash
-source ../../.venv311/bin/activate
+cd /path/to/EDGE-wav2clip
+source .venv311/bin/activate
 python submit_training_pipeline.py \
   --preset g1_finedance_wav2clip_stft_beat_concat_norm \
   --train_name EXP-20260513-finedance-g1-wav2clip-stft-beat_r01_concat_norm \
