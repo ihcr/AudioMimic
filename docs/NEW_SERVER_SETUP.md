@@ -45,10 +45,13 @@ python scripts/upload_wav2clip_artifacts_to_hf.py \
   --include-cache \
   --include-checkpoint \
   --include-diffusion-caches \
-  --include-diffusion-checkpoints
+  --include-diffusion-checkpoints \
+  --progress-seconds 30
 ```
 
 Add `--private` only when creating a new private HF repo.
+The uploader uses Hugging Face's resumable large-folder path and prints a
+progress report every `--progress-seconds`.
 
 Then on the new server:
 

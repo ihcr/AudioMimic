@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 import tempfile
+from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -115,6 +116,18 @@ def parse_args():
         "--skip-evidence",
         action="store_true",
         help="Do not upload curated GitHub-safe evidence folders.",
+    )
+    parser.add_argument(
+        "--num-workers",
+        type=int,
+        default=None,
+        help="Worker count for resumable large-folder uploads.",
+    )
+    parser.add_argument(
+        "--progress-seconds",
+        type=int,
+        default=30,
+        help="How often upload_large_folder prints a progress report. Default: 30.",
     )
     parser.add_argument("--dry-run", action="store_true", help="Print planned uploads only.")
     return parser.parse_args()
@@ -283,26 +296,37 @@ def write_manifest(args, uploads):
     return Path(handle.name), path_in_repo
 
 
-def upload_item(api, args, item):
-    full_path = require_item(item)
-    if item.kind == "folder":
-        api.upload_folder(
+def upload_items_resumable(api, args, uploads):
+    grouped = defaultdict(list)
+    for item in uploads:
+        require_item(item)
+        grouped[item.source_root].append(item)
+
+    ignore_patterns = ["__pycache__/**", "*.pyc", ".DS_Store", ".git/**"]
+    for source_root, items in grouped.items():
+        allow_patterns = []
+        for item in items:
+            if item.kind == "folder":
+                allow_patterns.append(f"{item.local_path.as_posix()}/**")
+            else:
+                allow_patterns.append(item.local_path.as_posix())
+
+        print(f"Uploading from {source_root} with resumable large-folder uploader.")
+        print("Allow patterns:")
+        for pattern in allow_patterns:
+            print(f"  {pattern}")
+
+        api.upload_large_folder(
             repo_id=args.repo_id,
-            repo_type=hf_repo_type_arg(args.repo_type),
+            repo_type=args.repo_type,
             revision=args.revision,
-            folder_path=str(full_path),
-            path_in_repo=str(item.path_in_repo),
-            commit_message=f"Upload {item.path_in_repo}",
-            ignore_patterns=["__pycache__/**", "*.pyc", ".DS_Store"],
-        )
-    else:
-        api.upload_file(
-            repo_id=args.repo_id,
-            repo_type=hf_repo_type_arg(args.repo_type),
-            revision=args.revision,
-            path_or_fileobj=str(full_path),
-            path_in_repo=str(item.path_in_repo),
-            commit_message=f"Upload {item.path_in_repo}",
+            private=args.private,
+            folder_path=str(source_root),
+            allow_patterns=allow_patterns,
+            ignore_patterns=ignore_patterns,
+            num_workers=args.num_workers,
+            print_report=True,
+            print_report_every=args.progress_seconds,
         )
 
 
@@ -341,8 +365,7 @@ def main():
         exist_ok=True,
     )
 
-    for item in uploads:
-        upload_item(api, args, item)
+    upload_items_resumable(api, args, uploads)
 
     api.upload_file(
         repo_id=args.repo_id,
