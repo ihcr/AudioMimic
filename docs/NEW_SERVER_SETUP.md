@@ -34,7 +34,9 @@ prepared FineDance+G1 data from the `diffusion` worktree with the Wav2CLIP/STFT
 feature directories from this `wav2clip-stft-beat` branch:
 
 ```bash
-source .venv311/bin/activate
+# On the current old server, the shared EDGE env is here; in a fresh clone,
+# use the .venv311 created by scripts/setup_new_server.sh.
+source /projects/u6ed/yukun/EDGE/.venv311/bin/activate
 export HF_TOKEN=...
 python scripts/upload_wav2clip_artifacts_to_hf.py \
   --repo-id wyksdsg/edge-g1-beatdistance \
