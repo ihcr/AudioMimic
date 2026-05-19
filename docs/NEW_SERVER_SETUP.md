@@ -42,12 +42,13 @@ python scripts/upload_wav2clip_artifacts_to_hf.py \
   --repo-id wyksdsg/edge-g1-beatdistance \
   --repo-type model \
   --diffusion-root /projects/u6ed/yukun/EDGE/.worktrees/diffusion \
-  --private \
   --include-cache \
   --include-checkpoint \
   --include-diffusion-caches \
   --include-diffusion-checkpoints
 ```
+
+Add `--private` only when creating a new private HF repo.
 
 Then on the new server:
 
