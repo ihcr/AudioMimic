@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Upload EDGE G1 runtime artifacts to one Hugging Face repo."""
+"""Upload compact EDGE G1 artifacts to one Hugging Face repo."""
 
 import argparse
 import json
@@ -16,26 +16,18 @@ DEFAULT_REPO_ID = "wyksdsg/edge-g1-beatdistance"
 DEFAULT_REPO_TYPE = "model"
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DIFFUSION_ROOT = REPO_ROOT.parent / "diffusion"
+for _parent in (REPO_ROOT, *REPO_ROOT.parents):
+    if _parent.name == ".worktrees":
+        DEFAULT_SOURCE_ROOT = _parent.parent
+        break
+else:
+    DEFAULT_SOURCE_ROOT = REPO_ROOT
 
-WAV2CLIP_FEATURE_RELS = (
-    Path("data/finedance_g1_fkbeats/train/wav2clip_stft_beat_feats"),
-    Path("data/finedance_g1_fkbeats/test/wav2clip_stft_beat_feats"),
-)
-WAV2CLIP_CACHE_REL = Path(
-    "data/finedance_g1_wav2clip_stft_beat_stream_adapter_dataset_backups"
-)
+FINEDANCE_SOURCE_REL = Path("data/finedance")
+FINEDANCE_G1_RETARGETED_REL = Path("data/finedance-g1-retargeted")
 WAV2CLIP_CHECKPOINT_REL = Path(
     "runs/train/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/"
     "weights/train-500.pt"
-)
-WAV2CLIP_EVIDENCE_REL = Path(
-    "docs/experiments/artifacts/EXP-20260513-finedance-g1-wav2clip-stft-beat"
-)
-
-DIFFUSION_DATA_REL = Path("data/finedance_g1_fkbeats")
-DIFFUSION_CACHE_RELS = (
-    Path("data/finedance_g1_fkbeats_dataset_backups_fkbeat1000"),
-    Path("data/finedance_g1_librosa35_fullctx_motiondist_cond_dataset_backups"),
 )
 DIFFUSION_CHECKPOINT_RELS = (
     Path("runs/train/finedance_g1_fkbeatdistance_1000/weights/train-1000.pt"),
@@ -44,8 +36,13 @@ DIFFUSION_CHECKPOINT_RELS = (
         "weights/train-2000.pt"
     ),
 )
-DIFFUSION_EVIDENCE_REL = Path(
-    "docs/experiments/artifacts/EXP-20260512-diffusion-baseline-evidence"
+PRUNE_PATHS = (
+    "data/finedance_g1_fkbeats",
+    "data/finedance_g1_wav2clip_stft_beat_concat_norm_dataset_backups",
+    "data/finedance_g1_wav2clip_stft_beat_stream_adapter_dataset_backups",
+    "data/finedance_g1_fkbeats_dataset_backups_fkbeat1000",
+    "data/finedance_g1_librosa35_fullctx_motiondist_cond_dataset_backups",
+    "docs/experiments/artifacts",
 )
 
 
@@ -61,9 +58,10 @@ class UploadItem:
 def parse_args():
     parser = argparse.ArgumentParser(
         description=(
-            "Upload the EDGE G1 runtime artifacts to a single Hugging Face "
-            "repo. The uploaded layout preserves repo-relative paths so "
-            "scripts/setup_new_server.sh can download them directly."
+            "Upload only compact EDGE G1 artifacts to a single Hugging Face "
+            "repo: raw FineDance source data, retargeted G1 motions, and "
+            "checkpoints. Feature folders and tensor caches are intentionally "
+            "not uploaded; rebuild them on the target 4090 machine."
         )
     )
     parser.add_argument(
@@ -83,39 +81,45 @@ def parse_args():
     parser.add_argument("--revision", default="main", help="Target branch/revision.")
     parser.add_argument("--private", action="store_true", help="Create repo as private.")
     parser.add_argument(
+        "--source-root",
+        default=str(DEFAULT_SOURCE_ROOT),
+        help=(
+            "Repo root containing shared source data/finedance and "
+            "data/finedance-g1-retargeted. Default: parent of .worktrees."
+        ),
+    )
+    parser.add_argument(
         "--diffusion-root",
         default=str(DEFAULT_DIFFUSION_ROOT),
         help="Path to the diffusion branch checkout/worktree.",
     )
     parser.add_argument(
-        "--skip-diffusion-data",
+        "--skip-finedance-source",
         action="store_true",
-        help="Do not upload diffusion's real data/finedance_g1_fkbeats tree.",
+        help="Do not upload data/finedance.",
     )
     parser.add_argument(
-        "--include-cache",
+        "--skip-retargeted-g1",
         action="store_true",
-        help="Upload wav2clip stream-adapter tensor/cache backup.",
+        help="Do not upload data/finedance-g1-retargeted.",
     )
     parser.add_argument(
-        "--include-checkpoint",
+        "--skip-wav2clip-checkpoint",
         action="store_true",
-        help="Upload wav2clip r02 stream-adapter train-500.pt.",
+        help="Do not upload wav2clip r02 stream-adapter train-500.pt.",
     )
     parser.add_argument(
-        "--include-diffusion-caches",
+        "--skip-diffusion-checkpoints",
         action="store_true",
-        help="Upload diffusion baseline tensor/cache backups.",
+        help="Do not upload diffusion anchor checkpoint .pt files.",
     )
     parser.add_argument(
-        "--include-diffusion-checkpoints",
+        "--prune-large-feature-paths",
         action="store_true",
-        help="Upload diffusion anchor checkpoint .pt files.",
-    )
-    parser.add_argument(
-        "--skip-evidence",
-        action="store_true",
-        help="Do not upload curated GitHub-safe evidence folders.",
+        help=(
+            "Delete older HF uploads of feature folders, caches, and evidence "
+            "paths before uploading compact artifacts."
+        ),
     )
     parser.add_argument(
         "--num-workers",
@@ -167,42 +171,32 @@ def hf_repo_type_arg(repo_type):
 
 
 def planned_uploads(args):
+    source_root = Path(args.source_root).resolve()
     diffusion_root = Path(args.diffusion_root).resolve()
     uploads = []
 
-    if not args.skip_diffusion_data:
+    if not args.skip_finedance_source:
         uploads.append(
             UploadItem(
-                diffusion_root,
-                DIFFUSION_DATA_REL,
-                DIFFUSION_DATA_REL,
+                source_root,
+                FINEDANCE_SOURCE_REL,
+                FINEDANCE_SOURCE_REL,
                 "folder",
-                "real FineDance+G1 prepared data from diffusion",
+                "raw FineDance source data for local preprocessing",
+            )
+        )
+    if not args.skip_retargeted_g1:
+        uploads.append(
+            UploadItem(
+                source_root,
+                FINEDANCE_G1_RETARGETED_REL,
+                FINEDANCE_G1_RETARGETED_REL,
+                "folder",
+                "FineDance retargeted G1 sequence motions",
             )
         )
 
-    for rel in WAV2CLIP_FEATURE_RELS:
-        uploads.append(
-            UploadItem(
-                REPO_ROOT,
-                rel,
-                rel,
-                "folder",
-                "wav2clip_stft_beat feature shard",
-            )
-        )
-
-    if args.include_cache:
-        uploads.append(
-            UploadItem(
-                REPO_ROOT,
-                WAV2CLIP_CACHE_REL,
-                WAV2CLIP_CACHE_REL,
-                "folder",
-                "wav2clip stream-adapter tensor cache",
-            )
-        )
-    if args.include_checkpoint:
+    if not args.skip_wav2clip_checkpoint:
         uploads.append(
             UploadItem(
                 REPO_ROOT,
@@ -212,18 +206,7 @@ def planned_uploads(args):
                 "wav2clip stream-adapter checkpoint",
             )
         )
-    if args.include_diffusion_caches:
-        for rel in DIFFUSION_CACHE_RELS:
-            uploads.append(
-                UploadItem(
-                    diffusion_root,
-                    rel,
-                    rel,
-                    "folder",
-                    "diffusion baseline tensor cache",
-                )
-            )
-    if args.include_diffusion_checkpoints:
+    if not args.skip_diffusion_checkpoints:
         for rel in DIFFUSION_CHECKPOINT_RELS:
             uploads.append(
                 UploadItem(
@@ -234,29 +217,11 @@ def planned_uploads(args):
                     "diffusion anchor checkpoint",
                 )
             )
-    if not args.skip_evidence:
-        uploads.append(
-            UploadItem(
-                REPO_ROOT,
-                WAV2CLIP_EVIDENCE_REL,
-                WAV2CLIP_EVIDENCE_REL,
-                "folder",
-                "wav2clip curated evidence",
-            )
-        )
-        uploads.append(
-            UploadItem(
-                diffusion_root,
-                DIFFUSION_EVIDENCE_REL,
-                DIFFUSION_EVIDENCE_REL,
-                "folder",
-                "diffusion curated evidence",
-            )
-        )
     return uploads
 
 
 def write_manifest(args, uploads):
+    source_root = Path(args.source_root).resolve()
     diffusion_root = Path(args.diffusion_root).resolve()
     manifest = {
         "created_utc": datetime.now(timezone.utc).isoformat(),
@@ -265,9 +230,11 @@ def write_manifest(args, uploads):
         "revision": args.revision,
         "layout": "repo-relative",
         "source_commits": {
+            "source_root": git_commit(source_root),
             "wav2clip": git_commit(REPO_ROOT),
             "diffusion": git_commit(diffusion_root),
         },
+        "policy": "HF stores compact source/checkpoint artifacts only; features and caches are rebuilt locally.",
         "artifacts": [],
     }
     for item in uploads:
@@ -292,7 +259,7 @@ def write_manifest(args, uploads):
     )
     with handle:
         handle.write(json.dumps(manifest, indent=2, sort_keys=True) + "\n")
-    path_in_repo = Path("docs/experiments/artifacts/hf_manifest.json")
+    path_in_repo = Path("hf_manifest.json")
     return Path(handle.name), path_in_repo
 
 
@@ -330,6 +297,21 @@ def upload_items_resumable(api, args, uploads):
         )
 
 
+def prune_large_feature_paths(api, args):
+    for path in PRUNE_PATHS:
+        print(f"Pruning HF path if present: {path}")
+        try:
+            api.delete_folder(
+                repo_id=args.repo_id,
+                repo_type=hf_repo_type_arg(args.repo_type),
+                revision=args.revision,
+                path_in_repo=path,
+                commit_message=f"Prune {path}",
+            )
+        except Exception as exc:
+            print(f"  skipped {path}: {exc}")
+
+
 def main():
     args = parse_args()
     uploads = planned_uploads(args)
@@ -353,7 +335,7 @@ def main():
     except ImportError as exc:
         raise SystemExit(
             "Missing huggingface_hub. Install it with `pip install huggingface_hub` "
-            "or run scripts/setup_new_server.sh first."
+            "or run scripts/bootstrap_finedance_g1_4090.sh first."
         ) from exc
 
     token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGINGFACE_HUB_TOKEN")
@@ -364,6 +346,9 @@ def main():
         private=args.private,
         exist_ok=True,
     )
+
+    if args.prune_large_feature_paths:
+        prune_large_feature_paths(api, args)
 
     upload_items_resumable(api, args, uploads)
 

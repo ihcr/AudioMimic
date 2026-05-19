@@ -32,10 +32,11 @@ Both use the current Transformer `DanceDecoder`, G1 motion format, 5-second hori
 - Branch: `wav2clip-stft-beat`; on a new server, clone this branch directly as
   the repo root rather than depending on an existing EDGE worktree.
 - Dataset: `data/finedance_g1_fkbeats`.
-- Runtime source data: `motions_sliced`, `wavs_sliced`, `baseline_feats`, and
-  `beat_feats` were symlinked from the local diffusion worktree on this server.
-  For migration, copy them with `rsync -aL` into this branch so
-  `data/finedance_g1_fkbeats` is self-contained.
+- Migration source data: HF keeps compact raw `data/finedance/`, retargeted
+  `data/finedance-g1-retargeted/`, and checkpoints only. On the 4090 server,
+  rebuild `motions_sliced`, `wavs_sliced`, `baseline_feats`, `jukebox_feats`,
+  `beat_feats`, and `wav2clip_stft_beat_feats` locally with
+  `scripts/bootstrap_finedance_g1_4090.sh`.
 - New feature cache: write `wav2clip_stft_beat_feats` in this worktree, not into the diffusion worktree.
 - Train clips: `47817`; test clips: `3265`.
 - Backbone: current Transformer diffusion, no Mamba or hybrid block.
@@ -98,9 +99,10 @@ Both use the current Transformer `DanceDecoder`, G1 motion format, 5-second hori
 
 ## Next Action
 
-On the next server or account, copy the runtime artifacts listed in
-`HANDOFF.md`, then run r01 first. Do not wait on old Slurm job `4576168`; it
-was cancelled on the previous account.
+On the 4090 server, use the compact-HF plus local-rebuild flow in
+`docs/NEW_SERVER_SETUP.md`. Do not wait on old Slurm job `4576168`; it was
+cancelled on the previous account. HF should hold raw FineDance, retargeted G1
+motions, and checkpoints only; rebuild feature folders locally.
 
 ```bash
 cd /path/to/EDGE-wav2clip

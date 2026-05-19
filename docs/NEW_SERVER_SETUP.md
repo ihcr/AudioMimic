@@ -1,114 +1,108 @@
 # New Server Setup
 
-This branch can be restored on a new server with one script. The script prepares
-`.venv311`, fetches the runtime artifacts, and checks that the Wav2CLIP/STFT/Beat
-feature cache has the expected train/test counts.
+The new 4090 server does not use Slurm. Clone `wav2clip-stft-beat`, then run
+one local bootstrap script. The script builds `.venv311`, downloads compact
+artifacts from Hugging Face, and rebuilds FineDance+G1 prepared data/features on
+the 4090 machine.
 
-## Option A: Copy From Another Server
+## Hugging Face Policy
 
-From a fresh clone of `wav2clip-stft-beat`:
-
-```bash
-scripts/setup_new_server.sh \
-  --artifact-source OLD:/projects/u6ed/yukun/EDGE/.worktrees/wav2clip \
-  --include-cache \
-  --include-checkpoint
-```
-
-`data/finedance_g1_fkbeats/` is copied with `rsync -aL`, so the old symlinked
-motion/audio/baseline/beat directories become real files in the new clone.
-
-## Option B: Download From Hugging Face
-
-All EDGE/G1 Hugging Face artifacts should live in this repo:
+Use this existing HF repo:
 
 ```text
 wyksdsg/edge-g1-beatdistance
 ```
 
-The current URL is a model repo (`https://huggingface.co/wyksdsg/edge-g1-beatdistance`),
-so the scripts default to `--repo-type model` / `--hf-repo-type model`.
+Keep HF compact. Do not upload sliced feature folders or tensor caches there;
+they contain tens of thousands of small files and can hit API limits. HF should
+hold only:
 
-First upload the runtime artifacts from the old server. This combines the real
-prepared FineDance+G1 data from the `diffusion` worktree with the Wav2CLIP/STFT
-feature directories from this `wav2clip-stft-beat` branch:
+- `data/finedance/`: raw FineDance source data needed for local preprocessing.
+- `data/finedance-g1-retargeted/`: retargeted G1 sequence motions.
+- selected checkpoints under `runs/train/.../weights/*.pt`.
+- `hf_manifest.json`.
+
+Docs, experiment specs, and curated logs live in GitHub.
+
+On the old server, upload/repair the compact HF contents with:
 
 ```bash
-# On the current old server, the shared EDGE env is here; in a fresh clone,
-# use the .venv311 created by scripts/setup_new_server.sh.
+cd /projects/u6ed/yukun/EDGE/.worktrees/wav2clip
 source /projects/u6ed/yukun/EDGE/.venv311/bin/activate
 export HF_TOKEN=...
 python scripts/upload_wav2clip_artifacts_to_hf.py \
   --repo-id wyksdsg/edge-g1-beatdistance \
   --repo-type model \
+  --source-root /projects/u6ed/yukun/EDGE \
   --diffusion-root /projects/u6ed/yukun/EDGE/.worktrees/diffusion \
-  --include-cache \
-  --include-checkpoint \
-  --include-diffusion-caches \
-  --include-diffusion-checkpoints \
+  --prune-large-feature-paths \
   --progress-seconds 30
 ```
 
-Add `--private` only when creating a new private HF repo.
-The uploader uses Hugging Face's resumable large-folder path and prints a
-progress report every `--progress-seconds`.
+Add `--private` only when creating a new private HF repo. If an earlier upload
+partially pushed feature/caches to HF, keep `--prune-large-feature-paths`.
 
-Then on the new server:
+## One Command On The 4090 Server
+
+From a fresh clone:
 
 ```bash
+git clone --branch wav2clip-stft-beat git@github.com:lbtwyk/Musics2Dance.git EDGE-wav2clip
+cd EDGE-wav2clip
 export HF_TOKEN=...
-scripts/setup_new_server.sh \
-  --hf-repo wyksdsg/edge-g1-beatdistance \
-  --hf-repo-type model \
-  --include-cache \
-  --include-checkpoint \
-  --include-diffusion-caches \
-  --include-diffusion-checkpoints \
-  --include-evidence
+scripts/bootstrap_finedance_g1_4090.sh --run-validation
 ```
 
-The HF repo should preserve repo-relative paths, for example
-`data/finedance_g1_fkbeats/...` and
-`runs/train/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/weights/train-500.pt`.
-The diffusion anchor data/checkpoints use their original repo-relative paths,
-for example `runs/train/finedance_g1_fkbeatdistance_1000/weights/train-1000.pt`.
+The default bootstrap downloads compact HF artifacts and rebuilds:
 
-## Torch/CUDA Wheels
+- FineDance source clips in `data/finedance_aistpp`.
+- FineDance+G1 tree in `data/finedance_g1_fkbeats`.
+- Librosa baseline features: `baseline_feats`.
+- Jukebox features: `jukebox_feats`.
+- G1 FK beat metadata: `beat_feats`.
+- Wav2CLIP + STFT + GaussianBeat features: `wav2clip_stft_beat_feats`.
 
-If the server needs a specific PyTorch CUDA wheel, pass the wheel index:
+It uses `torch/torchaudio` wheels from `https://download.pytorch.org/whl/cu126`
+by default, warms up Jukebox and Wav2CLIP model downloads, and writes logs under
+`setup_logs/finedance_g1_4090/`.
+
+The feature extraction is resumable: rerunning the script skips completed
+Wav2CLIP/STFT files and overwrites/rebuilds deterministic prepared trees as
+needed. Use a smaller Jukebox batch size if the 4090 runs out of memory:
 
 ```bash
-scripts/setup_new_server.sh \
-  --hf-repo wyksdsg/edge-g1-beatdistance \
-  --torch-index-url https://download.pytorch.org/whl/cu126 \
-  --include-cache \
-  --include-checkpoint
+scripts/bootstrap_finedance_g1_4090.sh \
+  --jukebox-batch-size 2 \
+  --run-validation
 ```
 
-If the cluster already provides torch in the active environment, use
-`--skip-torch`.
+Useful variants:
 
-## Validation And Continuation
+```bash
+# Only download compact HF artifacts and install deps.
+scripts/bootstrap_finedance_g1_4090.sh --skip-prepare --skip-features
 
-The default setup performs a lightweight artifact count check. For a deeper
-sample validation, add `--run-validation`.
+# Rebuild only Librosa baseline and Wav2CLIP/STFT features.
+scripts/bootstrap_finedance_g1_4090.sh --features baseline,wav2clip_stft_beat
 
-After setup, launch the unfinished concat run:
+# Preview what will run.
+scripts/bootstrap_finedance_g1_4090.sh --dry-run
+```
+
+## Continuation
+
+After bootstrap:
 
 ```bash
 source .venv311/bin/activate
-python submit_training_pipeline.py \
-  --preset g1_finedance_wav2clip_stft_beat_concat_norm \
-  --train_name EXP-20260513-finedance-g1-wav2clip-stft-beat_r01_concat_norm \
-  --run_id EXP-20260513-finedance-g1-wav2clip-stft-beat_r01_concat_norm \
-  --skip_preprocess \
-  --train_time 04:00:00 \
-  --eval_time 02:00:00
 ```
 
-Then evaluate the existing stream-adapter checkpoint:
+The existing stream-adapter checkpoint should be present at:
 
-```bash
-sbatch --time=02:00:00 \
-  slurm/pipelines/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/evaluate.sbatch
+```text
+runs/train/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/weights/train-500.pt
 ```
+
+The unfinished concat run can be launched locally with the same arguments stored
+in the experiment spec, but without Slurm. Keep long run logs under
+`setup_logs/` or another ignored runtime directory.

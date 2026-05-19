@@ -37,6 +37,7 @@ slurm/
 smoke_artifacts/
 tmp/
 retarget_exports/
+setup_logs/
 .cache/
 .pytest_cache/
 *.log
