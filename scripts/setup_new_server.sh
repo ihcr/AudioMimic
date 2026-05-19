@@ -14,11 +14,16 @@ Data sources, choose at most one:
                              /mnt/edge_wav2clip_artifacts
   --hf-repo REPO_ID          Hugging Face dataset repo containing repo-relative
                              paths such as data/finedance_g1_fkbeats/.
+                             Default: wyksdsg/edge-g1-beatdistance
 
 Options:
   --hf-revision REV          HF revision, branch, or commit. Default: main.
   --include-cache            Also fetch stream-adapter tensor/cache backup.
   --include-checkpoint       Also fetch r02 stream-adapter train-500.pt.
+  --include-diffusion-caches Also fetch selected diffusion baseline caches.
+  --include-diffusion-checkpoints
+                             Also fetch selected diffusion anchor checkpoints.
+  --include-evidence         Also fetch curated Slurm/metric evidence.
   --skip-env                 Do not create .venv311 or install Python deps.
   --skip-data                Do not fetch/copy runtime artifacts.
   --skip-torch               Do not install torch/torchaudio automatically.
@@ -38,7 +43,7 @@ Examples:
     --include-cache --include-checkpoint
 
   scripts/setup_new_server.sh \
-    --hf-repo USER/edge-finedance-g1-wav2clip-artifacts \
+    --hf-repo wyksdsg/edge-g1-beatdistance \
     --include-cache --include-checkpoint --run-validation
 EOF
 }
@@ -49,9 +54,13 @@ PYTHON_BIN="${PYTHON_BIN:-python3.11}"
 
 ARTIFACT_SOURCE=""
 HF_REPO=""
+DEFAULT_HF_REPO="wyksdsg/edge-g1-beatdistance"
 HF_REVISION="main"
 INCLUDE_CACHE=0
 INCLUDE_CHECKPOINT=0
+INCLUDE_DIFFUSION_CACHES=0
+INCLUDE_DIFFUSION_CHECKPOINTS=0
+INCLUDE_EVIDENCE=0
 SKIP_ENV=0
 SKIP_DATA=0
 SKIP_TORCH=0
@@ -84,6 +93,18 @@ while [[ $# -gt 0 ]]; do
       ;;
     --include-checkpoint)
       INCLUDE_CHECKPOINT=1
+      shift
+      ;;
+    --include-diffusion-caches)
+      INCLUDE_DIFFUSION_CACHES=1
+      shift
+      ;;
+    --include-diffusion-checkpoints)
+      INCLUDE_DIFFUSION_CHECKPOINTS=1
+      shift
+      ;;
+    --include-evidence)
+      INCLUDE_EVIDENCE=1
       shift
       ;;
     --skip-env)
@@ -234,6 +255,17 @@ download_from_hf() {
   if [[ "$INCLUDE_CHECKPOINT" -eq 1 ]]; then
     patterns="$patterns, '$CHECKPOINT_REL'"
   fi
+  if [[ "$INCLUDE_DIFFUSION_CACHES" -eq 1 ]]; then
+    patterns="$patterns, 'data/finedance_g1_fkbeats_dataset_backups_fkbeat1000/**'"
+    patterns="$patterns, 'data/finedance_g1_librosa35_fullctx_motiondist_cond_dataset_backups/**'"
+  fi
+  if [[ "$INCLUDE_DIFFUSION_CHECKPOINTS" -eq 1 ]]; then
+    patterns="$patterns, 'runs/train/finedance_g1_fkbeatdistance_1000/weights/train-1000.pt'"
+    patterns="$patterns, 'runs/train/finedance_g1_librosa35_fullctx_motiondist_cond_2000/weights/train-2000.pt'"
+  fi
+  if [[ "$INCLUDE_EVIDENCE" -eq 1 ]]; then
+    patterns="$patterns, 'docs/experiments/artifacts/**'"
+  fi
 
   log "Downloading artifacts from HF dataset repo $HF_REPO@$HF_REVISION."
   "$(runtime_python)" - <<PY
@@ -271,7 +303,8 @@ fetch_data() {
     return
   fi
 
-  log "No artifact source configured. Environment will be prepared only."
+  HF_REPO="$DEFAULT_HF_REPO"
+  download_from_hf
 }
 
 quick_check() {
@@ -319,7 +352,7 @@ main() {
   mkdir -p data runs/train slurm
   install_env
   fetch_data
-  if [[ "$SKIP_DATA" -eq 0 ]] && [[ -n "$ARTIFACT_SOURCE" || -n "$HF_REPO" ]]; then
+  if [[ "$SKIP_DATA" -eq 0 ]]; then
     quick_check
     if [[ "$RUN_VALIDATION" -eq 1 ]]; then
       run_validation

@@ -20,17 +20,27 @@ motion/audio/baseline/beat directories become real files in the new clone.
 
 ## Option B: Download From Hugging Face
 
-First upload the runtime artifacts from the old server:
+All EDGE/G1 Hugging Face artifacts should live in this dataset repo:
+
+```text
+wyksdsg/edge-g1-beatdistance
+```
+
+First upload the runtime artifacts from the old server. This combines the real
+prepared FineDance+G1 data from the `diffusion` worktree with the Wav2CLIP/STFT
+feature directories from this `wav2clip-stft-beat` branch:
 
 ```bash
 source .venv311/bin/activate
 export HF_TOKEN=...
 python scripts/upload_wav2clip_artifacts_to_hf.py \
-  --repo-id USER/edge-finedance-g1-wav2clip-artifacts \
+  --repo-id wyksdsg/edge-g1-beatdistance \
+  --diffusion-root /projects/u6ed/yukun/EDGE/.worktrees/diffusion \
   --private \
   --include-cache \
   --include-checkpoint \
-  --include-evidence
+  --include-diffusion-caches \
+  --include-diffusion-checkpoints
 ```
 
 Then on the new server:
@@ -38,14 +48,19 @@ Then on the new server:
 ```bash
 export HF_TOKEN=...
 scripts/setup_new_server.sh \
-  --hf-repo USER/edge-finedance-g1-wav2clip-artifacts \
+  --hf-repo wyksdsg/edge-g1-beatdistance \
   --include-cache \
-  --include-checkpoint
+  --include-checkpoint \
+  --include-diffusion-caches \
+  --include-diffusion-checkpoints \
+  --include-evidence
 ```
 
 The HF dataset repo should preserve repo-relative paths, for example
 `data/finedance_g1_fkbeats/...` and
 `runs/train/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/weights/train-500.pt`.
+The diffusion anchor data/checkpoints use their original repo-relative paths,
+for example `runs/train/finedance_g1_fkbeatdistance_1000/weights/train-1000.pt`.
 
 ## Torch/CUDA Wheels
 
@@ -53,7 +68,7 @@ If the server needs a specific PyTorch CUDA wheel, pass the wheel index:
 
 ```bash
 scripts/setup_new_server.sh \
-  --hf-repo USER/edge-finedance-g1-wav2clip-artifacts \
+  --hf-repo wyksdsg/edge-g1-beatdistance \
   --torch-index-url https://download.pytorch.org/whl/cu126 \
   --include-cache \
   --include-checkpoint
