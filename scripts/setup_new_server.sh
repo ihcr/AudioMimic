@@ -12,9 +12,10 @@ Data sources, choose at most one:
   --artifact-source SRC      rsync source root. Examples:
                              OLD:/projects/u6ed/yukun/EDGE/.worktrees/wav2clip
                              /mnt/edge_wav2clip_artifacts
-  --hf-repo REPO_ID          Hugging Face dataset repo containing repo-relative
+  --hf-repo REPO_ID          Hugging Face repo containing repo-relative
                              paths such as data/finedance_g1_fkbeats/.
                              Default: wyksdsg/edge-g1-beatdistance
+  --hf-repo-type TYPE        HF repo type: model or dataset. Default: model.
 
 Options:
   --hf-revision REV          HF revision, branch, or commit. Default: main.
@@ -35,7 +36,7 @@ Options:
 
 Environment:
   PYTHON_BIN                 Python used to create .venv311. Default: python3.11.
-  HF_TOKEN                   Hugging Face token for private dataset repos.
+  HF_TOKEN                   Hugging Face token for private repos.
 
 Examples:
   scripts/setup_new_server.sh \
@@ -54,6 +55,7 @@ PYTHON_BIN="${PYTHON_BIN:-python3.11}"
 
 ARTIFACT_SOURCE=""
 HF_REPO=""
+HF_REPO_TYPE="model"
 DEFAULT_HF_REPO="wyksdsg/edge-g1-beatdistance"
 HF_REVISION="main"
 INCLUDE_CACHE=0
@@ -81,6 +83,14 @@ while [[ $# -gt 0 ]]; do
       ;;
     --hf-repo)
       HF_REPO="${2:?missing value for --hf-repo}"
+      shift 2
+      ;;
+    --hf-repo-type)
+      HF_REPO_TYPE="${2:?missing value for --hf-repo-type}"
+      if [[ "$HF_REPO_TYPE" != "model" && "$HF_REPO_TYPE" != "dataset" ]]; then
+        echo "--hf-repo-type must be model or dataset." >&2
+        exit 2
+      fi
       shift 2
       ;;
     --hf-revision)
@@ -267,13 +277,14 @@ download_from_hf() {
     patterns="$patterns, 'docs/experiments/artifacts/**'"
   fi
 
-  log "Downloading artifacts from HF dataset repo $HF_REPO@$HF_REVISION."
+  log "Downloading artifacts from HF $HF_REPO_TYPE repo $HF_REPO@$HF_REVISION."
   "$(runtime_python)" - <<PY
 from huggingface_hub import snapshot_download
 
+repo_type = None if "$HF_REPO_TYPE" == "model" else "$HF_REPO_TYPE"
 snapshot_download(
     repo_id="$HF_REPO",
-    repo_type="dataset",
+    repo_type=repo_type,
     revision="$HF_REVISION",
     local_dir="$REPO_ROOT",
     allow_patterns=[$patterns],

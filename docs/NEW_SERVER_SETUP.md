@@ -20,11 +20,14 @@ motion/audio/baseline/beat directories become real files in the new clone.
 
 ## Option B: Download From Hugging Face
 
-All EDGE/G1 Hugging Face artifacts should live in this dataset repo:
+All EDGE/G1 Hugging Face artifacts should live in this repo:
 
 ```text
 wyksdsg/edge-g1-beatdistance
 ```
+
+The current URL is a model repo (`https://huggingface.co/wyksdsg/edge-g1-beatdistance`),
+so the scripts default to `--repo-type model` / `--hf-repo-type model`.
 
 First upload the runtime artifacts from the old server. This combines the real
 prepared FineDance+G1 data from the `diffusion` worktree with the Wav2CLIP/STFT
@@ -35,6 +38,7 @@ source .venv311/bin/activate
 export HF_TOKEN=...
 python scripts/upload_wav2clip_artifacts_to_hf.py \
   --repo-id wyksdsg/edge-g1-beatdistance \
+  --repo-type model \
   --diffusion-root /projects/u6ed/yukun/EDGE/.worktrees/diffusion \
   --private \
   --include-cache \
@@ -49,6 +53,7 @@ Then on the new server:
 export HF_TOKEN=...
 scripts/setup_new_server.sh \
   --hf-repo wyksdsg/edge-g1-beatdistance \
+  --hf-repo-type model \
   --include-cache \
   --include-checkpoint \
   --include-diffusion-caches \
@@ -56,7 +61,7 @@ scripts/setup_new_server.sh \
   --include-evidence
 ```
 
-The HF dataset repo should preserve repo-relative paths, for example
+The HF repo should preserve repo-relative paths, for example
 `data/finedance_g1_fkbeats/...` and
 `runs/train/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/weights/train-500.pt`.
 The diffusion anchor data/checkpoints use their original repo-relative paths,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Upload EDGE G1 runtime artifacts to one Hugging Face dataset repo."""
+"""Upload EDGE G1 runtime artifacts to one Hugging Face repo."""
 
 import argparse
 import json
@@ -12,6 +12,7 @@ from pathlib import Path
 
 
 DEFAULT_REPO_ID = "wyksdsg/edge-g1-beatdistance"
+DEFAULT_REPO_TYPE = "model"
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_DIFFUSION_ROOT = REPO_ROOT.parent / "diffusion"
 
@@ -60,14 +61,23 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description=(
             "Upload the EDGE G1 runtime artifacts to a single Hugging Face "
-            "dataset repo. The uploaded layout preserves repo-relative paths so "
+            "repo. The uploaded layout preserves repo-relative paths so "
             "scripts/setup_new_server.sh can download them directly."
         )
     )
     parser.add_argument(
         "--repo-id",
         default=DEFAULT_REPO_ID,
-        help=f"HF dataset repo. Default: {DEFAULT_REPO_ID}",
+        help=f"HF repo id. Default: {DEFAULT_REPO_ID}",
+    )
+    parser.add_argument(
+        "--repo-type",
+        default=DEFAULT_REPO_TYPE,
+        choices=("model", "dataset"),
+        help=(
+            "HF repo type. Default: model, matching "
+            "https://huggingface.co/wyksdsg/edge-g1-beatdistance."
+        ),
     )
     parser.add_argument("--revision", default="main", help="Target branch/revision.")
     parser.add_argument("--private", action="store_true", help="Create repo as private.")
@@ -137,6 +147,10 @@ def require_item(item):
     if not full_path.exists():
         raise SystemExit(f"Missing required artifact: {full_path}")
     return full_path
+
+
+def hf_repo_type_arg(repo_type):
+    return None if repo_type == "model" else repo_type
 
 
 def planned_uploads(args):
@@ -234,6 +248,7 @@ def write_manifest(args, uploads):
     manifest = {
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "repo_id": args.repo_id,
+        "repo_type": args.repo_type,
         "revision": args.revision,
         "layout": "repo-relative",
         "source_commits": {
@@ -273,7 +288,7 @@ def upload_item(api, args, item):
     if item.kind == "folder":
         api.upload_folder(
             repo_id=args.repo_id,
-            repo_type="dataset",
+            repo_type=hf_repo_type_arg(args.repo_type),
             revision=args.revision,
             folder_path=str(full_path),
             path_in_repo=str(item.path_in_repo),
@@ -283,7 +298,7 @@ def upload_item(api, args, item):
     else:
         api.upload_file(
             repo_id=args.repo_id,
-            repo_type="dataset",
+            repo_type=hf_repo_type_arg(args.repo_type),
             revision=args.revision,
             path_or_fileobj=str(full_path),
             path_in_repo=str(item.path_in_repo),
@@ -296,7 +311,7 @@ def main():
     uploads = planned_uploads(args)
     manifest_path, manifest_path_in_repo = write_manifest(args, uploads)
 
-    print(f"Target HF dataset repo: {args.repo_id}")
+    print(f"Target HF {args.repo_type} repo: {args.repo_id}")
     print("Planned HF uploads:")
     for item in uploads:
         full_path = require_item(item)
@@ -321,7 +336,7 @@ def main():
     api = HfApi(token=token)
     api.create_repo(
         repo_id=args.repo_id,
-        repo_type="dataset",
+        repo_type=hf_repo_type_arg(args.repo_type),
         private=args.private,
         exist_ok=True,
     )
@@ -331,7 +346,7 @@ def main():
 
     api.upload_file(
         repo_id=args.repo_id,
-        repo_type="dataset",
+        repo_type=hf_repo_type_arg(args.repo_type),
         revision=args.revision,
         path_or_fileobj=str(manifest_path),
         path_in_repo=str(manifest_path_in_repo),

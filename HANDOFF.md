@@ -112,8 +112,8 @@ rsync -a --info=progress2 \
 
 1. Clone/fetch the pushed `wav2clip-stft-beat` branch on the new server.
 2. Prefer the one-command setup in `docs/NEW_SERVER_SETUP.md`. It can copy
-   artifacts with `rsync` or download them from the shared Hugging Face dataset
-   repo `wyksdsg/edge-g1-beatdistance`.
+   artifacts with `rsync` or download them from the shared Hugging Face repo
+   `wyksdsg/edge-g1-beatdistance`.
 3. If not using that script, recreate or install the repo env, including
    `wav2clip` and CUDA-compatible `torchaudio`, then copy the runtime artifacts
    above.
