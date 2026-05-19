@@ -6,7 +6,6 @@ import json
 import os
 import subprocess
 import tempfile
-from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -125,13 +124,13 @@ def parse_args():
         "--num-workers",
         type=int,
         default=None,
-        help="Worker count for resumable large-folder uploads.",
+        help="Reserved for compatibility; compact uploads use one commit per source root.",
     )
     parser.add_argument(
         "--progress-seconds",
         type=int,
         default=30,
-        help="How often upload_large_folder prints a progress report. Default: 30.",
+        help="Reserved for compatibility; compact uploads use upload_folder progress.",
     )
     parser.add_argument("--dry-run", action="store_true", help="Print planned uploads only.")
     return parser.parse_args()
@@ -263,11 +262,11 @@ def write_manifest(args, uploads):
     return Path(handle.name), path_in_repo
 
 
-def upload_items_resumable(api, args, uploads):
-    grouped = defaultdict(list)
+def upload_items_compact(api, args, uploads):
+    grouped = {}
     for item in uploads:
         require_item(item)
-        grouped[item.source_root].append(item)
+        grouped.setdefault(item.source_root, []).append(item)
 
     ignore_patterns = ["__pycache__/**", "*.pyc", ".DS_Store", ".git/**"]
     for source_root, items in grouped.items():
@@ -278,38 +277,77 @@ def upload_items_resumable(api, args, uploads):
             else:
                 allow_patterns.append(item.local_path.as_posix())
 
-        print(f"Uploading from {source_root} with resumable large-folder uploader.")
+        print(f"Uploading from {source_root} in one compact folder commit.")
         print("Allow patterns:")
         for pattern in allow_patterns:
             print(f"  {pattern}")
 
-        api.upload_large_folder(
+        api.upload_folder(
             repo_id=args.repo_id,
-            repo_type=args.repo_type,
+            repo_type=hf_repo_type_arg(args.repo_type),
             revision=args.revision,
-            private=args.private,
             folder_path=str(source_root),
+            path_in_repo="",
             allow_patterns=allow_patterns,
             ignore_patterns=ignore_patterns,
-            num_workers=args.num_workers,
-            print_report=True,
-            print_report_every=args.progress_seconds,
+            commit_message=f"Upload compact artifacts from {source_root.name}",
         )
 
 
 def prune_large_feature_paths(api, args):
+    from huggingface_hub import CommitOperationDelete
+
+    operations = []
     for path in PRUNE_PATHS:
-        print(f"Pruning HF path if present: {path}")
         try:
-            api.delete_folder(
-                repo_id=args.repo_id,
-                repo_type=hf_repo_type_arg(args.repo_type),
-                revision=args.revision,
-                path_in_repo=path,
-                commit_message=f"Prune {path}",
+            next(
+                iter(
+                    api.list_repo_tree(
+                        repo_id=args.repo_id,
+                        repo_type=hf_repo_type_arg(args.repo_type),
+                        revision=args.revision,
+                        path_in_repo=path,
+                        recursive=False,
+                    )
+                )
             )
-        except Exception as exc:
-            print(f"  skipped {path}: {exc}")
+        except Exception:
+            print(f"Prune skip, not present: {path}")
+            continue
+        print(f"Prune include: {path}")
+        operations.append(CommitOperationDelete(path_in_repo=path, is_folder=True))
+
+    if not operations:
+        print("No large feature/cache HF paths found to prune.")
+        return
+
+    print(f"Pruning {len(operations)} HF paths in one commit.")
+    try:
+        api.create_commit(
+            repo_id=args.repo_id,
+            repo_type=hf_repo_type_arg(args.repo_type),
+            revision=args.revision,
+            operations=operations,
+            commit_message="Prune large feature and cache paths",
+        )
+    except Exception as exc:
+        print(f"Prune commit skipped/failed: {exc}")
+        print(
+            "If this is a commit-rate-limit error, wait for the reset and run "
+            "again with --prune-large-feature-paths."
+        )
+
+
+def upload_manifest(api, args, manifest_path, manifest_path_in_repo):
+    print(f"Uploading manifest: {manifest_path_in_repo}")
+    api.upload_file(
+        repo_id=args.repo_id,
+        repo_type=hf_repo_type_arg(args.repo_type),
+        revision=args.revision,
+        path_or_fileobj=str(manifest_path),
+        path_in_repo=str(manifest_path_in_repo),
+        commit_message="Upload HF artifact manifest",
+    )
 
 
 def main():
@@ -350,16 +388,9 @@ def main():
     if args.prune_large_feature_paths:
         prune_large_feature_paths(api, args)
 
-    upload_items_resumable(api, args, uploads)
+    upload_items_compact(api, args, uploads)
 
-    api.upload_file(
-        repo_id=args.repo_id,
-        repo_type=hf_repo_type_arg(args.repo_type),
-        revision=args.revision,
-        path_or_fileobj=str(manifest_path),
-        path_in_repo=str(manifest_path_in_repo),
-        commit_message="Upload HF artifact manifest",
-    )
+    upload_manifest(api, args, manifest_path, manifest_path_in_repo)
 
     print("Upload complete.")
 

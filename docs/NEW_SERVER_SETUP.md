@@ -35,12 +35,13 @@ python scripts/upload_wav2clip_artifacts_to_hf.py \
   --repo-type model \
   --source-root /projects/u6ed/yukun/EDGE \
   --diffusion-root /projects/u6ed/yukun/EDGE/.worktrees/diffusion \
-  --prune-large-feature-paths \
-  --progress-seconds 30
+  --prune-large-feature-paths
 ```
 
 Add `--private` only when creating a new private HF repo. If an earlier upload
 partially pushed feature/caches to HF, keep `--prune-large-feature-paths`.
+The uploader batches compact artifacts by source root, so a normal run should
+create only a few commits instead of one commit per upload batch.
 
 ## One Command On The 4090 Server
 
