@@ -1,0 +1,20 @@
+# Runtime dependencies for the FineDance+G1 Wav2CLIP/STFT/Beat continuation.
+#
+# Install torch/torchaudio separately when the target server needs a specific
+# CUDA wheel index. scripts/setup_new_server.sh can do that with
+# --torch-index-url.
+accelerate
+einops
+fairmotion==0.0.4
+huggingface_hub
+librosa
+matplotlib
+mujoco>=3.2,<4
+numpy
+PyOpenGL>=3.1.7,<4
+PyOpenGL_accelerate>=3.1.7,<4; platform_machine != "aarch64"
+scipy
+soundfile
+tqdm
+wandb
+wav2clip

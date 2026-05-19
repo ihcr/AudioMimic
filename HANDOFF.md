@@ -111,8 +111,11 @@ rsync -a --info=progress2 \
 ## Next Steps
 
 1. Clone/fetch the pushed `wav2clip-stft-beat` branch on the new server.
-2. Recreate or install the repo env, including `wav2clip` and CUDA-compatible `torchaudio`.
-3. Copy the runtime artifacts above.
+2. Prefer the one-command setup in `docs/NEW_SERVER_SETUP.md`. It can copy
+   artifacts with `rsync` or download them from a Hugging Face dataset repo.
+3. If not using that script, recreate or install the repo env, including
+   `wav2clip` and CUDA-compatible `torchaudio`, then copy the runtime artifacts
+   above.
 4. Validate copied data:
 
 ```bash
