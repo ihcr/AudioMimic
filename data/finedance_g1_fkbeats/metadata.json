@@ -1,0 +1,32 @@
+{
+  "beat_metadata": {
+    "extracted": false,
+    "g1_fk_model_path": "",
+    "g1_root_quat_order": "",
+    "motion_beat_source": ""
+  },
+  "feature_type": "baseline",
+  "link_mode": "symlink",
+  "motion_payload": "G1 root_pos/root_rot/dof_pos plus compatibility pos and q=root_rot+dof_pos.",
+  "raw_g1_sequences": 203,
+  "source": "FineDance retargeted to G1",
+  "source_motion_dir": "data/finedance-g1-retargeted",
+  "source_prepared_root": "data/finedance_aistpp",
+  "stride_seconds": 0.5,
+  "target_fps": 30,
+  "test": {
+    "clips": 3265,
+    "padded_clips": 1,
+    "padded_frames": 1,
+    "sequences": 18,
+    "source_clips": 3265
+  },
+  "train": {
+    "clips": 47817,
+    "padded_clips": 1,
+    "padded_frames": 1,
+    "sequences": 183,
+    "source_clips": 47817
+  },
+  "window_seconds": 5.0
+}
