@@ -1,0 +1,17 @@
+{
+  "Files": 3265,
+  "G1 Beat Align.": 0.24982936223798763,
+  "G1 Beat F1": 0.22554677566434642,
+  "G1 Beat Match": 0.33478358712774736,
+  "G1 FK Beat Align.": 0.2652662669296232,
+  "G1 FK RoboPerform BAS": 0.45097826642443245,
+  "G1 Foot Sliding": 0.5245854009530446,
+  "G1 RoboPerform BAS": 0.4666039276708135,
+  "G1Dist": 8.923905372619629,
+  "G1Div": 12.301973273399778,
+  "Joint Range Viol.": 0.0008521589128865888,
+  "Method": "G1 train-2000",
+  "Root Drift": 0.2351272925019983,
+  "Root Height Max": 0.8783075544772068,
+  "Root Height Min": 0.7954489933951525
+}

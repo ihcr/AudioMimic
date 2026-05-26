@@ -4,6 +4,9 @@ edge_aistpp/
 data/finedance_aistpp/
 data/aist_finedance/
 data/aist_finedance_dataset_backups/
+data/finedance_g1_fkbeats/*
+!data/finedance_g1_fkbeats/metadata.json
+data/finedance_g1_librosa*_dataset_backups/
 data/g1_aistpp/
 data/g1_aistpp_full/
 data/g1_aistpp_full_fkbeats/
@@ -13,6 +16,7 @@ dataset_backups/
 runs/
 wandb/
 renders/
+videos/
 .ipynb_checkpoints/
 __pycache__/
 *.pyc

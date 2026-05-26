@@ -133,6 +133,11 @@ DEFAULT_MODEL_CONFIG = {
     "beat_rep": "distance",
     "motion_format": SMPL_MOTION_FORMAT,
 }
+FEATURE_DIMS = {
+    "baseline": 35,
+    "baseline34": 34,
+    "jukebox": 4800,
+}
 DEFAULT_NON_BEAT_LEARNING_RATE = 2e-4
 DEFAULT_BEAT_LEARNING_RATE = 2e-4
 
@@ -625,8 +630,9 @@ class EDGE:
         self.beat_rep = beat_rep
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
-        use_baseline_feats = self.feature_type == "baseline"
-        feature_dim = 35 if use_baseline_feats else 4800
+        if self.feature_type not in FEATURE_DIMS:
+            raise ValueError(f"Unsupported feature_type: {self.feature_type}")
+        feature_dim = FEATURE_DIMS[self.feature_type]
 
         model_cls = BeatDanceDecoder if self.use_beats else DanceDecoder
         model_kwargs = dict(

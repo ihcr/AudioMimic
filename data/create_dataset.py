@@ -113,6 +113,18 @@ def create_dataset(opt):
             str(DATA_DIR / "test" / "wavs_sliced"),
             str(DATA_DIR / "test" / "baseline_feats"),
         )
+    if getattr(opt, "extract_baseline34", False):
+        print("Extracting 34D baseline features")
+        _load_baseline_extract()(
+            str(DATA_DIR / "train" / "wavs_sliced"),
+            str(DATA_DIR / "train" / "baseline34_feats"),
+            feature_dim=34,
+        )
+        _load_baseline_extract()(
+            str(DATA_DIR / "test" / "wavs_sliced"),
+            str(DATA_DIR / "test" / "baseline34_feats"),
+            feature_dim=34,
+        )
     if opt.extract_jukebox:
         print("Extracting jukebox features")
         _load_jukebox_extract()(
@@ -148,6 +160,7 @@ def parse_opt():
         help="folder containing motions and music",
     )
     parser.add_argument("--extract-baseline", action="store_true")
+    parser.add_argument("--extract-baseline34", action="store_true")
     parser.add_argument("--extract-jukebox", action="store_true")
     parser.add_argument("--extract-beats", action="store_true")
     opt = parser.parse_args()

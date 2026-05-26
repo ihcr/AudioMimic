@@ -22,9 +22,12 @@ SCRIPT_ROOT = Path(__file__).resolve().parent
 SHARED_ROOT = resolve_shared_root(SCRIPT_ROOT)
 DEFAULT_BATCH_SIZE = 128
 DEFAULT_LEARNING_RATE = 2e-4
-DEFAULT_LBEAT_REFERENCE_EVAL_DIR = (
-    "/lus/lfs1aip2/projects/u6ed/yukun/EDGE/.worktrees/diffusion/"
-    "slurm/pipelines/20260424-090100-edge_beatdistance_20260424_shmfix/eval"
+DEFAULT_LBEAT_REFERENCE_EVAL_DIR = str(
+    SCRIPT_ROOT
+    / "slurm"
+    / "pipelines"
+    / "20260424-090100-edge_beatdistance_20260424_shmfix"
+    / "eval"
 )
 DEFAULT_G1_FKBEAT_CHECKPOINT = (
     "runs/train/g1_aist_beatdistance_fkbeats/weights/train-2000.pt"
@@ -300,7 +303,7 @@ def parse_args(argv=None):
     )
     parser.add_argument("--train_name", required=True, help="Logical name for the training run.")
     parser.add_argument(
-        "--feature_type", choices=("baseline", "jukebox"), default="baseline"
+        "--feature_type", choices=("baseline", "baseline34", "jukebox"), default="baseline"
     )
     parser.add_argument("--motion_format", choices=("smpl", "g1"), default="smpl")
     parser.add_argument("--use_beats", action="store_true")
@@ -538,6 +541,8 @@ def build_preprocess_command(args):
     command = ["python", "data/create_dataset.py"]
     if args.feature_type == "baseline":
         command.append("--extract-baseline")
+    if args.feature_type == "baseline34":
+        command.append("--extract-baseline34")
     if args.feature_type == "jukebox":
         command.append("--extract-jukebox")
     if args.use_beats:

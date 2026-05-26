@@ -590,8 +590,6 @@ class GaussianDiffusion(nn.Module):
         
         assert batch > 1
         assert x.shape[1] % 2 == 0
-        half = x.shape[1] // 2
-
         x_start = None
 
         for time, time_next, weight in tqdm(
@@ -621,7 +619,16 @@ class GaussianDiffusion(nn.Module):
             
             if time > 0:
                 # the first half of each sequence is the second half of the previous one
-                x[1:, :half] = x[:-1, half:]
+                self._enforce_long_overlap(x)
+        return x
+
+    @staticmethod
+    def _enforce_long_overlap(x):
+        if x.shape[0] <= 1:
+            return x
+        assert x.shape[1] % 2 == 0
+        half = x.shape[1] // 2
+        x[1:, :half] = x[:-1, half:]
         return x
 
     @torch.no_grad()
@@ -699,8 +706,6 @@ class GaussianDiffusion(nn.Module):
                 start_point=start_point,
             )
         assert batch_size > 1
-        half = x.shape[1] // 2
-
         start_point = self.n_timestep if start_point is None else start_point
         for i in tqdm(
             reversed(range(0, start_point)),
@@ -716,7 +721,7 @@ class GaussianDiffusion(nn.Module):
             # enforce constraint between each denoising step
             if i > 0:
                 # the first half of each sequence is the second half of the previous one
-                x[1:, :half] = x[:-1, half:] 
+                self._enforce_long_overlap(x)
 
             if return_diffusion:
                 diffusion.append(x)

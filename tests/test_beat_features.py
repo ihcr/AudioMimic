@@ -185,6 +185,24 @@ class BaselineFeatureCompatibilityTests(unittest.TestCase):
         self.assertEqual(feature.shape, (150, 35))
         self.assertTrue(save_path.endswith(".npy"))
 
+    def test_baseline_extract_can_drop_binary_beat_channel(self):
+        baseline_features = importlib.import_module("data.audio_extraction.baseline_features")
+
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            wav_path = tmp_path / "gBR_sBM_cAll_d04_mBR1_ch03_slice0.wav"
+            audio = np.sin(np.linspace(0, 8 * np.pi, 5 * 30 * 512, dtype=np.float32))
+            sf.write(wav_path, audio, 30 * 512)
+
+            feature, _ = baseline_features.extract(
+                str(wav_path),
+                skip_completed=False,
+                dest_dir=str(tmp_path / "baseline34_feats"),
+                feature_dim=34,
+            )
+
+        self.assertEqual(feature.shape, (150, 34))
+
     def test_baseline_extract_folder_reports_progress(self):
         baseline_features = importlib.import_module("data.audio_extraction.baseline_features")
 

@@ -258,7 +258,7 @@ def parse_args(argv=None):
     parser.add_argument("--g1_motion_dir", default="/projects/u6ed/yukun/EDGE/data/finedance-g1-retargeted")
     parser.add_argument("--source_prepared_root", default="data/finedance_aistpp")
     parser.add_argument("--output_root", default="data/finedance_g1_fkbeats")
-    parser.add_argument("--feature_type", choices=("baseline", "jukebox"), default="jukebox")
+    parser.add_argument("--feature_type", choices=("baseline", "baseline34", "jukebox"), default="jukebox")
     parser.add_argument("--length", type=float, default=DEFAULT_LENGTH_SECONDS)
     parser.add_argument("--stride", type=float, default=DEFAULT_STRIDE_SECONDS)
     parser.add_argument("--fps", type=int, default=DEFAULT_FPS)

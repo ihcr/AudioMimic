@@ -12,6 +12,8 @@ FPS = 30
 HOP_LENGTH = 512
 SR = FPS * HOP_LENGTH
 EPS = 1e-6
+BASELINE_FEATURE_DIM = 35
+BASELINE34_FEATURE_DIM = 34
 
 if not hasattr(scipy.signal, "hann") and hasattr(scipy.signal, "windows"):
     scipy.signal.hann = scipy.signal.windows.hann
@@ -42,14 +44,8 @@ def _get_tempo(audio_name):
         assert False, audio_name
 
 
-def extract(fpath, skip_completed=True, dest_dir="aist_baseline_feats"):
-    os.makedirs(dest_dir, exist_ok=True)
+def make_audio_feature(fpath):
     audio_name = Path(fpath).stem
-    save_path = os.path.join(dest_dir, audio_name + ".npy")
-
-    if os.path.exists(save_path) and skip_completed:
-        return
-
     data, _ = librosa.load(fpath, sr=SR)
 
     envelope = librosa.onset.onset_strength(y=data, sr=SR)  # (seq_len,)
@@ -84,6 +80,26 @@ def extract(fpath, skip_completed=True, dest_dir="aist_baseline_feats"):
         [envelope[:, None], mfcc, chroma, peak_onehot[:, None], beat_onehot[:, None]],
         axis=-1,
     )
+    return audio_feature.astype(np.float32)
+
+
+def trim_feature_dim(audio_feature, feature_dim=BASELINE_FEATURE_DIM):
+    if feature_dim == BASELINE_FEATURE_DIM:
+        return audio_feature
+    if feature_dim == BASELINE34_FEATURE_DIM:
+        return audio_feature[:, :BASELINE34_FEATURE_DIM]
+    raise ValueError(f"Unsupported baseline feature dim: {feature_dim}")
+
+
+def extract(fpath, skip_completed=True, dest_dir="aist_baseline_feats", feature_dim=BASELINE_FEATURE_DIM):
+    os.makedirs(dest_dir, exist_ok=True)
+    audio_name = Path(fpath).stem
+    save_path = os.path.join(dest_dir, audio_name + ".npy")
+
+    if os.path.exists(save_path) and skip_completed:
+        return
+
+    audio_feature = trim_feature_dim(make_audio_feature(fpath), feature_dim=feature_dim)
 
     # chop to ensure exact shape
     audio_feature = audio_feature[:5 * FPS]
@@ -93,10 +109,15 @@ def extract(fpath, skip_completed=True, dest_dir="aist_baseline_feats"):
     return audio_feature, save_path
 
 
-def extract_folder(src, dest):
+def extract_folder(src, dest, feature_dim=BASELINE_FEATURE_DIM):
     fpaths = Path(src).glob("*")
     fpaths = sorted(list(fpaths))
-    extract_ = partial(extract, skip_completed=False, dest_dir=dest)
+    extract_ = partial(
+        extract,
+        skip_completed=False,
+        dest_dir=dest,
+        feature_dim=feature_dim,
+    )
     for fpath in tqdm(
         fpaths,
         total=len(fpaths),
@@ -114,7 +135,13 @@ if __name__ == "__main__":
 
     parser.add_argument("--src", help="source path to AIST++ audio files")
     parser.add_argument("--dest", help="dest path to audio features")
+    parser.add_argument(
+        "--feature_dim",
+        type=int,
+        choices=(BASELINE_FEATURE_DIM, BASELINE34_FEATURE_DIM),
+        default=BASELINE_FEATURE_DIM,
+    )
 
     args = parser.parse_args()
 
-    extract_folder(args.src, args.dest)
+    extract_folder(args.src, args.dest, feature_dim=args.feature_dim)

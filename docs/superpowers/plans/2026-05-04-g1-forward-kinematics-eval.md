@@ -2,6 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
+> Historical note: commands in this archived plan may include old local
+> worktree paths. For current work, run from a direct branch clone with
+> `source .venv311/bin/activate` and replace dataset paths for the current
+> server.
+
 **Goal:** Add trusted Unitree G1 forward kinematics to the G1 evaluation path so robot beat and foot diagnostics use real robot geometry.
 
 **Architecture:** Keep the change evaluation-first. Add a small Unitree model fetcher, a focused FK adapter around MuJoCo, and new FK metrics wired into the existing G1 evaluator without changing training data yet.
