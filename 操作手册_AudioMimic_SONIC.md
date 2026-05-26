@@ -48,6 +48,24 @@ ls -la ~/GR00T-WholeBodyControl/gear_sonic_deploy/planner/target_vel/V2/
 
 ---
 
+## 2.5 可用 AudioMimic 模型一览
+
+| 模型 | Checkpoint 路径 | 说明 |
+|------|-----------------|------|
+| **lbeat fine-tune (推荐)** | `runs/train/g1_lbeat_relative_finetune/weights/train-500.pt` | 在 BeatDistance 基线上 fine-tune，**增加了 beat 对齐 loss**，节拍卡点更精准。节奏向 checkpoint。 |
+| BeatDistance 基线 | `runs/train/g1_aist_beatdistance_featurecache/weights/train-2000.pt` | 原始 BeatDistance 训练的稳定基线模型。 |
+
+> 两个模型共享相同的推理接口（输入/输出 tensor shape `[T, 38]`），运行参数完全一致（`--feature_type jukebox --beat_rep distance`），只需替换 `--checkpoint` 路径即可切换。
+
+如需下载新模型：
+```bash
+mkdir -p ~/AudioMimic/runs/train/g1_lbeat_relative_finetune/weights
+wget -O ~/AudioMimic/runs/train/g1_lbeat_relative_finetune/weights/train-500.pt \
+  "https://huggingface.co/wyksdsg/edge-g1-beatdistance/resolve/main/lbeat_relative_finetune/train-500.pt"
+```
+
+---
+
 ## 3. 启动流程（需要 3 个终端）
 
 ### Terminal 1 — MuJoCo 仿真器
@@ -100,7 +118,7 @@ python stream_audiomimic.py \
 cd ~/AudioMimic && conda activate audiomimic && \
 python stream_inference.py \
   --music_dir custom_music/ \
-  --checkpoint runs/train/g1_aist_beatdistance_featurecache/weights/train-2000.pt \
+  --checkpoint runs/train/g1_lbeat_relative_finetune/weights/train-500.pt \
   --feature_type jukebox \
   --motion_format g1 \
   --use_beats --beat_rep distance --beat_source audio \
@@ -108,7 +126,9 @@ python stream_inference.py \
   --precache_features
 ```
 
-> ⚠️ 注意：使用的权重文件 `train-2000.pt` **仅兼容** Jukebox 特征和 BeatDistance 的节拍表示，运行参数必须保持 `--feature_type jukebox` 与 `--beat_rep distance`，否则会导致模型不兼容或效果极差。
+> 💡 也可以替换为基线模型 `runs/train/g1_aist_beatdistance_featurecache/weights/train-2000.pt`，两者接口完全兼容。
+
+> ⚠️ 注意：两个 checkpoint 都**仅兼容** Jukebox 特征和 BeatDistance 的节拍表示，运行参数必须保持 `--feature_type jukebox` 与 `--beat_rep distance`，否则会导致模型不兼容或效果极差。
 
 > ⚠️ 注意：添加 `--precache_features` 参数会在开始前一次性提取所有的 Jukebox 特征（需要一定时间）。提取完成后，DDIM 生成与 30 FPS 播放将同步进行，避免动作卡顿。如果不加该参数，则为完全实时流式模式，但由于 Jukebox 提取耗时较长，动作播放会逐渐落后于音频。
 
@@ -177,18 +197,20 @@ cd ~/AudioMimic
 
 python test.py \
   --music_dir custom_music/ \
-  --checkpoint runs/train/g1_aist_beatdistance_featurecache/weights/train-2000.pt \
+  --checkpoint runs/train/g1_lbeat_relative_finetune/weights/train-500.pt \
   --feature_type jukebox \
   --motion_format g1 \
   --use_beats --beat_rep distance --beat_source audio \
   --no_render --save_motions \
-  --motion_save_dir eval/g1_motions \
+  --motion_save_dir eval/g1_motions_lbeat \
   --out_length 15
 ```
 
-> ⚠️ 注意：同样地，这里的 `train-2000.pt` 仅支持 Jukebox + BeatDistance。
+> 💡 也可替换为基线模型 `runs/train/g1_aist_beatdistance_featurecache/weights/train-2000.pt`。
 
-生成的 `.pkl` 文件在 `~/AudioMimic/eval/g1_motions/` 目录下。
+> ⚠️ 注意：两个 checkpoint 都仅支持 Jukebox + BeatDistance，参数不可更改。
+
+生成的 `.pkl` 文件在指定的 `--motion_save_dir` 目录下。
 
 ---
 
