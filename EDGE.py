@@ -2,6 +2,7 @@ import os
 import pickle
 import time
 import math
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import torch
@@ -20,15 +21,37 @@ from dataset.motion_representation import (
     validate_motion_format,
 )
 from dataset.preprocess import increment_path
-from feature_config import get_cond_feature_dim, validate_feature_fusion
+from feature_config import (
+    WAV2CLIP_MOTION_ENERGY_BEAT_FEATURE_TYPE,
+    WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+    get_cond_feature_dim,
+    validate_feature_fusion,
+)
 from model.adan import Adan
 from model.beat_estimator import BeatDistanceEstimator, G1BeatDistanceEstimator
 from model.diffusion import (GaussianDiffusion, cond_batch_size, move_cond_to_device,
                              slice_cond)
-from model.model import BeatDanceDecoder, DanceDecoder
+from model.model import (
+    BeatDanceDecoder,
+    DanceDecoder,
+    Wav2ClipMotionEnergyBeatDecoder,
+    Wav2ClipMotionIntensityBeatnessDecoder,
+)
 from vis import SMPLSkeleton
 
 TENSOR_DATASET_CACHE_VERSION = "v5"
+TRAIN_POSTFIX_UPDATE_INTERVAL = 10
+
+
+def format_duration(seconds):
+    seconds = max(int(round(seconds)), 0)
+    hours, remainder = divmod(seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    if hours:
+        return f"{hours}h{minutes:02d}m{seconds:02d}s"
+    if minutes:
+        return f"{minutes}m{seconds:02d}s"
+    return f"{seconds}s"
 
 
 def wrap(x):
@@ -158,12 +181,39 @@ def wandb_disabled_by_env():
     return disabled in {"1", "true", "yes", "on"} or mode == "disabled"
 
 
-def safe_wandb_init(project, name):
+def _wandb_config_value(value):
+    if isinstance(value, (str, int, float, bool)) or value is None:
+        return value
+    return str(value)
+
+
+def build_wandb_config(opt, training_recipe):
+    config = {key: _wandb_config_value(value) for key, value in vars(opt).items()}
+    for key, value in training_recipe.items():
+        config[f"recipe/{key}"] = _wandb_config_value(value)
+    return config
+
+
+def _metric_float(value):
+    if torch.is_tensor(value):
+        value = value.detach().cpu()
+    return float(value)
+
+
+def _metric_tensor(value, device):
+    if value is None:
+        return torch.zeros((), device=device, dtype=torch.float32)
+    if torch.is_tensor(value):
+        return value.detach().to(device=device, dtype=torch.float32)
+    return torch.tensor(float(value), device=device, dtype=torch.float32)
+
+
+def safe_wandb_init(project, name, config=None):
     if wandb_disabled_by_env():
         print("wandb disabled via environment; skipping wandb.init()")
         return None
     try:
-        return wandb.init(project=project, name=name)
+        return wandb.init(project=project, name=name, config=config)
     except Exception as exc:
         print(f"wandb init failed; continuing without wandb logging: {exc}")
         return None
@@ -229,7 +279,10 @@ def build_checkpoint_config(
     learning_rate,
     weight_decay,
     lambda_acc,
-    lambda_beat,
+    lambda_acc_final=None,
+    lambda_acc_warmup_start_epoch=0,
+    lambda_acc_warmup_epochs=0,
+    lambda_beat=0.5,
     beat_loss_start_epoch=0,
     beat_loss_warmup_epochs=0,
     beat_loss_max_fraction=0.0,
@@ -250,6 +303,18 @@ def build_checkpoint_config(
     g1_kin_loss_max_fraction=0.0,
     g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
     g1_root_quat_order="xyzw",
+    lambda_motion_energy=0.0,
+    lambda_motion_intensity=None,
+    lambda_motion_beatness=0.0,
+    motion_beatness_warmup_start_epoch=100,
+    motion_beatness_warmup_epochs=400,
+    motion_beatness_max_fraction=0.1,
+    lambda_energy_pred=0.0,
+    energy_teacher_forcing_epochs=100,
+    energy_pred_mix_prob=0.5,
+    energy_smoothness_weight=0.1,
+    motion_energy_norm_p05=None,
+    motion_energy_norm_p95=None,
     epoch_offset=0,
 ):
     motion_format = validate_motion_format(motion_format)
@@ -272,6 +337,9 @@ def build_checkpoint_config(
         "learning_rate": learning_rate,
         "weight_decay": weight_decay,
         "lambda_acc": lambda_acc,
+        "lambda_acc_final": lambda_acc_final,
+        "lambda_acc_warmup_start_epoch": lambda_acc_warmup_start_epoch,
+        "lambda_acc_warmup_epochs": lambda_acc_warmup_epochs,
         "lambda_beat": lambda_beat,
         "beat_loss_start_epoch": beat_loss_start_epoch,
         "beat_loss_warmup_epochs": beat_loss_warmup_epochs,
@@ -288,6 +356,20 @@ def build_checkpoint_config(
         "g1_kin_loss_max_fraction": g1_kin_loss_max_fraction,
         "g1_fk_model_path": g1_fk_model_path,
         "g1_root_quat_order": g1_root_quat_order,
+        "lambda_motion_energy": lambda_motion_energy,
+        "lambda_motion_intensity": lambda_motion_energy
+        if lambda_motion_intensity is None
+        else lambda_motion_intensity,
+        "lambda_motion_beatness": lambda_motion_beatness,
+        "motion_beatness_warmup_start_epoch": motion_beatness_warmup_start_epoch,
+        "motion_beatness_warmup_epochs": motion_beatness_warmup_epochs,
+        "motion_beatness_max_fraction": motion_beatness_max_fraction,
+        "lambda_energy_pred": lambda_energy_pred,
+        "energy_teacher_forcing_epochs": energy_teacher_forcing_epochs,
+        "energy_pred_mix_prob": energy_pred_mix_prob,
+        "energy_smoothness_weight": energy_smoothness_weight,
+        "motion_energy_norm_p05": motion_energy_norm_p05,
+        "motion_energy_norm_p95": motion_energy_norm_p95,
         "epoch_offset": epoch_offset,
     }
 
@@ -529,6 +611,9 @@ class EDGE:
         use_beats=False,
         beat_rep="distance",
         lambda_acc=0.1,
+        lambda_acc_final=None,
+        lambda_acc_warmup_start_epoch=0,
+        lambda_acc_warmup_epochs=0,
         lambda_beat=0.5,
         beat_a=10.0,
         beat_c=0.1,
@@ -552,6 +637,18 @@ class EDGE:
         g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
         g1_root_quat_order="xyzw",
         feature_fusion="linear",
+        lambda_motion_energy=0.0,
+        lambda_motion_intensity=None,
+        lambda_motion_beatness=0.0,
+        motion_beatness_warmup_start_epoch=100,
+        motion_beatness_warmup_epochs=400,
+        motion_beatness_max_fraction=0.1,
+        lambda_energy_pred=0.0,
+        energy_teacher_forcing_epochs=100,
+        energy_pred_mix_prob=0.5,
+        energy_smoothness_weight=0.1,
+        motion_energy_norm_p05=None,
+        motion_energy_norm_p95=None,
     ):
         configure_cuda_math()
         ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
@@ -571,6 +668,9 @@ class EDGE:
         self.num_processes = num_processes
         self.gradient_accumulation_steps = gradient_accumulation_steps
         self.lambda_acc = lambda_acc
+        self.lambda_acc_final = lambda_acc_final
+        self.lambda_acc_warmup_start_epoch = lambda_acc_warmup_start_epoch
+        self.lambda_acc_warmup_epochs = lambda_acc_warmup_epochs
         self.lambda_beat = lambda_beat
         self.beat_a = beat_a
         self.beat_c = beat_c
@@ -592,6 +692,20 @@ class EDGE:
         self.g1_kin_loss_max_fraction = g1_kin_loss_max_fraction
         self.g1_fk_model_path = g1_fk_model_path
         self.g1_root_quat_order = g1_root_quat_order
+        self.lambda_motion_energy = lambda_motion_energy
+        self.lambda_motion_intensity = (
+            lambda_motion_energy if lambda_motion_intensity is None else lambda_motion_intensity
+        )
+        self.lambda_motion_beatness = lambda_motion_beatness
+        self.motion_beatness_warmup_start_epoch = motion_beatness_warmup_start_epoch
+        self.motion_beatness_warmup_epochs = motion_beatness_warmup_epochs
+        self.motion_beatness_max_fraction = motion_beatness_max_fraction
+        self.lambda_energy_pred = lambda_energy_pred
+        self.energy_teacher_forcing_epochs = energy_teacher_forcing_epochs
+        self.energy_pred_mix_prob = energy_pred_mix_prob
+        self.energy_smoothness_weight = energy_smoothness_weight
+        self.motion_energy_norm_p05 = motion_energy_norm_p05
+        self.motion_energy_norm_p95 = motion_energy_norm_p95
 
         self.repr_dim = repr_dim = motion_repr_dim(self.motion_format)
 
@@ -641,7 +755,12 @@ class EDGE:
         self.weight_decay = weight_decay
         feature_dim = get_cond_feature_dim(self.feature_type)
 
-        model_cls = BeatDanceDecoder if self.use_beats else DanceDecoder
+        if self.feature_type == WAV2CLIP_MOTION_ENERGY_BEAT_FEATURE_TYPE:
+            model_cls = Wav2ClipMotionEnergyBeatDecoder
+        elif self.feature_type == WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE:
+            model_cls = Wav2ClipMotionIntensityBeatnessDecoder
+        else:
+            model_cls = BeatDanceDecoder if self.use_beats else DanceDecoder
         model_kwargs = dict(
             nfeats=repr_dim,
             seq_len=horizon,
@@ -690,6 +809,9 @@ class EDGE:
             guidance_weight=2,
             beat_estimator=beat_estimator,
             lambda_acc=self.lambda_acc,
+            lambda_acc_final=self.lambda_acc_final,
+            lambda_acc_warmup_start_epoch=self.lambda_acc_warmup_start_epoch,
+            lambda_acc_warmup_epochs=self.lambda_acc_warmup_epochs,
             lambda_beat=self.lambda_beat,
             beat_a=self.beat_a,
             beat_c=self.beat_c,
@@ -708,6 +830,18 @@ class EDGE:
             g1_kin_loss_max_fraction=self.g1_kin_loss_max_fraction,
             g1_fk_model_path=self.g1_fk_model_path,
             g1_root_quat_order=self.g1_root_quat_order,
+            lambda_motion_energy=self.lambda_motion_energy,
+            lambda_motion_intensity=self.lambda_motion_intensity,
+            lambda_motion_beatness=self.lambda_motion_beatness,
+            motion_beatness_warmup_start_epoch=self.motion_beatness_warmup_start_epoch,
+            motion_beatness_warmup_epochs=self.motion_beatness_warmup_epochs,
+            motion_beatness_max_fraction=self.motion_beatness_max_fraction,
+            lambda_energy_pred=self.lambda_energy_pred,
+            energy_teacher_forcing_epochs=self.energy_teacher_forcing_epochs,
+            energy_pred_mix_prob=self.energy_pred_mix_prob,
+            energy_smoothness_weight=self.energy_smoothness_weight,
+            motion_energy_norm_p05=self.motion_energy_norm_p05,
+            motion_energy_norm_p95=self.motion_energy_norm_p95,
         )
 
         print(
@@ -753,6 +887,9 @@ class EDGE:
             learning_rate=self.learning_rate,
             weight_decay=self.weight_decay,
             lambda_acc=self.lambda_acc,
+            lambda_acc_final=self.lambda_acc_final,
+            lambda_acc_warmup_start_epoch=self.lambda_acc_warmup_start_epoch,
+            lambda_acc_warmup_epochs=self.lambda_acc_warmup_epochs,
             lambda_beat=self.lambda_beat,
             beat_loss_start_epoch=self.beat_loss_start_epoch,
             beat_loss_warmup_epochs=self.beat_loss_warmup_epochs,
@@ -773,6 +910,18 @@ class EDGE:
             g1_kin_loss_max_fraction=self.g1_kin_loss_max_fraction,
             g1_fk_model_path=self.g1_fk_model_path,
             g1_root_quat_order=self.g1_root_quat_order,
+            lambda_motion_energy=self.lambda_motion_energy,
+            lambda_motion_intensity=self.lambda_motion_intensity,
+            lambda_motion_beatness=self.lambda_motion_beatness,
+            motion_beatness_warmup_start_epoch=self.motion_beatness_warmup_start_epoch,
+            motion_beatness_warmup_epochs=self.motion_beatness_warmup_epochs,
+            motion_beatness_max_fraction=self.motion_beatness_max_fraction,
+            lambda_energy_pred=self.lambda_energy_pred,
+            energy_teacher_forcing_epochs=self.energy_teacher_forcing_epochs,
+            energy_pred_mix_prob=self.energy_pred_mix_prob,
+            energy_smoothness_weight=self.energy_smoothness_weight,
+            motion_energy_norm_p05=self.motion_energy_norm_p05,
+            motion_energy_norm_p95=self.motion_energy_norm_p95,
         )
         if self.accelerator.is_main_process:
             beat_mode = (
@@ -796,11 +945,16 @@ class EDGE:
                 f"weight_decay={training_recipe['weight_decay']} "
                 f"lambda_beat={self.lambda_beat} "
                 f"lambda_acc={self.lambda_acc} "
+                f"lambda_acc_final={self.lambda_acc_final} "
                 f"lambda_g1_fk={self.lambda_g1_fk} "
                 f"lambda_g1_fk_vel={self.lambda_g1_fk_vel} "
                 f"lambda_g1_fk_acc={self.lambda_g1_fk_acc} "
                 f"lambda_g1_foot={self.lambda_g1_foot} "
-                f"lambda_g1_kin={self.lambda_g1_kin}"
+                f"lambda_g1_kin={self.lambda_g1_kin} "
+                f"lambda_motion_energy={self.lambda_motion_energy} "
+                f"lambda_motion_intensity={self.lambda_motion_intensity} "
+                f"lambda_motion_beatness={self.lambda_motion_beatness} "
+                f"lambda_energy_pred={self.lambda_energy_pred}"
             )
         # load datasets
         train_tensor_dataset_path = os.path.join(
@@ -914,7 +1068,11 @@ class EDGE:
         if self.accelerator.is_main_process:
             save_dir = str(increment_path(Path(opt.project) / opt.exp_name))
             opt.exp_name = save_dir.split("/")[-1]
-            wandb_run = safe_wandb_init(opt.wandb_pj_name, opt.exp_name)
+            wandb_run = safe_wandb_init(
+                opt.wandb_pj_name,
+                opt.exp_name,
+                config=build_wandb_config(opt, training_recipe),
+            )
             save_dir = Path(save_dir)
             wdir = save_dir / "weights"
             wdir.mkdir(parents=True, exist_ok=True)
@@ -926,32 +1084,60 @@ class EDGE:
                 f"mixed_precision={self.mixed_precision} "
                 f"feature_cache_mode={feature_cache_mode} "
                 f"feature_cache_dtype={feature_cache_dtype} "
-                f"tensor_cache_reused={tensor_cache_reused}"
+                f"tensor_cache_reused={tensor_cache_reused} "
+                f"wandb_log_interval={opt.wandb_log_interval}"
             )
 
         epoch_offset = int(getattr(opt, "epoch_offset", 0))
         if epoch_offset < 0:
             raise ValueError("--epoch_offset must be non-negative.")
+        wandb_log_interval = int(getattr(opt, "wandb_log_interval", 1))
+        if wandb_log_interval < 0:
+            raise ValueError("--wandb_log_interval must be non-negative.")
 
         self.accelerator.wait_for_everyone()
+        train_start = time.perf_counter()
+        epoch_durations = []
+        total_epochs = int(opt.epochs)
+        target_global_epoch = epoch_offset + total_epochs
         for epoch in range(1, opt.epochs + 1):
+            epoch_logged_to_wandb = False
             global_epoch = epoch_offset + epoch
             self.diffusion.set_training_epoch(global_epoch)
             epoch_start = time.perf_counter()
             if self.accelerator.device.type == "cuda":
                 torch.cuda.reset_peak_memory_stats(self.accelerator.device)
-            avg_loss = 0
-            avg_vloss = 0
-            avg_fkloss = 0
-            avg_footloss = 0
-            avg_accloss = 0
-            avg_beatloss = 0
-            avg_beatcontrib = 0
-            avg_beatcap_hits = 0
-            avg_g1_fk_vel_loss = 0
-            avg_g1_fk_acc_loss = 0
-            avg_g1_kin_contrib = 0
-            avg_g1_kin_cap_hits = 0
+            metric_device = self.accelerator.device
+            zero_metric = torch.zeros((), device=metric_device)
+            avg_loss = zero_metric.clone()
+            avg_total_loss = zero_metric.clone()
+            avg_vloss = zero_metric.clone()
+            avg_fkloss = zero_metric.clone()
+            avg_footloss = zero_metric.clone()
+            avg_accloss = zero_metric.clone()
+            avg_beatloss = zero_metric.clone()
+            avg_beatcontrib = zero_metric.clone()
+            avg_beatcap_hits = zero_metric.clone()
+            avg_g1_fk_vel_loss = zero_metric.clone()
+            avg_g1_fk_acc_loss = zero_metric.clone()
+            avg_g1_kin_contrib = zero_metric.clone()
+            avg_g1_kin_cap_hits = zero_metric.clone()
+            avg_energy_pred_loss = zero_metric.clone()
+            avg_energy_smoothness_loss = zero_metric.clone()
+            avg_energy_pred_contrib = zero_metric.clone()
+            avg_energy_mix_rate = zero_metric.clone()
+            avg_motion_energy_loss = zero_metric.clone()
+            avg_motion_energy_contrib = zero_metric.clone()
+            avg_intensity_pred_loss = zero_metric.clone()
+            avg_intensity_smoothness_loss = zero_metric.clone()
+            avg_motion_beatness_pred_loss = zero_metric.clone()
+            avg_motion_beatness_loss = zero_metric.clone()
+            avg_motion_beatness_contrib = zero_metric.clone()
+            avg_motion_beatness_cap_hits = zero_metric.clone()
+            avg_motion_intensity_mean_gt = zero_metric.clone()
+            avg_motion_intensity_mean_pred = zero_metric.clone()
+            avg_motion_beatness_mean_gt = zero_metric.clone()
+            avg_motion_beatness_mean_pred = zero_metric.clone()
             # train
             self.train()
             train_loop = train_data_loader
@@ -997,45 +1183,110 @@ class EDGE:
 
                 # ema update and train loss update only on main
                 if self.accelerator.is_main_process:
-                    avg_loss += loss.detach().cpu().numpy()
-                    avg_vloss += v_loss.detach().cpu().numpy()
-                    avg_fkloss += fk_loss.detach().cpu().numpy()
-                    avg_footloss += foot_loss.detach().cpu().numpy()
-                    avg_accloss += acc_loss.detach().cpu().numpy()
-                    avg_beatloss += beat_loss.detach().cpu().numpy()
+                    avg_total_loss += total_loss.detach()
+                    avg_loss += loss.detach()
+                    avg_vloss += v_loss.detach()
+                    avg_fkloss += fk_loss.detach()
+                    avg_footloss += foot_loss.detach()
+                    avg_accloss += acc_loss.detach()
+                    avg_beatloss += beat_loss.detach()
                     beat_stats = getattr(self.diffusion, "last_beat_loss_stats", {})
                     beat_contribution = beat_stats.get(
                         "beat_contribution",
-                        torch.zeros((), device=beat_loss.device),
+                        zero_metric,
                     )
                     beat_capped = beat_stats.get(
                         "beat_capped",
-                        torch.zeros((), dtype=torch.bool, device=beat_loss.device),
+                        zero_metric,
                     )
-                    avg_beatcontrib += float(beat_contribution.detach().cpu())
-                    avg_beatcap_hits += float(beat_capped.detach().cpu())
+                    avg_beatcontrib += _metric_tensor(beat_contribution, metric_device)
+                    avg_beatcap_hits += _metric_tensor(beat_capped, metric_device)
                     g1_stats = getattr(self.diffusion, "last_g1_kin_loss_stats", {})
-                    avg_g1_fk_vel_loss += float(
-                        g1_stats.get("g1_fk_vel_loss", torch.zeros(())).detach().cpu()
-                        if torch.is_tensor(g1_stats.get("g1_fk_vel_loss", None))
-                        else g1_stats.get("g1_fk_vel_loss", 0.0)
+                    avg_g1_fk_vel_loss += _metric_tensor(
+                        g1_stats.get("g1_fk_vel_loss", zero_metric),
+                        metric_device,
                     )
-                    avg_g1_fk_acc_loss += float(
-                        g1_stats.get("g1_fk_acc_loss", torch.zeros(())).detach().cpu()
-                        if torch.is_tensor(g1_stats.get("g1_fk_acc_loss", None))
-                        else g1_stats.get("g1_fk_acc_loss", 0.0)
+                    avg_g1_fk_acc_loss += _metric_tensor(
+                        g1_stats.get("g1_fk_acc_loss", zero_metric),
+                        metric_device,
                     )
-                    avg_g1_kin_contrib += float(
-                        g1_stats.get("g1_kin_contribution", torch.zeros(())).detach().cpu()
-                        if torch.is_tensor(g1_stats.get("g1_kin_contribution", None))
-                        else g1_stats.get("g1_kin_contribution", 0.0)
+                    avg_g1_kin_contrib += _metric_tensor(
+                        g1_stats.get("g1_kin_contribution", zero_metric),
+                        metric_device,
                     )
-                    avg_g1_kin_cap_hits += float(
-                        g1_stats.get("g1_kin_capped", torch.zeros(())).detach().cpu()
-                        if torch.is_tensor(g1_stats.get("g1_kin_capped", None))
-                        else g1_stats.get("g1_kin_capped", 0.0)
+                    avg_g1_kin_cap_hits += _metric_tensor(
+                        g1_stats.get("g1_kin_capped", zero_metric),
+                        metric_device,
                     )
-                    if hasattr(train_loop, "set_postfix"):
+                    energy_stats = getattr(self.diffusion, "last_motion_energy_stats", {})
+                    avg_energy_pred_loss += _metric_tensor(
+                        energy_stats.get("energy_pred_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_energy_smoothness_loss += _metric_tensor(
+                        energy_stats.get("energy_smoothness_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_energy_pred_contrib += _metric_tensor(
+                        energy_stats.get("energy_pred_contribution", zero_metric),
+                        metric_device,
+                    )
+                    avg_energy_mix_rate += _metric_tensor(
+                        energy_stats.get("energy_pred_mix_rate", zero_metric),
+                        metric_device,
+                    )
+                    avg_motion_energy_loss += _metric_tensor(
+                        energy_stats.get("motion_energy_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_motion_energy_contrib += _metric_tensor(
+                        energy_stats.get("motion_energy_contribution", zero_metric),
+                        metric_device,
+                    )
+                    avg_intensity_pred_loss += _metric_tensor(
+                        energy_stats.get("intensity_pred_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_intensity_smoothness_loss += _metric_tensor(
+                        energy_stats.get("intensity_smoothness_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_motion_beatness_pred_loss += _metric_tensor(
+                        energy_stats.get("beatness_pred_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_motion_beatness_loss += _metric_tensor(
+                        energy_stats.get("motion_beatness_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_motion_beatness_contrib += _metric_tensor(
+                        energy_stats.get("motion_beatness_contribution", zero_metric),
+                        metric_device,
+                    )
+                    avg_motion_beatness_cap_hits += _metric_tensor(
+                        energy_stats.get("motion_beatness_capped", zero_metric),
+                        metric_device,
+                    )
+                    avg_motion_intensity_mean_gt += _metric_tensor(
+                        energy_stats.get("gt_intensity_mean", zero_metric),
+                        metric_device,
+                    )
+                    avg_motion_intensity_mean_pred += _metric_tensor(
+                        energy_stats.get("pred_intensity_mean", zero_metric),
+                        metric_device,
+                    )
+                    avg_motion_beatness_mean_gt += _metric_tensor(
+                        energy_stats.get("gt_beatness_mean", zero_metric),
+                        metric_device,
+                    )
+                    avg_motion_beatness_mean_pred += _metric_tensor(
+                        energy_stats.get("pred_beatness_mean", zero_metric),
+                        metric_device,
+                    )
+                    if hasattr(train_loop, "set_postfix") and (
+                        step % TRAIN_POSTFIX_UPDATE_INTERVAL == 0
+                        or step == len(train_data_loader) - 1
+                    ):
                         train_loop.set_postfix(
                             **build_train_postfix(
                                 loss=loss,
@@ -1052,6 +1303,13 @@ class EDGE:
                         )
             if self.accelerator.is_main_process:
                 epoch_duration = max(time.perf_counter() - epoch_start, 1e-6)
+                epoch_durations.append(epoch_duration)
+                recent_epoch_seconds = sum(epoch_durations[-10:]) / min(len(epoch_durations), 10)
+                epochs_remaining = max(total_epochs - epoch, 0)
+                eta_seconds = recent_epoch_seconds * epochs_remaining
+                elapsed_seconds = time.perf_counter() - train_start
+                progress_percent = 100.0 * epoch / max(total_epochs, 1)
+                estimated_finish = datetime.now() + timedelta(seconds=eta_seconds)
                 peak_cuda_memory_mb = (
                     torch.cuda.max_memory_allocated(self.accelerator.device) / (1024 ** 2)
                     if self.accelerator.device.type == "cuda"
@@ -1061,8 +1319,69 @@ class EDGE:
                     f"train_epoch={global_epoch} seconds={epoch_duration:.2f} "
                     f"batches_per_second={len(train_data_loader) / epoch_duration:.2f} "
                     f"samples_per_second={len(train_dataset) / epoch_duration:.2f} "
-                    f"peak_cuda_memory_mb={peak_cuda_memory_mb:.2f}"
+                    f"peak_cuda_memory_mb={peak_cuda_memory_mb:.2f} "
+                    f"progress={epoch}/{total_epochs} "
+                    f"global_progress={global_epoch}/{target_global_epoch} "
+                    f"progress_percent={progress_percent:.2f} "
+                    f"elapsed={format_duration(elapsed_seconds)} "
+                    f"eta={format_duration(eta_seconds)} "
+                    f"estimated_finish={estimated_finish.strftime('%Y-%m-%d %H:%M:%S')}"
                 )
+                num_train_batches = max(len(train_data_loader), 1)
+                epoch_log_dict = {
+                    "epoch": global_epoch,
+                    "train/epoch_index": epoch,
+                    "train/target_epoch": target_global_epoch,
+                    "train/progress_percent": progress_percent,
+                    "train/elapsed_seconds": elapsed_seconds,
+                    "train/eta_seconds": eta_seconds,
+                    "train/epoch_seconds": epoch_duration,
+                    "train/recent_epoch_seconds": recent_epoch_seconds,
+                    "train/batches_per_second": len(train_data_loader) / epoch_duration,
+                    "train/samples_per_second": len(train_dataset) / epoch_duration,
+                    "system/peak_cuda_memory_mb": peak_cuda_memory_mb,
+                    "loss/train": _metric_float(avg_total_loss) / num_train_batches,
+                    "loss/total": _metric_float(avg_total_loss) / num_train_batches,
+                    "loss/reconstruction": _metric_float(avg_loss) / num_train_batches,
+                    "loss/velocity": _metric_float(avg_vloss) / num_train_batches,
+                    "loss/fk": _metric_float(avg_fkloss) / num_train_batches,
+                    "loss/foot": _metric_float(avg_footloss) / num_train_batches,
+                    "loss/acceleration": _metric_float(avg_accloss) / num_train_batches,
+                    "loss/acceleration_weight": self.diffusion.effective_lambda_acc(),
+                    "loss/beat": _metric_float(avg_beatloss) / num_train_batches,
+                    "beat/weight": _metric_float(
+                        self.diffusion.last_beat_loss_stats.get(
+                            "effective_lambda_beat", 0.0
+                        )
+                    ),
+                    "beat/contribution": _metric_float(avg_beatcontrib) / num_train_batches,
+                    "beat/cap_hit_rate": _metric_float(avg_beatcap_hits) / num_train_batches,
+                    "g1/fk_vel_loss": _metric_float(avg_g1_fk_vel_loss) / num_train_batches,
+                    "g1/fk_acc_loss": _metric_float(avg_g1_fk_acc_loss) / num_train_batches,
+                    "g1/kin_contribution": _metric_float(avg_g1_kin_contrib) / num_train_batches,
+                    "g1/kin_cap_hit_rate": _metric_float(avg_g1_kin_cap_hits) / num_train_batches,
+                    "motion_energy/predictor_loss": _metric_float(avg_energy_pred_loss) / num_train_batches,
+                    "motion_energy/smoothness_loss": _metric_float(avg_energy_smoothness_loss) / num_train_batches,
+                    "motion_energy/predictor_contribution": _metric_float(avg_energy_pred_contrib) / num_train_batches,
+                    "motion_energy/pred_mix_rate": _metric_float(avg_energy_mix_rate) / num_train_batches,
+                    "motion_energy/global_loss": _metric_float(avg_motion_energy_loss) / num_train_batches,
+                    "motion_energy/global_contribution": _metric_float(avg_motion_energy_contrib) / num_train_batches,
+                    "motion_intensity/pred_loss": _metric_float(avg_intensity_pred_loss) / num_train_batches,
+                    "motion_intensity/smoothness_loss": _metric_float(avg_intensity_smoothness_loss) / num_train_batches,
+                    "motion_intensity/global_loss": _metric_float(avg_motion_energy_loss) / num_train_batches,
+                    "motion_intensity/global_contribution": _metric_float(avg_motion_energy_contrib) / num_train_batches,
+                    "motion_intensity/mean_gt": _metric_float(avg_motion_intensity_mean_gt) / num_train_batches,
+                    "motion_intensity/mean_pred": _metric_float(avg_motion_intensity_mean_pred) / num_train_batches,
+                    "motion_beatness/pred_loss": _metric_float(avg_motion_beatness_pred_loss) / num_train_batches,
+                    "motion_beatness/valley_loss": _metric_float(avg_motion_beatness_loss) / num_train_batches,
+                    "motion_beatness/contribution": _metric_float(avg_motion_beatness_contrib) / num_train_batches,
+                    "motion_beatness/cap_hit_rate": _metric_float(avg_motion_beatness_cap_hits) / num_train_batches,
+                    "motion_beatness/mean_gt": _metric_float(avg_motion_beatness_mean_gt) / num_train_batches,
+                    "motion_beatness/mean_pred": _metric_float(avg_motion_beatness_mean_pred) / num_train_batches,
+                    "checkpoint/saved": 0,
+                }
+            else:
+                epoch_log_dict = None
             # Save model
             if (epoch % opt.save_interval) == 0:
                 # everyone waits here for the val loop to finish ( don't start next train epoch early)
@@ -1083,25 +1402,6 @@ class EDGE:
                     avg_g1_fk_acc_loss /= len(train_data_loader)
                     avg_g1_kin_contrib /= len(train_data_loader)
                     avg_g1_kin_cap_hits /= len(train_data_loader)
-                    log_dict = {
-                        "Train Loss": avg_loss,
-                        "V Loss": avg_vloss,
-                        "FK Loss": avg_fkloss,
-                        "Foot Loss": avg_footloss,
-                        "Acc Loss": avg_accloss,
-                        "Beat Loss": avg_beatloss,
-                        "Beat Weight": self.diffusion.last_beat_loss_stats.get(
-                            "effective_lambda_beat", 0.0
-                        ),
-                        "Beat Contribution": avg_beatcontrib,
-                        "Beat Cap Hit Rate": avg_beatcap_hits,
-                        "G1 FK Vel Loss": avg_g1_fk_vel_loss,
-                        "G1 FK Acc Loss": avg_g1_fk_acc_loss,
-                        "G1 Kin Contribution": avg_g1_kin_contrib,
-                        "G1 Kin Cap Hit Rate": avg_g1_kin_cap_hits,
-                    }
-                    if wandb_run is not None:
-                        wandb.log(log_dict)
                     ckpt = {
                         "ema_state_dict": self.diffusion.master_model.state_dict(),
                         "model_state_dict": self.accelerator.unwrap_model(
@@ -1111,7 +1411,19 @@ class EDGE:
                         "normalizer": self.normalizer,
                         "config": training_recipe,
                     }
-                    torch.save(ckpt, os.path.join(wdir, f"train-{global_epoch}.pt"))
+                    ckpt_path = os.path.join(wdir, f"train-{global_epoch}.pt")
+                    torch.save(ckpt, ckpt_path)
+                    if epoch_log_dict is not None:
+                        epoch_log_dict["checkpoint/saved"] = 1
+                        epoch_log_dict["checkpoint/path"] = ckpt_path
+                    if (
+                        wandb_run is not None
+                        and epoch_log_dict is not None
+                        and wandb_log_interval > 0
+                        and (epoch % wandb_log_interval == 0 or epoch == total_epochs)
+                    ):
+                        wandb.log(epoch_log_dict, step=global_epoch)
+                        epoch_logged_to_wandb = True
                     # generate a sample
                     render_count = 2
                     shape = (render_count, self.horizon, self.repr_dim)
@@ -1129,6 +1441,17 @@ class EDGE:
                         sound=True,
                     )
                     print(f"[MODEL SAVED at Epoch {global_epoch}]")
+            if (
+                self.accelerator.is_main_process
+                and wandb_run is not None
+                and epoch_log_dict is not None
+                and not epoch_logged_to_wandb
+                and (
+                    wandb_log_interval > 0
+                    and (epoch % wandb_log_interval == 0 or epoch == total_epochs)
+                )
+            ):
+                wandb.log(epoch_log_dict, step=global_epoch)
         if self.accelerator.is_main_process and wandb_run is not None:
             wandb_run.finish()
 

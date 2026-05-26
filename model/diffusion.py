@@ -35,10 +35,7 @@ def move_cond_to_device(cond, device):
     if torch.is_tensor(cond):
         return cond.to(device)
     if isinstance(cond, dict):
-        return {
-            key: (value.to(device) if torch.is_tensor(value) else value)
-            for key, value in cond.items()
-        }
+        return {key: move_cond_to_device(value, device) for key, value in cond.items()}
     return cond
 
 
@@ -47,8 +44,10 @@ def cond_batch_size(cond):
         return cond.shape[0]
     if isinstance(cond, dict):
         for value in cond.values():
-            if torch.is_tensor(value):
-                return value.shape[0]
+            try:
+                return cond_batch_size(value)
+            except TypeError:
+                continue
     raise TypeError("Unsupported condition type")
 
 
@@ -57,8 +56,10 @@ def cond_device(cond):
         return cond.device
     if isinstance(cond, dict):
         for value in cond.values():
-            if torch.is_tensor(value):
-                return value.device
+            try:
+                return cond_device(value)
+            except TypeError:
+                continue
     raise TypeError("Unsupported condition type")
 
 
@@ -71,6 +72,8 @@ def slice_cond(cond, idx):
         for key, value in cond.items():
             if torch.is_tensor(value) and value.ndim > 0 and value.shape[0] == batch_size:
                 sliced[key] = value[idx]
+            elif isinstance(value, dict):
+                sliced[key] = slice_cond(value, idx)
             else:
                 sliced[key] = value
         return sliced
@@ -197,6 +200,18 @@ def effective_warmup_scale(epoch, warmup_epochs=0):
     return min(max(float(epoch) / float(warmup_epochs), 0.0), 1.0)
 
 
+def effective_linear_ramp(epoch, start_value, final_value=None, start_epoch=0, warmup_epochs=0):
+    if final_value is None:
+        return float(start_value)
+    if epoch <= start_epoch:
+        return float(start_value)
+    if warmup_epochs <= 0:
+        return float(final_value)
+    progress = (epoch - start_epoch) / float(warmup_epochs)
+    progress = min(max(progress, 0.0), 1.0)
+    return float(start_value) + (float(final_value) - float(start_value)) * progress
+
+
 def compute_capped_aux_contribution(base_loss, raw_contribution, max_fraction=0.0):
     if max_fraction <= 0:
         cap = torch.full_like(raw_contribution, float("inf"))
@@ -272,6 +287,21 @@ class GaussianDiffusion(nn.Module):
         g1_kin_loss_max_fraction=0.0,
         g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
         g1_root_quat_order="xyzw",
+        lambda_motion_energy=0.0,
+        lambda_motion_intensity=None,
+        lambda_motion_beatness=0.0,
+        motion_beatness_warmup_start_epoch=100,
+        motion_beatness_warmup_epochs=400,
+        motion_beatness_max_fraction=0.1,
+        lambda_energy_pred=0.0,
+        energy_teacher_forcing_epochs=100,
+        energy_pred_mix_prob=0.5,
+        energy_smoothness_weight=0.1,
+        lambda_acc_final=None,
+        lambda_acc_warmup_start_epoch=0,
+        lambda_acc_warmup_epochs=0,
+        motion_energy_norm_p05=None,
+        motion_energy_norm_p95=None,
     ):
         super().__init__()
         self.horizon = horizon
@@ -301,6 +331,29 @@ class GaussianDiffusion(nn.Module):
         self.g1_kin_loss_warmup_epochs = int(g1_kin_loss_warmup_epochs)
         self.g1_kin_loss_max_fraction = float(g1_kin_loss_max_fraction)
         self.g1_root_quat_order = g1_root_quat_order
+        self.lambda_motion_energy = float(lambda_motion_energy)
+        self.lambda_motion_intensity = (
+            self.lambda_motion_energy
+            if lambda_motion_intensity is None
+            else float(lambda_motion_intensity)
+        )
+        self.lambda_motion_beatness = float(lambda_motion_beatness)
+        self.motion_beatness_warmup_start_epoch = int(motion_beatness_warmup_start_epoch)
+        self.motion_beatness_warmup_epochs = int(motion_beatness_warmup_epochs)
+        self.motion_beatness_max_fraction = float(motion_beatness_max_fraction)
+        self.lambda_energy_pred = float(lambda_energy_pred)
+        self.energy_teacher_forcing_epochs = int(energy_teacher_forcing_epochs)
+        self.energy_pred_mix_prob = float(energy_pred_mix_prob)
+        self.energy_smoothness_weight = float(energy_smoothness_weight)
+        self.lambda_acc_final = None if lambda_acc_final is None else float(lambda_acc_final)
+        self.lambda_acc_warmup_start_epoch = int(lambda_acc_warmup_start_epoch)
+        self.lambda_acc_warmup_epochs = int(lambda_acc_warmup_epochs)
+        self.motion_energy_norm_p05 = (
+            None if motion_energy_norm_p05 is None else float(motion_energy_norm_p05)
+        )
+        self.motion_energy_norm_p95 = (
+            None if motion_energy_norm_p95 is None else float(motion_energy_norm_p95)
+        )
         g1_weights = (
             self.lambda_g1_fk,
             self.lambda_g1_fk_vel,
@@ -315,6 +368,37 @@ class GaussianDiffusion(nn.Module):
             raise ValueError("g1_kin_loss_warmup_epochs must be non-negative.")
         if self.g1_kin_loss_max_fraction < 0:
             raise ValueError("g1_kin_loss_max_fraction must be non-negative.")
+        if self.lambda_motion_energy < 0:
+            raise ValueError("lambda_motion_energy must be non-negative.")
+        if self.lambda_motion_intensity < 0:
+            raise ValueError("lambda_motion_intensity must be non-negative.")
+        if self.lambda_motion_beatness < 0:
+            raise ValueError("lambda_motion_beatness must be non-negative.")
+        if self.motion_beatness_warmup_start_epoch < 0:
+            raise ValueError("motion_beatness_warmup_start_epoch must be non-negative.")
+        if self.motion_beatness_warmup_epochs < 0:
+            raise ValueError("motion_beatness_warmup_epochs must be non-negative.")
+        if self.motion_beatness_max_fraction < 0:
+            raise ValueError("motion_beatness_max_fraction must be non-negative.")
+        if self.lambda_energy_pred < 0:
+            raise ValueError("lambda_energy_pred must be non-negative.")
+        if self.energy_teacher_forcing_epochs < 0:
+            raise ValueError("energy_teacher_forcing_epochs must be non-negative.")
+        if not 0.0 <= self.energy_pred_mix_prob <= 1.0:
+            raise ValueError("energy_pred_mix_prob must be in [0, 1].")
+        if self.energy_smoothness_weight < 0:
+            raise ValueError("energy_smoothness_weight must be non-negative.")
+        if self.lambda_acc_warmup_start_epoch < 0:
+            raise ValueError("lambda_acc_warmup_start_epoch must be non-negative.")
+        if self.lambda_acc_warmup_epochs < 0:
+            raise ValueError("lambda_acc_warmup_epochs must be non-negative.")
+        if (self.motion_energy_norm_p05 is None) != (self.motion_energy_norm_p95 is None):
+            raise ValueError("motion_energy_norm_p05 and motion_energy_norm_p95 must be set together.")
+        if (
+            self.motion_energy_norm_p05 is not None
+            and self.motion_energy_norm_p95 <= self.motion_energy_norm_p05
+        ):
+            raise ValueError("motion_energy_norm_p95 must be greater than motion_energy_norm_p05.")
         self.use_g1_kinematic_losses = self.lambda_g1_kin > 0 and any(
             weight > 0 for weight in g1_weights
         )
@@ -327,9 +411,38 @@ class GaussianDiffusion(nn.Module):
             if self.use_g1_kinematic_losses
             else None
         )
+        self.motion_energy_kinematics = (
+            self.g1_kinematics
+            if self.g1_kinematics is not None
+            else G1TorchKinematics(g1_fk_model_path, root_quat_order=g1_root_quat_order)
+            if self.lambda_motion_intensity > 0 or self.lambda_motion_beatness > 0
+            else None
+        )
+        self.motion_energy_keypoint_weights = {
+            "left_wrist_yaw_link": 0.35,
+            "right_wrist_yaw_link": 0.35,
+            "left_ankle_roll_link": 0.10,
+            "right_ankle_roll_link": 0.10,
+            "torso_link": 0.10,
+        }
+        if self.motion_energy_kinematics is not None:
+            missing = [
+                name
+                for name in self.motion_energy_keypoint_weights
+                if name not in self.motion_energy_kinematics.keypoint_names
+            ]
+            if missing:
+                raise ValueError(f"G1 keypoints missing for motion energy loss: {missing}")
+            self.motion_energy_keypoint_indices = [
+                self.motion_energy_kinematics.keypoint_names.index(name)
+                for name in self.motion_energy_keypoint_weights
+            ]
+        else:
+            self.motion_energy_keypoint_indices = []
         self.current_epoch = 1
         self.last_beat_loss_stats = {}
         self.last_g1_kin_loss_stats = {}
+        self.last_motion_energy_stats = {}
         self.beat_estimator = beat_estimator
         self.beat_estimator_config = (
             getattr(beat_estimator, "checkpoint_config_summary", {})
@@ -786,30 +899,38 @@ class GaussianDiffusion(nn.Module):
         }
         if not self.use_g1_kinematic_losses:
             self.last_g1_kin_loss_stats = empty_stats
-            return zero, zero, zero
+            return zero, zero, zero, None
 
         model_fk = self._decode_g1_for_kinematics(model_out)
         target_fk = self._decode_g1_for_kinematics(target)
         model_keypoints = model_fk["keypoints"]
-        target_keypoints = target_fk["keypoints"].detach()
         model_feet = model_fk["feet"]
         target_feet = target_fk["feet"].detach()
 
-        g1_fk_loss = F.mse_loss(model_keypoints, target_keypoints)
         g1_fk_vel_loss = zero
-        if model_keypoints.shape[1] > 1:
+        g1_fk_acc_loss = zero
+        if (
+            self.lambda_g1_fk > 0
+            or self.lambda_g1_fk_vel > 0
+            or self.lambda_g1_fk_acc > 0
+        ):
+            target_keypoints = target_fk["keypoints"].detach()
+        if self.lambda_g1_fk > 0:
+            g1_fk_loss = F.mse_loss(model_keypoints, target_keypoints)
+        else:
+            g1_fk_loss = zero
+        if self.lambda_g1_fk_vel > 0 and model_keypoints.shape[1] > 1:
             model_v = model_keypoints[:, 1:] - model_keypoints[:, :-1]
             target_v = target_keypoints[:, 1:] - target_keypoints[:, :-1]
             g1_fk_vel_loss = F.mse_loss(model_v, target_v)
 
-        g1_fk_acc_loss = zero
-        if model_keypoints.shape[1] > 2:
+        if self.lambda_g1_fk_acc > 0 and model_keypoints.shape[1] > 2:
             model_a = model_keypoints[:, 2:] - 2 * model_keypoints[:, 1:-1] + model_keypoints[:, :-2]
             target_a = target_keypoints[:, 2:] - 2 * target_keypoints[:, 1:-1] + target_keypoints[:, :-2]
             g1_fk_acc_loss = F.mse_loss(model_a, target_a)
 
         g1_foot_loss = zero
-        if model_feet.shape[1] > 1:
+        if self.lambda_g1_foot > 0 and model_feet.shape[1] > 1:
             contact_mask = self._g1_target_contact_mask(target_feet)
             model_foot_v = model_feet[:, 1:, :, :2] - model_feet[:, :-1, :, :2]
             masked_velocity = model_foot_v * contact_mask
@@ -841,11 +962,166 @@ class GaussianDiffusion(nn.Module):
             "g1_kin_capped": capped.detach(),
             "g1_kin_cap": cap.detach(),
         }
-        return contribution, g1_fk_loss, g1_foot_loss
+        return contribution, g1_fk_loss, g1_foot_loss, model_keypoints
+
+    def _prepare_motion_energy_condition(self, cond):
+        zero = torch.zeros((), device=cond_device(cond), dtype=torch.float32)
+        empty_stats = {
+            "energy_pred_loss": zero,
+            "energy_smoothness_loss": zero,
+            "energy_pred_contribution": zero,
+            "energy_pred_mix_rate": 0.0,
+            "selected_energy_mean": zero,
+            "pred_energy_mean": zero,
+            "gt_energy_mean": zero,
+            "intensity_pred_loss": zero,
+            "beatness_pred_loss": zero,
+            "intensity_smoothness_loss": zero,
+            "selected_intensity_mean": zero,
+            "pred_intensity_mean": zero,
+            "gt_intensity_mean": zero,
+            "selected_beatness_mean": zero,
+            "pred_beatness_mean": zero,
+            "gt_beatness_mean": zero,
+            "motion_beatness_loss": zero,
+            "motion_beatness_contribution": zero,
+            "motion_beatness_weight": 0.0,
+            "motion_beatness_capped": zero.to(dtype=torch.bool),
+        }
+        if not hasattr(self.model, "prepare_motion_energy_training_condition"):
+            self.last_motion_energy_stats = empty_stats
+            return cond, empty_stats
+        cond, stats = self.model.prepare_motion_energy_training_condition(
+            cond,
+            epoch=self.current_epoch,
+            teacher_forcing_epochs=self.energy_teacher_forcing_epochs,
+            pred_mix_prob=self.energy_pred_mix_prob,
+            detach_pred=True,
+        )
+        pred_loss = stats["energy_pred_loss"]
+        smoothness_loss = stats["energy_smoothness_loss"]
+        contribution = self.lambda_energy_pred * (
+            pred_loss + self.energy_smoothness_weight * smoothness_loss
+        )
+        self.last_motion_energy_stats = {
+            **stats,
+            "energy_pred_contribution": contribution,
+        }
+        return cond, self.last_motion_energy_stats
+
+    def _weighted_motion_energy_from_keypoints(self, keypoints):
+        indices = torch.tensor(
+            self.motion_energy_keypoint_indices,
+            device=keypoints.device,
+            dtype=torch.long,
+        )
+        keypoints = keypoints.index_select(-2, indices)
+        frame_speed = keypoints.new_zeros(keypoints.shape[:2] + (keypoints.shape[-2],))
+        frame_speed[:, 1:] = torch.linalg.vector_norm(
+            keypoints[:, 1:] - keypoints[:, :-1],
+            dim=-1,
+        ) * 30.0
+        weights = torch.tensor(
+            list(self.motion_energy_keypoint_weights.values()),
+            device=keypoints.device,
+            dtype=keypoints.dtype,
+        )
+        return (frame_speed * weights.view(1, 1, -1)).sum(dim=-1)
+
+    def _compute_weighted_motion_energy(self, samples):
+        if self.motion_energy_kinematics is None:
+            raise ValueError("Motion-energy loss requires G1 kinematics.")
+        if self.normalizer is None:
+            raise ValueError("Motion-energy loss requires a fitted motion normalizer.")
+        decoded = decode_g1_motion(self.normalizer.unnormalize(samples.clone()).float())
+        result = self.motion_energy_kinematics(
+            decoded["root_pos"],
+            decoded["root_rot"],
+            decoded["dof_pos"],
+        )
+        return self._weighted_motion_energy_from_keypoints(result["keypoints"])
+
+    def _motion_energy_preservation_loss(self, model_out, motion_energy_stats, model_keypoints=None):
+        zero = torch.zeros((), device=model_out.device, dtype=model_out.dtype)
+        if self.lambda_motion_intensity <= 0:
+            return zero
+        selected_energy = motion_energy_stats.get(
+            "selected_intensity",
+            motion_energy_stats.get("selected_energy"),
+        )
+        if selected_energy is None:
+            return zero
+        if model_keypoints is None:
+            pred_speed = self._compute_weighted_motion_energy(model_out)
+        else:
+            pred_speed = self._weighted_motion_energy_from_keypoints(model_keypoints)
+        if self.motion_energy_norm_p05 is not None:
+            pred_speed = torch.clamp(
+                (pred_speed - self.motion_energy_norm_p05)
+                / (self.motion_energy_norm_p95 - self.motion_energy_norm_p05),
+                min=0.0,
+                max=1.0,
+            )
+        pred_global_energy = torch.clamp(pred_speed.mean(dim=1), min=1e-5)
+        target_global_energy = torch.clamp(
+            selected_energy.squeeze(-1).mean(dim=1).to(pred_global_energy.dtype),
+            min=1e-5,
+        )
+        return F.mse_loss(torch.log(pred_global_energy), torch.log(target_global_energy))
+
+    def _motion_beatness_valley_loss(self, model_out, motion_energy_stats, model_keypoints=None):
+        zero = torch.zeros((), device=model_out.device, dtype=model_out.dtype)
+        if self.lambda_motion_beatness <= 0:
+            return zero
+        selected_beatness = motion_energy_stats.get("selected_beatness")
+        if selected_beatness is None:
+            return zero
+        if model_keypoints is None:
+            pred_speed = self._compute_weighted_motion_energy(model_out)
+        else:
+            pred_speed = self._weighted_motion_energy_from_keypoints(model_keypoints)
+        if self.motion_energy_norm_p05 is not None:
+            pred_speed = torch.clamp(
+                (pred_speed - self.motion_energy_norm_p05)
+                / (self.motion_energy_norm_p95 - self.motion_energy_norm_p05),
+                min=0.0,
+                max=1.0,
+            )
+        shoulder_speed = F.max_pool1d(
+            pred_speed.unsqueeze(1),
+            kernel_size=13,
+            stride=1,
+            padding=6,
+        ).squeeze(1)
+        valley_contrast = torch.clamp(shoulder_speed - pred_speed, min=0.0, max=1.0)
+        target = selected_beatness.squeeze(-1).to(valley_contrast.dtype)
+        weights = torch.clamp(target, min=0.0)
+        denom = torch.clamp(weights.sum(), min=1.0)
+        return (weights * (valley_contrast - target).pow(2)).sum() / denom
+
+    def effective_motion_beatness_weight(self):
+        return effective_linear_ramp(
+            self.current_epoch,
+            0.0,
+            final_value=self.lambda_motion_beatness,
+            start_epoch=self.motion_beatness_warmup_start_epoch,
+            warmup_epochs=self.motion_beatness_warmup_epochs,
+        )
+
+    def effective_lambda_acc(self):
+        return effective_linear_ramp(
+            self.current_epoch,
+            self.lambda_acc,
+            final_value=self.lambda_acc_final,
+            start_epoch=self.lambda_acc_warmup_start_epoch,
+            warmup_epochs=self.lambda_acc_warmup_epochs,
+        )
 
     def p_losses(self, x_start, cond, t):
         noise = torch.randn_like(x_start)
         x_noisy = self.q_sample(x_start=x_start, t=t, noise=noise)
+
+        cond, motion_energy_stats = self._prepare_motion_energy_condition(cond)
 
         # reconstruct
         x_recon = self.model(x_noisy, cond, t, cond_drop_prob=self.cond_drop_prob)
@@ -920,16 +1196,55 @@ class GaussianDiffusion(nn.Module):
                 "beat_capped": beat_capped.detach(),
                 "beat_cap": beat_cap.detach(),
             }
-            g1_kin_contribution, fk_loss, foot_loss = self._g1_robot_losses(
+            g1_kin_contribution, fk_loss, foot_loss, model_keypoints = self._g1_robot_losses(
                 model_out,
                 target,
                 base_loss,
             )
+            motion_energy_loss = self._motion_energy_preservation_loss(
+                model_out,
+                motion_energy_stats,
+                model_keypoints=model_keypoints,
+            )
+            motion_energy_contribution = self.lambda_motion_intensity * motion_energy_loss
+            motion_beatness_loss = self._motion_beatness_valley_loss(
+                model_out,
+                motion_energy_stats,
+                model_keypoints=model_keypoints,
+            )
+            motion_beatness_weight = self.effective_motion_beatness_weight()
+            raw_motion_beatness_contribution = motion_beatness_weight * motion_beatness_loss
+            (
+                motion_beatness_contribution,
+                motion_beatness_capped,
+                motion_beatness_cap,
+            ) = compute_capped_aux_contribution(
+                base_loss=base_loss,
+                raw_contribution=raw_motion_beatness_contribution,
+                max_fraction=self.motion_beatness_max_fraction,
+            )
+            energy_pred_contribution = motion_energy_stats.get(
+                "energy_pred_contribution",
+                zero,
+            )
+            self.last_motion_energy_stats = {
+                **motion_energy_stats,
+                "motion_energy_loss": motion_energy_loss.detach(),
+                "motion_energy_contribution": motion_energy_contribution.detach(),
+                "motion_beatness_loss": motion_beatness_loss.detach(),
+                "motion_beatness_weight": motion_beatness_weight,
+                "motion_beatness_contribution": motion_beatness_contribution.detach(),
+                "motion_beatness_capped": motion_beatness_capped.detach(),
+                "motion_beatness_cap": motion_beatness_cap.detach(),
+            }
             total_loss = (
                 base_loss
-                + self.lambda_acc * acc_loss
+                + self.effective_lambda_acc() * acc_loss
                 + beat_contribution
                 + g1_kin_contribution
+                + motion_energy_contribution
+                + motion_beatness_contribution
+                + energy_pred_contribution
             )
             return total_loss, (loss.mean(), v_loss.mean(), fk_loss, foot_loss, acc_loss, beat_loss)
 

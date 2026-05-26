@@ -59,6 +59,7 @@ def write_feature(path, feature_type):
     dims = {
         "baseline": 35,
         "jukebox": 4800,
+        "gaussian_beat": 1,
         "wav2clip_stft_beat": 706,
     }
     dim = dims[feature_type]

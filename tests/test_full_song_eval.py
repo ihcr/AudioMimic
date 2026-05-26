@@ -237,6 +237,51 @@ class MetricComparisonTests(unittest.TestCase):
         self.assertIn("Official EDGE", report)
         self.assertIn("BeatDistance", report)
 
+    def test_g1_metric_comparison_writes_g1_rows(self):
+        compare_module = reload_module("eval.write_g1_metric_comparison")
+
+        with TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            metrics_a = root / "a.json"
+            metrics_b = root / "b.json"
+            metrics_a.write_text(
+                json.dumps(
+                    {
+                        "num_motion_files": 2,
+                        "num_scored_files": 2,
+                        "num_valid_motion_files": 2,
+                        "G1BAS": 0.25,
+                        "G1Dist": 10.5,
+                        "G1FootSliding": 0.6,
+                    }
+                ),
+                encoding="utf-8",
+            )
+            metrics_b.write_text(
+                json.dumps(
+                    {
+                        "num_motion_files": 2,
+                        "num_scored_files": 2,
+                        "num_valid_motion_files": 2,
+                        "G1BAS": 0.35,
+                        "G1Dist": 8.0,
+                        "G1FootSliding": 0.4,
+                    }
+                ),
+                encoding="utf-8",
+            )
+
+            rows = compare_module.write_comparison(
+                entries=[("G1 A", metrics_a), ("G1 B", metrics_b)],
+                json_path=root / "g1_comparison.json",
+                markdown_path=root / "g1_comparison.md",
+            )
+            report = (root / "g1_comparison.md").read_text(encoding="utf-8")
+
+        self.assertEqual([row["label"] for row in rows], ["G1 A", "G1 B"])
+        self.assertIn("G1BAS", report)
+        self.assertIn("10.5000", report)
+
 
 if __name__ == "__main__":
     unittest.main()

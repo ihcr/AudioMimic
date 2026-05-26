@@ -10,7 +10,16 @@ from torch.nn import functional as F
 
 from model.rotary_embedding_torch import RotaryEmbedding
 from model.utils import PositionalEncoding, SinusoidalPosEmb, prob_mask_like
-from feature_config import WAV2CLIP_STFT_BEAT_DIMS
+from feature_config import (
+    GAUSSIAN_BEAT_DIM,
+    MOTION_BEATNESS_DIM,
+    MOTION_ENERGY_DIM,
+    MOTION_INTENSITY_DIM,
+    WAV2CLIP_DIM,
+    WAV2CLIP_MOTION_ENERGY_BEAT_CONTROL_DIM,
+    WAV2CLIP_MOTION_INTENSITY_BEATNESS_CONTROL_DIM,
+    WAV2CLIP_STFT_BEAT_DIMS,
+)
 
 
 class DenseFiLM(nn.Module):
@@ -411,6 +420,12 @@ class DanceDecoder(nn.Module):
         cond_tokens = self.cond_encoder(cond_tokens)
         return cond_tokens
 
+    def _encode_condition(self, cond_embed):
+        cond_tokens = self._encode_condition_tokens(cond_embed)
+        mean_pooled_cond_tokens = cond_tokens.mean(dim=-2)
+        cond_hidden = self.non_attn_cond_projection(mean_pooled_cond_tokens)
+        return cond_tokens, cond_hidden
+
     def guided_forward(self, x, cond_embed, times, guidance_weight):
         unc = self.forward(x, cond_embed, times, cond_drop_prob=1)
         conditioned = self.forward(x, cond_embed, times, cond_drop_prob=0)
@@ -430,10 +445,7 @@ class DanceDecoder(nn.Module):
         # create music conditional embedding with conditional dropout
         keep_mask = prob_mask_like((batch_size,), 1 - cond_drop_prob, device=device)
 
-        cond_tokens = self._encode_condition_tokens(cond_embed)
-
-        mean_pooled_cond_tokens = cond_tokens.mean(dim=-2)
-        cond_hidden = self.non_attn_cond_projection(mean_pooled_cond_tokens)
+        cond_tokens, cond_hidden = self._encode_condition(cond_embed)
         cond_tokens, cond_hidden = self._apply_condition_dropout(
             cond_tokens, cond_hidden, keep_mask
         )
@@ -458,6 +470,550 @@ class DanceDecoder(nn.Module):
 
         output = self.final_layer(output)
         return output
+
+
+class MotionEnergyPredictor(nn.Module):
+    def __init__(
+        self,
+        hidden_dim=256,
+        num_layers=2,
+        num_heads=4,
+        ff_size=1024,
+        dropout=0.1,
+        activation=F.gelu,
+    ):
+        super().__init__()
+        input_dim = WAV2CLIP_DIM + GAUSSIAN_BEAT_DIM
+        self.input_projection = nn.Linear(input_dim, hidden_dim)
+        self.encoder = nn.Sequential(
+            *[
+                TransformerEncoderLayer(
+                    d_model=hidden_dim,
+                    nhead=num_heads,
+                    dim_feedforward=ff_size,
+                    dropout=dropout,
+                    activation=activation,
+                    batch_first=True,
+                )
+                for _ in range(num_layers)
+            ]
+        )
+        self.output_projection = nn.Linear(hidden_dim, MOTION_ENERGY_DIM)
+
+    def forward(self, wav2clip, gaussian_beat):
+        tokens = torch.cat((wav2clip, gaussian_beat), dim=-1)
+        tokens = self.input_projection(tokens)
+        tokens = self.encoder(tokens)
+        return torch.sigmoid(self.output_projection(tokens))
+
+
+class MotionControlPredictor(nn.Module):
+    def __init__(
+        self,
+        hidden_dim=256,
+        num_layers=2,
+        num_heads=4,
+        ff_size=1024,
+        dropout=0.1,
+        activation=F.gelu,
+    ):
+        super().__init__()
+        input_dim = WAV2CLIP_DIM + GAUSSIAN_BEAT_DIM
+        self.input_projection = nn.Linear(input_dim, hidden_dim)
+        self.encoder = nn.Sequential(
+            *[
+                TransformerEncoderLayer(
+                    d_model=hidden_dim,
+                    nhead=num_heads,
+                    dim_feedforward=ff_size,
+                    dropout=dropout,
+                    activation=activation,
+                    batch_first=True,
+                )
+                for _ in range(num_layers)
+            ]
+        )
+        self.intensity_head = nn.Linear(hidden_dim, MOTION_INTENSITY_DIM)
+        self.beatness_head = nn.Linear(hidden_dim, MOTION_BEATNESS_DIM)
+
+    def forward(self, wav2clip, gaussian_beat):
+        tokens = torch.cat((wav2clip, gaussian_beat), dim=-1)
+        tokens = self.input_projection(tokens)
+        tokens = self.encoder(tokens)
+        return {
+            "motion_intensity": torch.sigmoid(self.intensity_head(tokens)),
+            "motion_beatness": torch.sigmoid(self.beatness_head(tokens)),
+        }
+
+
+class Wav2ClipMotionEnergyBeatDecoder(DanceDecoder):
+    def __init__(
+        self,
+        *args,
+        semantic_drop_prob: float = 0.10,
+        control_drop_prob: float = 0.10,
+        energy_drop_prob: float = 0.10,
+        **kwargs,
+    ) -> None:
+        seq_len = kwargs.get("seq_len", 150)
+        latent_dim = kwargs.get("latent_dim", 512)
+        ff_size = kwargs.get("ff_size", 1024)
+        num_heads = kwargs.get("num_heads", 8)
+        dropout = kwargs.get("dropout", 0.1)
+        activation = kwargs.get("activation", F.gelu)
+        super().__init__(*args, **kwargs)
+        self.semantic_drop_prob = float(semantic_drop_prob)
+        self.control_drop_prob = float(control_drop_prob)
+        self.energy_drop_prob = float(energy_drop_prob)
+        self.null_cond_embed = nn.Parameter(torch.randn(1, seq_len * 2, latent_dim))
+
+        self.semantic_projection = nn.Linear(WAV2CLIP_DIM, latent_dim)
+        self.semantic_encoder = nn.Sequential(
+            *[
+                TransformerEncoderLayer(
+                    d_model=latent_dim,
+                    nhead=num_heads,
+                    dim_feedforward=ff_size,
+                    dropout=dropout,
+                    activation=activation,
+                    batch_first=True,
+                    rotary=self.rotary,
+                )
+                for _ in range(2)
+            ]
+        )
+
+        control_hidden_dim = 256
+        self.control_projection = nn.Linear(
+            WAV2CLIP_MOTION_ENERGY_BEAT_CONTROL_DIM,
+            control_hidden_dim,
+        )
+        control_rotary = RotaryEmbedding(dim=control_hidden_dim)
+        self.control_encoder = nn.Sequential(
+            *[
+                TransformerEncoderLayer(
+                    d_model=control_hidden_dim,
+                    nhead=4,
+                    dim_feedforward=ff_size,
+                    dropout=dropout,
+                    activation=activation,
+                    batch_first=True,
+                    rotary=control_rotary,
+                )
+                for _ in range(2)
+            ]
+        )
+        self.control_output_projection = nn.Linear(control_hidden_dim, latent_dim)
+
+        self.semantic_hidden_projection = nn.Sequential(
+            nn.LayerNorm(latent_dim),
+            nn.Linear(latent_dim, latent_dim),
+            nn.SiLU(),
+            nn.Linear(latent_dim, latent_dim),
+        )
+        self.control_hidden_projection = nn.Sequential(
+            nn.LayerNorm(latent_dim),
+            nn.Linear(latent_dim, latent_dim),
+            nn.SiLU(),
+            nn.Linear(latent_dim, latent_dim),
+        )
+        self.energy_hidden_projection = nn.Sequential(
+            nn.Linear(MOTION_ENERGY_DIM, latent_dim),
+            nn.SiLU(),
+            nn.Linear(latent_dim, latent_dim),
+        )
+        self.energy_predictor = MotionEnergyPredictor(
+            hidden_dim=256,
+            num_layers=2,
+            num_heads=4,
+            ff_size=ff_size,
+            dropout=dropout,
+            activation=activation,
+        )
+
+        self.null_semantic_tokens = nn.Parameter(torch.randn(1, seq_len, latent_dim))
+        self.null_semantic_hidden = nn.Parameter(torch.randn(1, latent_dim))
+        self.null_control_tokens = nn.Parameter(torch.randn(1, seq_len, latent_dim))
+        self.null_control_hidden = nn.Parameter(torch.randn(1, latent_dim))
+        self.null_energy_hidden = nn.Parameter(torch.randn(1, latent_dim))
+
+    @staticmethod
+    def _structured_streams(cond_embed):
+        if not isinstance(cond_embed, dict):
+            raise TypeError("Wav2ClipMotionEnergyBeatDecoder expects a condition dict")
+        semantic = cond_embed["semantic"]
+        control = cond_embed["control"]
+        wav2clip = semantic["wav2clip"]
+        gaussian_beat = control["gaussian_beat"]
+        beat_energy = control["beat_energy_envelope"]
+        return wav2clip, gaussian_beat, beat_energy
+
+    @staticmethod
+    def _clone_with_selected_energy(cond_embed, beat_energy):
+        return {
+            "semantic": dict(cond_embed["semantic"]),
+            "control": {
+                **dict(cond_embed["control"]),
+                "beat_energy_envelope": beat_energy,
+            },
+        }
+
+    def predict_energy(self, cond_embed):
+        wav2clip, gaussian_beat, _ = self._structured_streams(cond_embed)
+        return self.energy_predictor(wav2clip, gaussian_beat)
+
+    def prepare_motion_energy_training_condition(
+        self,
+        cond_embed,
+        epoch,
+        teacher_forcing_epochs=100,
+        pred_mix_prob=0.5,
+        detach_pred=True,
+    ):
+        _, _, gt_energy = self._structured_streams(cond_embed)
+        pred_energy = self.predict_energy(cond_embed)
+        if int(epoch) <= int(teacher_forcing_epochs):
+            selected_energy = gt_energy
+            pred_rate = 0.0
+        else:
+            mask = prob_mask_like(
+                (gt_energy.shape[0],),
+                float(pred_mix_prob),
+                device=gt_energy.device,
+            )
+            mix_mask = rearrange(mask, "b -> b 1 1").to(gt_energy.dtype)
+            selected_pred = pred_energy.detach() if detach_pred else pred_energy
+            selected_energy = gt_energy * (1.0 - mix_mask) + selected_pred * mix_mask
+            pred_rate = float(mask.float().mean().detach().cpu())
+        energy_pred_loss = F.mse_loss(pred_energy, gt_energy)
+        if pred_energy.shape[1] > 1:
+            energy_smoothness_loss = F.mse_loss(pred_energy[:, 1:], pred_energy[:, :-1])
+        else:
+            energy_smoothness_loss = pred_energy.new_zeros(())
+        prepared = self._clone_with_selected_energy(cond_embed, selected_energy)
+        stats = {
+            "pred_energy": pred_energy,
+            "selected_energy": selected_energy,
+            "gt_energy": gt_energy,
+            "energy_pred_loss": energy_pred_loss,
+            "energy_smoothness_loss": energy_smoothness_loss,
+            "energy_pred_mix_rate": pred_rate,
+            "selected_energy_mean": selected_energy.detach().mean(),
+            "pred_energy_mean": pred_energy.detach().mean(),
+            "gt_energy_mean": gt_energy.detach().mean(),
+        }
+        return prepared, stats
+
+    def _apply_branch_dropout(self, tokens, hidden, null_tokens, null_hidden, drop_prob):
+        if not self.training or drop_prob <= 0:
+            return tokens, hidden
+        keep_mask = prob_mask_like((tokens.shape[0],), 1.0 - drop_prob, device=tokens.device)
+        keep_tokens = rearrange(keep_mask, "b -> b 1 1").to(tokens.dtype)
+        keep_hidden = rearrange(keep_mask, "b -> b 1").to(hidden.dtype)
+        tokens = tokens * keep_tokens + null_tokens.to(tokens.dtype) * (1.0 - keep_tokens)
+        hidden = hidden * keep_hidden + null_hidden.to(hidden.dtype) * (1.0 - keep_hidden)
+        return tokens, hidden
+
+    def _apply_energy_dropout(self, energy_hidden):
+        if not self.training or self.energy_drop_prob <= 0:
+            return energy_hidden
+        keep_mask = prob_mask_like(
+            (energy_hidden.shape[0],),
+            1.0 - self.energy_drop_prob,
+            device=energy_hidden.device,
+        )
+        keep_hidden = rearrange(keep_mask, "b -> b 1").to(energy_hidden.dtype)
+        return energy_hidden * keep_hidden + self.null_energy_hidden.to(energy_hidden.dtype) * (
+            1.0 - keep_hidden
+        )
+
+    def _encode_condition(self, cond_embed):
+        wav2clip, gaussian_beat, beat_energy = self._structured_streams(cond_embed)
+
+        semantic_tokens = self.semantic_projection(wav2clip)
+        semantic_tokens = self.abs_pos_encoding(semantic_tokens)
+        semantic_tokens = self.semantic_encoder(semantic_tokens)
+        semantic_hidden = self.semantic_hidden_projection(semantic_tokens.mean(dim=-2))
+        semantic_tokens, semantic_hidden = self._apply_branch_dropout(
+            semantic_tokens,
+            semantic_hidden,
+            self.null_semantic_tokens,
+            self.null_semantic_hidden,
+            self.semantic_drop_prob,
+        )
+
+        control_input = torch.cat((gaussian_beat, beat_energy), dim=-1)
+        control_tokens = self.control_projection(control_input)
+        control_tokens = self.control_encoder(control_tokens)
+        control_tokens = self.control_output_projection(control_tokens)
+        control_hidden = self.control_hidden_projection(control_tokens.mean(dim=-2))
+        control_tokens, control_hidden = self._apply_branch_dropout(
+            control_tokens,
+            control_hidden,
+            self.null_control_tokens,
+            self.null_control_hidden,
+            self.control_drop_prob,
+        )
+
+        energy_hidden = self.energy_hidden_projection(beat_energy.mean(dim=-2))
+        energy_hidden = self._apply_energy_dropout(energy_hidden)
+
+        cond_tokens = torch.cat((semantic_tokens, control_tokens), dim=-2)
+        cond_hidden = semantic_hidden + control_hidden + energy_hidden
+        return cond_tokens, cond_hidden
+
+
+class Wav2ClipMotionIntensityBeatnessDecoder(DanceDecoder):
+    def __init__(
+        self,
+        *args,
+        semantic_drop_prob: float = 0.10,
+        control_drop_prob: float = 0.10,
+        control_summary_drop_prob: float = 0.10,
+        **kwargs,
+    ) -> None:
+        seq_len = kwargs.get("seq_len", 150)
+        latent_dim = kwargs.get("latent_dim", 512)
+        ff_size = kwargs.get("ff_size", 1024)
+        num_heads = kwargs.get("num_heads", 8)
+        dropout = kwargs.get("dropout", 0.1)
+        activation = kwargs.get("activation", F.gelu)
+        super().__init__(*args, **kwargs)
+        self.semantic_drop_prob = float(semantic_drop_prob)
+        self.control_drop_prob = float(control_drop_prob)
+        self.control_summary_drop_prob = float(control_summary_drop_prob)
+        self.null_cond_embed = nn.Parameter(torch.randn(1, seq_len * 2, latent_dim))
+
+        self.semantic_projection = nn.Linear(WAV2CLIP_DIM, latent_dim)
+        self.semantic_encoder = nn.Sequential(
+            *[
+                TransformerEncoderLayer(
+                    d_model=latent_dim,
+                    nhead=num_heads,
+                    dim_feedforward=ff_size,
+                    dropout=dropout,
+                    activation=activation,
+                    batch_first=True,
+                    rotary=self.rotary,
+                )
+                for _ in range(2)
+            ]
+        )
+
+        control_hidden_dim = 256
+        self.control_projection = nn.Linear(
+            WAV2CLIP_MOTION_INTENSITY_BEATNESS_CONTROL_DIM,
+            control_hidden_dim,
+        )
+        control_rotary = RotaryEmbedding(dim=control_hidden_dim)
+        self.control_encoder = nn.Sequential(
+            *[
+                TransformerEncoderLayer(
+                    d_model=control_hidden_dim,
+                    nhead=4,
+                    dim_feedforward=ff_size,
+                    dropout=dropout,
+                    activation=activation,
+                    batch_first=True,
+                    rotary=control_rotary,
+                )
+                for _ in range(2)
+            ]
+        )
+        self.control_output_projection = nn.Linear(control_hidden_dim, latent_dim)
+
+        self.semantic_hidden_projection = nn.Sequential(
+            nn.LayerNorm(latent_dim),
+            nn.Linear(latent_dim, latent_dim),
+            nn.SiLU(),
+            nn.Linear(latent_dim, latent_dim),
+        )
+        self.control_hidden_projection = nn.Sequential(
+            nn.LayerNorm(latent_dim),
+            nn.Linear(latent_dim, latent_dim),
+            nn.SiLU(),
+            nn.Linear(latent_dim, latent_dim),
+        )
+        self.control_summary_projection = nn.Sequential(
+            nn.Linear(MOTION_INTENSITY_DIM + MOTION_BEATNESS_DIM, latent_dim),
+            nn.SiLU(),
+            nn.Linear(latent_dim, latent_dim),
+        )
+        self.control_predictor = MotionControlPredictor(
+            hidden_dim=256,
+            num_layers=2,
+            num_heads=4,
+            ff_size=ff_size,
+            dropout=dropout,
+            activation=activation,
+        )
+
+        self.null_semantic_tokens = nn.Parameter(torch.randn(1, seq_len, latent_dim))
+        self.null_semantic_hidden = nn.Parameter(torch.randn(1, latent_dim))
+        self.null_control_tokens = nn.Parameter(torch.randn(1, seq_len, latent_dim))
+        self.null_control_hidden = nn.Parameter(torch.randn(1, latent_dim))
+        self.null_control_summary_hidden = nn.Parameter(torch.randn(1, latent_dim))
+
+    @staticmethod
+    def _structured_streams(cond_embed):
+        if not isinstance(cond_embed, dict):
+            raise TypeError("Wav2ClipMotionIntensityBeatnessDecoder expects a condition dict")
+        semantic = cond_embed["semantic"]
+        control = cond_embed["control"]
+        return (
+            semantic["wav2clip"],
+            control["gaussian_beat"],
+            control["motion_intensity"],
+            control["motion_beatness"],
+        )
+
+    @staticmethod
+    def _clone_with_selected_controls(cond_embed, motion_intensity, motion_beatness):
+        return {
+            "semantic": dict(cond_embed["semantic"]),
+            "control": {
+                **dict(cond_embed["control"]),
+                "motion_intensity": motion_intensity,
+                "motion_beatness": motion_beatness,
+            },
+        }
+
+    def predict_controls(self, cond_embed):
+        wav2clip, gaussian_beat, _, _ = self._structured_streams(cond_embed)
+        return self.control_predictor(wav2clip, gaussian_beat)
+
+    def prepare_motion_energy_training_condition(
+        self,
+        cond_embed,
+        epoch,
+        teacher_forcing_epochs=100,
+        pred_mix_prob=0.5,
+        detach_pred=True,
+    ):
+        _, _, gt_intensity, gt_beatness = self._structured_streams(cond_embed)
+        predictions = self.predict_controls(cond_embed)
+        pred_intensity = predictions["motion_intensity"]
+        pred_beatness = predictions["motion_beatness"]
+        if int(epoch) <= int(teacher_forcing_epochs):
+            selected_intensity = gt_intensity
+            selected_beatness = gt_beatness
+            pred_rate = 0.0
+        else:
+            mask = prob_mask_like(
+                (gt_intensity.shape[0],),
+                float(pred_mix_prob),
+                device=gt_intensity.device,
+            )
+            mix_mask = rearrange(mask, "b -> b 1 1").to(gt_intensity.dtype)
+            selected_pred_intensity = pred_intensity.detach() if detach_pred else pred_intensity
+            selected_pred_beatness = pred_beatness.detach() if detach_pred else pred_beatness
+            selected_intensity = gt_intensity * (1.0 - mix_mask) + selected_pred_intensity * mix_mask
+            selected_beatness = gt_beatness * (1.0 - mix_mask) + selected_pred_beatness * mix_mask
+            pred_rate = float(mask.float().mean().detach().cpu())
+        intensity_pred_loss = F.mse_loss(pred_intensity, gt_intensity)
+        beatness_pred_loss = F.mse_loss(pred_beatness, gt_beatness)
+        if pred_intensity.shape[1] > 1:
+            intensity_smoothness_loss = F.mse_loss(
+                pred_intensity[:, 1:],
+                pred_intensity[:, :-1],
+            )
+        else:
+            intensity_smoothness_loss = pred_intensity.new_zeros(())
+        prepared = self._clone_with_selected_controls(
+            cond_embed,
+            selected_intensity,
+            selected_beatness,
+        )
+        combined_pred_loss = intensity_pred_loss + beatness_pred_loss
+        stats = {
+            "pred_intensity": pred_intensity,
+            "pred_beatness": pred_beatness,
+            "selected_intensity": selected_intensity,
+            "selected_beatness": selected_beatness,
+            "gt_intensity": gt_intensity,
+            "gt_beatness": gt_beatness,
+            "intensity_pred_loss": intensity_pred_loss,
+            "beatness_pred_loss": beatness_pred_loss,
+            "intensity_smoothness_loss": intensity_smoothness_loss,
+            "energy_pred_loss": combined_pred_loss,
+            "energy_smoothness_loss": intensity_smoothness_loss,
+            "energy_pred_mix_rate": pred_rate,
+            "selected_energy": selected_intensity,
+            "selected_intensity_mean": selected_intensity.detach().mean(),
+            "pred_intensity_mean": pred_intensity.detach().mean(),
+            "gt_intensity_mean": gt_intensity.detach().mean(),
+            "selected_beatness_mean": selected_beatness.detach().mean(),
+            "pred_beatness_mean": pred_beatness.detach().mean(),
+            "gt_beatness_mean": gt_beatness.detach().mean(),
+            "selected_energy_mean": selected_intensity.detach().mean(),
+            "pred_energy_mean": pred_intensity.detach().mean(),
+            "gt_energy_mean": gt_intensity.detach().mean(),
+        }
+        return prepared, stats
+
+    def _apply_branch_dropout(self, tokens, hidden, null_tokens, null_hidden, drop_prob):
+        if not self.training or drop_prob <= 0:
+            return tokens, hidden
+        keep_mask = prob_mask_like((tokens.shape[0],), 1.0 - drop_prob, device=tokens.device)
+        keep_tokens = rearrange(keep_mask, "b -> b 1 1").to(tokens.dtype)
+        keep_hidden = rearrange(keep_mask, "b -> b 1").to(hidden.dtype)
+        tokens = tokens * keep_tokens + null_tokens.to(tokens.dtype) * (1.0 - keep_tokens)
+        hidden = hidden * keep_hidden + null_hidden.to(hidden.dtype) * (1.0 - keep_hidden)
+        return tokens, hidden
+
+    def _apply_control_summary_dropout(self, control_summary_hidden):
+        if not self.training or self.control_summary_drop_prob <= 0:
+            return control_summary_hidden
+        keep_mask = prob_mask_like(
+            (control_summary_hidden.shape[0],),
+            1.0 - self.control_summary_drop_prob,
+            device=control_summary_hidden.device,
+        )
+        keep_hidden = rearrange(keep_mask, "b -> b 1").to(control_summary_hidden.dtype)
+        return control_summary_hidden * keep_hidden + self.null_control_summary_hidden.to(
+            control_summary_hidden.dtype
+        ) * (1.0 - keep_hidden)
+
+    def _encode_condition(self, cond_embed):
+        wav2clip, gaussian_beat, motion_intensity, motion_beatness = self._structured_streams(
+            cond_embed
+        )
+
+        semantic_tokens = self.semantic_projection(wav2clip)
+        semantic_tokens = self.abs_pos_encoding(semantic_tokens)
+        semantic_tokens = self.semantic_encoder(semantic_tokens)
+        semantic_hidden = self.semantic_hidden_projection(semantic_tokens.mean(dim=-2))
+        semantic_tokens, semantic_hidden = self._apply_branch_dropout(
+            semantic_tokens,
+            semantic_hidden,
+            self.null_semantic_tokens,
+            self.null_semantic_hidden,
+            self.semantic_drop_prob,
+        )
+
+        control_input = torch.cat((gaussian_beat, motion_intensity, motion_beatness), dim=-1)
+        control_tokens = self.control_projection(control_input)
+        control_tokens = self.control_encoder(control_tokens)
+        control_tokens = self.control_output_projection(control_tokens)
+        control_hidden = self.control_hidden_projection(control_tokens.mean(dim=-2))
+        control_tokens, control_hidden = self._apply_branch_dropout(
+            control_tokens,
+            control_hidden,
+            self.null_control_tokens,
+            self.null_control_hidden,
+            self.control_drop_prob,
+        )
+
+        control_summary_input = torch.cat(
+            (motion_intensity.mean(dim=-2), motion_beatness.mean(dim=-2)),
+            dim=-1,
+        )
+        control_summary_hidden = self.control_summary_projection(control_summary_input)
+        control_summary_hidden = self._apply_control_summary_dropout(control_summary_hidden)
+
+        cond_tokens = torch.cat((semantic_tokens, control_tokens), dim=-2)
+        cond_hidden = semantic_hidden + control_hidden + control_summary_hidden
+        return cond_tokens, cond_hidden
 
 
 class BeatEncoder(nn.Module):

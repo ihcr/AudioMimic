@@ -1,15 +1,28 @@
 WAV2CLIP_STFT_BEAT_FEATURE_TYPE = "wav2clip_stft_beat"
+GAUSSIAN_BEAT_FEATURE_TYPE = "gaussian_beat"
+WAV2CLIP_MOTION_ENERGY_BEAT_FEATURE_TYPE = "wav2clip_motion_energy_beat"
+WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE = "wav2clip_motion_intensity_beatness"
 
 WAV2CLIP_DIM = 512
 STFT_DIM = 193
 GAUSSIAN_BEAT_DIM = 1
+MOTION_ENERGY_DIM = 1
+MOTION_INTENSITY_DIM = 1
+MOTION_BEATNESS_DIM = 1
+WAV2CLIP_MOTION_ENERGY_BEAT_CONTROL_DIM = GAUSSIAN_BEAT_DIM + MOTION_ENERGY_DIM
+WAV2CLIP_MOTION_INTENSITY_BEATNESS_CONTROL_DIM = (
+    GAUSSIAN_BEAT_DIM + MOTION_INTENSITY_DIM + MOTION_BEATNESS_DIM
+)
 WAV2CLIP_STFT_BEAT_DIMS = (WAV2CLIP_DIM, STFT_DIM, GAUSSIAN_BEAT_DIM)
 WAV2CLIP_STFT_BEAT_DIM = sum(WAV2CLIP_STFT_BEAT_DIMS)
 
 FEATURE_DIMS = {
     "baseline": 35,
     "jukebox": 4800,
+    GAUSSIAN_BEAT_FEATURE_TYPE: GAUSSIAN_BEAT_DIM,
     WAV2CLIP_STFT_BEAT_FEATURE_TYPE: WAV2CLIP_STFT_BEAT_DIM,
+    WAV2CLIP_MOTION_ENERGY_BEAT_FEATURE_TYPE: WAV2CLIP_DIM,
+    WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE: WAV2CLIP_DIM,
 }
 
 FEATURE_FUSIONS = ("linear", "concat_norm", "stream_adapter")
@@ -31,6 +44,15 @@ def validate_feature_fusion(feature_type, feature_fusion):
         if feature_fusion == "linear":
             raise ValueError(
                 "wav2clip_stft_beat requires --feature_fusion concat_norm or stream_adapter"
+            )
+    elif feature_type in (
+        WAV2CLIP_MOTION_ENERGY_BEAT_FEATURE_TYPE,
+        WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+    ):
+        if feature_fusion != "linear":
+            raise ValueError(
+                f"{feature_type} uses structured encoders and requires "
+                "--feature_fusion linear"
             )
     elif feature_fusion != "linear":
         raise ValueError(

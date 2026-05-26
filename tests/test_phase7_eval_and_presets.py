@@ -133,6 +133,29 @@ class EvalBasBapTests(unittest.TestCase):
         self.assertTrue(np.isnan(result["BAP_precision"]))
         self.assertTrue(np.isnan(result["BAP_recall"]))
 
+    def test_short_baseline_features_fall_back_to_audio_beats(self):
+        eval_module = reload_module("eval.eval_bas_bap")
+
+        with TemporaryDirectory() as tmpdir:
+            tmp_path = Path(tmpdir)
+            wav_dir = tmp_path / "wavs_sliced"
+            feature_dir = tmp_path / "baseline_feats"
+            wav_dir.mkdir()
+            feature_dir.mkdir()
+            wav_path = wav_dir / "clip.wav"
+            wav_path.write_bytes(b"wav")
+            np.save(feature_dir / "clip.npy", np.zeros((150, 35), dtype=np.float32))
+
+            with patch.object(
+                eval_module,
+                "_load_audio_beat_frames",
+                return_value=np.array([12, 48], dtype=np.int64),
+            ) as fallback:
+                result = eval_module.load_audio_beat_frames(str(wav_path), seq_len=150)
+
+        np.testing.assert_array_equal(result, np.array([12, 48], dtype=np.int64))
+        fallback.assert_called_once()
+
     def test_compute_bas_score_matches_paper_table_music_to_motion_direction(self):
         eval_module = reload_module("eval.eval_bas_bap")
 

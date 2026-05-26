@@ -19,6 +19,16 @@ from dataset.motion_representation import (
 )
 from dataset.preprocess import Normalizer, vectorize_many
 from dataset.quaternion import ax_to_6v
+from feature_config import (
+    GAUSSIAN_BEAT_DIM,
+    MOTION_BEATNESS_DIM,
+    MOTION_ENERGY_DIM,
+    MOTION_INTENSITY_DIM,
+    WAV2CLIP_DIM,
+    WAV2CLIP_MOTION_ENERGY_BEAT_FEATURE_TYPE,
+    WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+    WAV2CLIP_STFT_BEAT_DIM,
+)
 from rotation_transforms import (RotateAxisAngle, axis_angle_to_quaternion,
                                  quaternion_multiply,
                                  quaternion_to_axis_angle)
@@ -30,6 +40,17 @@ FEATURE_CACHE_OFF = "off"
 FEATURE_CACHE_MEMMAP = "memmap"
 FEATURE_CACHE_MODES = (FEATURE_CACHE_OFF, FEATURE_CACHE_MEMMAP)
 FEATURE_CACHE_DTYPES = ("float32", "float16")
+
+
+def is_structured_motion_energy_feature(feature_type):
+    return feature_type in (
+        WAV2CLIP_MOTION_ENERGY_BEAT_FEATURE_TYPE,
+        WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+    )
+
+
+def is_motion_intensity_beatness_feature(feature_type):
+    return feature_type == WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE
 
 
 def atomic_pickle_dump(payload, path):
@@ -243,6 +264,14 @@ class AISTPPDataset(Dataset):
         self.feature_type = feature_type
         self.use_beats = use_beats
         self.beat_rep = beat_rep
+        self.structured_motion_energy = is_structured_motion_energy_feature(feature_type)
+        self.structured_motion_intensity_beatness = is_motion_intensity_beatness_feature(
+            feature_type
+        )
+        if self.structured_motion_energy and self.use_beats:
+            raise ValueError(f"{feature_type} uses structured control and does not support --use_beats")
+        if self.structured_motion_energy and self.feature_cache_mode != FEATURE_CACHE_OFF:
+            raise ValueError(f"{feature_type} does not support feature_cache_mode=memmap")
 
         self.normalizer = normalizer
         self.data_len = data_len
@@ -290,6 +319,8 @@ class AISTPPDataset(Dataset):
             "filenames": data["filenames"],
             "wavs": data["wavs"],
         }
+        if "structured_condition_paths" in data:
+            self.data["structured_condition_paths"] = data["structured_condition_paths"]
         if self.feature_cache_mode == FEATURE_CACHE_MEMMAP:
             metadata = build_or_reuse_feature_store(
                 data["filenames"],
@@ -338,12 +369,72 @@ class AISTPPDataset(Dataset):
         return self._feature_store
 
     def _load_feature(self, idx):
+        if self.structured_motion_energy:
+            return self._load_structured_motion_energy_feature(idx)
         feature_store_path = getattr(self, "feature_store_path", None)
         if feature_store_path:
             feature = self._open_feature_store()[idx]
         else:
             feature = np.load(self.data["filenames"][idx], mmap_mode="r")
         return torch.from_numpy(np.array(feature, dtype=np.float32, copy=True))
+
+    def _load_structured_motion_energy_feature(self, idx):
+        paths = self.data["structured_condition_paths"][idx]
+        combined = np.load(paths["wav2clip_stft_beat"], mmap_mode="r")
+        if combined.shape != (150, WAV2CLIP_STFT_BEAT_DIM):
+            raise ValueError(
+                f"{paths['wav2clip_stft_beat']} expected {(150, WAV2CLIP_STFT_BEAT_DIM)}, "
+                f"got {combined.shape}"
+            )
+        gaussian_beat = np.load(paths["gaussian_beat"], mmap_mode="r")
+        if gaussian_beat.shape != (150, GAUSSIAN_BEAT_DIM):
+            raise ValueError(
+                f"{paths['gaussian_beat']} expected {(150, GAUSSIAN_BEAT_DIM)}, got {gaussian_beat.shape}"
+            )
+        control = {
+            "gaussian_beat": torch.from_numpy(
+                np.array(gaussian_beat, dtype=np.float32, copy=True)
+            ),
+        }
+        if self.structured_motion_intensity_beatness:
+            with np.load(paths["motion_control"]) as motion_control:
+                motion_intensity = motion_control["motion_intensity_envelope"]
+                motion_beatness = motion_control["motion_beatness_envelope"]
+            if motion_intensity.shape != (150, MOTION_INTENSITY_DIM):
+                raise ValueError(
+                    f"{paths['motion_control']} motion_intensity_envelope expected "
+                    f"{(150, MOTION_INTENSITY_DIM)}, got {motion_intensity.shape}"
+                )
+            if motion_beatness.shape != (150, MOTION_BEATNESS_DIM):
+                raise ValueError(
+                    f"{paths['motion_control']} motion_beatness_envelope expected "
+                    f"{(150, MOTION_BEATNESS_DIM)}, got {motion_beatness.shape}"
+                )
+            control["motion_intensity"] = torch.from_numpy(
+                np.array(motion_intensity, dtype=np.float32, copy=True)
+            )
+            control["motion_beatness"] = torch.from_numpy(
+                np.array(motion_beatness, dtype=np.float32, copy=True)
+            )
+        else:
+            with np.load(paths["motion_energy"]) as motion_energy:
+                beat_energy = motion_energy["beat_energy_envelope"]
+            if beat_energy.shape != (150, MOTION_ENERGY_DIM):
+                raise ValueError(
+                    f"{paths['motion_energy']} beat_energy_envelope expected "
+                    f"{(150, MOTION_ENERGY_DIM)}, got {beat_energy.shape}"
+                )
+            control["beat_energy_envelope"] = torch.from_numpy(
+                np.array(beat_energy, dtype=np.float32, copy=True)
+            )
+        return {
+            "semantic": {
+                "wav2clip": torch.from_numpy(
+                    np.array(combined[:, :WAV2CLIP_DIM], dtype=np.float32, copy=True)
+                ),
+            },
+            "control": control,
+        }
 
     def __getitem__(self, idx):
         filename_ = self.data["filenames"][idx]
@@ -386,12 +477,32 @@ class AISTPPDataset(Dataset):
         #   |    |- wavs
 
         motion_path = os.path.join(split_data_path, "motions_sliced")
-        sound_path = os.path.join(split_data_path, f"{self.feature_type}_feats")
+        if self.structured_motion_energy:
+            sound_path = os.path.join(split_data_path, "wav2clip_stft_beat_feats")
+            gaussian_beat_path = os.path.join(split_data_path, "gaussian_beat_feats")
+            motion_energy_path = os.path.join(
+                split_data_path,
+                "motion_control_v2_feats"
+                if self.structured_motion_intensity_beatness
+                else "motion_energy_feats",
+            )
+        else:
+            sound_path = os.path.join(split_data_path, f"{self.feature_type}_feats")
         wav_path = os.path.join(split_data_path, f"wavs_sliced")
         beat_path = os.path.join(split_data_path, "beat_feats")
         # sort motions and sounds
         motions = sorted(glob.glob(os.path.join(motion_path, "*.pkl")))
         features = sorted(glob.glob(os.path.join(sound_path, "*.npy")))
+        gaussian_features = (
+            sorted(glob.glob(os.path.join(gaussian_beat_path, "*.npy")))
+            if self.structured_motion_energy
+            else []
+        )
+        motion_energy_features = (
+            sorted(glob.glob(os.path.join(motion_energy_path, "*.npz")))
+            if self.structured_motion_energy
+            else []
+        )
         wavs = sorted(glob.glob(os.path.join(wav_path, "*.wav")))
         beats = sorted(glob.glob(os.path.join(beat_path, "*.npz"))) if self.use_beats else []
 
@@ -400,13 +511,17 @@ class AISTPPDataset(Dataset):
         all_q = []
         all_names = []
         all_wavs = []
+        all_structured_condition_paths = []
         all_beats = []
         all_motion_dist = []
         all_motion_spacing = []
         all_motion_mask = []
         all_audio_dist = []
         all_audio_mask = []
-        if self.use_beats:
+        if self.structured_motion_energy:
+            assert len(motions) == len(features) == len(gaussian_features) == len(motion_energy_features) == len(wavs)
+            pairs = zip(motions, features, gaussian_features, motion_energy_features, wavs)
+        elif self.use_beats:
             assert len(motions) == len(features) == len(wavs) == len(beats)
             pairs = zip(motions, features, wavs, beats)
         else:
@@ -414,7 +529,9 @@ class AISTPPDataset(Dataset):
             pairs = zip(motions, features, wavs)
 
         for items in pairs:
-            if self.use_beats:
+            if self.structured_motion_energy:
+                motion, feature, gaussian_feature, motion_energy_feature, wav = items
+            elif self.use_beats:
                 motion, feature, wav, beat = items
             else:
                 motion, feature, wav = items
@@ -422,7 +539,13 @@ class AISTPPDataset(Dataset):
             m_name = os.path.splitext(os.path.basename(motion))[0]
             f_name = os.path.splitext(os.path.basename(feature))[0]
             w_name = os.path.splitext(os.path.basename(wav))[0]
-            if self.use_beats:
+            if self.structured_motion_energy:
+                g_name = os.path.splitext(os.path.basename(gaussian_feature))[0]
+                e_name = os.path.splitext(os.path.basename(motion_energy_feature))[0]
+                assert m_name == f_name == g_name == e_name == w_name, str(
+                    (motion, feature, gaussian_feature, motion_energy_feature, wav)
+                )
+            elif self.use_beats:
                 b_name = os.path.splitext(os.path.basename(beat))[0]
                 assert m_name == f_name == w_name == b_name, str((motion, feature, wav, beat))
             else:
@@ -452,6 +575,18 @@ class AISTPPDataset(Dataset):
             all_q.append(q)
             all_names.append(feature)
             all_wavs.append(wav)
+            if self.structured_motion_energy:
+                all_structured_condition_paths.append(
+                    {
+                        "wav2clip_stft_beat": feature,
+                        "gaussian_beat": gaussian_feature,
+                        (
+                            "motion_control"
+                            if self.structured_motion_intensity_beatness
+                            else "motion_energy"
+                        ): motion_energy_feature,
+                    }
+                )
             if self.use_beats:
                 all_beats.append(beat)
                 with np.load(beat) as beat_meta:
@@ -473,6 +608,8 @@ class AISTPPDataset(Dataset):
             "filenames": all_names,
             "wavs": all_wavs,
         }
+        if self.structured_motion_energy:
+            data["structured_condition_paths"] = all_structured_condition_paths
         if self.use_beats:
             data["beatnames"] = all_beats
             data["motion_dist"] = np.stack(all_motion_dist, axis=0)

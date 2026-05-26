@@ -21,6 +21,7 @@ DEFAULT_BAS_SIGMA_SQUARED = 9.0
 DEFAULT_BAP_TOLERANCE = 2
 BAS_DIRECTION = "music_to_motion"
 ROBOPERFORM_BAS_DIRECTION = "motion_to_music"
+LEGACY_BASELINE_BEAT_CHANNEL = 53
 
 
 def mean_joint_speed_curve(full_pose):
@@ -63,7 +64,11 @@ def load_audio_beat_frames_from_features(audio_path, seq_len=None):
     baseline_feat_path = Path(str(audio_path).replace("wavs_sliced", "baseline_feats")).with_suffix(".npy")
     if baseline_feat_path.is_file():
         feature = np.load(baseline_feat_path)
-        channel = feature[:, 53]
+        if feature.ndim != 2:
+            raise ValueError(f"{baseline_feat_path}: expected 2D baseline features, got {feature.shape}")
+        if feature.shape[1] <= LEGACY_BASELINE_BEAT_CHANNEL:
+            return None
+        channel = feature[:, LEGACY_BASELINE_BEAT_CHANNEL]
         if seq_len is not None:
             channel = channel[:seq_len]
         return np.flatnonzero(channel.astype(bool)).astype(np.int64)

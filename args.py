@@ -79,6 +79,12 @@ def parse_train_opt(argv=None):
     parser.add_argument(
         "--wandb_pj_name", type=str, default="EDGE", help="project name"
     )
+    parser.add_argument(
+        "--wandb_log_interval",
+        type=int,
+        default=1,
+        help="Log epoch-level training metrics to W&B every N epochs; 0 disables metric logging.",
+    )
     parser.add_argument("--batch_size", type=int, default=DEFAULT_BATCH_SIZE, help="batch size")
     parser.add_argument("--epochs", type=int, default=2000)
     parser.add_argument(
@@ -122,6 +128,9 @@ def parse_train_opt(argv=None):
         "--beat_rep", type=str, choices=("distance", "pulse"), default="distance"
     )
     parser.add_argument("--lambda_acc", type=float, default=None)
+    parser.add_argument("--lambda_acc_final", type=float, default=None)
+    parser.add_argument("--lambda_acc_warmup_start_epoch", type=int, default=0)
+    parser.add_argument("--lambda_acc_warmup_epochs", type=int, default=0)
     parser.add_argument("--lambda_beat", type=float, default=0.5)
     parser.add_argument("--beat_a", type=float, default=10.0)
     parser.add_argument("--beat_c", type=float, default=0.1)
@@ -142,6 +151,20 @@ def parse_train_opt(argv=None):
     parser.add_argument("--lambda_g1_kin", type=float, default=1.0)
     parser.add_argument("--g1_kin_loss_warmup_epochs", type=int, default=0)
     parser.add_argument("--g1_kin_loss_max_fraction", type=float, default=0.0)
+    parser.add_argument("--lambda_motion_energy", type=float, default=0.0)
+    parser.add_argument("--lambda_motion_intensity", type=float, default=None)
+    parser.add_argument("--lambda_motion_beatness", type=float, default=0.0)
+    parser.add_argument("--motion_beatness_warmup_start_epoch", type=int, default=100)
+    parser.add_argument("--motion_beatness_warmup_epochs", type=int, default=400)
+    parser.add_argument("--motion_beatness_max_fraction", type=float, default=0.1)
+    parser.add_argument("--lambda_energy_pred", type=float, default=0.0)
+    parser.add_argument("--energy_teacher_forcing_epochs", type=int, default=100)
+    parser.add_argument("--energy_pred_mix_prob", type=float, default=0.5)
+    parser.add_argument("--energy_smoothness_weight", type=float, default=0.1)
+    parser.add_argument("--motion_energy_norm_p05", type=float, default=None)
+    parser.add_argument("--motion_energy_norm_p95", type=float, default=None)
+    parser.add_argument("--motion_intensity_norm_p05", type=float, default=None)
+    parser.add_argument("--motion_intensity_norm_p95", type=float, default=None)
     parser.add_argument(
         "--g1_fk_model_path",
         type=str,
@@ -194,6 +217,10 @@ def parse_train_opt(argv=None):
         opt.learning_rate = DEFAULT_LEARNING_RATE
     if opt.lambda_acc is None:
         opt.lambda_acc = default_lambda_acc(opt.use_beats)
+    if opt.motion_intensity_norm_p05 is not None:
+        opt.motion_energy_norm_p05 = opt.motion_intensity_norm_p05
+    if opt.motion_intensity_norm_p95 is not None:
+        opt.motion_energy_norm_p95 = opt.motion_intensity_norm_p95
     opt.train_num_workers, opt.test_num_workers = resolve_train_test_workers(
         opt.train_num_workers if train_workers_explicit else None,
         opt.test_num_workers if test_workers_explicit else None,

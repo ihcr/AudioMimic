@@ -58,6 +58,8 @@ class TrainArgParserTests(unittest.TestCase):
         self.assertEqual(baseline_opt.motion_format, "smpl")
         self.assertEqual(beat_opt.feature_cache_mode, "off")
         self.assertEqual(beat_opt.feature_cache_dtype, "float32")
+        self.assertEqual(beat_opt.wandb_log_interval, 1)
+        self.assertEqual(baseline_opt.wandb_log_interval, 1)
         self.assertFalse(beat_opt.learning_rate_was_explicit)
         self.assertFalse(baseline_opt.learning_rate_was_explicit)
 
@@ -81,6 +83,12 @@ class TrainArgParserTests(unittest.TestCase):
             opt = args.parse_train_opt()
 
         self.assertEqual(opt.mixed_precision, "no")
+
+    def test_train_parser_accepts_wandb_log_interval(self):
+        with argv_context("train.py", "--wandb_log_interval", "5"):
+            opt = args.parse_train_opt()
+
+        self.assertEqual(opt.wandb_log_interval, 5)
 
     def test_train_parser_accepts_phase0_arguments(self):
         with argv_context(

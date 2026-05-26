@@ -419,6 +419,7 @@ def evaluate_g1_fk_metrics(motion, fk_model_path, root_quat_order="xyzw", bap_to
 
 def summarize_g1_motion(motion, bounds=None):
     root_pos = motion["root_pos"]
+    dof_pos = motion["dof_pos"]
     root_velocity, root_acceleration, root_jerk = compute_root_derivatives(motion)
     joint_velocity, joint_acceleration, joint_jerk = compute_joint_derivatives(motion)
     root_speed = np.linalg.norm(root_velocity, axis=-1) if root_velocity.size else []
@@ -447,6 +448,11 @@ def summarize_g1_motion(motion, bounds=None):
         if flat_path.shape[0] > 1
         else 0.0
     )
+    flat_range = (
+        float(np.linalg.norm(flat_path.max(axis=0) - flat_path.min(axis=0)))
+        if flat_path.size
+        else 0.0
+    )
 
     summary = {
         "frames": int(root_pos.shape[0]),
@@ -455,6 +461,7 @@ def summarize_g1_motion(motion, bounds=None):
         "root_height_max": float(np.max(heights)),
         "root_height_mean": float(np.mean(heights)),
         "root_drift": drift,
+        "root_flat_range": flat_range,
         "root_path_length": path_length,
         "root_velocity_mean": finite_mean(root_speed),
         "root_velocity_max": finite_max(root_speed),
@@ -466,6 +473,10 @@ def summarize_g1_motion(motion, bounds=None):
         "joint_acceleration_mean": finite_mean(joint_accel),
         "joint_acceleration_max": finite_max(joint_accel),
         "joint_smoothness_jerk_mean": finite_mean(joint_jerk_abs),
+        "joint_position_std_mean": float(dof_pos.std(axis=0).mean()),
+        "joint_position_range_mean": float(
+            (dof_pos.max(axis=0) - dof_pos.min(axis=0)).mean()
+        ),
     }
     if bounds is not None:
         summary["joint_range_violation_rate"] = compute_joint_range_violation_rate(
@@ -555,6 +566,7 @@ def aggregate_summaries(summaries):
         "root_height_max",
         "root_height_mean",
         "root_drift",
+        "root_flat_range",
         "root_path_length",
         "root_velocity_mean",
         "root_velocity_max",
@@ -566,6 +578,8 @@ def aggregate_summaries(summaries):
         "joint_acceleration_mean",
         "joint_acceleration_max",
         "joint_smoothness_jerk_mean",
+        "joint_position_std_mean",
+        "joint_position_range_mean",
         "joint_range_violation_rate",
         "root_height_violation_rate",
     ]
@@ -578,6 +592,7 @@ def aggregate_summaries(summaries):
         "RootHeightMax": finite_mean([summary["root_height_max"] for summary in summaries]),
         "RootHeightMean": aggregated["root_height_mean"],
         "RootDriftMean": aggregated["root_drift"],
+        "RootFlatRangeMean": aggregated["root_flat_range"],
         "RootPathLengthMean": aggregated["root_path_length"],
         "RootVelocityMean": aggregated["root_velocity_mean"],
         "RootVelocityMax": finite_max([summary["root_velocity_max"] for summary in summaries]),
@@ -589,6 +604,8 @@ def aggregate_summaries(summaries):
         "JointAccelerationMean": aggregated["joint_acceleration_mean"],
         "JointAccelerationMax": finite_max([summary["joint_acceleration_max"] for summary in summaries]),
         "JointSmoothnessJerkMean": aggregated["joint_smoothness_jerk_mean"],
+        "JointPositionStdMean": aggregated["joint_position_std_mean"],
+        "JointPositionRangeMean": aggregated["joint_position_range_mean"],
         "ReferenceRangeViolationRate": aggregated["joint_range_violation_rate"],
         "RootHeightViolationRate": aggregated["root_height_violation_rate"],
     }
@@ -711,9 +728,12 @@ def build_g1_table(metrics, method_name):
         "G1 RoboPerform BAS": metrics["G1RoboPerformBAS"],
         "G1 Beat Match": metrics["G1BAP_precision"],
         "Root Drift": metrics["RootDriftMean"],
+        "Root Flat Range": metrics["RootFlatRangeMean"],
         "Root Height Min": metrics["RootHeightMin"],
         "Root Height Max": metrics["RootHeightMax"],
         "Joint Range Viol.": metrics["ReferenceRangeViolationRate"],
+        "Joint Pos. Std": metrics["JointPositionStdMean"],
+        "Joint Pos. Range": metrics["JointPositionRangeMean"],
         "G1Dist": metrics["G1Dist"],
         "G1Div": metrics["G1Div"],
     }
@@ -742,7 +762,10 @@ def render_g1_paper_report(metrics, table):
         f"- Designated beat precision: {metrics['G1BAP_precision']}",
         f"- Designated beat recall: {metrics['G1BAP_recall']}",
         f"- Root drift mean: {metrics['RootDriftMean']}",
+        f"- Root flat range mean: {metrics['RootFlatRangeMean']}",
         f"- Root height mean: {metrics['RootHeightMean']}",
+        f"- Joint position std mean: {metrics['JointPositionStdMean']}",
+        f"- Joint position range mean: {metrics['JointPositionRangeMean']}",
         f"- Joint range violation rate: {metrics['ReferenceRangeViolationRate']}",
         f"- G1 feature distance: {metrics['G1Dist']}",
         f"- G1 diversity: {metrics['G1Div']}",

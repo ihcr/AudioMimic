@@ -136,6 +136,9 @@ class G1TorchKinematics(nn.Module):
         ]
         keypoint_indices = [self.body_names.index(name) for name in DEFAULT_KEYPOINT_BODIES]
         foot_body_indices = [self.body_names.index(name) for name in FOOT_BODY_NAMES]
+        self.parent_id_list = [body.parent for body in bodies]
+        self.joint_index_list = joint_indices
+        self.foot_body_index_list = foot_body_indices
 
         self.register_buffer("parent_ids", torch.tensor([body.parent for body in bodies], dtype=torch.long))
         self.register_buffer("body_pos", torch.tensor([body.pos for body in bodies], dtype=torch.float32))
@@ -206,13 +209,14 @@ class G1TorchKinematics(nn.Module):
         body_positions = flat_root_pos.new_zeros((batch, body_count, 3))
         body_rotations = flat_root_pos.new_zeros((batch, body_count, 3, 3))
 
-        fixed_rotations = quaternion_to_matrix(
-            self.body_quat.to(device=flat_root_pos.device, dtype=flat_root_pos.dtype)
-        )
+        body_pos = self.body_pos.to(device=flat_root_pos.device, dtype=flat_root_pos.dtype)
+        joint_axes = self.joint_axes.to(device=flat_root_pos.device, dtype=flat_root_pos.dtype)
+        body_quat = self.body_quat.to(device=flat_root_pos.device, dtype=flat_root_pos.dtype)
+        fixed_rotations = quaternion_to_matrix(body_quat)
         root_rotation = quaternion_to_matrix(flat_root_rot)
 
         for body_index in range(body_count):
-            parent = int(self.parent_ids[body_index].item())
+            parent = self.parent_id_list[body_index]
             if parent < 0:
                 body_positions[:, body_index] = flat_root_pos
                 body_rotations[:, body_index] = root_rotation
@@ -220,10 +224,7 @@ class G1TorchKinematics(nn.Module):
 
             parent_pos = body_positions[:, parent]
             parent_rot = body_rotations[:, parent]
-            local_pos = self.body_pos[body_index].to(
-                device=flat_root_pos.device,
-                dtype=flat_root_pos.dtype,
-            )
+            local_pos = body_pos[body_index]
             fixed_rot = fixed_rotations[body_index].expand(batch, -1, -1)
             base_pos = parent_pos + torch.matmul(
                 parent_rot,
@@ -231,12 +232,9 @@ class G1TorchKinematics(nn.Module):
             ).squeeze(-1)
             base_rot = torch.matmul(parent_rot, fixed_rot)
 
-            joint_index = int(self.joint_indices[body_index].item())
+            joint_index = self.joint_index_list[body_index]
             if joint_index >= 0:
-                axis = self.joint_axes[body_index].to(
-                    device=flat_root_pos.device,
-                    dtype=flat_root_pos.dtype,
-                )
+                axis = joint_axes[body_index]
                 angle_axis = axis.expand(batch, 3) * flat_dof[:, joint_index : joint_index + 1]
                 joint_rot = quaternion_to_matrix(axis_angle_to_quaternion(angle_axis))
                 body_rot = torch.matmul(base_rot, joint_rot)
@@ -256,13 +254,13 @@ class G1TorchKinematics(nn.Module):
             flat_positions,
             flat_rotations,
             FOOT_BODY_NAMES[0],
-            int(self.foot_body_indices[0].item()),
+            self.foot_body_index_list[0],
         )
         right_foot = self._lowest_foot_points(
             flat_positions,
             flat_rotations,
             FOOT_BODY_NAMES[1],
-            int(self.foot_body_indices[1].item()),
+            self.foot_body_index_list[1],
         )
         feet = torch.stack((left_foot, right_foot), dim=-2).reshape(*leading_shape, 2, 3)
         keypoints = torch.cat((keypoints, feet), dim=-2)

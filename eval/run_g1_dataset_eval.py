@@ -1,4 +1,5 @@
 import argparse
+import json
 import random
 import shutil
 import sys
@@ -33,6 +34,7 @@ def parse_args():
     parser.add_argument("--motion_audit_path", default="eval/g1/motion_audit.json", type=str)
     parser.add_argument("--paper_report_path", default="eval/g1/paper_report.md", type=str)
     parser.add_argument("--seed", default=1234, type=int)
+    parser.add_argument("--batch_size", default=1, type=int)
     parser.add_argument("--use_beats", action="store_true")
     parser.add_argument("--beat_rep", choices=("distance", "pulse"), default="distance")
     parser.add_argument("--max_eval_clips", default=0, type=int)
@@ -56,6 +58,28 @@ def parse_args():
     parser.add_argument("--g1_render_width", default=960, type=int)
     parser.add_argument("--g1_render_height", default=720, type=int)
     parser.add_argument("--g1_mujoco_gl", default="egl", type=str)
+    parser.add_argument(
+        "--motion_energy_condition_variant",
+        choices=(
+            "auto",
+            "oracle_gt",
+            "oracle_controls",
+            "pred_energy",
+            "pred_controls",
+            "flat_energy",
+            "flat_intensity",
+            "zero_energy",
+            "zero_beatness",
+            "zero_control",
+            "zero_all_controls",
+        ),
+        default="auto",
+        help=(
+            "Condition variant for structured motion-control eval. auto uses "
+            "predicted controls for wav2clip_motion_intensity_beatness and "
+            "oracle GT energy for legacy wav2clip_motion_energy_beat."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -75,18 +99,131 @@ def clear_motion_dir(motion_dir):
     return motion_dir
 
 
+def slice_batch(batch, stop):
+    pose, cond, filename, wavname = batch
+    return (
+        pose[:stop],
+        slice_cond(cond, slice(None, stop)),
+        filename[:stop],
+        wavname[:stop],
+    )
+
+
 def iter_limited_batches(loader, max_eval_clips=0):
-    for idx, batch in enumerate(loader):
-        if max_eval_clips and idx >= max_eval_clips:
+    emitted = 0
+    for batch in loader:
+        if max_eval_clips and emitted >= max_eval_clips:
             break
+        batch_size = cond_batch_size(batch[1])
+        if max_eval_clips and emitted + batch_size > max_eval_clips:
+            batch = slice_batch(batch, max_eval_clips - emitted)
+            batch_size = cond_batch_size(batch[1])
+        emitted += batch_size
         yield batch
 
 
-def render_g1_dataset_batch(model, batch, render_dir, motion_dir, label="g1_eval"):
+def clone_structured_condition_with_control(cond, **updates):
+    control = dict(cond["control"])
+    for key, value in updates.items():
+        if value is not None:
+            control[key] = value
+    return {
+        "semantic": dict(cond["semantic"]),
+        "control": control,
+    }
+
+
+def apply_motion_energy_condition_variant(model, cond, variant):
+    if not isinstance(cond, dict) or "control" not in cond:
+        if variant not in ("auto", "oracle_gt", "oracle_controls"):
+            raise ValueError(f"{variant} requires structured motion-energy condition")
+        return cond
+    control = cond["control"]
+    if variant == "auto":
+        variant = "pred_controls" if "motion_intensity" in control else "oracle_gt"
+    if variant in ("oracle_gt", "oracle_controls"):
+        return cond
+    gaussian_beat = control["gaussian_beat"]
+    beat_energy = control.get("beat_energy_envelope")
+    motion_intensity = control.get("motion_intensity")
+    motion_beatness = control.get("motion_beatness")
+    if variant == "pred_controls":
+        if hasattr(model.diffusion.model, "predict_controls"):
+            predictions = model.diffusion.model.predict_controls(cond)
+            return clone_structured_condition_with_control(
+                cond,
+                motion_intensity=predictions["motion_intensity"].detach(),
+                motion_beatness=predictions["motion_beatness"].detach(),
+            )
+        if hasattr(model.diffusion.model, "predict_energy") and beat_energy is not None:
+            pred_energy = model.diffusion.model.predict_energy(cond).detach()
+            return clone_structured_condition_with_control(cond, beat_energy_envelope=pred_energy)
+        raise ValueError("pred_controls requires predict_controls or legacy predict_energy")
+    if variant == "pred_energy":
+        if not hasattr(model.diffusion.model, "predict_energy"):
+            raise ValueError("pred_energy requires a model with predict_energy")
+        pred_energy = model.diffusion.model.predict_energy(cond).detach()
+        return clone_structured_condition_with_control(cond, beat_energy_envelope=pred_energy)
+    if variant == "flat_energy":
+        if beat_energy is None:
+            raise ValueError("flat_energy requires beat_energy_envelope")
+        flat_energy = beat_energy.mean(dim=1, keepdim=True).expand_as(beat_energy).clone()
+        return clone_structured_condition_with_control(cond, beat_energy_envelope=flat_energy)
+    if variant == "flat_intensity":
+        if motion_intensity is None:
+            raise ValueError("flat_intensity requires motion_intensity")
+        flat_intensity = motion_intensity.mean(dim=1, keepdim=True).expand_as(motion_intensity).clone()
+        return clone_structured_condition_with_control(cond, motion_intensity=flat_intensity)
+    if variant == "zero_energy":
+        if beat_energy is None:
+            raise ValueError("zero_energy requires beat_energy_envelope")
+        return clone_structured_condition_with_control(
+            cond,
+            beat_energy_envelope=torch.zeros_like(beat_energy),
+        )
+    if variant == "zero_beatness":
+        if motion_beatness is None:
+            raise ValueError("zero_beatness requires motion_beatness")
+        return clone_structured_condition_with_control(
+            cond,
+            motion_beatness=torch.zeros_like(motion_beatness),
+        )
+    if variant == "zero_control":
+        return clone_structured_condition_with_control(
+            cond,
+            gaussian_beat=torch.zeros_like(gaussian_beat),
+            beat_energy_envelope=torch.zeros_like(beat_energy) if beat_energy is not None else None,
+            motion_intensity=torch.zeros_like(motion_intensity) if motion_intensity is not None else None,
+            motion_beatness=torch.zeros_like(motion_beatness) if motion_beatness is not None else None,
+        )
+    if variant == "zero_all_controls":
+        return clone_structured_condition_with_control(
+            cond,
+            gaussian_beat=torch.zeros_like(gaussian_beat),
+            beat_energy_envelope=torch.zeros_like(beat_energy) if beat_energy is not None else None,
+            motion_intensity=torch.zeros_like(motion_intensity) if motion_intensity is not None else None,
+            motion_beatness=torch.zeros_like(motion_beatness) if motion_beatness is not None else None,
+        )
+    raise ValueError(f"Unsupported motion_energy_condition_variant: {variant}")
+
+
+def render_g1_dataset_batch(
+    model,
+    batch,
+    render_dir,
+    motion_dir,
+    label="g1_eval",
+    motion_energy_condition_variant="oracle_gt",
+):
     _, cond, _, wavname = batch
     render_count = cond_batch_size(cond)
     shape = (render_count, model.horizon, model.repr_dim)
     cond = move_cond_to_device(cond, model.accelerator.device)
+    cond = apply_motion_energy_condition_variant(
+        model,
+        cond,
+        motion_energy_condition_variant,
+    )
     model.diffusion.render_sample(
         shape,
         slice_cond(cond, slice(None, render_count)),
@@ -128,16 +265,21 @@ def run_g1_dataset_evaluation(args):
         beat_rep=args.beat_rep,
         motion_format="g1",
     )
-    loader = DataLoader(dataset, batch_size=1, shuffle=False, num_workers=0)
+    loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=0)
 
-    for batch in tqdm(
-        iter_limited_batches(loader, max_eval_clips=args.max_eval_clips),
-        desc="G1 dataset eval",
-        unit="clip",
-    ):
-        render_g1_dataset_batch(model, batch, args.render_dir, motion_dir)
+    progress_total = args.max_eval_clips if args.max_eval_clips else len(dataset)
+    with tqdm(total=progress_total, desc="G1 dataset eval", unit="clip") as progress:
+        for batch in iter_limited_batches(loader, max_eval_clips=args.max_eval_clips):
+            render_g1_dataset_batch(
+                model,
+                batch,
+                args.render_dir,
+                motion_dir,
+                motion_energy_condition_variant=args.motion_energy_condition_variant,
+            )
+            progress.update(cond_batch_size(batch[1]))
 
-    return run_g1_motion_evaluation(
+    metrics = run_g1_motion_evaluation(
         motion_path=motion_dir,
         reference_motion_path=Path(args.data_path) / "test" / "motions_sliced",
         metrics_path=args.metrics_path,
@@ -155,6 +297,10 @@ def run_g1_dataset_evaluation(args):
         fk_model_path=args.g1_fk_model_path,
         root_quat_order=args.g1_root_quat_order,
     )
+    metrics["motion_energy_condition_variant"] = args.motion_energy_condition_variant
+    with open(args.metrics_path, "w", encoding="utf-8") as handle:
+        json.dump(metrics, handle, indent=2, sort_keys=True)
+    return metrics
 
 
 if __name__ == "__main__":

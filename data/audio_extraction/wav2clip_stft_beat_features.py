@@ -1,5 +1,6 @@
 import os
 import sys
+import inspect
 from functools import partial
 from pathlib import Path
 
@@ -32,6 +33,33 @@ TARGET_FRAMES = TARGET_SECONDS * FPS
 
 if not hasattr(scipy.signal, "hann"):
     scipy.signal.hann = scipy.signal.windows.hann
+
+
+def patch_librosa_frame_for_wav2clip():
+    frame = librosa.util.frame
+    params = inspect.signature(frame).parameters
+    frame_length = params.get("frame_length")
+    hop_length = params.get("hop_length")
+    keyword_only = (
+        frame_length is not None
+        and hop_length is not None
+        and frame_length.kind is inspect.Parameter.KEYWORD_ONLY
+        and hop_length.kind is inspect.Parameter.KEYWORD_ONLY
+    )
+    if not keyword_only or getattr(frame, "_wav2clip_compat", False):
+        return
+
+    def frame_compat(x, frame_length, hop_length, *args, **kwargs):
+        return frame(
+            x,
+            *args,
+            frame_length=frame_length,
+            hop_length=hop_length,
+            **kwargs,
+        )
+
+    frame_compat._wav2clip_compat = True
+    librosa.util.frame = frame_compat
 
 
 def _get_tempo(audio_name):
@@ -142,6 +170,7 @@ def extract_gaussian_beat(fpath):
 
 
 def load_wav2clip_model(device=None):
+    patch_librosa_frame_for_wav2clip()
     try:
         import torch
         import wav2clip

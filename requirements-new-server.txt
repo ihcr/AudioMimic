@@ -7,12 +7,14 @@ accelerate
 einops
 fairmotion==0.0.4
 huggingface_hub
+imageio-ffmpeg
 git+https://github.com/rodrigo-castellon/jukebox.git@6b4486164e150286d9d6944797a14b19f31912f0#egg=jukebox
 git+https://github.com/rodrigo-castellon/jukemirlib.git@a91d87fcae0dd89085752421e794ea7e1b300735#egg=jukemirlib
 librosa
 matplotlib
 mujoco>=3.2,<4
 numpy
+p_tqdm
 PyOpenGL>=3.1.7,<4
 PyOpenGL_accelerate>=3.1.7,<4; platform_machine != "aarch64"
 scipy

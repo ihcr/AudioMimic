@@ -10,19 +10,22 @@ depend on the old shared EDGE checkout for code or environment.
 - Data prep and audio features: `data/` and `data/audio_extraction/`
 - Evaluation: `eval/`
 - Tests: `tests/`
-- Runtime outputs: `slurm/`, `renders/`, `runs/`, `wandb/`, `cached_features/`, and `data/`
+- Runtime outputs: `slurm/`, `renders/`, `runs/`, `wandb/`, `cached_features/`, `setup_logs/`, and `data/`
 
 Large checkpoints, datasets, cached features, renders, and Slurm outputs are runtime artifacts, not source files.
 
 ## Environment And Compute
 - Use the repo-local environment: `source .venv311/bin/activate`
 - Do not move EDGE onto the shared `yukun` Conda env unless explicitly requested.
-- Run training, full preprocessing, and long evaluation on compute nodes with `srun` or `sbatch`, not on the login node.
-- Also use `srun` for any command expected to run longer than about a minute, including large dataset scans, bulk pickle/NumPy/audio reads, full validation passes, and full test suites that import heavy ML libraries.
-- Keep Slurm logs and generated run files inside repo-local `slurm/`.
+- On the direct-attached 4090 server, there is no Slurm. Use the local bootstrap
+  and long-running `tmux` sessions instead of `srun`/`sbatch`.
+- Long-running `tmux` training sessions must show live output when attached.
+  Prefer `PYTHONUNBUFFERED=1 ... 2>&1 | tee -a setup_logs/<experiment>.log`
+  inside the tmux pane instead of redirecting stdout/stderr away from the pane.
 
 ## Common Commands
 - `python data/create_dataset.py --extract-baseline --extract-jukebox`
+- `scripts/bootstrap_finedance_g1_4090.sh --run-validation`
 - `accelerate launch train.py --feature_type jukebox ...`
 - `python test.py --music_dir custom_music --checkpoint checkpoint.pt --no_render`
 - `python -m unittest discover -s tests`
@@ -34,6 +37,8 @@ Use package-style entry points for evaluation code when available. Running files
 - Before launching, resuming, evaluating, or comparing runs, read the experiment index and the active spec; update status, commands, Slurm job IDs/logs, run directories, checkpoints, metric/render paths, conclusions, and next action as work changes.
 - Include the experiment ID in run, Slurm, render, metric, and checkpoint paths when practical.
 - Keep durable guidance here general. Put transient run IDs, failed attempts, and one-off conclusions in experiment specs.
+- Keep W&B enabled for training unless the user explicitly asks for offline/disabled mode. Future runs should log epoch-level losses, progress, throughput, ETA, and checkpoint markers so training curves are visible while jobs run.
+- For long training runs, run full evaluation at every 500-epoch checkpoint by default. Sample renders do not count as eval. If training is still using the only GPU, record the eval as pending in the experiment spec and run it at the next GPU-safe window.
 
 ## Branch And Worktree Boundaries
 - Keep `main` close to original EDGE plus local environment fixes.

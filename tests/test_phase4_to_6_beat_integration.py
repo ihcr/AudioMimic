@@ -3,6 +3,7 @@ import json
 import os
 import sys
 import unittest
+from argparse import Namespace
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from unittest.mock import MagicMock, patch
@@ -385,6 +386,36 @@ class WandbFallbackTests(unittest.TestCase):
 
         self.assertIsNone(run)
         mock_init.assert_not_called()
+
+    def test_safe_wandb_init_passes_config(self):
+        edge_module = reload_module("EDGE")
+
+        fake_run = object()
+        config = {"epochs": 2000, "recipe/effective_batch_size": 512}
+        with patch.object(edge_module.wandb, "init", return_value=fake_run) as mock_init:
+            run = edge_module.safe_wandb_init("EDGE", "smoke", config=config)
+
+        self.assertIs(run, fake_run)
+        mock_init.assert_called_once_with(project="EDGE", name="smoke", config=config)
+
+    def test_build_wandb_config_includes_args_and_recipe(self):
+        edge_module = reload_module("EDGE")
+
+        opt = Namespace(
+            epochs=2000,
+            feature_type="wav2clip_stft_beat",
+            data_path=Path("data/finedance_g1_fkbeats"),
+        )
+
+        config = edge_module.build_wandb_config(
+            opt, {"effective_batch_size": 512, "motion_format": "g1"}
+        )
+
+        self.assertEqual(config["epochs"], 2000)
+        self.assertEqual(config["feature_type"], "wav2clip_stft_beat")
+        self.assertEqual(config["data_path"], "data/finedance_g1_fkbeats")
+        self.assertEqual(config["recipe/effective_batch_size"], 512)
+        self.assertEqual(config["recipe/motion_format"], "g1")
 
 
 class LossGuardTests(unittest.TestCase):

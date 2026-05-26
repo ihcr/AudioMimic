@@ -19,6 +19,7 @@ EDGE = None
 baseline_extract = None
 juke_extract = None
 wav2clip_stft_beat_extract = None
+gaussian_beat_extract = None
 
 # sort filenames that look like songname_slice{number}.ext
 key_func = lambda x: int(os.path.splitext(x)[0].split("_")[-1].split("slice")[-1])
@@ -80,6 +81,15 @@ def _load_wav2clip_stft_beat_extract():
     return wav2clip_stft_beat_extract
 
 
+def _load_gaussian_beat_extract():
+    global gaussian_beat_extract
+    if gaussian_beat_extract is None:
+        from data.audio_extraction.gaussian_beat_features import extract
+
+        gaussian_beat_extract = extract
+    return gaussian_beat_extract
+
+
 def get_feature_func(feature_type):
     if feature_type == "jukebox":
         return _load_jukebox_extract()
@@ -87,6 +97,8 @@ def get_feature_func(feature_type):
         return _load_baseline_extract()
     if feature_type == "wav2clip_stft_beat":
         return _load_wav2clip_stft_beat_extract()
+    if feature_type == "gaussian_beat":
+        return _load_gaussian_beat_extract()
     raise ValueError(f"Unsupported feature_type: {feature_type}")
 
 
