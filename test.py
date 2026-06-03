@@ -17,6 +17,7 @@ from data.slice import slice_audio
 
 EDGE = None
 baseline_extract = None
+beat_features_8d_extract = None
 juke_extract = None
 
 # sort filenames that look like songname_slice{number}.ext
@@ -68,6 +69,15 @@ def _load_jukebox_extract():
 
         juke_extract = extract
     return juke_extract
+
+
+def _load_beat_features_8d_extract():
+    global beat_features_8d_extract
+    if beat_features_8d_extract is None:
+        from data.audio_extraction.beat_features_8d_features import extract as extract
+
+        beat_features_8d_extract = extract
+    return beat_features_8d_extract
 
 
 def load_user_beat_frames(beat_file, target_fps=FPS):
@@ -190,11 +200,12 @@ def choose_slice_start(total_slices, sample_size, rng):
 
 
 def test(opt):
-    feature_func = (
-        _load_jukebox_extract()
-        if opt.feature_type == "jukebox"
-        else _load_baseline_extract()
-    )
+    if opt.feature_type == "jukebox":
+        feature_func = _load_jukebox_extract()
+    elif opt.feature_type == "beat_features_8d":
+        feature_func = _load_beat_features_8d_extract()
+    else:
+        feature_func = _load_baseline_extract()
     rng = set_inference_seed(getattr(opt, "seed", -1)) or random
     sample_length = opt.out_length
     sample_size = int(sample_length / 2.5) - 1

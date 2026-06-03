@@ -404,10 +404,12 @@ def _load_feature_extractors(feature_type, use_beats):
     beat_extract = None
     if feature_type in ("baseline", "baseline34"):
         from data.audio_extraction.baseline_features import extract_folder as baseline_extract
+    elif feature_type == "beat_features_8d":
+        from data.audio_extraction.beat_features_8d_features import extract_folder as baseline_extract
     elif feature_type == "jukebox":
         from data.audio_extraction.jukebox_features import extract_folder as jukebox_extract
     else:
-        raise ValueError("feature_type must be 'baseline', 'baseline34', or 'jukebox'")
+        raise ValueError("feature_type must be 'baseline', 'baseline34', 'beat_features_8d', or 'jukebox'")
 
     if use_beats:
         from data.audio_extraction.beat_features import extract_folder as beat_extract

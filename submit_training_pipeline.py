@@ -116,6 +116,23 @@ PRESET_DEFAULTS = {
         "feature_cache_dtype": "float32",
         "skip_preprocess": True,
     },
+    "g1_beat_features_8d": {
+        "motion_format": "g1",
+        "data_path": "data/finedance_g1_fkbeats",
+        "processed_data_dir": "data/finedance_g1_beat_features_8d_dataset_backups",
+        "feature_type": "beat_features_8d",
+        "use_beats": False,
+        "lambda_acc": 0.0,
+        "lambda_beat": 0.0,
+        "batch_size": DEFAULT_BATCH_SIZE,
+        "gradient_accumulation_steps": 2,
+        "epochs": 1000,
+        "save_interval": 50,
+        "learning_rate": DEFAULT_LEARNING_RATE,
+        "feature_cache_mode": "memmap",
+        "feature_cache_dtype": "float16",
+        "skip_preprocess": True,
+    },
     "g1_beatdistance_fkbeats": {
         "motion_format": "g1",
         "data_path": "data/g1_aistpp_full_fkbeats",
@@ -303,7 +320,9 @@ def parse_args(argv=None):
     )
     parser.add_argument("--train_name", required=True, help="Logical name for the training run.")
     parser.add_argument(
-        "--feature_type", choices=("baseline", "baseline34", "jukebox"), default="baseline"
+        "--feature_type",
+        choices=("baseline", "baseline34", "beat_features_8d", "jukebox"),
+        default="baseline",
     )
     parser.add_argument("--motion_format", choices=("smpl", "g1"), default="smpl")
     parser.add_argument("--use_beats", action="store_true")
@@ -543,6 +562,8 @@ def build_preprocess_command(args):
         command.append("--extract-baseline")
     if args.feature_type == "baseline34":
         command.append("--extract-baseline34")
+    if args.feature_type == "beat_features_8d":
+        command.append("--extract-beat-features-8d")
     if args.feature_type == "jukebox":
         command.append("--extract-jukebox")
     if args.use_beats:

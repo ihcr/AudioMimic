@@ -347,7 +347,7 @@ class AISTPPDataset(Dataset):
 
     def __getitem__(self, idx):
         filename_ = self.data["filenames"][idx]
-        feature = self._load_feature(idx)
+        feature = type(self)._load_feature(self, idx)
         wavname = self.data["wavs"][idx]
         if not self.use_beats:
             return self.data["pose"][idx], feature, filename_, wavname

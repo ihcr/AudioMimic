@@ -77,6 +77,7 @@ EXPECTED_MODEL_FRAMES = 150
 EXPECTED_FEATURE_DIMS = {
     "baseline": 35,
     "baseline34": 34,
+    "beat_features_8d": 8,
     "jukebox": 4800,
 }
 ROOT_HEIGHT_MIN = 0.0
@@ -91,7 +92,11 @@ def parse_args(argv=None):
     )
     parser.add_argument("--data_path", default="data")
     parser.add_argument("--processed_data_dir", default="data/dataset_backups")
-    parser.add_argument("--feature_type", choices=("baseline", "baseline34", "jukebox"), required=True)
+    parser.add_argument(
+        "--feature_type",
+        choices=("baseline", "baseline34", "beat_features_8d", "jukebox"),
+        required=True,
+    )
     parser.add_argument("--motion_format", choices=("smpl", "g1"), default="smpl")
     parser.add_argument("--use_beats", action="store_true")
     parser.add_argument("--beat_rep", choices=("distance", "pulse"), default="distance")

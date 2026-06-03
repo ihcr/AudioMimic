@@ -136,6 +136,7 @@ DEFAULT_MODEL_CONFIG = {
 FEATURE_DIMS = {
     "baseline": 35,
     "baseline34": 34,
+    "beat_features_8d": 8,
     "jukebox": 4800,
 }
 DEFAULT_NON_BEAT_LEARNING_RATE = 2e-4

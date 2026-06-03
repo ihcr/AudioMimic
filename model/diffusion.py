@@ -223,11 +223,23 @@ class EMA:
     def __init__(self, beta):
         super().__init__()
         self.beta = beta
+        self._parameter_pairs = None
+        self._parameter_pair_model_ids = None
 
     def update_model_average(self, ma_model, current_model):
-        for current_params, ma_params in zip(
-            current_model.parameters(), ma_model.parameters()
-        ):
+        parameter_pair_model_ids = (id(ma_model), id(current_model))
+        if self._parameter_pair_model_ids != parameter_pair_model_ids:
+            current_parameters = list(current_model.parameters())
+            ma_parameters = list(ma_model.parameters())
+            if len(current_parameters) != len(ma_parameters):
+                raise ValueError(
+                    "EMA model parameter count mismatch: "
+                    f"current={len(current_parameters)} ema={len(ma_parameters)}"
+                )
+            self._parameter_pairs = list(zip(current_parameters, ma_parameters))
+            self._parameter_pair_model_ids = parameter_pair_model_ids
+
+        for current_params, ma_params in self._parameter_pairs:
             old_weight, up_weight = ma_params.data, current_params.data
             ma_params.data = self.update_average(old_weight, up_weight)
 
