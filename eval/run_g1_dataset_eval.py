@@ -25,6 +25,7 @@ def parse_args():
     parser.add_argument("--checkpoint", required=True, type=str)
     parser.add_argument("--feature_type", default="jukebox", type=str)
     parser.add_argument("--feature_fusion", default="linear", type=str)
+    parser.add_argument("--motion_format", choices=("g1", "g1_root_delta", "g1_yaw_delta"), default="g1")
     parser.add_argument("--data_path", default="data/g1_aistpp", type=str)
     parser.add_argument("--processed_data_dir", default="data/g1_dataset_backups", type=str)
     parser.add_argument("--render_dir", default="eval/g1/renders", type=str)
@@ -32,6 +33,7 @@ def parse_args():
     parser.add_argument("--metrics_path", default="eval/g1/metrics.json", type=str)
     parser.add_argument("--g1_table_path", default="eval/g1/g1_table.json", type=str)
     parser.add_argument("--motion_audit_path", default="eval/g1/motion_audit.json", type=str)
+    parser.add_argument("--failure_panel_path", default="", type=str)
     parser.add_argument("--paper_report_path", default="eval/g1/paper_report.md", type=str)
     parser.add_argument("--seed", default=1234, type=int)
     parser.add_argument("--batch_size", default=1, type=int)
@@ -68,15 +70,19 @@ def parse_args():
             "pred_controls",
             "flat_energy",
             "flat_intensity",
+            "flat_body_intensity",
             "zero_energy",
             "zero_beatness",
+            "zero_support_beatness",
+            "zero_upper_beatness",
+            "zero_support_contact",
             "zero_control",
             "zero_all_controls",
         ),
         default="auto",
         help=(
             "Condition variant for structured motion-control eval. auto uses "
-            "predicted controls for wav2clip_motion_intensity_beatness and "
+            "predicted controls for wav2clip_motion_intensity_beatness variants and "
             "oracle GT energy for legacy wav2clip_motion_energy_beat."
         ),
     )
@@ -122,6 +128,21 @@ def iter_limited_batches(loader, max_eval_clips=0):
         yield batch
 
 
+def clone_structured_condition(cond, semantic_updates=None, control_updates=None):
+    semantic = dict(cond["semantic"])
+    control = dict(cond["control"])
+    for key, value in (semantic_updates or {}).items():
+        if value is not None:
+            semantic[key] = value
+    for key, value in (control_updates or {}).items():
+        if value is not None:
+            control[key] = value
+    return {
+        "semantic": semantic,
+        "control": control,
+    }
+
+
 def clone_structured_condition_with_control(cond, **updates):
     control = dict(cond["control"])
     for key, value in updates.items():
@@ -140,20 +161,65 @@ def apply_motion_energy_condition_variant(model, cond, variant):
         return cond
     control = cond["control"]
     if variant == "auto":
-        variant = "pred_controls" if "motion_intensity" in control else "oracle_gt"
+        variant = (
+            "pred_controls"
+            if (
+                "motion_intensity" in control
+                or "motion_beatness" in control
+                or "body_intensity" in control
+                or "support_beatness" in control
+                or "upper_beatness" in control
+                or "support_contact" in control
+            )
+            else "oracle_gt"
+        )
     if variant in ("oracle_gt", "oracle_controls"):
         return cond
-    gaussian_beat = control["gaussian_beat"]
+    semantic = cond["semantic"]
+    beat_features_8d = semantic.get("beat_features_8d")
+    gaussian_beat = control.get("gaussian_beat")
     beat_energy = control.get("beat_energy_envelope")
     motion_intensity = control.get("motion_intensity")
     motion_beatness = control.get("motion_beatness")
+    body_intensity = control.get("body_intensity")
+    support_beatness = control.get("support_beatness")
+    upper_beatness = control.get("upper_beatness")
+    support_contact = control.get("support_contact")
     if variant == "pred_controls":
         if hasattr(model.diffusion.model, "predict_controls"):
             predictions = model.diffusion.model.predict_controls(cond)
             return clone_structured_condition_with_control(
                 cond,
-                motion_intensity=predictions["motion_intensity"].detach(),
-                motion_beatness=predictions["motion_beatness"].detach(),
+                motion_intensity=(
+                    predictions["motion_intensity"].detach()
+                    if "motion_intensity" in predictions
+                    else None
+                ),
+                motion_beatness=(
+                    predictions["motion_beatness"].detach()
+                    if "motion_beatness" in predictions
+                    else None
+                ),
+                body_intensity=(
+                    predictions["body_intensity"].detach()
+                    if "body_intensity" in predictions
+                    else None
+                ),
+                support_beatness=(
+                    predictions["support_beatness"].detach()
+                    if "support_beatness" in predictions
+                    else None
+                ),
+                upper_beatness=(
+                    predictions["upper_beatness"].detach()
+                    if "upper_beatness" in predictions
+                    else None
+                ),
+                support_contact=(
+                    predictions["support_contact"].detach()
+                    if "support_contact" in predictions
+                    else None
+                ),
             )
         if hasattr(model.diffusion.model, "predict_energy") and beat_energy is not None:
             pred_energy = model.diffusion.model.predict_energy(cond).detach()
@@ -174,6 +240,14 @@ def apply_motion_energy_condition_variant(model, cond, variant):
             raise ValueError("flat_intensity requires motion_intensity")
         flat_intensity = motion_intensity.mean(dim=1, keepdim=True).expand_as(motion_intensity).clone()
         return clone_structured_condition_with_control(cond, motion_intensity=flat_intensity)
+    if variant == "flat_body_intensity":
+        if body_intensity is None:
+            raise ValueError("flat_body_intensity requires body_intensity")
+        flat_body_intensity = body_intensity.mean(dim=1, keepdim=True).expand_as(body_intensity).clone()
+        return clone_structured_condition_with_control(
+            cond,
+            body_intensity=flat_body_intensity,
+        )
     if variant == "zero_energy":
         if beat_energy is None:
             raise ValueError("zero_energy requires beat_energy_envelope")
@@ -188,21 +262,89 @@ def apply_motion_energy_condition_variant(model, cond, variant):
             cond,
             motion_beatness=torch.zeros_like(motion_beatness),
         )
+    if variant == "zero_support_beatness":
+        if support_beatness is None:
+            raise ValueError("zero_support_beatness requires support_beatness")
+        return clone_structured_condition_with_control(
+            cond,
+            support_beatness=torch.zeros_like(support_beatness),
+        )
+    if variant == "zero_upper_beatness":
+        if upper_beatness is None:
+            raise ValueError("zero_upper_beatness requires upper_beatness")
+        return clone_structured_condition_with_control(
+            cond,
+            upper_beatness=torch.zeros_like(upper_beatness),
+        )
+    if variant == "zero_support_contact":
+        if support_contact is None:
+            raise ValueError("zero_support_contact requires support_contact")
+        return clone_structured_condition_with_control(
+            cond,
+            support_contact=torch.zeros_like(support_contact),
+        )
     if variant == "zero_control":
         return clone_structured_condition_with_control(
             cond,
-            gaussian_beat=torch.zeros_like(gaussian_beat),
+            gaussian_beat=torch.zeros_like(gaussian_beat) if gaussian_beat is not None else None,
             beat_energy_envelope=torch.zeros_like(beat_energy) if beat_energy is not None else None,
             motion_intensity=torch.zeros_like(motion_intensity) if motion_intensity is not None else None,
             motion_beatness=torch.zeros_like(motion_beatness) if motion_beatness is not None else None,
+            body_intensity=torch.zeros_like(body_intensity) if body_intensity is not None else None,
+            support_beatness=torch.zeros_like(support_beatness) if support_beatness is not None else None,
+            upper_beatness=torch.zeros_like(upper_beatness) if upper_beatness is not None else None,
+            support_contact=torch.zeros_like(support_contact) if support_contact is not None else None,
         )
     if variant == "zero_all_controls":
-        return clone_structured_condition_with_control(
+        return clone_structured_condition(
             cond,
-            gaussian_beat=torch.zeros_like(gaussian_beat),
-            beat_energy_envelope=torch.zeros_like(beat_energy) if beat_energy is not None else None,
-            motion_intensity=torch.zeros_like(motion_intensity) if motion_intensity is not None else None,
-            motion_beatness=torch.zeros_like(motion_beatness) if motion_beatness is not None else None,
+            semantic_updates={
+                "beat_features_8d": (
+                    torch.zeros_like(beat_features_8d)
+                    if beat_features_8d is not None
+                    else None
+                ),
+            },
+            control_updates={
+                "gaussian_beat": (
+                    torch.zeros_like(gaussian_beat)
+                    if gaussian_beat is not None
+                    else None
+                ),
+                "beat_energy_envelope": (
+                    torch.zeros_like(beat_energy) if beat_energy is not None else None
+                ),
+                "motion_intensity": (
+                    torch.zeros_like(motion_intensity)
+                    if motion_intensity is not None
+                    else None
+                ),
+                "motion_beatness": (
+                    torch.zeros_like(motion_beatness)
+                    if motion_beatness is not None
+                    else None
+                ),
+                "body_intensity": (
+                    torch.zeros_like(body_intensity)
+                    if body_intensity is not None
+                    else None
+                ),
+                "support_beatness": (
+                    torch.zeros_like(support_beatness)
+                    if support_beatness is not None
+                    else None
+                ),
+                "upper_beatness": (
+                    torch.zeros_like(upper_beatness)
+                    if upper_beatness is not None
+                    else None
+                ),
+                "support_contact": (
+                    torch.zeros_like(support_contact)
+                    if support_contact is not None
+                    else None
+                ),
+            },
         )
     raise ValueError(f"Unsupported motion_energy_condition_variant: {variant}")
 
@@ -250,7 +392,7 @@ def run_g1_dataset_evaluation(args):
         use_beats=args.use_beats,
         beat_rep=args.beat_rep,
         lambda_beat=0.0,
-        motion_format="g1",
+        motion_format=args.motion_format,
         feature_fusion=args.feature_fusion,
     )
     model.eval()
@@ -263,7 +405,7 @@ def run_g1_dataset_evaluation(args):
         normalizer=model.normalizer,
         use_beats=args.use_beats,
         beat_rep=args.beat_rep,
-        motion_format="g1",
+        motion_format=args.motion_format,
     )
     loader = DataLoader(dataset, batch_size=args.batch_size, shuffle=False, num_workers=0)
 
@@ -296,6 +438,7 @@ def run_g1_dataset_evaluation(args):
         enable_fk_metrics=args.enable_fk_metrics,
         fk_model_path=args.g1_fk_model_path,
         root_quat_order=args.g1_root_quat_order,
+        failure_panel_path=args.failure_panel_path or None,
     )
     metrics["motion_energy_condition_variant"] = args.motion_energy_condition_variant
     with open(args.metrics_path, "w", encoding="utf-8") as handle:

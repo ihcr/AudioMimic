@@ -14,14 +14,20 @@ from tqdm import tqdm
 
 from dataset.motion_representation import (
     G1_MOTION_FORMAT,
+    G1_ROOT_DELTA_MOTION_FORMAT,
+    G1_YAW_DELTA_MOTION_FORMAT,
     SMPL_MOTION_FORMAT,
     decode_g1_motion,
+    is_g1_motion_format,
     validate_motion_format,
 )
 from dataset.quaternion import ax_from_6v, quat_slerp
 from model.g1_torch_kinematics import G1TorchKinematics
-from rotation_transforms import (axis_angle_to_quaternion,
-                                 quaternion_to_axis_angle)
+from rotation_transforms import (
+    axis_angle_to_quaternion,
+    quaternion_to_axis_angle,
+    quaternion_to_matrix,
+)
 from vis import skeleton_render
 
 from .utils import extract, make_beta_schedule
@@ -238,11 +244,23 @@ class EMA:
     def __init__(self, beta):
         super().__init__()
         self.beta = beta
+        self._parameter_pairs = None
+        self._parameter_pair_model_ids = None
 
     def update_model_average(self, ma_model, current_model):
-        for current_params, ma_params in zip(
-            current_model.parameters(), ma_model.parameters()
-        ):
+        parameter_pair_model_ids = (id(ma_model), id(current_model))
+        if self._parameter_pair_model_ids != parameter_pair_model_ids:
+            current_parameters = list(current_model.parameters())
+            ma_parameters = list(ma_model.parameters())
+            if len(current_parameters) != len(ma_parameters):
+                raise ValueError(
+                    "EMA model parameter count mismatch: "
+                    f"current={len(current_parameters)} ema={len(ma_parameters)}"
+                )
+            self._parameter_pairs = list(zip(current_parameters, ma_parameters))
+            self._parameter_pair_model_ids = parameter_pair_model_ids
+
+        for current_params, ma_params in self._parameter_pairs:
             old_weight, up_weight = ma_params.data, current_params.data
             ma_params.data = self.update_average(old_weight, up_weight)
 
@@ -287,9 +305,15 @@ class GaussianDiffusion(nn.Module):
         g1_kin_loss_max_fraction=0.0,
         g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
         g1_root_quat_order="xyzw",
+        lambda_g1_root_angular=0.0,
+        g1_root_angular_velocity_margin=3.141592653589793,
+        g1_root_angular_acceleration_margin=18.84955592153876,
+        g1_root_angular_acceleration_weight=0.25,
+        g1_root_angular_max_fraction=0.05,
         lambda_motion_energy=0.0,
         lambda_motion_intensity=None,
         lambda_motion_beatness=0.0,
+        motion_energy_frame="world",
         motion_beatness_warmup_start_epoch=100,
         motion_beatness_warmup_epochs=400,
         motion_beatness_max_fraction=0.1,
@@ -302,6 +326,9 @@ class GaussianDiffusion(nn.Module):
         lambda_acc_warmup_epochs=0,
         motion_energy_norm_p05=None,
         motion_energy_norm_p95=None,
+        motion_beatness_norm_p05=None,
+        motion_beatness_norm_p95=None,
+        motion_energy_keypoint_weights=None,
     ):
         super().__init__()
         self.horizon = horizon
@@ -331,6 +358,15 @@ class GaussianDiffusion(nn.Module):
         self.g1_kin_loss_warmup_epochs = int(g1_kin_loss_warmup_epochs)
         self.g1_kin_loss_max_fraction = float(g1_kin_loss_max_fraction)
         self.g1_root_quat_order = g1_root_quat_order
+        self.lambda_g1_root_angular = float(lambda_g1_root_angular)
+        self.g1_root_angular_velocity_margin = float(g1_root_angular_velocity_margin)
+        self.g1_root_angular_acceleration_margin = float(
+            g1_root_angular_acceleration_margin
+        )
+        self.g1_root_angular_acceleration_weight = float(
+            g1_root_angular_acceleration_weight
+        )
+        self.g1_root_angular_max_fraction = float(g1_root_angular_max_fraction)
         self.lambda_motion_energy = float(lambda_motion_energy)
         self.lambda_motion_intensity = (
             self.lambda_motion_energy
@@ -338,6 +374,9 @@ class GaussianDiffusion(nn.Module):
             else float(lambda_motion_intensity)
         )
         self.lambda_motion_beatness = float(lambda_motion_beatness)
+        if motion_energy_frame not in ("world", "root_local"):
+            raise ValueError("motion_energy_frame must be 'world' or 'root_local'.")
+        self.motion_energy_frame = motion_energy_frame
         self.motion_beatness_warmup_start_epoch = int(motion_beatness_warmup_start_epoch)
         self.motion_beatness_warmup_epochs = int(motion_beatness_warmup_epochs)
         self.motion_beatness_max_fraction = float(motion_beatness_max_fraction)
@@ -354,6 +393,12 @@ class GaussianDiffusion(nn.Module):
         self.motion_energy_norm_p95 = (
             None if motion_energy_norm_p95 is None else float(motion_energy_norm_p95)
         )
+        self.motion_beatness_norm_p05 = (
+            None if motion_beatness_norm_p05 is None else float(motion_beatness_norm_p05)
+        )
+        self.motion_beatness_norm_p95 = (
+            None if motion_beatness_norm_p95 is None else float(motion_beatness_norm_p95)
+        )
         g1_weights = (
             self.lambda_g1_fk,
             self.lambda_g1_fk_vel,
@@ -368,6 +413,15 @@ class GaussianDiffusion(nn.Module):
             raise ValueError("g1_kin_loss_warmup_epochs must be non-negative.")
         if self.g1_kin_loss_max_fraction < 0:
             raise ValueError("g1_kin_loss_max_fraction must be non-negative.")
+        root_angular_weights = (
+            self.lambda_g1_root_angular,
+            self.g1_root_angular_velocity_margin,
+            self.g1_root_angular_acceleration_margin,
+            self.g1_root_angular_acceleration_weight,
+            self.g1_root_angular_max_fraction,
+        )
+        if any(weight < 0 for weight in root_angular_weights):
+            raise ValueError("G1 root angular loss settings must be non-negative.")
         if self.lambda_motion_energy < 0:
             raise ValueError("lambda_motion_energy must be non-negative.")
         if self.lambda_motion_intensity < 0:
@@ -399,13 +453,25 @@ class GaussianDiffusion(nn.Module):
             and self.motion_energy_norm_p95 <= self.motion_energy_norm_p05
         ):
             raise ValueError("motion_energy_norm_p95 must be greater than motion_energy_norm_p05.")
+        if (self.motion_beatness_norm_p05 is None) != (self.motion_beatness_norm_p95 is None):
+            raise ValueError("motion_beatness_norm_p05 and motion_beatness_norm_p95 must be set together.")
+        if (
+            self.motion_beatness_norm_p05 is not None
+            and self.motion_beatness_norm_p95 <= self.motion_beatness_norm_p05
+        ):
+            raise ValueError("motion_beatness_norm_p95 must be greater than motion_beatness_norm_p05.")
         self.use_g1_kinematic_losses = self.lambda_g1_kin > 0 and any(
             weight > 0 for weight in g1_weights
         )
-        if self.use_g1_kinematic_losses and self.motion_format != G1_MOTION_FORMAT:
-            raise ValueError("G1 robot losses require motion_format='g1'.")
+        if self.use_g1_kinematic_losses and not is_g1_motion_format(self.motion_format):
+            raise ValueError("G1 robot losses require a G1 motion format.")
         if self.use_g1_kinematic_losses and predict_epsilon:
             raise ValueError("G1 robot losses require predict_epsilon=False.")
+        self.use_g1_root_angular_loss = self.lambda_g1_root_angular > 0
+        if self.use_g1_root_angular_loss and not is_g1_motion_format(self.motion_format):
+            raise ValueError("G1 root angular loss requires a G1 motion format.")
+        if self.use_g1_root_angular_loss and predict_epsilon:
+            raise ValueError("G1 root angular loss requires predict_epsilon=False.")
         self.g1_kinematics = (
             G1TorchKinematics(g1_fk_model_path, root_quat_order=g1_root_quat_order)
             if self.use_g1_kinematic_losses
@@ -418,13 +484,17 @@ class GaussianDiffusion(nn.Module):
             if self.lambda_motion_intensity > 0 or self.lambda_motion_beatness > 0
             else None
         )
-        self.motion_energy_keypoint_weights = {
-            "left_wrist_yaw_link": 0.35,
-            "right_wrist_yaw_link": 0.35,
-            "left_ankle_roll_link": 0.10,
-            "right_ankle_roll_link": 0.10,
-            "torso_link": 0.10,
-        }
+        self.motion_energy_keypoint_weights = dict(
+            motion_energy_keypoint_weights
+            if motion_energy_keypoint_weights is not None
+            else {
+                "left_wrist_yaw_link": 0.35,
+                "right_wrist_yaw_link": 0.35,
+                "left_ankle_roll_link": 0.10,
+                "right_ankle_roll_link": 0.10,
+                "torso_link": 0.10,
+            }
+        )
         if self.motion_energy_kinematics is not None:
             missing = [
                 name
@@ -731,10 +801,6 @@ class GaussianDiffusion(nn.Module):
             x = x_start * alpha_next.sqrt() + \
                   c * pred_noise + \
                   sigma * noise
-            
-            if time > 0:
-                # the first half of each sequence is the second half of the previous one
-                x[1:, :half] = x[:-1, half:]
         return x
 
     @torch.no_grad()
@@ -812,7 +878,6 @@ class GaussianDiffusion(nn.Module):
                 start_point=start_point,
             )
         assert batch_size > 1
-        half = x.shape[1] // 2
 
         start_point = self.n_timestep if start_point is None else start_point
         for i in tqdm(
@@ -826,10 +891,6 @@ class GaussianDiffusion(nn.Module):
 
             # sample x from step i to step i-1
             x, _ = self.p_sample(x, cond, timesteps)
-            # enforce constraint between each denoising step
-            if i > 0:
-                # the first half of each sequence is the second half of the previous one
-                x[1:, :half] = x[:-1, half:] 
 
             if return_diffusion:
                 diffusion.append(x)
@@ -864,15 +925,36 @@ class GaussianDiffusion(nn.Module):
 
         return sample
 
-    def _decode_g1_for_kinematics(self, samples):
+    def _decode_g1_samples(self, samples):
         if self.normalizer is None:
             raise ValueError("G1 robot losses require a fitted motion normalizer.")
-        decoded = decode_g1_motion(self.normalizer.unnormalize(samples.clone()).float())
+        return decode_g1_motion(
+            self.normalizer.unnormalize(samples.clone()).float(),
+            motion_format=self.motion_format,
+        )
+
+    def _root_quaternion_wxyz(self, root_rot):
+        if self.g1_root_quat_order == "wxyz":
+            return root_rot
+        if self.g1_root_quat_order == "xyzw":
+            return root_rot[..., [3, 0, 1, 2]]
+        raise ValueError(f"Unsupported G1 root quaternion order: {self.g1_root_quat_order}")
+
+    def _root_local_keypoints(self, keypoints, decoded):
+        root_rotation = quaternion_to_matrix(self._root_quaternion_wxyz(decoded["root_rot"]))
+        centered = keypoints - decoded["root_pos"].unsqueeze(-2)
+        return torch.matmul(
+            root_rotation.transpose(-1, -2).unsqueeze(-3),
+            centered.unsqueeze(-1),
+        ).squeeze(-1)
+
+    def _decode_g1_for_kinematics(self, samples):
+        decoded = self._decode_g1_samples(samples)
         return self.g1_kinematics(
             decoded["root_pos"],
             decoded["root_rot"],
             decoded["dof_pos"],
-        )
+        ), decoded
 
     @staticmethod
     def _g1_target_contact_mask(target_feet, height_threshold=0.035, speed_threshold=0.025):
@@ -899,10 +981,10 @@ class GaussianDiffusion(nn.Module):
         }
         if not self.use_g1_kinematic_losses:
             self.last_g1_kin_loss_stats = empty_stats
-            return zero, zero, zero, None
+            return zero, zero, zero, None, None, None
 
-        model_fk = self._decode_g1_for_kinematics(model_out)
-        target_fk = self._decode_g1_for_kinematics(target)
+        model_fk, model_decoded = self._decode_g1_for_kinematics(model_out)
+        target_fk, target_decoded = self._decode_g1_for_kinematics(target)
         model_keypoints = model_fk["keypoints"]
         model_feet = model_fk["feet"]
         target_feet = target_fk["feet"].detach()
@@ -962,7 +1044,14 @@ class GaussianDiffusion(nn.Module):
             "g1_kin_capped": capped.detach(),
             "g1_kin_cap": cap.detach(),
         }
-        return contribution, g1_fk_loss, g1_foot_loss, model_keypoints
+        return (
+            contribution,
+            g1_fk_loss,
+            g1_foot_loss,
+            model_keypoints,
+            model_decoded,
+            target_decoded,
+        )
 
     def _prepare_motion_energy_condition(self, cond):
         zero = torch.zeros((), device=cond_device(cond), dtype=torch.float32)
@@ -983,6 +1072,19 @@ class GaussianDiffusion(nn.Module):
             "selected_beatness_mean": zero,
             "pred_beatness_mean": zero,
             "gt_beatness_mean": zero,
+            "body_intensity_pred_loss": zero,
+            "body_intensity_smoothness_loss": zero,
+            "body_intensity_mean_gt": zero,
+            "body_intensity_mean_pred": zero,
+            "support_beatness_pred_loss": zero,
+            "support_beatness_mean_gt": zero,
+            "support_beatness_mean_pred": zero,
+            "upper_beatness_pred_loss": zero,
+            "upper_beatness_mean_gt": zero,
+            "upper_beatness_mean_pred": zero,
+            "support_contact_pred_loss": zero,
+            "support_contact_mean_gt": zero,
+            "support_contact_mean_pred": zero,
             "motion_beatness_loss": zero,
             "motion_beatness_contribution": zero,
             "motion_beatness_weight": 0.0,
@@ -1009,13 +1111,17 @@ class GaussianDiffusion(nn.Module):
         }
         return cond, self.last_motion_energy_stats
 
-    def _weighted_motion_energy_from_keypoints(self, keypoints):
+    def _weighted_motion_energy_from_keypoints(self, keypoints, decoded=None):
         indices = torch.tensor(
             self.motion_energy_keypoint_indices,
             device=keypoints.device,
             dtype=torch.long,
         )
         keypoints = keypoints.index_select(-2, indices)
+        if self.motion_energy_frame == "root_local":
+            if decoded is None:
+                raise ValueError("root_local motion-energy loss requires decoded G1 motion.")
+            keypoints = self._root_local_keypoints(keypoints, decoded)
         frame_speed = keypoints.new_zeros(keypoints.shape[:2] + (keypoints.shape[-2],))
         frame_speed[:, 1:] = torch.linalg.vector_norm(
             keypoints[:, 1:] - keypoints[:, :-1],
@@ -1033,15 +1139,21 @@ class GaussianDiffusion(nn.Module):
             raise ValueError("Motion-energy loss requires G1 kinematics.")
         if self.normalizer is None:
             raise ValueError("Motion-energy loss requires a fitted motion normalizer.")
-        decoded = decode_g1_motion(self.normalizer.unnormalize(samples.clone()).float())
+        decoded = self._decode_g1_samples(samples)
         result = self.motion_energy_kinematics(
             decoded["root_pos"],
             decoded["root_rot"],
             decoded["dof_pos"],
         )
-        return self._weighted_motion_energy_from_keypoints(result["keypoints"])
+        return self._weighted_motion_energy_from_keypoints(result["keypoints"], decoded)
 
-    def _motion_energy_preservation_loss(self, model_out, motion_energy_stats, model_keypoints=None):
+    def _motion_energy_preservation_loss(
+        self,
+        model_out,
+        motion_energy_stats,
+        model_keypoints=None,
+        model_decoded=None,
+    ):
         zero = torch.zeros((), device=model_out.device, dtype=model_out.dtype)
         if self.lambda_motion_intensity <= 0:
             return zero
@@ -1054,7 +1166,10 @@ class GaussianDiffusion(nn.Module):
         if model_keypoints is None:
             pred_speed = self._compute_weighted_motion_energy(model_out)
         else:
-            pred_speed = self._weighted_motion_energy_from_keypoints(model_keypoints)
+            pred_speed = self._weighted_motion_energy_from_keypoints(
+                model_keypoints,
+                model_decoded,
+            )
         if self.motion_energy_norm_p05 is not None:
             pred_speed = torch.clamp(
                 (pred_speed - self.motion_energy_norm_p05)
@@ -1069,7 +1184,13 @@ class GaussianDiffusion(nn.Module):
         )
         return F.mse_loss(torch.log(pred_global_energy), torch.log(target_global_energy))
 
-    def _motion_beatness_valley_loss(self, model_out, motion_energy_stats, model_keypoints=None):
+    def _motion_beatness_valley_loss(
+        self,
+        model_out,
+        motion_energy_stats,
+        model_keypoints=None,
+        model_decoded=None,
+    ):
         zero = torch.zeros((), device=model_out.device, dtype=model_out.dtype)
         if self.lambda_motion_beatness <= 0:
             return zero
@@ -1079,25 +1200,125 @@ class GaussianDiffusion(nn.Module):
         if model_keypoints is None:
             pred_speed = self._compute_weighted_motion_energy(model_out)
         else:
-            pred_speed = self._weighted_motion_energy_from_keypoints(model_keypoints)
-        if self.motion_energy_norm_p05 is not None:
-            pred_speed = torch.clamp(
-                (pred_speed - self.motion_energy_norm_p05)
-                / (self.motion_energy_norm_p95 - self.motion_energy_norm_p05),
+            pred_speed = self._weighted_motion_energy_from_keypoints(
+                model_keypoints,
+                model_decoded,
+            )
+        if self.motion_beatness_norm_p05 is not None:
+            shoulder_speed = F.max_pool1d(
+                pred_speed.unsqueeze(1),
+                kernel_size=13,
+                stride=1,
+                padding=6,
+            ).squeeze(1)
+            valley_contrast = torch.clamp(shoulder_speed - pred_speed, min=0.0)
+            valley_contrast = torch.clamp(
+                (valley_contrast - self.motion_beatness_norm_p05)
+                / (self.motion_beatness_norm_p95 - self.motion_beatness_norm_p05),
                 min=0.0,
                 max=1.0,
             )
-        shoulder_speed = F.max_pool1d(
-            pred_speed.unsqueeze(1),
-            kernel_size=13,
-            stride=1,
-            padding=6,
-        ).squeeze(1)
-        valley_contrast = torch.clamp(shoulder_speed - pred_speed, min=0.0, max=1.0)
+        else:
+            if self.motion_energy_norm_p05 is not None:
+                pred_speed = torch.clamp(
+                    (pred_speed - self.motion_energy_norm_p05)
+                    / (self.motion_energy_norm_p95 - self.motion_energy_norm_p05),
+                    min=0.0,
+                    max=1.0,
+                )
+            shoulder_speed = F.max_pool1d(
+                pred_speed.unsqueeze(1),
+                kernel_size=13,
+                stride=1,
+                padding=6,
+            ).squeeze(1)
+            valley_contrast = torch.clamp(shoulder_speed - pred_speed, min=0.0, max=1.0)
         target = selected_beatness.squeeze(-1).to(valley_contrast.dtype)
         weights = torch.clamp(target, min=0.0)
         denom = torch.clamp(weights.sum(), min=1.0)
         return (weights * (valley_contrast - target).pow(2)).sum() / denom
+
+    def _root_angular_speeds(self, root_rot):
+        root_quat = F.normalize(self._root_quaternion_wxyz(root_rot), dim=-1)
+        if root_quat.shape[1] < 2:
+            return root_quat.new_zeros(root_quat.shape[0], 0)
+        dots = torch.sum(root_quat[:, 1:] * root_quat[:, :-1], dim=-1).abs()
+        dots = torch.clamp(dots, min=0.0, max=1.0 - 1e-6)
+        return 2.0 * torch.acos(dots) * 30.0
+
+    def _g1_root_angular_loss(
+        self,
+        model_out,
+        target,
+        base_loss,
+        model_decoded=None,
+        target_decoded=None,
+    ):
+        zero = torch.zeros((), device=model_out.device, dtype=model_out.dtype)
+        empty_stats = {
+            "g1_root_angular_loss": zero,
+            "g1_root_angular_velocity_loss": zero,
+            "g1_root_angular_acceleration_loss": zero,
+            "g1_root_angular_contribution": zero,
+            "g1_root_angular_capped": torch.zeros(
+                (),
+                dtype=torch.bool,
+                device=model_out.device,
+            ),
+            "g1_root_angular_cap": torch.full(
+                (),
+                float("inf"),
+                device=model_out.device,
+                dtype=model_out.dtype,
+            ),
+        }
+        if not self.use_g1_root_angular_loss:
+            return zero, empty_stats
+        if model_decoded is None:
+            model_decoded = self._decode_g1_samples(model_out)
+        if target_decoded is None:
+            target_decoded = self._decode_g1_samples(target)
+
+        model_speed = self._root_angular_speeds(model_decoded["root_rot"])
+        target_speed = self._root_angular_speeds(target_decoded["root_rot"]).detach()
+        if model_speed.numel() == 0:
+            return zero, empty_stats
+
+        velocity_excess = F.relu(
+            model_speed - target_speed - self.g1_root_angular_velocity_margin
+        )
+        velocity_loss = velocity_excess.pow(2).mean()
+
+        acceleration_loss = zero
+        if model_speed.shape[1] > 1:
+            model_acc = (model_speed[:, 1:] - model_speed[:, :-1]) * 30.0
+            target_acc = (target_speed[:, 1:] - target_speed[:, :-1]) * 30.0
+            acceleration_excess = F.relu(
+                model_acc.abs()
+                - target_acc.abs()
+                - self.g1_root_angular_acceleration_margin
+            )
+            acceleration_loss = acceleration_excess.pow(2).mean()
+
+        root_angular_loss = (
+            velocity_loss
+            + self.g1_root_angular_acceleration_weight * acceleration_loss
+        )
+        raw_contribution = self.lambda_g1_root_angular * root_angular_loss
+        contribution, capped, cap = compute_capped_aux_contribution(
+            base_loss=base_loss,
+            raw_contribution=raw_contribution,
+            max_fraction=self.g1_root_angular_max_fraction,
+        )
+        stats = {
+            "g1_root_angular_loss": root_angular_loss.detach(),
+            "g1_root_angular_velocity_loss": velocity_loss.detach(),
+            "g1_root_angular_acceleration_loss": acceleration_loss.detach(),
+            "g1_root_angular_contribution": contribution.detach(),
+            "g1_root_angular_capped": capped.detach(),
+            "g1_root_angular_cap": cap.detach(),
+        }
+        return contribution, stats
 
     def effective_motion_beatness_weight(self):
         return effective_linear_ramp(
@@ -1138,7 +1359,7 @@ class GaussianDiffusion(nn.Module):
         loss = reduce(loss, "b ... -> b (...)", "mean")
         loss = loss * extract(self.p2_loss_weight, t, loss.shape)
 
-        if self.motion_format == G1_MOTION_FORMAT:
+        if is_g1_motion_format(self.motion_format):
             target_v = target[:, 1:] - target[:, :-1]
             model_out_v = model_out[:, 1:] - model_out[:, :-1]
             v_loss = self.loss_fn(model_out_v, target_v, reduction="none")
@@ -1196,21 +1417,37 @@ class GaussianDiffusion(nn.Module):
                 "beat_capped": beat_capped.detach(),
                 "beat_cap": beat_cap.detach(),
             }
-            g1_kin_contribution, fk_loss, foot_loss, model_keypoints = self._g1_robot_losses(
+            (
+                g1_kin_contribution,
+                fk_loss,
+                foot_loss,
+                model_keypoints,
+                model_decoded,
+                target_decoded,
+            ) = self._g1_robot_losses(model_out, target, base_loss)
+            root_angular_contribution, root_angular_stats = self._g1_root_angular_loss(
                 model_out,
                 target,
                 base_loss,
+                model_decoded=model_decoded,
+                target_decoded=target_decoded,
             )
+            self.last_g1_kin_loss_stats = {
+                **self.last_g1_kin_loss_stats,
+                **root_angular_stats,
+            }
             motion_energy_loss = self._motion_energy_preservation_loss(
                 model_out,
                 motion_energy_stats,
                 model_keypoints=model_keypoints,
+                model_decoded=model_decoded,
             )
             motion_energy_contribution = self.lambda_motion_intensity * motion_energy_loss
             motion_beatness_loss = self._motion_beatness_valley_loss(
                 model_out,
                 motion_energy_stats,
                 model_keypoints=model_keypoints,
+                model_decoded=model_decoded,
             )
             motion_beatness_weight = self.effective_motion_beatness_weight()
             raw_motion_beatness_contribution = motion_beatness_weight * motion_beatness_loss
@@ -1242,6 +1479,7 @@ class GaussianDiffusion(nn.Module):
                 + self.effective_lambda_acc() * acc_loss
                 + beat_contribution
                 + g1_kin_contribution
+                + root_angular_contribution
                 + motion_energy_contribution
                 + motion_beatness_contribution
                 + energy_pred_contribution
@@ -1428,7 +1666,15 @@ class GaussianDiffusion(nn.Module):
             None, :, None
         ]
 
-        blended_pos = pos.clone()
+        aligned_pos = pos.clone()
+        for index in range(1, b):
+            offset = (aligned_pos[index - 1, half:] - aligned_pos[index, :half]).mean(
+                dim=0,
+                keepdim=True,
+            )
+            aligned_pos[index] += offset
+
+        blended_pos = aligned_pos.clone()
         blended_dof = dof_pos.clone()
         blended_pos[:-1] *= fade_out
         blended_pos[1:] *= fade_in
@@ -1461,6 +1707,21 @@ class GaussianDiffusion(nn.Module):
         full_rot[idx : idx + half] = root_rot[-1, half:]
         return full_pos, full_rot, full_dof
 
+    def _stitch_g1_integrated_root_samples(self, samples):
+        b, s, _ = samples.shape
+        if b == 1:
+            decoded = decode_g1_motion(samples, motion_format=self.motion_format)
+            return decoded["root_pos"][0], decoded["root_rot"][0], decoded["dof_pos"][0]
+
+        assert s % 2 == 0
+        half = s // 2
+        full_samples = torch.cat(
+            (samples[0], samples[1:, half:].reshape(-1, samples.shape[-1])),
+            dim=0,
+        )
+        decoded = decode_g1_motion(full_samples.unsqueeze(0), motion_format=self.motion_format)
+        return decoded["root_pos"][0], decoded["root_rot"][0], decoded["dof_pos"][0]
+
     def render_g1_sample(
         self,
         samples,
@@ -1484,14 +1745,17 @@ class GaussianDiffusion(nn.Module):
     ):
         output_dir = Path(fk_out or render_out)
         output_dir.mkdir(parents=True, exist_ok=True)
-        decoded = decode_g1_motion(samples)
         beat_rep = getattr(self.model, "beat_rep", None)
         render_g1_motion = None
         if render:
             from eval.g1_visualization import render_g1_motion
 
         if mode == "long":
-            root_pos, root_rot, dof_pos = self._stitch_g1_samples(decoded)
+            if self.motion_format in (G1_ROOT_DELTA_MOTION_FORMAT, G1_YAW_DELTA_MOTION_FORMAT):
+                root_pos, root_rot, dof_pos = self._stitch_g1_integrated_root_samples(samples)
+            else:
+                decoded = decode_g1_motion(samples, motion_format=self.motion_format)
+                root_pos, root_rot, dof_pos = self._stitch_g1_samples(decoded)
             if metadata_total_frames is not None:
                 root_pos = root_pos[:metadata_total_frames]
                 root_rot = root_rot[:metadata_total_frames]
@@ -1537,6 +1801,7 @@ class GaussianDiffusion(nn.Module):
                 )
             return
 
+        decoded = decode_g1_motion(samples, motion_format=self.motion_format)
         for num in range(decoded["root_pos"].shape[0]):
             filename = name[num] if name is not None else None
             metadata = build_saved_motion_metadata(
@@ -1624,7 +1889,7 @@ class GaussianDiffusion(nn.Module):
 
         samples = normalizer.unnormalize(samples)
 
-        if self.motion_format == G1_MOTION_FORMAT:
+        if is_g1_motion_format(self.motion_format):
             self.render_g1_sample(
                 samples,
                 cond,

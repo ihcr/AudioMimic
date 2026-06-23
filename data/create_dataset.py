@@ -12,6 +12,7 @@ jukebox_extract = None
 beat_extract = None
 jukebox_setup = None
 wav2clip_stft_beat_extract = None
+beat_features_8d_extract = None
 
 
 def _candidate_data_roots():
@@ -93,6 +94,15 @@ def _load_wav2clip_stft_beat_extract():
     return wav2clip_stft_beat_extract
 
 
+def _load_beat_features_8d_extract():
+    global beat_features_8d_extract
+    if beat_features_8d_extract is None:
+        beat_features_8d_extract = _load_audio_extraction_attr(
+            "beat_features_8d_features", "extract_folder"
+        )
+    return beat_features_8d_extract
+
+
 def create_dataset(opt):
     dataset_folder = _resolve_dataset_folder(opt.dataset_folder)
     train_motion_dir = DATA_DIR / "train" / "motions"
@@ -155,6 +165,16 @@ def create_dataset(opt):
             str(DATA_DIR / "test" / "wavs_sliced"),
             str(DATA_DIR / "test" / "wav2clip_stft_beat_feats"),
         )
+    if getattr(opt, "extract_beat_features_8d", False):
+        print("Extracting 8D beat-structure features")
+        _load_beat_features_8d_extract()(
+            str(DATA_DIR / "train" / "wavs_sliced"),
+            str(DATA_DIR / "train" / "beat_features_8d_feats"),
+        )
+        _load_beat_features_8d_extract()(
+            str(DATA_DIR / "test" / "wavs_sliced"),
+            str(DATA_DIR / "test" / "beat_features_8d_feats"),
+        )
 
 
 def parse_opt():
@@ -171,6 +191,7 @@ def parse_opt():
     parser.add_argument("--extract-jukebox", action="store_true")
     parser.add_argument("--extract-beats", action="store_true")
     parser.add_argument("--extract-wav2clip-stft-beat", action="store_true")
+    parser.add_argument("--extract-beat-features-8d", action="store_true")
     opt = parser.parse_args()
     return opt
 

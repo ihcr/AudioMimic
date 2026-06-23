@@ -21,7 +21,7 @@ def write_g1_motion(path, root_x=0.0, dof_offset=0.0, audio_path="clip.wav"):
     root_pos[:, 0] = np.linspace(root_x, root_x + 0.5, frames, dtype=np.float32)
     root_pos[:, 2] = 0.78 + np.linspace(0.0, 0.05, frames, dtype=np.float32)
     root_rot = np.zeros((frames, 4), dtype=np.float32)
-    root_rot[:, 0] = 1.0
+    root_rot[:, 3] = 1.0
     dof_pos = np.zeros((frames, 29), dtype=np.float32)
     dof_pos[:, 0] = np.linspace(dof_offset, dof_offset + 0.3, frames, dtype=np.float32)
     dof_pos[:, 1] = np.linspace(-0.2, 0.2, frames, dtype=np.float32)
@@ -45,6 +45,28 @@ def write_g1_motion(path, root_x=0.0, dof_offset=0.0, audio_path="clip.wav"):
 
 
 class G1MetricTests(unittest.TestCase):
+    def test_root_up_z_uses_configured_quaternion_order(self):
+        g1_module = reload_module("eval.g1_metrics")
+        motion = {
+            "root_pos": np.zeros((3, 3), dtype=np.float32),
+            "root_rot": np.array(
+                [
+                    [0.0, 0.0, 0.0, 1.0],
+                    [np.sqrt(0.5), 0.0, 0.0, np.sqrt(0.5)],
+                    [1.0, 0.0, 0.0, 0.0],
+                ],
+                dtype=np.float32,
+            ),
+            "dof_pos": np.zeros((3, 29), dtype=np.float32),
+            "fps": 30.0,
+        }
+
+        up_z = g1_module.compute_root_up_z(motion, root_quat_order="xyzw")
+
+        self.assertAlmostEqual(float(up_z[0]), 1.0)
+        self.assertAlmostEqual(float(up_z[1]), 0.0, places=6)
+        self.assertAlmostEqual(float(up_z[2]), -1.0)
+
     def test_beat_timing_reports_precision_recall_f1_and_offsets(self):
         g1_module = reload_module("eval.g1_metrics")
 
@@ -136,15 +158,34 @@ class G1MetricTests(unittest.TestCase):
                 )
 
             audit = json.loads((root / "audit_fk.json").read_text(encoding="utf-8"))
+            failure_panel = json.loads((root / "failure_panel.json").read_text(encoding="utf-8"))
 
         self.assertNotIn("G1FKBAS", without_fk)
         self.assertIn("G1FKBAS", with_fk)
         self.assertIn("G1FKRoboPerformBAS", with_fk)
         self.assertIn("G1BeatF1", with_fk)
+        self.assertIn("G1BeatDensityRatio", with_fk)
+        self.assertIn("G1UnmatchedMotionBeatRate", with_fk)
+        self.assertIn("G1WristBeatF1", with_fk)
+        self.assertIn("G1FootBeatF1", with_fk)
+        self.assertIn("G1TorsoBeatF1", with_fk)
+        self.assertIn("G1WristDominanceRatio", with_fk)
+        self.assertIn("G1FootContactOnBeatRate", with_fk)
+        self.assertIn("G1NearSupportOnBeatRate", with_fk)
+        self.assertIn("G1NoNearSupportRate", with_fk)
+        self.assertIn("G1FootHighLiftRate", with_fk)
+        self.assertIn("G1WristJerkMean", with_fk)
+        self.assertIn("G1FootJerkMean", with_fk)
         self.assertIn("G1FootSliding", with_fk)
         self.assertTrue(np.isfinite(with_fk["G1FKBAS"]))
         self.assertAlmostEqual(with_fk["G1FKRoboPerformBAS"], 1.0)
+        self.assertAlmostEqual(with_fk["G1BeatDensityRatio"], 1.0)
+        self.assertAlmostEqual(with_fk["G1UnmatchedMotionBeatRate"], 0.0)
+        self.assertIn("wrist_jerk_highest", failure_panel)
+        self.assertIn("beat_recall_lowest", failure_panel)
         self.assertEqual(audit["fk_model_path"], "third_party/unitree_g1_description/g1_29dof_rev_1_0.xml")
+        self.assertEqual(audit["failure_panel_path"], str(root / "failure_panel.json"))
+        self.assertIn("G1FootBeatF1", audit["per_file"][0])
 
     def test_g1_metrics_are_finite_and_do_not_report_smpl_only_names(self):
         g1_module = reload_module("eval.g1_metrics")
@@ -223,6 +264,11 @@ class G1MetricTests(unittest.TestCase):
         self.assertEqual(saved_metrics["G1RoboPerformBAS"], 1.0)
         self.assertEqual(saved_table["G1 RoboPerform BAS"], 1.0)
         self.assertEqual(saved_metrics["G1BAP_precision"], 1.0)
+        self.assertIn("RootAngularVelocityP99", saved_metrics)
+        self.assertIn("Root Ang. Vel. P99", saved_table)
+        self.assertIn("RootUpZP01", saved_metrics)
+        self.assertIn("Root Up Z P01", saved_table)
+        self.assertEqual(saved_metrics["RootTiltGt60DegRate"], 0.0)
         self.assertTrue(wrote_render)
 
     def test_reference_range_violation_counts_joint_values_outside_test_range(self):
@@ -232,7 +278,7 @@ class G1MetricTests(unittest.TestCase):
             {
                 "dof_pos": np.zeros((4, 2), dtype=np.float32),
                 "root_pos": np.zeros((4, 3), dtype=np.float32),
-                "root_rot": np.tile(np.array([[1.0, 0.0, 0.0, 0.0]], dtype=np.float32), (4, 1)),
+                "root_rot": np.tile(np.array([[0.0, 0.0, 0.0, 1.0]], dtype=np.float32), (4, 1)),
                 "fps": 30.0,
             }
         ]
@@ -247,7 +293,7 @@ class G1MetricTests(unittest.TestCase):
                 dtype=np.float32,
             ),
             "root_pos": np.zeros((4, 3), dtype=np.float32),
-            "root_rot": np.tile(np.array([[1.0, 0.0, 0.0, 0.0]], dtype=np.float32), (4, 1)),
+            "root_rot": np.tile(np.array([[0.0, 0.0, 0.0, 1.0]], dtype=np.float32), (4, 1)),
             "fps": 30.0,
         }
 

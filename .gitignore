@@ -54,3 +54,4 @@ AGENTS.md
 # Local artifact manifests and experiment outputs.
 hf_manifest.json
 eval/EXP-*/
+eval/**/motion_audit.json

@@ -12,14 +12,45 @@ REPO_ROOT = SCRIPT_ROOT.parent
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
-from feature_config import FEATURE_DIMS
+from feature_config import (
+    BEAT_FEATURES_8D_FEATURE_TYPE,
+    BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE,
+    BODY_INTENSITY_DIM,
+    FEATURE_DIMS,
+    GAUSSIAN_BEAT_FEATURE_TYPE,
+    MOTION_BEATNESS_DIM,
+    MOTION_ENERGY_DIM,
+    MOTION_INTENSITY_DIM,
+    SUPPORT_BEATNESS_DIM,
+    SUPPORT_CONTACT_DIM,
+    UPPER_BEATNESS_DIM,
+    WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE,
+    WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+    WAV2CLIP_MOTION_ENERGY_BEAT_FEATURE_TYPE,
+    WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+    WAV2CLIP_STFT_BEAT_FEATURE_TYPE,
+)
 
 DATASET_CACHE_VERSION = "v4"
 TENSOR_DATASET_CACHE_VERSION = "v5"
 SMPL_MOTION_FORMAT = "smpl"
 G1_MOTION_FORMAT = "g1"
-VALID_MOTION_FORMATS = (SMPL_MOTION_FORMAT, G1_MOTION_FORMAT)
+G1_ROOT_DELTA_MOTION_FORMAT = "g1_root_delta"
+G1_YAW_DELTA_MOTION_FORMAT = "g1_yaw_delta"
+G1_MOTION_FORMATS = (
+    G1_MOTION_FORMAT,
+    G1_ROOT_DELTA_MOTION_FORMAT,
+    G1_YAW_DELTA_MOTION_FORMAT,
+)
+VALID_MOTION_FORMATS = (SMPL_MOTION_FORMAT, *G1_MOTION_FORMATS)
 G1_DOF_DIM = 29
+STRUCTURED_MOTION_FEATURE_TYPES = (
+    BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE,
+    WAV2CLIP_MOTION_ENERGY_BEAT_FEATURE_TYPE,
+    WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+    WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+    WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE,
+)
 
 
 def validate_motion_format(motion_format):
@@ -28,6 +59,10 @@ def validate_motion_format(motion_format):
             f"Unsupported motion_format {motion_format!r}; expected one of {VALID_MOTION_FORMATS}"
         )
     return motion_format
+
+
+def is_g1_motion_format(motion_format):
+    return validate_motion_format(motion_format) in G1_MOTION_FORMATS
 
 
 def processed_dataset_cache_name(
@@ -90,7 +125,11 @@ def parse_args(argv=None):
     parser.add_argument("--data_path", default="data")
     parser.add_argument("--processed_data_dir", default="data/dataset_backups")
     parser.add_argument("--feature_type", choices=tuple(sorted(FEATURE_DIMS)), required=True)
-    parser.add_argument("--motion_format", choices=("smpl", "g1"), default="smpl")
+    parser.add_argument(
+        "--motion_format",
+        choices=("smpl", "g1", "g1_root_delta", "g1_yaw_delta"),
+        default="smpl",
+    )
     parser.add_argument("--use_beats", action="store_true")
     parser.add_argument("--beat_rep", choices=("distance", "pulse"), default="distance")
     parser.add_argument("--feature_cache_mode", choices=("off", "memmap"), default="off")
@@ -165,15 +204,15 @@ def validate_motion_file(
     except Exception as exc:
         raise ValueError(f"{path}: could not read motion pickle ({type(exc).__name__}: {exc}).") from exc
 
-    if motion_format == G1_MOTION_FORMAT:
+    if is_g1_motion_format(motion_format):
         root_height_values = validate_g1_motion_file(path, payload)
     else:
         root_height_values = validate_smpl_motion_file(path, payload)
 
     observed_height_min = float(root_height_values.min())
     observed_height_max = float(root_height_values.max())
-    min_bound = G1_ROOT_HEIGHT_MIN if motion_format == G1_MOTION_FORMAT else ROOT_HEIGHT_MIN
-    max_bound = G1_ROOT_HEIGHT_MAX if motion_format == G1_MOTION_FORMAT else ROOT_HEIGHT_MAX
+    min_bound = G1_ROOT_HEIGHT_MIN if is_g1_motion_format(motion_format) else ROOT_HEIGHT_MIN
+    max_bound = G1_ROOT_HEIGHT_MAX if is_g1_motion_format(motion_format) else ROOT_HEIGHT_MAX
     if root_height_min is not None:
         min_bound = root_height_min
     if root_height_max is not None:
@@ -201,6 +240,92 @@ def validate_feature_file(path, feature_type):
         f"{path}: expected feature shape {(EXPECTED_MODEL_FRAMES, expected_dim)}, got {feature.shape}.",
     )
     require(np.isfinite(feature).all(), f"{path}: feature array contains non-finite values.")
+
+
+def motion_control_feature_dir(feature_type):
+    if feature_type == BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE:
+        return "motion_control_v3_local_feats"
+    if feature_type == WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE:
+        return "motion_control_v3_local_feats"
+    if feature_type == WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE:
+        return "motion_control_v4_support_feats"
+    if feature_type == WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE:
+        return "motion_control_v2_feats"
+    return "motion_energy_feats"
+
+
+def validate_motion_control_file(path, feature_type):
+    with np.load(path) as feature:
+        keys = set(feature.files)
+        if feature_type in (
+            BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE,
+            WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+            WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+        ):
+            required = {
+                "motion_intensity_envelope",
+                "motion_beatness_envelope",
+                "weighted_fk_speed",
+                "smoothed_weighted_fk_speed",
+                "audio_beat_frames",
+                "intensity_peaks",
+                "beatness_peaks",
+            }
+            require(required.issubset(keys), f"{path}: missing motion-control keys {sorted(required - keys)}.")
+            intensity = feature["motion_intensity_envelope"]
+            beatness = feature["motion_beatness_envelope"]
+            require(
+                intensity.shape == (EXPECTED_MODEL_FRAMES, MOTION_INTENSITY_DIM),
+                f"{path}: expected motion_intensity_envelope shape "
+                f"{(EXPECTED_MODEL_FRAMES, MOTION_INTENSITY_DIM)}, got {intensity.shape}.",
+            )
+            require(
+                beatness.shape == (EXPECTED_MODEL_FRAMES, MOTION_BEATNESS_DIM),
+                f"{path}: expected motion_beatness_envelope shape "
+                f"{(EXPECTED_MODEL_FRAMES, MOTION_BEATNESS_DIM)}, got {beatness.shape}.",
+            )
+            require(np.isfinite(intensity).all(), f"{path}: motion_intensity_envelope contains non-finite values.")
+            require(np.isfinite(beatness).all(), f"{path}: motion_beatness_envelope contains non-finite values.")
+        elif feature_type == WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE:
+            required = {
+                "body_intensity_envelope",
+                "support_beatness_envelope",
+                "upper_beatness_envelope",
+                "support_contact",
+                "body_weighted_fk_speed",
+                "support_weighted_fk_speed",
+                "upper_weighted_fk_speed",
+                "audio_beat_frames",
+                "body_intensity_peaks",
+                "support_beatness_peaks",
+                "upper_beatness_peaks",
+                "lowest_foot_heights",
+            }
+            require(required.issubset(keys), f"{path}: missing V6a motion-control keys {sorted(required - keys)}.")
+            checks = (
+                ("body_intensity_envelope", (EXPECTED_MODEL_FRAMES, BODY_INTENSITY_DIM)),
+                ("support_beatness_envelope", (EXPECTED_MODEL_FRAMES, SUPPORT_BEATNESS_DIM)),
+                ("upper_beatness_envelope", (EXPECTED_MODEL_FRAMES, UPPER_BEATNESS_DIM)),
+                ("support_contact", (EXPECTED_MODEL_FRAMES, SUPPORT_CONTACT_DIM)),
+                ("body_weighted_fk_speed", (EXPECTED_MODEL_FRAMES,)),
+                ("support_weighted_fk_speed", (EXPECTED_MODEL_FRAMES,)),
+                ("upper_weighted_fk_speed", (EXPECTED_MODEL_FRAMES,)),
+                ("lowest_foot_heights", (EXPECTED_MODEL_FRAMES, SUPPORT_CONTACT_DIM)),
+            )
+            for key, shape in checks:
+                value = feature[key]
+                require(value.shape == shape, f"{path}: expected {key} shape {shape}, got {value.shape}.")
+                require(np.isfinite(value).all(), f"{path}: {key} contains non-finite values.")
+        else:
+            required = {"beat_energy_envelope", "weighted_fk_speed", "audio_beat_frames", "beat_energy_peaks"}
+            require(required.issubset(keys), f"{path}: missing motion-energy keys {sorted(required - keys)}.")
+            energy = feature["beat_energy_envelope"]
+            require(
+                energy.shape == (EXPECTED_MODEL_FRAMES, MOTION_ENERGY_DIM),
+                f"{path}: expected beat_energy_envelope shape "
+                f"{(EXPECTED_MODEL_FRAMES, MOTION_ENERGY_DIM)}, got {energy.shape}.",
+            )
+            require(np.isfinite(energy).all(), f"{path}: beat_energy_envelope contains non-finite values.")
 
 
 def validate_beat_file(path):
@@ -284,22 +409,53 @@ def validate_split(
     split_dir = Path(data_path) / split_name
     motion_dir = split_dir / "motions_sliced"
     wav_dir = split_dir / "wavs_sliced"
-    feature_dir = split_dir / f"{feature_type}_feats"
+    structured_feature = feature_type in STRUCTURED_MOTION_FEATURE_TYPES
+    beat_features_8d_structured = feature_type == BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE
+    feature_dir = split_dir / (
+        "beat_features_8d_feats"
+        if beat_features_8d_structured
+        else "wav2clip_stft_beat_feats"
+        if structured_feature
+        else f"{feature_type}_feats"
+    )
+    gaussian_beat_dir = split_dir / "gaussian_beat_feats"
+    motion_control_dir = split_dir / motion_control_feature_dir(feature_type)
     beat_dir = split_dir / "beat_feats"
 
     require(motion_dir.is_dir(), f"{motion_dir}: missing motions_sliced directory.")
     require(wav_dir.is_dir(), f"{wav_dir}: missing wavs_sliced directory.")
-    require(feature_dir.is_dir(), f"{feature_dir}: missing {feature_type}_feats directory.")
+    require(feature_dir.is_dir(), f"{feature_dir}: missing feature directory.")
+    if structured_feature and not beat_features_8d_structured:
+        require(gaussian_beat_dir.is_dir(), f"{gaussian_beat_dir}: missing gaussian_beat_feats directory.")
+        require(motion_control_dir.is_dir(), f"{motion_control_dir}: missing motion-control feature directory.")
+    elif structured_feature:
+        require(motion_control_dir.is_dir(), f"{motion_control_dir}: missing motion-control feature directory.")
     if use_beats:
         require(beat_dir.is_dir(), f"{beat_dir}: missing beat_feats directory.")
 
     motion_stems = list_stems(motion_dir, ".pkl")
     wav_stems = list_stems(wav_dir, ".wav")
     feature_stems = list_stems(feature_dir, ".npy")
+    gaussian_beat_stems = (
+        list_stems(gaussian_beat_dir, ".npy")
+        if structured_feature and not beat_features_8d_structured
+        else []
+    )
+    motion_control_stems = list_stems(motion_control_dir, ".npz") if structured_feature else []
     beat_stems = list_stems(beat_dir, ".npz") if use_beats else []
 
     require(motion_stems, f"{motion_dir}: no sliced motions found.")
     require(motion_stems == wav_stems == feature_stems, f"{split_name}: motion, wav, and feature file names do not match.")
+    if beat_features_8d_structured:
+        require(
+            motion_stems == motion_control_stems,
+            f"{split_name}: beat8d motion-beatness feature file names do not match motion files.",
+        )
+    elif structured_feature:
+        require(
+            motion_stems == gaussian_beat_stems == motion_control_stems,
+            f"{split_name}: structured feature file names do not match motion files.",
+        )
     if use_beats:
         require(motion_stems == beat_stems, f"{split_name}: beat file names do not match motion files.")
 
@@ -317,7 +473,15 @@ def validate_split(
 
     sampled_stems = evenly_sample_stems(motion_stems, sample_count)
     for stem in sampled_stems:
-        validate_feature_file(feature_dir / f"{stem}.npy", feature_type)
+        if structured_feature:
+            if beat_features_8d_structured:
+                validate_feature_file(feature_dir / f"{stem}.npy", BEAT_FEATURES_8D_FEATURE_TYPE)
+            else:
+                validate_feature_file(feature_dir / f"{stem}.npy", WAV2CLIP_STFT_BEAT_FEATURE_TYPE)
+                validate_feature_file(gaussian_beat_dir / f"{stem}.npy", GAUSSIAN_BEAT_FEATURE_TYPE)
+            validate_motion_control_file(motion_control_dir / f"{stem}.npz", feature_type)
+        else:
+            validate_feature_file(feature_dir / f"{stem}.npy", feature_type)
         if use_beats:
             validate_beat_file(beat_dir / f"{stem}.npz")
         wav_path = wav_dir / f"{stem}.wav"
@@ -327,7 +491,13 @@ def validate_split(
     return {
         "count": len(motion_stems),
         "sampled": len(sampled_stems),
-        "feature_dir": feature_dir.name,
+        "feature_dir": (
+            f"{feature_dir.name}+{motion_control_dir.name}"
+            if beat_features_8d_structured
+            else f"{feature_dir.name}+{gaussian_beat_dir.name}+{motion_control_dir.name}"
+            if structured_feature
+            else feature_dir.name
+        ),
         "beat_count": len(beat_stems),
         "root_height_min": min(height_mins),
         "root_height_max": max(height_maxes),

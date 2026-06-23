@@ -1,0 +1,4 @@
+[2026-05-13T00:25:20Z] Starting FineDance G1 Wav2CLIP/STFT/GaussianBeat extraction shard 2/8
+extracting train shard 2/8: data/finedance_g1_fkbeats/train/wavs_sliced -> data/finedance_g1_fkbeats/train/wav2clip_stft_beat_feats
+extracting test shard 2/8: data/finedance_g1_fkbeats/test/wavs_sliced -> data/finedance_g1_fkbeats/test/wav2clip_stft_beat_feats
+[2026-05-13T01:06:36Z] Feature extraction shard complete

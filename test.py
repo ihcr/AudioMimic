@@ -14,12 +14,17 @@ from tqdm import tqdm
 from args import parse_test_opt
 from data.audio_extraction.beat_features import nearest_beat_distance
 from data.slice import slice_audio
+from feature_config import (
+    BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE,
+    MOTION_BEATNESS_DIM,
+)
 
 EDGE = None
 baseline_extract = None
 juke_extract = None
 wav2clip_stft_beat_extract = None
 gaussian_beat_extract = None
+beat_features_8d_extract = None
 
 # sort filenames that look like songname_slice{number}.ext
 key_func = lambda x: int(os.path.splitext(x)[0].split("_")[-1].split("slice")[-1])
@@ -90,6 +95,15 @@ def _load_gaussian_beat_extract():
     return gaussian_beat_extract
 
 
+def _load_beat_features_8d_extract():
+    global beat_features_8d_extract
+    if beat_features_8d_extract is None:
+        from data.audio_extraction.beat_features_8d_features import extract
+
+        beat_features_8d_extract = extract
+    return beat_features_8d_extract
+
+
 def get_feature_func(feature_type):
     if feature_type == "jukebox":
         return _load_jukebox_extract()
@@ -99,7 +113,25 @@ def get_feature_func(feature_type):
         return _load_wav2clip_stft_beat_extract()
     if feature_type == "gaussian_beat":
         return _load_gaussian_beat_extract()
+    if feature_type in ("beat_features_8d", BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE):
+        return _load_beat_features_8d_extract()
     raise ValueError(f"Unsupported feature_type: {feature_type}")
+
+
+def is_beat_features_8d_motion_beatness(feature_type):
+    return feature_type == BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE
+
+
+def build_beat_features_8d_motion_beatness_condition(music_cond):
+    return {
+        "semantic": {"beat_features_8d": music_cond},
+        "control": {
+            "motion_beatness": torch.zeros(
+                (*music_cond.shape[:2], MOTION_BEATNESS_DIM),
+                dtype=music_cond.dtype,
+            ),
+        },
+    }
 
 
 def load_user_beat_frames(beat_file, target_fps=FPS):
@@ -223,6 +255,8 @@ def choose_slice_start(total_slices, sample_size, rng):
 
 def test(opt):
     feature_func = get_feature_func(opt.feature_type)
+    if is_beat_features_8d_motion_beatness(opt.feature_type) and opt.use_beats:
+        raise ValueError(f"{opt.feature_type} uses structured control and does not support --use_beats")
     rng = set_inference_seed(getattr(opt, "seed", -1)) or random
     sample_length = opt.out_length
     sample_size = int(sample_length / 2.5) - 1
@@ -244,6 +278,10 @@ def test(opt):
             slice_features = juke_file_list[rand_idx : rand_idx + sample_size]
             cond_list = [np.load(x) for x in slice_features]
             music_cond = torch.from_numpy(np.array(cond_list)).float()
+            if is_beat_features_8d_motion_beatness(opt.feature_type):
+                all_cond.append(build_beat_features_8d_motion_beatness_condition(music_cond))
+                all_filenames.append(slice_wavs)
+                continue
             if opt.use_beats:
                 song_wav = resolve_cached_source_wav(dir.rstrip("/"), opt.music_dir)
                 beat_cond = build_beat_condition_slices(
@@ -306,6 +344,10 @@ def test(opt):
                 if rand_idx <= idx < rand_idx + sample_size:
                     cond_list.append(reps)
             music_cond = torch.from_numpy(np.array(cond_list)).float()
+            if is_beat_features_8d_motion_beatness(opt.feature_type):
+                all_cond.append(build_beat_features_8d_motion_beatness_condition(music_cond))
+                all_filenames.append(file_list[rand_idx : rand_idx + sample_size])
+                continue
             if opt.use_beats:
                 beat_cond = build_beat_condition_slices(
                     beat_source=opt.beat_source,
@@ -334,6 +376,18 @@ def test(opt):
         feature_fusion=opt.feature_fusion,
     )
     model.eval()
+    if is_beat_features_8d_motion_beatness(opt.feature_type):
+        from eval.run_g1_dataset_eval import apply_motion_energy_condition_variant
+        from model.diffusion import move_cond_to_device
+
+        all_cond = [
+            apply_motion_energy_condition_variant(
+                model,
+                move_cond_to_device(cond, model.accelerator.device),
+                "pred_controls",
+            )
+            for cond in all_cond
+        ]
 
     # directory for optionally saving the dances for eval
     fk_out = None
