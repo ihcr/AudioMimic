@@ -1,109 +1,276 @@
-# New Server Setup
+# Isambard SSH Migration And Slurm Setup
 
-The new 4090 server does not use Slurm. Clone `wav2clip-stft-beat`, then run
-one local bootstrap script. The script builds `.venv311`, downloads compact
-artifacts from Hugging Face, and rebuilds FineDance+G1 prepared data/features on
-the 4090 machine.
+This document is the migration runbook for moving this branch to Isambard. The
+branch must be usable as a normal repo clone; do not depend on the old shared
+EDGE checkout or the old `yukun` Conda environment for code.
+
+## Current Migration Snapshot
+
+- Source branch: `codex/wav2clip-stage-20260526`.
+- Target compute style: Isambard SSH login plus Slurm jobs.
+- Preferred Python entrypoint inside the repo: `.venv311/bin/python`.
+- Slurm runtime outputs: `slurm/`, `setup_logs/`, `runs/`, `wandb/`, `renders/`,
+  `eval/`, and `data/` are runtime artifacts, not source files.
+- MuJoCo/G1 render or FK eval paths should export:
+
+```bash
+export MUJOCO_GL=egl
+export PYOPENGL_PLATFORM=egl
+```
+
+V6b Stage A (`EXP-20260623-finedance-g1-v6b-motion-prior`) is implemented and
+validated, but its first local 4090 r01 training run was stopped on 2026-06-23
+before checkpoint 100. There is no checkpoint to resume from. After migration to
+Isambard, relaunch r01 from scratch unless a later experiment spec says
+otherwise.
+
+Before launching, resuming, evaluating, or comparing any run, read:
+
+```text
+AGENTS.md
+docs/experiments/INDEX.md
+docs/experiments/EXP-20260623-finedance-g1-v6b-motion-prior.md
+```
+
+## Source Checkout Or Workspace Transfer
+
+Clone the repo onto Isambard storage, or rsync the whole working tree from the
+old machine. Pick the real project path for the account; the paths below are
+examples.
+
+```bash
+export M2D_ROOT=/lus/lfs1aip2/projects/u6ed/$USER/Musics2Dance
+git clone --branch codex/wav2clip-stage-20260526 git@github.com:lbtwyk/Musics2Dance.git "$M2D_ROOT"
+cd "$M2D_ROOT"
+```
+
+If transferring the existing workspace directly, it is fine to include large
+runtime folders such as `data/`, `runs/`, `eval/`, `renders/`, `wandb/`, and
+`setup_logs/`. They can be useful for continuity and comparison. The important
+boundary is that these remain runtime artifacts and should not be committed to
+Git.
+
+```bash
+rsync -a --info=progress2 \
+  --exclude .venv311 \
+  /home/tianhup/Desktop/Musics2Dance/ \
+  user@isambard:/lus/lfs1aip2/projects/u6ed/$USER/Musics2Dance/
+```
+
+Do not rsync `.venv311`. Rebuild the Python environment on Isambard so binary
+wheels match the cluster image.
+
+## Environment Setup
+
+Use the repo-local `.venv311` environment. Do not move this branch onto the old
+shared `yukun` Conda env unless the user explicitly asks.
+
+If `.venv311` does not exist on Isambard, create it with the available Python
+3.11 module or executable, then install dependencies. The exact module names can
+vary by Isambard image, so record the working module commands in `setup_logs/`.
+
+```bash
+cd "$M2D_ROOT"
+python3.11 -m venv .venv311
+.venv311/bin/python -m pip install --upgrade pip setuptools wheel
+.venv311/bin/python -m pip install -r requirements-new-server.txt
+.venv311/bin/python -m pip install -r requirements-g1-fk.txt
+```
+
+If the cluster image needs a custom PyTorch wheel index, install torch before
+the repo requirements using the wheel index appropriate for the GPU/CUDA stack.
+Do not assume the direct-attached 4090 `cu126` wheel index is correct for every
+Isambard node.
+
+Validate the interpreter:
+
+```bash
+.venv311/bin/python --version
+.venv311/bin/python -m pip list | head
+```
+
+## Runtime Data Transfer
+
+For this migration, transferring large runtime artifacts is acceptable. If the
+full workspace transfer above is used, this section is just a checklist for the
+paths that matter most. If the source was cloned from Git instead, rsync these
+runtime folders from the old machine.
+
+Minimum V6b Stage A runtime inputs:
+
+```text
+data/finedance_g1_fkbeats/
+third_party/unitree_g1_description/g1_29dof_rev_1_0.xml
+```
+
+Recommended V6b cache to avoid rebuilding:
+
+```text
+data/finedance_g1_v6b_motion_prior_dataset_backups/
+```
+
+Minimum focused rsync commands from the old machine:
+
+```bash
+rsync -a --info=progress2 \
+  data/finedance_g1_fkbeats/ \
+  user@isambard:/lus/lfs1aip2/projects/u6ed/$USER/Musics2Dance/data/finedance_g1_fkbeats/
+
+rsync -a --info=progress2 \
+  data/finedance_g1_v6b_motion_prior_dataset_backups/ \
+  user@isambard:/lus/lfs1aip2/projects/u6ed/$USER/Musics2Dance/data/finedance_g1_v6b_motion_prior_dataset_backups/
+```
+
+For broader historical comparison work, transferring `runs/`, `eval/`,
+`renders/`, `wandb/`, and `setup_logs/` is useful. They are still ignored
+runtime artifacts; use experiment specs to decide which checkpoints and metrics
+are authoritative after the transfer.
+
+Do not rsync `.venv311`. Rebuild it on Isambard so binary wheels match the
+cluster image.
 
 ## Hugging Face Policy
 
-Use this existing HF repo:
+Use this existing HF repo for compact bootstrap artifacts:
 
 ```text
 wyksdsg/edge-g1-beatdistance
 ```
 
-Keep HF compact. Do not upload sliced feature folders or tensor caches there;
-they contain tens of thousands of small files and can hit API limits. HF should
-hold only:
+HF should hold only compact, reusable artifacts:
 
 - `data/finedance/`: raw FineDance source data needed for local preprocessing.
 - `data/finedance-g1-retargeted/`: retargeted G1 sequence motions.
 - selected checkpoints under `runs/train/.../weights/*.pt`.
 - `hf_manifest.json`.
 
-Docs, experiment specs, and curated logs live in GitHub.
+Do not upload sliced feature folders, tensor caches, renders, W&B runs, or
+experiment scratch logs to HF by default. They contain many small files and are
+runtime artifacts.
 
-On the old server, upload/repair the compact HF contents with:
+On the old machine, upload or repair compact HF contents with:
 
 ```bash
-cd /projects/u6ed/yukun/EDGE/.worktrees/wav2clip
-source /projects/u6ed/yukun/EDGE/.venv311/bin/activate
-export HF_TOKEN=...
-python scripts/upload_wav2clip_artifacts_to_hf.py \
+cd /path/to/old/Musics2Dance
+.venv311/bin/python scripts/upload_wav2clip_artifacts_to_hf.py \
   --repo-id wyksdsg/edge-g1-beatdistance \
   --repo-type model \
-  --source-root /projects/u6ed/yukun/EDGE \
-  --diffusion-root /projects/u6ed/yukun/EDGE/.worktrees/diffusion \
+  --source-root /path/to/old/Musics2Dance \
+  --diffusion-root /path/to/old/Musics2Dance \
   --prune-large-feature-paths
 ```
 
-Add `--private` only when creating a new private HF repo. If an earlier upload
-partially pushed feature/caches to HF, keep `--prune-large-feature-paths`.
-The uploader batches compact artifacts by source root, so a normal run should
-create only a few commits instead of one commit per upload batch.
+Do not store `HF_TOKEN` in committed files.
 
-## One Command On The 4090 Server
+## Slurm Sanity Checks
 
-From a fresh clone:
+Run cheap checks on a login node only if they do not touch the GPU or heavy data
+paths:
 
 ```bash
-git clone --branch wav2clip-stft-beat git@github.com:lbtwyk/Musics2Dance.git EDGE-wav2clip
-cd EDGE-wav2clip
-export HF_TOKEN=...
-scripts/bootstrap_finedance_g1_4090.sh --run-validation
+cd "$M2D_ROOT"
+.venv311/bin/python -m py_compile train_g1_motion_prior.py dataset/g1_motion_prior_dataset.py model/g1_motion_prior.py eval/run_g1_motion_prior_eval.py
 ```
 
-The default bootstrap downloads compact HF artifacts and rebuilds:
-
-- FineDance source clips in `data/finedance_aistpp`.
-- FineDance+G1 tree in `data/finedance_g1_fkbeats`.
-- Librosa baseline features: `baseline_feats`.
-- Jukebox features: `jukebox_feats`.
-- G1 FK beat metadata: `beat_feats`.
-- Wav2CLIP + STFT + GaussianBeat features: `wav2clip_stft_beat_feats`.
-
-It uses `torch/torchaudio` wheels from `https://download.pytorch.org/whl/cu126`
-by default, warms up Jukebox and Wav2CLIP model downloads, and writes logs under
-`setup_logs/finedance_g1_4090/`.
-
-The feature extraction is resumable: rerunning the script skips completed
-Wav2CLIP/STFT files and overwrites/rebuilds deterministic prepared trees as
-needed. Use a smaller Jukebox batch size if the 4090 runs out of memory:
+Run unit tests through Slurm so imports, file permissions, and node-local
+runtime behavior match training:
 
 ```bash
-scripts/bootstrap_finedance_g1_4090.sh \
-  --jukebox-batch-size 2 \
-  --run-validation
+mkdir -p slurm/EXP-20260623-finedance-g1-v6b-motion-prior
+cat > slurm/EXP-20260623-finedance-g1-v6b-motion-prior/unit_tests.sbatch <<'EOF'
+#!/usr/bin/env bash
+#SBATCH --job-name=m2d_v6b_tests
+#SBATCH --output=slurm/EXP-20260623-finedance-g1-v6b-motion-prior/unit_tests_%j.out
+#SBATCH --partition=workq
+#SBATCH --time=00:30:00
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=16G
+
+set -euo pipefail
+cd "$M2D_ROOT"
+export PYTHONUNBUFFERED=1
+.venv311/bin/python -m unittest tests.test_g1_motion_prior
+EOF
+sbatch --export=ALL,M2D_ROOT="$M2D_ROOT" slurm/EXP-20260623-finedance-g1-v6b-motion-prior/unit_tests.sbatch
 ```
 
-Useful variants:
+Use `squeue -u "$USER"` to watch jobs and `tail -f slurm/.../*.out` to inspect
+logs.
+
+## V6b Smoke Job
+
+Submit a one-epoch smoke job before the full r01 launch:
 
 ```bash
-# Only download compact HF artifacts and install deps.
-scripts/bootstrap_finedance_g1_4090.sh --skip-prepare --skip-features
+mkdir -p slurm/EXP-20260623-finedance-g1-v6b-motion-prior
+cat > slurm/EXP-20260623-finedance-g1-v6b-motion-prior/smoke.sbatch <<'EOF'
+#!/usr/bin/env bash
+#SBATCH --job-name=m2d_v6b_smoke
+#SBATCH --output=slurm/EXP-20260623-finedance-g1-v6b-motion-prior/smoke_%j.out
+#SBATCH --partition=workq
+#SBATCH --time=01:00:00
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=32G
+#SBATCH --gres=gpu:1
 
-# Rebuild only Librosa baseline and Wav2CLIP/STFT features.
-scripts/bootstrap_finedance_g1_4090.sh --features baseline,wav2clip_stft_beat
-
-# Preview what will run.
-scripts/bootstrap_finedance_g1_4090.sh --dry-run
+set -euo pipefail
+cd "$M2D_ROOT"
+export PYTHONUNBUFFERED=1
+export MUJOCO_GL=egl
+export PYOPENGL_PLATFORM=egl
+.venv311/bin/python -m train_g1_motion_prior \
+  --data_path data/finedance_g1_fkbeats \
+  --processed_data_dir data/finedance_g1_v6b_motion_prior_dataset_backups \
+  --exp_name EXP-20260623-finedance-g1-v6b-motion-prior_r01_ae_s2_latent128_smoke \
+  --motion_format g1_yaw_delta \
+  --prior_type ae \
+  --latent_dim 128 \
+  --epochs 1 \
+  --cache_limit_per_split 64 \
+  --data_len 64 \
+  --eval_data_len 16 \
+  --eval_max_clips 16 \
+  --full_eval_interval 0 \
+  --wandb_mode disabled
+EOF
+sbatch --export=ALL,M2D_ROOT="$M2D_ROOT" slurm/EXP-20260623-finedance-g1-v6b-motion-prior/smoke.sbatch
 ```
 
-## Continuation
+## Relaunch V6b R01 On Isambard
 
-After bootstrap:
+Use the repo launcher so the generated `.sbatch` file is preserved in the Slurm
+run folder and the Slurm output plus `tee` log are both retained:
 
 ```bash
-source .venv311/bin/activate
+cd "$M2D_ROOT"
+PARTITION=workq \
+TIME_LIMIT=24:00:00 \
+CPUS_PER_TASK=8 \
+MEMORY=64G \
+GPUS=1 \
+WANDB_MODE=online \
+scripts/slurm_train_g1_motion_prior.sh
 ```
 
-The existing stream-adapter checkpoint should be present at:
+If Isambard requires an account directive:
+
+```bash
+ACCOUNT=<account_name> scripts/slurm_train_g1_motion_prior.sh
+```
+
+The launcher writes:
 
 ```text
-runs/train/EXP-20260513-finedance-g1-wav2clip-stft-beat_r02_stream_adapter/weights/train-500.pt
+slurm/EXP-20260623-finedance-g1-v6b-motion-prior/r01_ae_s2_latent128/train_r01_ae_s2_latent128.sbatch
+setup_logs/EXP-20260623-finedance-g1-v6b-motion-prior/train_r01_ae_s2_latent128.log
+runs/train/EXP-20260623-finedance-g1-v6b-motion-prior_r01_ae_s2_latent128/
 ```
 
-The unfinished concat run can be launched locally with the same arguments stored
-in the experiment spec, but without Slurm. Keep long run logs under
-`setup_logs/` or another ignored runtime directory.
+Checkpoint 100 is the first sanity checkpoint. Checkpoint 500 is the first full
+acceptance gate and should run full reconstruction eval automatically.
+
+## Local 4090 Note
+
+The old local 4090 workflow used `tmux` and live `tee` logs because it had no
+Slurm. That is useful only when reproducing the stopped local run evidence. For
+Isambard migration and relaunch, prefer the Slurm commands above.

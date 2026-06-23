@@ -15,10 +15,17 @@ depend on the old shared EDGE checkout for code or environment.
 Large checkpoints, datasets, cached features, renders, and Slurm outputs are runtime artifacts, not source files.
 
 ## Environment And Compute
-- Use the repo-local environment: `source .venv311/bin/activate`
+- Use the repo-local environment. Prefer `.venv311/bin/python`; if an activate
+  script exists in a future clone, `source .venv311/bin/activate` is also fine.
 - Do not move EDGE onto the shared `yukun` Conda env unless explicitly requested.
+- On Isambard, use Slurm (`sbatch`/`srun`) for GPU training, eval, and heavy
+  preprocessing jobs. Keep Slurm logs under `slurm/` and curated live logs under
+  `setup_logs/` when useful.
 - On the direct-attached 4090 server, there is no Slurm. Use the local bootstrap
   and long-running `tmux` sessions instead of `srun`/`sbatch`.
+- For migration to Isambard, use `docs/NEW_SERVER_SETUP.md` as the
+  source-of-truth runbook. Runtime data/caches/checkpoints may be transferred,
+  but they stay out of Git.
 - Long-running `tmux` training sessions must show live output when attached.
   Prefer `PYTHONUNBUFFERED=1 ... 2>&1 | tee -a setup_logs/<experiment>.log`
   inside the tmux pane instead of redirecting stdout/stderr away from the pane.

@@ -1,5 +1,44 @@
 # Handoff
 
+## 2026-06-23 Migration Handoff
+
+The repo has been prepared for migration to Isambard. Training is not currently
+running: `m2d_v6b_prior_r01` is absent, no `train_g1_motion_prior` process is
+active, and the GPU compute list only shows AnyDesk. The stopped local 4090 V6b
+r01 run reached epoch 27/500 but saved no checkpoint because the first save
+interval was checkpoint 100.
+
+Use these files as the new-server reading path:
+
+- `AGENTS.md`
+- `docs/NEW_SERVER_SETUP.md`
+- `docs/experiments/INDEX.md`
+- `docs/experiments/EXP-20260623-finedance-g1-v6b-motion-prior.md`
+
+Current V6b code and tests are present in:
+
+- `dataset/g1_motion_prior_dataset.py`
+- `model/g1_motion_prior.py`
+- `train_g1_motion_prior.py`
+- `eval/run_g1_motion_prior_eval.py`
+- `scripts/slurm_train_g1_motion_prior.sh`
+- `tests/test_g1_motion_prior.py`
+
+The local processed cache exists at
+`data/finedance_g1_v6b_motion_prior_dataset_backups/` and is about 1.2GB. It is
+a runtime artifact, not source. For the Isambard migration, it is fine to rsync
+this and other large runtime directories; keep them ignored and out of Git.
+
+After migration, validate with:
+
+```bash
+.venv311/bin/python -m unittest tests.test_g1_motion_prior
+```
+
+Then relaunch `EXP-20260623-finedance-g1-v6b-motion-prior_r01_ae_s2_latent128`
+from scratch through Slurm using `scripts/slurm_train_g1_motion_prior.sh`. Do
+not treat the stopped W&B run `08zxd1ss` as a trained result.
+
 ## Goal
 
 Preserve the 2026-06-18 side conversation about the long-term
