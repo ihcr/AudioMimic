@@ -619,6 +619,29 @@ class CheckpointRestoreTests(unittest.TestCase):
         optim.load_state_dict.assert_not_called()
 
 
+class EmaTests(unittest.TestCase):
+    def test_update_model_average_reuses_cached_parameter_pairs(self):
+        diffusion_module = reload_module("model.diffusion")
+        current_model = nn.Linear(2, 2, bias=False)
+        ema_model = nn.Linear(2, 2, bias=False)
+        current_model.weight.data.fill_(1.0)
+        ema_model.weight.data.zero_()
+        ema = diffusion_module.EMA(0.5)
+
+        ema.update_model_average(ema_model, current_model)
+        self.assertTrue(torch.allclose(ema_model.weight, torch.full_like(ema_model.weight, 0.5)))
+
+        current_model.weight.data.fill_(2.0)
+        with patch.object(
+            current_model,
+            "parameters",
+            side_effect=AssertionError("parameters should be cached"),
+        ):
+            ema.update_model_average(ema_model, current_model)
+
+        self.assertTrue(torch.allclose(ema_model.weight, torch.full_like(ema_model.weight, 1.25)))
+
+
 class DummyModel(nn.Module):
     def forward(self, x, cond, t, cond_drop_prob=0.0):
         return x
@@ -966,6 +989,99 @@ class InferenceBeatUtilityTests(unittest.TestCase):
 
         mock_ddim.assert_called_once()
         self.assertTrue(torch.equal(output, expected))
+
+    def test_long_ddim_sample_does_not_hard_overwrite_final_overlap(self):
+        diffusion_module = reload_module("model.diffusion")
+        diffusion = diffusion_module.GaussianDiffusion(
+            DummyModel(),
+            horizon=4,
+            repr_dim=3,
+            smpl=DummySMPL(),
+            schedule="cosine",
+            n_timestep=10,
+            predict_epsilon=False,
+            loss_type="l2",
+            cond_drop_prob=0.0,
+        )
+        cond = torch.randn(2, 4, 35)
+
+        def fake_model_predictions(x, cond, t, weight=None, clip_x_start=False):
+            x_start = torch.zeros_like(x)
+            x_start[0, 2:] = 1.0
+            x_start[1, :2] = 2.0
+            return torch.zeros_like(x), x_start
+
+        with patch.object(diffusion, "model_predictions", side_effect=fake_model_predictions):
+            output = diffusion.long_ddim_sample((2, 4, 3), cond)
+
+        self.assertTrue(torch.equal(output[0, 2:], torch.ones_like(output[0, 2:])))
+        self.assertTrue(torch.equal(output[1, :2], torch.full_like(output[1, :2], 2.0)))
+
+    def test_long_ddim_sample_does_not_hard_overwrite_intermediate_overlap(self):
+        diffusion_module = reload_module("model.diffusion")
+        diffusion = diffusion_module.GaussianDiffusion(
+            DummyModel(),
+            horizon=4,
+            repr_dim=3,
+            smpl=DummySMPL(),
+            schedule="cosine",
+            n_timestep=10,
+            predict_epsilon=False,
+            loss_type="l2",
+            cond_drop_prob=0.0,
+        )
+        cond = torch.randn(2, 4, 35)
+        seen_inputs = []
+
+        def fake_model_predictions(x, cond, t, weight=None, clip_x_start=False):
+            seen_inputs.append(x.detach().clone())
+            x_start = torch.zeros_like(x)
+            x_start[0, 2:] = 1.0
+            x_start[1, :2] = 2.0
+            return torch.zeros_like(x), x_start
+
+        with patch.object(
+            diffusion_module.torch,
+            "randn_like",
+            side_effect=lambda tensor: torch.zeros_like(tensor),
+        ), patch.object(
+            diffusion,
+            "model_predictions",
+            side_effect=fake_model_predictions,
+        ):
+            diffusion.long_ddim_sample((2, 4, 3), cond)
+
+        self.assertGreater(len(seen_inputs), 1)
+        self.assertFalse(torch.equal(seen_inputs[1][1, :2], seen_inputs[1][0, 2:]))
+
+    def test_long_inpaint_loop_does_not_hard_overwrite_intermediate_overlap(self):
+        diffusion_module = reload_module("model.diffusion")
+        diffusion = diffusion_module.GaussianDiffusion(
+            DummyModel(),
+            horizon=4,
+            repr_dim=3,
+            smpl=DummySMPL(),
+            schedule="cosine",
+            n_timestep=10,
+            predict_epsilon=False,
+            loss_type="l2",
+            cond_drop_prob=0.0,
+        )
+        cond = torch.randn(2, 4, 35)
+        seen_inputs = []
+
+        def fake_p_sample(x, cond, t):
+            seen_inputs.append(x.detach().clone())
+            x_out = torch.zeros_like(x)
+            x_out[0, 2:] = 1.0
+            x_out[1, :2] = 2.0
+            return x_out, x_out
+
+        with patch.object(diffusion, "p_sample", side_effect=fake_p_sample):
+            diffusion.long_inpaint_loop((2, 4, 3), cond, start_point=3)
+
+        self.assertGreater(len(seen_inputs), 1)
+        self.assertFalse(torch.equal(seen_inputs[1][1, :2], seen_inputs[1][0, 2:]))
 
     def test_build_full_song_pulse_track_keeps_channel_dimension(self):
         test_module = reload_module("test")

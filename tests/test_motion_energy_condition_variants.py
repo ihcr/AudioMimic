@@ -34,6 +34,40 @@ class _ControlModel:
     diffusion = _ControlDiffusion()
 
 
+class _BeatnessOnlyPredictor:
+    def predict_controls(self, cond):
+        return {
+            "motion_beatness": torch.full_like(cond["control"]["motion_beatness"], 0.65),
+        }
+
+
+class _BeatnessOnlyDiffusion:
+    model = _BeatnessOnlyPredictor()
+
+
+class _BeatnessOnlyModel:
+    diffusion = _BeatnessOnlyDiffusion()
+
+
+class _BodySupportPredictor:
+    def predict_controls(self, cond):
+        control = cond["control"]
+        return {
+            "body_intensity": torch.full_like(control["body_intensity"], 0.15),
+            "support_beatness": torch.full_like(control["support_beatness"], 0.35),
+            "upper_beatness": torch.full_like(control["upper_beatness"], 0.55),
+            "support_contact": torch.full_like(control["support_contact"], 0.75),
+        }
+
+
+class _BodySupportDiffusion:
+    model = _BodySupportPredictor()
+
+
+class _BodySupportModel:
+    diffusion = _BodySupportDiffusion()
+
+
 class MotionEnergyConditionVariantTest(unittest.TestCase):
     def make_condition(self):
         return {
@@ -149,6 +183,105 @@ class MotionEnergyConditionVariantTest(unittest.TestCase):
         self.assertTrue(torch.count_nonzero(updated["control"]["gaussian_beat"]).item() == 0)
         self.assertTrue(torch.count_nonzero(updated["control"]["motion_intensity"]).item() == 0)
         self.assertTrue(torch.count_nonzero(updated["control"]["motion_beatness"]).item() == 0)
+
+    def make_beatness_only_condition(self):
+        return {
+            "semantic": {
+                "beat_features_8d": torch.ones(2, 4, 8),
+            },
+            "control": {
+                "motion_beatness": torch.tensor(
+                    [
+                        [[0.9], [0.7], [0.5], [0.3]],
+                        [[0.8], [0.6], [0.4], [0.2]],
+                    ],
+                    dtype=torch.float32,
+                ),
+            },
+        }
+
+    def test_auto_pred_controls_handles_beatness_only_predictor(self):
+        cond = self.make_beatness_only_condition()
+        updated = apply_motion_energy_condition_variant(_BeatnessOnlyModel(), cond, "auto")
+
+        self.assertTrue(
+            torch.allclose(
+                updated["control"]["motion_beatness"],
+                torch.full((2, 4, 1), 0.65),
+            )
+        )
+        self.assertTrue(torch.equal(updated["semantic"]["beat_features_8d"], cond["semantic"]["beat_features_8d"]))
+        self.assertNotIn("motion_intensity", updated["control"])
+
+    def test_zero_all_controls_zeros_beatness_only_semantic_and_control(self):
+        cond = self.make_beatness_only_condition()
+        updated = apply_motion_energy_condition_variant(
+            _BeatnessOnlyModel(),
+            cond,
+            "zero_all_controls",
+        )
+
+        self.assertTrue(torch.count_nonzero(updated["semantic"]["beat_features_8d"]).item() == 0)
+        self.assertTrue(torch.count_nonzero(updated["control"]["motion_beatness"]).item() == 0)
+
+    def make_body_support_condition(self):
+        return {
+            "semantic": {
+                "wav2clip": torch.ones(2, 4, 3),
+            },
+            "control": {
+                "gaussian_beat": torch.arange(8, dtype=torch.float32).reshape(2, 4, 1),
+                "body_intensity": torch.full((2, 4, 1), 0.2),
+                "support_beatness": torch.full((2, 4, 1), 0.4),
+                "upper_beatness": torch.full((2, 4, 1), 0.6),
+                "support_contact": torch.ones(2, 4, 2),
+            },
+        }
+
+    def test_body_support_pred_controls_and_diagnostic_variants(self):
+        cond = self.make_body_support_condition()
+        pred = apply_motion_energy_condition_variant(_BodySupportModel(), cond, "auto")
+        self.assertTrue(torch.allclose(pred["control"]["body_intensity"], torch.full((2, 4, 1), 0.15)))
+        self.assertTrue(torch.allclose(pred["control"]["support_beatness"], torch.full((2, 4, 1), 0.35)))
+        self.assertTrue(torch.allclose(pred["control"]["upper_beatness"], torch.full((2, 4, 1), 0.55)))
+        self.assertTrue(torch.allclose(pred["control"]["support_contact"], torch.full((2, 4, 2), 0.75)))
+
+        flat = apply_motion_energy_condition_variant(_BodySupportModel(), cond, "flat_body_intensity")
+        self.assertTrue(torch.allclose(flat["control"]["body_intensity"], torch.full((2, 4, 1), 0.2)))
+        self.assertTrue(torch.equal(flat["control"]["support_beatness"], cond["control"]["support_beatness"]))
+
+        zero_support = apply_motion_energy_condition_variant(
+            _BodySupportModel(),
+            cond,
+            "zero_support_beatness",
+        )
+        self.assertEqual(torch.count_nonzero(zero_support["control"]["support_beatness"]).item(), 0)
+        self.assertTrue(torch.equal(zero_support["control"]["upper_beatness"], cond["control"]["upper_beatness"]))
+
+        zero_upper = apply_motion_energy_condition_variant(
+            _BodySupportModel(),
+            cond,
+            "zero_upper_beatness",
+        )
+        self.assertEqual(torch.count_nonzero(zero_upper["control"]["upper_beatness"]).item(), 0)
+        self.assertTrue(torch.equal(zero_upper["control"]["support_beatness"], cond["control"]["support_beatness"]))
+
+        zero_contact = apply_motion_energy_condition_variant(
+            _BodySupportModel(),
+            cond,
+            "zero_support_contact",
+        )
+        self.assertEqual(torch.count_nonzero(zero_contact["control"]["support_contact"]).item(), 0)
+
+        zero_all = apply_motion_energy_condition_variant(_BodySupportModel(), cond, "zero_all_controls")
+        for key in (
+            "gaussian_beat",
+            "body_intensity",
+            "support_beatness",
+            "upper_beatness",
+            "support_contact",
+        ):
+            self.assertEqual(torch.count_nonzero(zero_all["control"][key]).item(), 0)
 
 
 if __name__ == "__main__":

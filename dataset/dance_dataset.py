@@ -2,6 +2,7 @@ import glob
 import os
 import pickle
 import random
+import zipfile
 from functools import cmp_to_key
 from pathlib import Path
 from typing import Any
@@ -12,19 +13,27 @@ from torch.utils.data import Dataset
 from tqdm import tqdm
 
 from dataset.motion_representation import (
-    G1_MOTION_FORMAT,
     SMPL_MOTION_FORMAT,
-    encode_g1_motion,
+    encode_g1_motion_for_format,
+    is_g1_motion_format,
     validate_motion_format,
 )
 from dataset.preprocess import Normalizer, vectorize_many
 from dataset.quaternion import ax_to_6v
 from feature_config import (
+    BEAT_FEATURES_8D_DIM,
+    BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE,
+    BODY_INTENSITY_DIM,
     GAUSSIAN_BEAT_DIM,
     MOTION_BEATNESS_DIM,
     MOTION_ENERGY_DIM,
     MOTION_INTENSITY_DIM,
+    SUPPORT_BEATNESS_DIM,
+    SUPPORT_CONTACT_DIM,
+    UPPER_BEATNESS_DIM,
+    WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE,
     WAV2CLIP_DIM,
+    WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
     WAV2CLIP_MOTION_ENERGY_BEAT_FEATURE_TYPE,
     WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
     WAV2CLIP_STFT_BEAT_DIM,
@@ -36,6 +45,7 @@ from vis import SMPLSkeleton
 
 DATASET_CACHE_VERSION = "v4"
 FEATURE_STORE_CACHE_VERSION = "v1"
+MOTION_CONTROL_STORE_CACHE_VERSION = "v1"
 FEATURE_CACHE_OFF = "off"
 FEATURE_CACHE_MEMMAP = "memmap"
 FEATURE_CACHE_MODES = (FEATURE_CACHE_OFF, FEATURE_CACHE_MEMMAP)
@@ -44,13 +54,39 @@ FEATURE_CACHE_DTYPES = ("float32", "float16")
 
 def is_structured_motion_energy_feature(feature_type):
     return feature_type in (
+        BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE,
         WAV2CLIP_MOTION_ENERGY_BEAT_FEATURE_TYPE,
         WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+        WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+        WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE,
     )
 
 
 def is_motion_intensity_beatness_feature(feature_type):
-    return feature_type == WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE
+    return feature_type in (
+        WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+        WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+    )
+
+
+def is_motion_beatness_only_feature(feature_type):
+    return feature_type == BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE
+
+
+def is_body_support_beatness_feature(feature_type):
+    return feature_type == WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE
+
+
+def motion_control_feature_dir(feature_type):
+    if feature_type == BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE:
+        return "motion_control_v3_local_feats"
+    if feature_type == WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE:
+        return "motion_control_v3_local_feats"
+    if feature_type == WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE:
+        return "motion_control_v4_support_feats"
+    if feature_type == WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE:
+        return "motion_control_v2_feats"
+    return "motion_energy_feats"
 
 
 def atomic_pickle_dump(payload, path):
@@ -79,6 +115,20 @@ def feature_store_index_name(split_name, feature_type, dtype_name):
     return (
         f"{split_name}_{feature_type}_features_{FEATURE_CACHE_MEMMAP}_"
         f"{dtype_name}_{FEATURE_STORE_CACHE_VERSION}.pkl"
+    )
+
+
+def motion_control_store_cache_name(split_name, feature_type, dtype_name):
+    return (
+        f"{split_name}_{feature_type}_motion_control_{FEATURE_CACHE_MEMMAP}_"
+        f"{dtype_name}_{MOTION_CONTROL_STORE_CACHE_VERSION}.npy"
+    )
+
+
+def motion_control_store_index_name(split_name, feature_type, dtype_name):
+    return (
+        f"{split_name}_{feature_type}_motion_control_{FEATURE_CACHE_MEMMAP}_"
+        f"{dtype_name}_{MOTION_CONTROL_STORE_CACHE_VERSION}.pkl"
     )
 
 
@@ -159,6 +209,178 @@ def build_or_reuse_feature_store(
         "store_path": str(store_path),
         "source_files": feature_paths,
         "shape": (len(feature_paths), *feature_shape),
+    }
+    atomic_pickle_dump(metadata, index_path)
+    return metadata
+
+
+def _load_motion_control_pair(path):
+    try:
+        with np.load(path) as motion_control:
+            motion_intensity = np.array(
+                motion_control["motion_intensity_envelope"],
+                dtype=np.float32,
+                copy=True,
+            )
+            motion_beatness = np.array(
+                motion_control["motion_beatness_envelope"],
+                dtype=np.float32,
+                copy=True,
+            )
+    except (KeyError, TypeError, zipfile.BadZipFile) as exc:
+        raise RuntimeError(
+            f"Failed to read motion-control feature cache {path}. "
+            "Rebuild the motion-control feature cache and processed dataset cache."
+        ) from exc
+    if motion_intensity.shape != (150, MOTION_INTENSITY_DIM):
+        raise ValueError(
+            f"{path} motion_intensity_envelope expected "
+            f"{(150, MOTION_INTENSITY_DIM)}, got {motion_intensity.shape}"
+        )
+    if motion_beatness.shape != (150, MOTION_BEATNESS_DIM):
+        raise ValueError(
+            f"{path} motion_beatness_envelope expected "
+            f"{(150, MOTION_BEATNESS_DIM)}, got {motion_beatness.shape}"
+        )
+    return motion_intensity, motion_beatness
+
+
+def _load_body_support_control(path):
+    try:
+        with np.load(path) as motion_control:
+            body_intensity = np.array(
+                motion_control["body_intensity_envelope"],
+                dtype=np.float32,
+                copy=True,
+            )
+            support_beatness = np.array(
+                motion_control["support_beatness_envelope"],
+                dtype=np.float32,
+                copy=True,
+            )
+            upper_beatness = np.array(
+                motion_control["upper_beatness_envelope"],
+                dtype=np.float32,
+                copy=True,
+            )
+            support_contact = np.array(
+                motion_control["support_contact"],
+                dtype=np.float32,
+                copy=True,
+            )
+    except (KeyError, TypeError, zipfile.BadZipFile) as exc:
+        raise RuntimeError(
+            f"Failed to read V6a body/support feature cache {path}. "
+            "Rebuild motion_control_v4_support_feats and the processed dataset cache."
+        ) from exc
+    expected = (
+        ("body_intensity_envelope", body_intensity, (150, BODY_INTENSITY_DIM)),
+        ("support_beatness_envelope", support_beatness, (150, SUPPORT_BEATNESS_DIM)),
+        ("upper_beatness_envelope", upper_beatness, (150, UPPER_BEATNESS_DIM)),
+        ("support_contact", support_contact, (150, SUPPORT_CONTACT_DIM)),
+    )
+    for name, value, shape in expected:
+        if value.shape != shape:
+            raise ValueError(f"{path} {name} expected {shape}, got {value.shape}")
+    return body_intensity, support_beatness, upper_beatness, support_contact
+
+
+def motion_control_store_fields(feature_type):
+    if is_body_support_beatness_feature(feature_type):
+        return (
+            "body_intensity",
+            "support_beatness",
+            "upper_beatness",
+            "support_contact",
+        )
+    return ("motion_intensity", "motion_beatness")
+
+
+def build_or_reuse_motion_control_store(
+    motion_control_paths,
+    cache_dir,
+    split_name,
+    feature_type,
+    dtype_name="float32",
+    force_rebuild=False,
+):
+    motion_control_paths = [str(path) for path in motion_control_paths]
+    if not motion_control_paths:
+        raise ValueError("Cannot build motion-control store without feature files.")
+
+    dtype = resolve_feature_cache_dtype(dtype_name)
+    cache_dir = Path(cache_dir).resolve()
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    store_path = cache_dir / motion_control_store_cache_name(split_name, feature_type, dtype_name)
+    index_path = cache_dir / motion_control_store_index_name(split_name, feature_type, dtype_name)
+
+    if not force_rebuild and store_path.is_file() and index_path.is_file():
+        metadata = _read_feature_store_metadata(index_path)
+        if (
+            metadata
+            and metadata.get("cache_version") == MOTION_CONTROL_STORE_CACHE_VERSION
+            and metadata.get("mode") == FEATURE_CACHE_MEMMAP
+            and metadata.get("dtype") == dtype_name
+            and metadata.get("source_files") == motion_control_paths
+            and Path(metadata.get("store_path", "")) == store_path
+        ):
+            print(f"Using cached motion-control store: {store_path}")
+            return metadata
+
+    print(f"Building motion-control store: {store_path}")
+    if is_body_support_beatness_feature(feature_type):
+        control_dim = (
+            BODY_INTENSITY_DIM
+            + SUPPORT_BEATNESS_DIM
+            + UPPER_BEATNESS_DIM
+            + SUPPORT_CONTACT_DIM
+        )
+    else:
+        control_dim = MOTION_INTENSITY_DIM + MOTION_BEATNESS_DIM
+    tmp_store_path = store_path.with_name(f"{store_path.stem}.{os.getpid()}.tmp.npy")
+    motion_control_store = np.lib.format.open_memmap(
+        tmp_store_path,
+        mode="w+",
+        dtype=dtype,
+        shape=(len(motion_control_paths), 150, control_dim),
+    )
+    for idx, path in enumerate(
+        tqdm(
+            motion_control_paths,
+            desc=f"Packing {split_name} {feature_type} motion controls",
+            unit="clip",
+            mininterval=10,
+        )
+    ):
+        if is_body_support_beatness_feature(feature_type):
+            (
+                body_intensity,
+                support_beatness,
+                upper_beatness,
+                support_contact,
+            ) = _load_body_support_control(path)
+            motion_control_store[idx] = np.concatenate(
+                (body_intensity, support_beatness, upper_beatness, support_contact),
+                axis=-1,
+            ).astype(dtype, copy=False)
+        else:
+            motion_intensity, motion_beatness = _load_motion_control_pair(path)
+            motion_control_store[idx] = np.concatenate(
+                (motion_intensity, motion_beatness),
+                axis=-1,
+            ).astype(dtype, copy=False)
+    motion_control_store.flush()
+    del motion_control_store
+    tmp_store_path.replace(store_path)
+
+    metadata = {
+        "cache_version": MOTION_CONTROL_STORE_CACHE_VERSION,
+        "mode": FEATURE_CACHE_MEMMAP,
+        "dtype": dtype_name,
+        "store_path": str(store_path),
+        "source_files": motion_control_paths,
+        "shape": (len(motion_control_paths), 150, control_dim),
+        "fields": motion_control_store_fields(feature_type),
     }
     atomic_pickle_dump(metadata, index_path)
     return metadata
@@ -254,7 +476,10 @@ class AISTPPDataset(Dataset):
         self.feature_store_path = None
         self.feature_store_shape = None
         self._feature_store = None
-        self.raw_fps = 30 if self.motion_format == G1_MOTION_FORMAT else 60
+        self.motion_control_store_path = None
+        self.motion_control_store_shape = None
+        self._motion_control_store = None
+        self.raw_fps = 30 if is_g1_motion_format(self.motion_format) else 60
         self.data_fps = 30
         assert self.data_fps <= self.raw_fps
         self.data_stride = self.raw_fps // self.data_fps
@@ -268,6 +493,8 @@ class AISTPPDataset(Dataset):
         self.structured_motion_intensity_beatness = is_motion_intensity_beatness_feature(
             feature_type
         )
+        self.structured_motion_beatness_only = is_motion_beatness_only_feature(feature_type)
+        self.structured_body_support_beatness = is_body_support_beatness_feature(feature_type)
         if self.structured_motion_energy and self.use_beats:
             raise ValueError(f"{feature_type} uses structured control and does not support --use_beats")
         if self.structured_motion_energy and self.feature_cache_mode != FEATURE_CACHE_OFF:
@@ -321,6 +548,21 @@ class AISTPPDataset(Dataset):
         }
         if "structured_condition_paths" in data:
             self.data["structured_condition_paths"] = data["structured_condition_paths"]
+            if (
+                self.structured_motion_intensity_beatness
+                or self.structured_motion_beatness_only
+                or self.structured_body_support_beatness
+            ):
+                metadata = build_or_reuse_motion_control_store(
+                    [paths["motion_control"] for paths in data["structured_condition_paths"]],
+                    backup_path / "feature_stores",
+                    split_name,
+                    self.feature_type,
+                    dtype_name="float32",
+                    force_rebuild=force_reload,
+                )
+                self.motion_control_store_path = metadata["store_path"]
+                self.motion_control_store_shape = tuple(metadata["shape"])
         if self.feature_cache_mode == FEATURE_CACHE_MEMMAP:
             metadata = build_or_reuse_feature_store(
                 data["filenames"],
@@ -356,6 +598,7 @@ class AISTPPDataset(Dataset):
     def __getstate__(self):
         state = self.__dict__.copy()
         state["_feature_store"] = None
+        state["_motion_control_store"] = None
         return state
 
     def __len__(self):
@@ -367,6 +610,13 @@ class AISTPPDataset(Dataset):
         if self._feature_store is None:
             self._feature_store = np.load(self.feature_store_path, mmap_mode="r")
         return self._feature_store
+
+    def _open_motion_control_store(self):
+        if not hasattr(self, "_motion_control_store"):
+            self._motion_control_store = None
+        if self._motion_control_store is None:
+            self._motion_control_store = np.load(self.motion_control_store_path, mmap_mode="r")
+        return self._motion_control_store
 
     def _load_feature(self, idx):
         if self.structured_motion_energy:
@@ -380,13 +630,51 @@ class AISTPPDataset(Dataset):
 
     def _load_structured_motion_energy_feature(self, idx):
         paths = self.data["structured_condition_paths"][idx]
-        combined = np.load(paths["wav2clip_stft_beat"], mmap_mode="r")
+        if self.structured_motion_beatness_only:
+            beat_features = np.array(
+                np.load(paths["beat_features_8d"], mmap_mode="r"),
+                dtype=np.float32,
+                copy=True,
+            )
+            if beat_features.shape != (150, BEAT_FEATURES_8D_DIM):
+                raise ValueError(
+                    f"{paths['beat_features_8d']} expected {(150, BEAT_FEATURES_8D_DIM)}, "
+                    f"got {beat_features.shape}"
+                )
+            motion_control_store_path = getattr(self, "motion_control_store_path", None)
+            if motion_control_store_path:
+                motion_control = np.array(
+                    self._open_motion_control_store()[idx],
+                    dtype=np.float32,
+                    copy=True,
+                )
+                motion_beatness = motion_control[:, MOTION_INTENSITY_DIM:]
+            else:
+                _, motion_beatness = _load_motion_control_pair(paths["motion_control"])
+            return {
+                "semantic": {
+                    "beat_features_8d": torch.from_numpy(beat_features),
+                },
+                "control": {
+                    "motion_beatness": torch.from_numpy(motion_beatness),
+                },
+            }
+
+        combined = np.array(
+            np.load(paths["wav2clip_stft_beat"], mmap_mode="r"),
+            dtype=np.float32,
+            copy=True,
+        )
         if combined.shape != (150, WAV2CLIP_STFT_BEAT_DIM):
             raise ValueError(
                 f"{paths['wav2clip_stft_beat']} expected {(150, WAV2CLIP_STFT_BEAT_DIM)}, "
                 f"got {combined.shape}"
             )
-        gaussian_beat = np.load(paths["gaussian_beat"], mmap_mode="r")
+        gaussian_beat = np.array(
+            np.load(paths["gaussian_beat"], mmap_mode="r"),
+            dtype=np.float32,
+            copy=True,
+        )
         if gaussian_beat.shape != (150, GAUSSIAN_BEAT_DIM):
             raise ValueError(
                 f"{paths['gaussian_beat']} expected {(150, GAUSSIAN_BEAT_DIM)}, got {gaussian_beat.shape}"
@@ -396,26 +684,49 @@ class AISTPPDataset(Dataset):
                 np.array(gaussian_beat, dtype=np.float32, copy=True)
             ),
         }
-        if self.structured_motion_intensity_beatness:
-            with np.load(paths["motion_control"]) as motion_control:
-                motion_intensity = motion_control["motion_intensity_envelope"]
-                motion_beatness = motion_control["motion_beatness_envelope"]
-            if motion_intensity.shape != (150, MOTION_INTENSITY_DIM):
-                raise ValueError(
-                    f"{paths['motion_control']} motion_intensity_envelope expected "
-                    f"{(150, MOTION_INTENSITY_DIM)}, got {motion_intensity.shape}"
+        if self.structured_body_support_beatness:
+            motion_control_store_path = getattr(self, "motion_control_store_path", None)
+            if motion_control_store_path:
+                motion_control = np.array(
+                    self._open_motion_control_store()[idx],
+                    dtype=np.float32,
+                    copy=True,
                 )
-            if motion_beatness.shape != (150, MOTION_BEATNESS_DIM):
-                raise ValueError(
-                    f"{paths['motion_control']} motion_beatness_envelope expected "
-                    f"{(150, MOTION_BEATNESS_DIM)}, got {motion_beatness.shape}"
+                start = 0
+                body_intensity = motion_control[:, start : start + BODY_INTENSITY_DIM]
+                start += BODY_INTENSITY_DIM
+                support_beatness = motion_control[:, start : start + SUPPORT_BEATNESS_DIM]
+                start += SUPPORT_BEATNESS_DIM
+                upper_beatness = motion_control[:, start : start + UPPER_BEATNESS_DIM]
+                start += UPPER_BEATNESS_DIM
+                support_contact = motion_control[:, start : start + SUPPORT_CONTACT_DIM]
+            else:
+                (
+                    body_intensity,
+                    support_beatness,
+                    upper_beatness,
+                    support_contact,
+                ) = _load_body_support_control(paths["motion_control"])
+            control["body_intensity"] = torch.from_numpy(body_intensity)
+            control["support_beatness"] = torch.from_numpy(support_beatness)
+            control["upper_beatness"] = torch.from_numpy(upper_beatness)
+            control["support_contact"] = torch.from_numpy(support_contact)
+        elif self.structured_motion_intensity_beatness:
+            motion_control_store_path = getattr(self, "motion_control_store_path", None)
+            if motion_control_store_path:
+                motion_control = np.array(
+                    self._open_motion_control_store()[idx],
+                    dtype=np.float32,
+                    copy=True,
                 )
-            control["motion_intensity"] = torch.from_numpy(
-                np.array(motion_intensity, dtype=np.float32, copy=True)
-            )
-            control["motion_beatness"] = torch.from_numpy(
-                np.array(motion_beatness, dtype=np.float32, copy=True)
-            )
+                motion_intensity = motion_control[:, :MOTION_INTENSITY_DIM]
+                motion_beatness = motion_control[:, MOTION_INTENSITY_DIM:]
+            else:
+                motion_intensity, motion_beatness = _load_motion_control_pair(
+                    paths["motion_control"]
+                )
+            control["motion_intensity"] = torch.from_numpy(motion_intensity)
+            control["motion_beatness"] = torch.from_numpy(motion_beatness)
         else:
             with np.load(paths["motion_energy"]) as motion_energy:
                 beat_energy = motion_energy["beat_energy_envelope"]
@@ -438,7 +749,7 @@ class AISTPPDataset(Dataset):
 
     def __getitem__(self, idx):
         filename_ = self.data["filenames"][idx]
-        feature = self._load_feature(idx)
+        feature = type(self)._load_feature(self, idx)
         wavname = self.data["wavs"][idx]
         if not self.use_beats:
             return self.data["pose"][idx], feature, filename_, wavname
@@ -478,13 +789,15 @@ class AISTPPDataset(Dataset):
 
         motion_path = os.path.join(split_data_path, "motions_sliced")
         if self.structured_motion_energy:
-            sound_path = os.path.join(split_data_path, "wav2clip_stft_beat_feats")
-            gaussian_beat_path = os.path.join(split_data_path, "gaussian_beat_feats")
+            if self.structured_motion_beatness_only:
+                sound_path = os.path.join(split_data_path, "beat_features_8d_feats")
+                gaussian_beat_path = None
+            else:
+                sound_path = os.path.join(split_data_path, "wav2clip_stft_beat_feats")
+                gaussian_beat_path = os.path.join(split_data_path, "gaussian_beat_feats")
             motion_energy_path = os.path.join(
                 split_data_path,
-                "motion_control_v2_feats"
-                if self.structured_motion_intensity_beatness
-                else "motion_energy_feats",
+                motion_control_feature_dir(self.feature_type),
             )
         else:
             sound_path = os.path.join(split_data_path, f"{self.feature_type}_feats")
@@ -495,7 +808,7 @@ class AISTPPDataset(Dataset):
         features = sorted(glob.glob(os.path.join(sound_path, "*.npy")))
         gaussian_features = (
             sorted(glob.glob(os.path.join(gaussian_beat_path, "*.npy")))
-            if self.structured_motion_energy
+            if self.structured_motion_energy and gaussian_beat_path is not None
             else []
         )
         motion_energy_features = (
@@ -518,7 +831,10 @@ class AISTPPDataset(Dataset):
         all_motion_mask = []
         all_audio_dist = []
         all_audio_mask = []
-        if self.structured_motion_energy:
+        if self.structured_motion_beatness_only:
+            assert len(motions) == len(features) == len(motion_energy_features) == len(wavs)
+            pairs = zip(motions, features, motion_energy_features, wavs)
+        elif self.structured_motion_energy:
             assert len(motions) == len(features) == len(gaussian_features) == len(motion_energy_features) == len(wavs)
             pairs = zip(motions, features, gaussian_features, motion_energy_features, wavs)
         elif self.use_beats:
@@ -529,7 +845,9 @@ class AISTPPDataset(Dataset):
             pairs = zip(motions, features, wavs)
 
         for items in pairs:
-            if self.structured_motion_energy:
+            if self.structured_motion_beatness_only:
+                motion, feature, motion_energy_feature, wav = items
+            elif self.structured_motion_energy:
                 motion, feature, gaussian_feature, motion_energy_feature, wav = items
             elif self.use_beats:
                 motion, feature, wav, beat = items
@@ -539,7 +857,12 @@ class AISTPPDataset(Dataset):
             m_name = os.path.splitext(os.path.basename(motion))[0]
             f_name = os.path.splitext(os.path.basename(feature))[0]
             w_name = os.path.splitext(os.path.basename(wav))[0]
-            if self.structured_motion_energy:
+            if self.structured_motion_beatness_only:
+                e_name = os.path.splitext(os.path.basename(motion_energy_feature))[0]
+                assert m_name == f_name == e_name == w_name, str(
+                    (motion, feature, motion_energy_feature, wav)
+                )
+            elif self.structured_motion_energy:
                 g_name = os.path.splitext(os.path.basename(gaussian_feature))[0]
                 e_name = os.path.splitext(os.path.basename(motion_energy_feature))[0]
                 assert m_name == f_name == g_name == e_name == w_name, str(
@@ -553,7 +876,7 @@ class AISTPPDataset(Dataset):
             # load motion
             with open(motion, "rb") as handle:
                 data = pickle.load(handle)
-            if self.motion_format == G1_MOTION_FORMAT:
+            if is_g1_motion_format(self.motion_format):
                 pos = data.get("root_pos", data.get("pos"))
                 root_rot = data.get("root_rot")
                 dof_pos = data.get("dof_pos")
@@ -575,14 +898,24 @@ class AISTPPDataset(Dataset):
             all_q.append(q)
             all_names.append(feature)
             all_wavs.append(wav)
-            if self.structured_motion_energy:
+            if self.structured_motion_beatness_only:
+                all_structured_condition_paths.append(
+                    {
+                        "beat_features_8d": feature,
+                        "motion_control": motion_energy_feature,
+                    }
+                )
+            elif self.structured_motion_energy:
                 all_structured_condition_paths.append(
                     {
                         "wav2clip_stft_beat": feature,
                         "gaussian_beat": gaussian_feature,
                         (
                             "motion_control"
-                            if self.structured_motion_intensity_beatness
+                            if (
+                                self.structured_motion_intensity_beatness
+                                or self.structured_body_support_beatness
+                            )
                             else "motion_energy"
                         ): motion_energy_feature,
                     }
@@ -620,7 +953,7 @@ class AISTPPDataset(Dataset):
         return data
 
     def process_dataset(self, root_pos, local_q):
-        if self.motion_format == G1_MOTION_FORMAT:
+        if is_g1_motion_format(self.motion_format):
             return self.process_g1_dataset(root_pos, local_q)
         return self.process_smpl_dataset(root_pos, local_q)
 
@@ -629,10 +962,11 @@ class AISTPPDataset(Dataset):
         local_q = torch.Tensor(local_q)
         if local_q.shape[-1] != 33:
             raise ValueError(f"G1 motion q expected 33 channels, got {local_q.shape[-1]}")
-        global_pose_vec_input = encode_g1_motion(
+        global_pose_vec_input = encode_g1_motion_for_format(
             root_pos,
             local_q[:, :, :4],
             local_q[:, :, 4:],
+            motion_format=self.motion_format,
         ).float().detach()
 
         if self.train:

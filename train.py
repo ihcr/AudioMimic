@@ -1,4 +1,7 @@
+import os
+
 from args import parse_train_opt
+from dataset.motion_representation import is_g1_motion_format
 
 EDGE = None
 
@@ -13,6 +16,11 @@ def _load_edge():
 
 
 def train(opt):
+    motion_format = getattr(opt, "motion_format", None)
+    if motion_format is not None and is_g1_motion_format(motion_format) and getattr(
+        opt, "g1_mujoco_gl", None
+    ):
+        os.environ.setdefault("MUJOCO_GL", opt.g1_mujoco_gl)
     model = _load_edge()(
         opt.feature_type,
         checkpoint_path=opt.checkpoint,
@@ -45,9 +53,27 @@ def train(opt):
         lambda_g1_kin=getattr(opt, "lambda_g1_kin", 1.0),
         g1_kin_loss_warmup_epochs=getattr(opt, "g1_kin_loss_warmup_epochs", 0),
         g1_kin_loss_max_fraction=getattr(opt, "g1_kin_loss_max_fraction", 0.0),
+        lambda_g1_root_angular=getattr(opt, "lambda_g1_root_angular", 0.0),
+        g1_root_angular_velocity_margin=getattr(
+            opt,
+            "g1_root_angular_velocity_margin",
+            3.141592653589793,
+        ),
+        g1_root_angular_acceleration_margin=getattr(
+            opt,
+            "g1_root_angular_acceleration_margin",
+            18.84955592153876,
+        ),
+        g1_root_angular_acceleration_weight=getattr(
+            opt,
+            "g1_root_angular_acceleration_weight",
+            0.25,
+        ),
+        g1_root_angular_max_fraction=getattr(opt, "g1_root_angular_max_fraction", 0.05),
         lambda_motion_energy=getattr(opt, "lambda_motion_energy", 0.0),
         lambda_motion_intensity=getattr(opt, "lambda_motion_intensity", None),
         lambda_motion_beatness=getattr(opt, "lambda_motion_beatness", 0.0),
+        motion_energy_frame=getattr(opt, "motion_energy_frame", "auto"),
         motion_beatness_warmup_start_epoch=getattr(
             opt,
             "motion_beatness_warmup_start_epoch",
@@ -61,6 +87,8 @@ def train(opt):
         energy_smoothness_weight=getattr(opt, "energy_smoothness_weight", 0.1),
         motion_energy_norm_p05=getattr(opt, "motion_energy_norm_p05", None),
         motion_energy_norm_p95=getattr(opt, "motion_energy_norm_p95", None),
+        motion_beatness_norm_p05=getattr(opt, "motion_beatness_norm_p05", None),
+        motion_beatness_norm_p95=getattr(opt, "motion_beatness_norm_p95", None),
         g1_fk_model_path=getattr(
             opt,
             "g1_fk_model_path",

@@ -9,9 +9,14 @@ from pathlib import Path
 
 from args import resolve_train_test_workers, resolve_worker_count
 from feature_config import (
+    BEAT_FEATURES_8D_FEATURE_TYPE,
+    BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE,
     FEATURE_DIMS,
     FEATURE_FUSIONS,
     GAUSSIAN_BEAT_FEATURE_TYPE,
+    WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE,
+    WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+    WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
     WAV2CLIP_STFT_BEAT_FEATURE_TYPE,
     validate_feature_fusion,
 )
@@ -28,6 +33,7 @@ def resolve_shared_root(path):
 SCRIPT_ROOT = Path(__file__).resolve().parent
 SHARED_ROOT = resolve_shared_root(SCRIPT_ROOT)
 DEFAULT_BATCH_SIZE = 128
+G1_MOTION_FORMATS = ("g1", "g1_root_delta", "g1_yaw_delta")
 DEFAULT_LEARNING_RATE = 2e-4
 DEFAULT_LBEAT_REFERENCE_EVAL_DIR = str(
     SCRIPT_ROOT
@@ -62,7 +68,7 @@ PRESET_DEFAULTS = {
         "batch_size": DEFAULT_BATCH_SIZE,
         "gradient_accumulation_steps": 4,
         "epochs": 2000,
-        "save_interval": 100,
+        "save_interval": 250,
         "learning_rate": DEFAULT_LEARNING_RATE,
     },
     "edge_beatpulse": {
@@ -74,7 +80,7 @@ PRESET_DEFAULTS = {
         "batch_size": DEFAULT_BATCH_SIZE,
         "gradient_accumulation_steps": 4,
         "epochs": 2000,
-        "save_interval": 100,
+        "save_interval": 250,
         "learning_rate": DEFAULT_LEARNING_RATE,
     },
     "edge_beatdistance": {
@@ -86,7 +92,7 @@ PRESET_DEFAULTS = {
         "batch_size": DEFAULT_BATCH_SIZE,
         "gradient_accumulation_steps": 4,
         "epochs": 2000,
-        "save_interval": 100,
+        "save_interval": 250,
         "learning_rate": DEFAULT_LEARNING_RATE,
     },
     "edge_beatdistance_lbeat": {
@@ -98,7 +104,7 @@ PRESET_DEFAULTS = {
         "batch_size": DEFAULT_BATCH_SIZE,
         "gradient_accumulation_steps": 4,
         "epochs": 500,
-        "save_interval": 50,
+        "save_interval": 250,
         "learning_rate": DEFAULT_LEARNING_RATE,
         "beat_loss_start_epoch": 25,
         "beat_loss_warmup_epochs": 200,
@@ -117,7 +123,7 @@ PRESET_DEFAULTS = {
         "batch_size": DEFAULT_BATCH_SIZE,
         "gradient_accumulation_steps": 4,
         "epochs": 2000,
-        "save_interval": 100,
+        "save_interval": 250,
         "learning_rate": DEFAULT_LEARNING_RATE,
         "feature_cache_mode": "memmap",
         "feature_cache_dtype": "float32",
@@ -135,7 +141,7 @@ PRESET_DEFAULTS = {
         "batch_size": DEFAULT_BATCH_SIZE,
         "gradient_accumulation_steps": 4,
         "epochs": 2000,
-        "save_interval": 100,
+        "save_interval": 250,
         "learning_rate": DEFAULT_LEARNING_RATE,
         "feature_cache_mode": "memmap",
         "feature_cache_dtype": "float32",
@@ -154,7 +160,7 @@ PRESET_DEFAULTS = {
         "batch_size": DEFAULT_BATCH_SIZE,
         "gradient_accumulation_steps": 4,
         "epochs": 500,
-        "save_interval": 50,
+        "save_interval": 250,
         "learning_rate": DEFAULT_LEARNING_RATE,
         "beat_loss_start_epoch": 50,
         "beat_loss_warmup_epochs": 300,
@@ -179,7 +185,7 @@ PRESET_DEFAULTS = {
         "batch_size": DEFAULT_BATCH_SIZE,
         "gradient_accumulation_steps": 4,
         "epochs": 2000,
-        "save_interval": 100,
+        "save_interval": 250,
         "learning_rate": DEFAULT_LEARNING_RATE,
         "feature_cache_mode": "memmap",
         "feature_cache_dtype": "float32",
@@ -204,7 +210,7 @@ PRESET_DEFAULTS = {
         "batch_size": 512,
         "gradient_accumulation_steps": 1,
         "epochs": 1000,
-        "save_interval": 100,
+        "save_interval": 250,
         "learning_rate": DEFAULT_LEARNING_RATE,
         "beat_loss_start_epoch": 50,
         "beat_loss_warmup_epochs": 300,
@@ -229,7 +235,7 @@ PRESET_DEFAULTS = {
         "batch_size": 512,
         "gradient_accumulation_steps": 1,
         "epochs": 500,
-        "save_interval": 50,
+        "save_interval": 250,
         "learning_rate": DEFAULT_LEARNING_RATE,
         "feature_cache_mode": "memmap",
         "feature_cache_dtype": "float16",
@@ -248,7 +254,7 @@ PRESET_DEFAULTS = {
         "batch_size": 512,
         "gradient_accumulation_steps": 1,
         "epochs": 500,
-        "save_interval": 50,
+        "save_interval": 250,
         "learning_rate": DEFAULT_LEARNING_RATE,
         "feature_cache_mode": "memmap",
         "feature_cache_dtype": "float16",
@@ -267,7 +273,26 @@ PRESET_DEFAULTS = {
         "batch_size": 512,
         "gradient_accumulation_steps": 1,
         "epochs": 500,
-        "save_interval": 50,
+        "save_interval": 250,
+        "learning_rate": DEFAULT_LEARNING_RATE,
+        "feature_cache_mode": "memmap",
+        "feature_cache_dtype": "float16",
+        "skip_preprocess": True,
+        "enable_g1_fk_metrics": True,
+    },
+    "g1_finedance_beat_features_8d": {
+        "motion_format": "g1",
+        "data_path": "data/finedance_g1_fkbeats",
+        "processed_data_dir": "data/finedance_g1_beat_features_8d_dataset_backups",
+        "feature_type": BEAT_FEATURES_8D_FEATURE_TYPE,
+        "feature_fusion": "linear",
+        "use_beats": False,
+        "lambda_acc": 0.0,
+        "lambda_beat": 0.0,
+        "batch_size": 512,
+        "gradient_accumulation_steps": 1,
+        "epochs": 1000,
+        "save_interval": 250,
         "learning_rate": DEFAULT_LEARNING_RATE,
         "feature_cache_mode": "memmap",
         "feature_cache_dtype": "float16",
@@ -286,7 +311,7 @@ PRESET_DEFAULTS = {
         "batch_size": DEFAULT_BATCH_SIZE,
         "gradient_accumulation_steps": 4,
         "epochs": 2000,
-        "save_interval": 100,
+        "save_interval": 250,
         "learning_rate": DEFAULT_LEARNING_RATE,
         "skip_preprocess": True,
     },
@@ -369,7 +394,7 @@ def parse_args(argv=None):
     parser.add_argument("--train_name", required=True, help="Logical name for the training run.")
     parser.add_argument("--feature_type", choices=tuple(sorted(FEATURE_DIMS)), default="baseline")
     parser.add_argument("--feature_fusion", choices=FEATURE_FUSIONS, default="linear")
-    parser.add_argument("--motion_format", choices=("smpl", "g1"), default="smpl")
+    parser.add_argument("--motion_format", choices=("smpl", "g1", "g1_root_delta", "g1_yaw_delta"), default="smpl")
     parser.add_argument("--use_beats", action="store_true")
     parser.add_argument(
         "--beat_rep", choices=("distance", "pulse"), default="distance"
@@ -422,7 +447,7 @@ def parse_args(argv=None):
     parser.add_argument("--gradient_accumulation_steps", type=int, default=1)
     parser.add_argument("--epochs", type=int, default=2000)
     parser.add_argument("--epoch_offset", type=int, default=0)
-    parser.add_argument("--save_interval", type=int, default=100)
+    parser.add_argument("--save_interval", type=int, default=250)
     parser.add_argument("--ema_interval", type=int, default=1)
     parser.add_argument("--learning_rate", type=float, default=None)
     parser.add_argument("--weight_decay", type=float, default=0.02)
@@ -525,7 +550,13 @@ def resolve_stage_mixed_precision(requested_mode, gpus):
 def apply_dynamic_defaults(args):
     apply_preset_defaults(args)
     if args.preprocess_gpus is None:
-        needs_feature_gpu = args.feature_type in ("jukebox", WAV2CLIP_STFT_BEAT_FEATURE_TYPE)
+        needs_feature_gpu = args.feature_type in (
+            "jukebox",
+            WAV2CLIP_STFT_BEAT_FEATURE_TYPE,
+            WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+            WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+            WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE,
+        )
         args.preprocess_gpus = 1 if needs_feature_gpu else 0
     if args.learning_rate is None:
         args.learning_rate = DEFAULT_LEARNING_RATE
@@ -590,11 +621,11 @@ def validate_pipeline_config(args):
         raise ValueError("--g1_kin_loss_warmup_epochs must be non-negative.")
     if args.g1_kin_loss_max_fraction < 0:
         raise ValueError("--g1_kin_loss_max_fraction must be non-negative.")
-    if any(weight > 0 for weight in g1_loss_weights) and args.motion_format != "g1":
-        raise ValueError("G1 robot losses require --motion_format g1.")
+    if any(weight > 0 for weight in g1_loss_weights) and args.motion_format not in G1_MOTION_FORMATS:
+        raise ValueError("G1 robot losses require a G1 motion format.")
     if args.beat_estimator_max_val_loss <= 0:
         raise ValueError("--beat_estimator_max_val_loss must be positive.")
-    if args.motion_format == "g1" and args.eval_mode != "dataset":
+    if args.motion_format in G1_MOTION_FORMATS and args.eval_mode != "dataset":
         raise ValueError("G1 evaluation currently supports --eval_mode dataset only.")
     return args
 
@@ -609,8 +640,18 @@ def build_preprocess_command(args):
         command.append("--extract-baseline")
     if args.feature_type == "jukebox":
         command.append("--extract-jukebox")
-    if args.feature_type == WAV2CLIP_STFT_BEAT_FEATURE_TYPE:
+    if args.feature_type in (
+        WAV2CLIP_STFT_BEAT_FEATURE_TYPE,
+        WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+        WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+        WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE,
+    ):
         command.append("--extract-wav2clip-stft-beat")
+    if args.feature_type in (
+        BEAT_FEATURES_8D_FEATURE_TYPE,
+        BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE,
+    ):
+        command.append("--extract-beat-features-8d")
     if args.use_beats:
         command.append("--extract-beats")
     return shell_join(command)
@@ -730,7 +771,7 @@ def build_train_command(args, beat_estimator_ckpt=None):
         )
         if beat_estimator_ckpt:
             command.extend(["--beat_estimator_ckpt", beat_estimator_ckpt])
-    elif args.motion_format == "g1":
+    elif args.motion_format in G1_MOTION_FORMATS:
         command.extend(["--lambda_beat", args.lambda_beat])
     if args.checkpoint:
         command.extend(["--checkpoint", args.checkpoint])
@@ -1136,7 +1177,7 @@ def submit_pipeline(args, repo_root=None, sbatch_submitter=submit_sbatch):
 
     if not args.skip_eval:
         eval_dir = run_dir / "eval"
-        if args.motion_format == "g1":
+        if args.motion_format in G1_MOTION_FORMATS:
             eval_command = build_g1_eval_command(
                 args,
                 checkpoint_path=final_checkpoint_path(args),

@@ -40,6 +40,12 @@ Use package-style entry points for evaluation code when available. Running files
 - Keep W&B enabled for training unless the user explicitly asks for offline/disabled mode. Future runs should log epoch-level losses, progress, throughput, ETA, and checkpoint markers so training curves are visible while jobs run.
 - For long training runs, run full evaluation at every 500-epoch checkpoint by default. Sample renders do not count as eval. If training is still using the only GPU, record the eval as pending in the experiment spec and run it at the next GPU-safe window.
 
+## Research Knowledge Base
+- Use `docs/research/README.md` as the entrypoint for durable method research and long-term architecture blueprints.
+- Use `docs/research/modules/` for module-level architecture specs such as latent priors, music-to-latent generation, feasibility critics, streaming roadmaps, RL/control layers, and their ablation matrices.
+- Use `docs/papers/INDEX.md` as the project paper database. Add papers there with category, link, local asset status, relevance, reusable idea, and limitation.
+- Keep paper-library conclusions durable and general. Put run-specific evidence, checkpoint comparisons, and one-off conclusions in experiment specs.
+
 ## Branch And Worktree Boundaries
 - Keep `main` close to original EDGE plus local environment fixes.
 - Beat-conditioned work belongs on the `diffusion` branch.

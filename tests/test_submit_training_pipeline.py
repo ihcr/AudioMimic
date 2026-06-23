@@ -50,7 +50,7 @@ class CommandBuilderTests(unittest.TestCase):
         self.assertEqual(args.lambda_beat, 0.02)
         self.assertEqual(args.lambda_acc, 0.1)
         self.assertEqual(args.epochs, 500)
-        self.assertEqual(args.save_interval, 50)
+        self.assertEqual(args.save_interval, 250)
         self.assertEqual(args.beat_loss_start_epoch, 25)
         self.assertEqual(args.beat_loss_warmup_epochs, 200)
         self.assertEqual(args.beat_loss_max_fraction, 0.25)
@@ -146,7 +146,7 @@ class CommandBuilderTests(unittest.TestCase):
         self.assertEqual(args.lambda_beat, 0.01)
         self.assertEqual(args.lambda_acc, 0.0)
         self.assertEqual(args.epochs, 500)
-        self.assertEqual(args.save_interval, 50)
+        self.assertEqual(args.save_interval, 250)
         self.assertEqual(args.beat_loss_start_epoch, 50)
         self.assertEqual(args.beat_loss_warmup_epochs, 300)
         self.assertEqual(args.beat_loss_max_fraction, 0.10)
@@ -366,6 +366,22 @@ class CommandBuilderTests(unittest.TestCase):
         self.assertIn("--extract-jukebox", command)
         self.assertIn("--extract-beats", command)
         self.assertNotIn("--extract-baseline", command)
+
+    def test_preprocess_command_uses_beat8d_extractor_for_motion_beatness_combo(self):
+        submit_module = reload_module()
+        args = submit_module.parse_args(
+            [
+                "--feature_type",
+                "beat_features_8d_motion_beatness",
+                "--train_name",
+                "demo",
+            ]
+        )
+
+        command = submit_module.build_preprocess_command(args)
+
+        self.assertIn("--extract-beat-features-8d", command)
+        self.assertNotIn("--extract-wav2clip-stft-beat", command)
 
     def test_train_command_uses_generated_estimator_checkpoint_when_needed(self):
         submit_module = reload_module()

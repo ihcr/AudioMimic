@@ -126,9 +126,77 @@ class FullSongEvalHelperTests(unittest.TestCase):
                     precomputed_data_path=data_root,
                 )
 
-        self.assertEqual([path.name for path in wav_slices], ["song_slice0.wav", "song_slice1.wav"])
+        self.assertEqual([path.name for path in wav_slices], ["song_slice0.wav", "song_slice5.wav"])
         self.assertEqual(tuple(music_cond.shape), (2, 150, 4800))
         self.assertEqual(load_mock.call_count, 2)
+
+    def test_select_precomputed_long_slices_skips_half_second_cache_overlap(self):
+        eval_module = reload_module("eval.run_full_song_eval")
+
+        wav_slices = [Path(f"song_slice{idx}.wav") for idx in range(16)]
+
+        selected = eval_module.select_precomputed_long_slices(wav_slices, expected_slices=4)
+
+        self.assertEqual(
+            [path.name for path in selected],
+            ["song_slice0.wav", "song_slice5.wav", "song_slice10.wav", "song_slice15.wav"],
+        )
+
+    def test_full_song_feature_dir_names_cover_new_feature_types(self):
+        eval_module = reload_module("eval.run_full_song_eval")
+
+        self.assertEqual(eval_module._feature_dir_name("baseline"), "baseline_feats")
+        self.assertEqual(eval_module._feature_dir_name("jukebox"), "jukebox_feats")
+        self.assertEqual(
+            eval_module._feature_dir_name("wav2clip_stft_beat"),
+            "wav2clip_stft_beat_feats",
+        )
+        self.assertEqual(
+            eval_module._feature_dir_name("beat_features_8d"),
+            "beat_features_8d_feats",
+        )
+        self.assertEqual(
+            eval_module._feature_dir_name("beat_features_8d_motion_beatness"),
+            "beat_features_8d_motion_beatness_feats",
+        )
+
+    def test_build_structured_full_song_condition_uses_wav2clip_and_zero_controls(self):
+        import torch
+
+        eval_module = reload_module("eval.run_full_song_eval")
+        combined = torch.ones((2, 150, 706))
+        gaussian = torch.full((2, 150, 1), 0.5)
+
+        cond = eval_module.build_structured_motion_condition(
+            "wav2clip_local_motion_intensity_beatness",
+            {
+                "wav2clip_stft_beat": combined,
+                "gaussian_beat": gaussian,
+            },
+        )
+
+        self.assertEqual(tuple(cond["semantic"]["wav2clip"].shape), (2, 150, 512))
+        self.assertTrue(torch.equal(cond["control"]["gaussian_beat"], gaussian))
+        self.assertEqual(tuple(cond["control"]["motion_intensity"].shape), (2, 150, 1))
+        self.assertEqual(tuple(cond["control"]["motion_beatness"].shape), (2, 150, 1))
+        self.assertEqual(float(cond["control"]["motion_intensity"].sum().item()), 0.0)
+
+    def test_build_structured_full_song_condition_uses_beat8d_and_zero_beatness(self):
+        import torch
+
+        eval_module = reload_module("eval.run_full_song_eval")
+        beat_features = torch.ones((2, 150, 8))
+
+        cond = eval_module.build_structured_motion_condition(
+            "beat_features_8d_motion_beatness",
+            {
+                "beat_features_8d": beat_features,
+            },
+        )
+
+        self.assertTrue(torch.equal(cond["semantic"]["beat_features_8d"], beat_features))
+        self.assertEqual(tuple(cond["control"]["motion_beatness"].shape), (2, 150, 1))
+        self.assertEqual(float(cond["control"]["motion_beatness"].sum().item()), 0.0)
 
     def test_slice_audio_uses_requested_output_stem_for_full_music(self):
         eval_module = reload_module("eval.run_full_song_eval")

@@ -74,7 +74,10 @@ def parse_train_opt(argv=None):
         help="conditioning fusion for feature stacks with multiple streams",
     )
     parser.add_argument(
-        "--motion_format", type=str, choices=("smpl", "g1"), default="smpl"
+        "--motion_format",
+        type=str,
+        choices=("smpl", "g1", "g1_root_delta", "g1_yaw_delta"),
+        default="smpl",
     )
     parser.add_argument(
         "--wandb_pj_name", type=str, default="EDGE", help="project name"
@@ -102,8 +105,63 @@ def parse_train_opt(argv=None):
     parser.add_argument(
         "--save_interval",
         type=int,
-        default=100,
+        default=250,
         help='Log model after every "save_period" epoch',
+    )
+    parser.add_argument(
+        "--full_eval_interval",
+        type=int,
+        default=None,
+        help=(
+            "Run full G1 dataset evaluation every N global epochs. "
+            "Defaults to 500 for G1 training and 0 for SMPL; set 0 to disable."
+        ),
+    )
+    parser.add_argument(
+        "--full_eval_root",
+        type=str,
+        default="eval",
+        help="Root directory for training-triggered full-eval artifacts.",
+    )
+    parser.add_argument(
+        "--full_eval_batch_size",
+        type=int,
+        default=32,
+        help="Batch size for training-triggered full G1 evaluation.",
+    )
+    parser.add_argument(
+        "--full_eval_max_clips",
+        type=int,
+        default=0,
+        help="Limit training-triggered eval clips; 0 means the full test split.",
+    )
+    parser.add_argument(
+        "--full_eval_variants",
+        type=str,
+        default="auto",
+        help=(
+            "Comma-separated motion-control eval variants. 'auto' expands to "
+            "the standard variants for structured control models."
+        ),
+    )
+    parser.add_argument(
+        "--full_eval_diagnostic_count",
+        type=int,
+        default=8,
+        help="Number of diagnostic plots to write during training-triggered full eval.",
+    )
+    parser.add_argument(
+        "--full_eval_disable_fk_metrics",
+        action="store_true",
+        help="Disable FK metrics during training-triggered G1 full eval.",
+    )
+    parser.add_argument(
+        "--skip_train_sample_render",
+        action="store_true",
+        help=(
+            "Skip periodic sample rendering during training checkpoints. "
+            "Checkpoint saves and full evaluation still run."
+        ),
     )
     parser.add_argument("--ema_interval", type=int, default=1, help="ema every x steps")
     parser.add_argument(
@@ -151,9 +209,27 @@ def parse_train_opt(argv=None):
     parser.add_argument("--lambda_g1_kin", type=float, default=1.0)
     parser.add_argument("--g1_kin_loss_warmup_epochs", type=int, default=0)
     parser.add_argument("--g1_kin_loss_max_fraction", type=float, default=0.0)
+    parser.add_argument("--lambda_g1_root_angular", type=float, default=0.0)
+    parser.add_argument(
+        "--g1_root_angular_velocity_margin",
+        type=float,
+        default=3.141592653589793,
+    )
+    parser.add_argument(
+        "--g1_root_angular_acceleration_margin",
+        type=float,
+        default=18.84955592153876,
+    )
+    parser.add_argument("--g1_root_angular_acceleration_weight", type=float, default=0.25)
+    parser.add_argument("--g1_root_angular_max_fraction", type=float, default=0.05)
     parser.add_argument("--lambda_motion_energy", type=float, default=0.0)
     parser.add_argument("--lambda_motion_intensity", type=float, default=None)
     parser.add_argument("--lambda_motion_beatness", type=float, default=0.0)
+    parser.add_argument(
+        "--motion_energy_frame",
+        choices=("auto", "world", "root_local"),
+        default="auto",
+    )
     parser.add_argument("--motion_beatness_warmup_start_epoch", type=int, default=100)
     parser.add_argument("--motion_beatness_warmup_epochs", type=int, default=400)
     parser.add_argument("--motion_beatness_max_fraction", type=float, default=0.1)
@@ -165,6 +241,8 @@ def parse_train_opt(argv=None):
     parser.add_argument("--motion_energy_norm_p95", type=float, default=None)
     parser.add_argument("--motion_intensity_norm_p05", type=float, default=None)
     parser.add_argument("--motion_intensity_norm_p95", type=float, default=None)
+    parser.add_argument("--motion_beatness_norm_p05", type=float, default=None)
+    parser.add_argument("--motion_beatness_norm_p95", type=float, default=None)
     parser.add_argument(
         "--g1_fk_model_path",
         type=str,
@@ -176,6 +254,15 @@ def parse_train_opt(argv=None):
         choices=("wxyz", "xyzw"),
         default="xyzw",
     )
+    parser.add_argument(
+        "--g1_render_backend",
+        type=str,
+        choices=("mujoco", "stick"),
+        default="mujoco",
+    )
+    parser.add_argument("--g1_render_width", type=int, default=960)
+    parser.add_argument("--g1_render_height", type=int, default=720)
+    parser.add_argument("--g1_mujoco_gl", type=str, default="egl")
     parser.add_argument(
         "--finetune_from_checkpoint",
         action="store_true",
@@ -221,6 +308,13 @@ def parse_train_opt(argv=None):
         opt.motion_energy_norm_p05 = opt.motion_intensity_norm_p05
     if opt.motion_intensity_norm_p95 is not None:
         opt.motion_energy_norm_p95 = opt.motion_intensity_norm_p95
+    if (opt.motion_beatness_norm_p05 is None) != (opt.motion_beatness_norm_p95 is None):
+        parser.error("--motion_beatness_norm_p05 and --motion_beatness_norm_p95 must be set together")
+    if (
+        opt.motion_beatness_norm_p05 is not None
+        and opt.motion_beatness_norm_p95 <= opt.motion_beatness_norm_p05
+    ):
+        parser.error("--motion_beatness_norm_p95 must be greater than --motion_beatness_norm_p05")
     opt.train_num_workers, opt.test_num_workers = resolve_train_test_workers(
         opt.train_num_workers if train_workers_explicit else None,
         opt.test_num_workers if test_workers_explicit else None,
@@ -239,7 +333,10 @@ def parse_test_opt():
         help="conditioning fusion for feature stacks with multiple streams",
     )
     parser.add_argument(
-        "--motion_format", type=str, choices=("smpl", "g1"), default="smpl"
+        "--motion_format",
+        type=str,
+        choices=("smpl", "g1", "g1_root_delta", "g1_yaw_delta"),
+        default="smpl",
     )
     parser.add_argument(
         "--g1_fk_model_path",

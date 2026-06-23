@@ -1,5 +1,6 @@
 import os
 import pickle
+import shutil
 import time
 import math
 from datetime import datetime, timedelta
@@ -15,13 +16,16 @@ from tqdm import tqdm
 
 from dataset.dance_dataset import AISTPPDataset
 from dataset.motion_representation import (
-    G1_MOTION_FORMAT,
     SMPL_MOTION_FORMAT,
+    is_g1_motion_format,
     motion_repr_dim,
     validate_motion_format,
 )
 from dataset.preprocess import increment_path
 from feature_config import (
+    BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE,
+    WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE,
+    WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
     WAV2CLIP_MOTION_ENERGY_BEAT_FEATURE_TYPE,
     WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
     get_cond_feature_dim,
@@ -32,8 +36,10 @@ from model.beat_estimator import BeatDistanceEstimator, G1BeatDistanceEstimator
 from model.diffusion import (GaussianDiffusion, cond_batch_size, move_cond_to_device,
                              slice_cond)
 from model.model import (
+    BeatFeatures8DMotionBeatnessDecoder,
     BeatDanceDecoder,
     DanceDecoder,
+    Wav2ClipBodySupportBeatnessDecoder,
     Wav2ClipMotionEnergyBeatDecoder,
     Wav2ClipMotionIntensityBeatnessDecoder,
 )
@@ -41,6 +47,46 @@ from vis import SMPLSkeleton
 
 TENSOR_DATASET_CACHE_VERSION = "v5"
 TRAIN_POSTFIX_UPDATE_INTERVAL = 10
+DEFAULT_G1_FULL_EVAL_INTERVAL = 500
+DEFAULT_FULL_EVAL_BATCH_SIZE = 32
+DEFAULT_FULL_EVAL_VARIANTS = {
+    BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE: (
+        "pred_controls",
+        "oracle_controls",
+        "zero_beatness",
+        "zero_all_controls",
+    ),
+    WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE: (
+        "pred_controls",
+        "oracle_controls",
+        "flat_intensity",
+        "zero_beatness",
+        "zero_all_controls",
+    ),
+    WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE: (
+        "pred_controls",
+        "oracle_controls",
+        "flat_intensity",
+        "zero_beatness",
+        "zero_all_controls",
+    ),
+    WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE: (
+        "pred_controls",
+        "oracle_controls",
+        "flat_body_intensity",
+        "zero_support_beatness",
+        "zero_upper_beatness",
+        "zero_support_contact",
+        "zero_all_controls",
+    ),
+    WAV2CLIP_MOTION_ENERGY_BEAT_FEATURE_TYPE: (
+        "pred_energy",
+        "oracle_gt",
+        "flat_energy",
+        "zero_energy",
+        "zero_control",
+    ),
+}
 
 
 def format_duration(seconds):
@@ -52,6 +98,35 @@ def format_duration(seconds):
     if minutes:
         return f"{minutes}m{seconds:02d}s"
     return f"{seconds}s"
+
+
+def format_bytes(num_bytes):
+    units = ("B", "KB", "MB", "GB", "TB")
+    value = float(num_bytes)
+    for unit in units:
+        if value < 1024 or unit == units[-1]:
+            return f"{value:.1f}{unit}"
+        value /= 1024
+
+
+def save_checkpoint_atomic(ckpt, ckpt_path):
+    ckpt_path = Path(ckpt_path)
+    ckpt_path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = ckpt_path.with_name(f"{ckpt_path.name}.tmp")
+    try:
+        torch.save(ckpt, tmp_path)
+        os.replace(tmp_path, ckpt_path)
+    except Exception as exc:
+        try:
+            if tmp_path.exists():
+                tmp_path.unlink()
+        finally:
+            usage = shutil.disk_usage(ckpt_path.parent)
+            raise RuntimeError(
+                "failed to save checkpoint atomically to "
+                f"{ckpt_path}; free space={format_bytes(usage.free)} "
+                f"total={format_bytes(usage.total)}"
+            ) from exc
 
 
 def wrap(x):
@@ -149,6 +224,81 @@ def build_sample_dataloader(dataset, batch_size, num_workers, pin_memory):
         drop_last=False,
         **build_dataloader_kwargs(num_workers, pin_memory),
     )
+
+
+def build_eval_dataloader(dataset, batch_size, num_workers, pin_memory):
+    return DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=False,
+        drop_last=False,
+        **build_dataloader_kwargs(num_workers, pin_memory),
+    )
+
+
+def resolve_full_eval_interval(opt, motion_format):
+    configured = getattr(opt, "full_eval_interval", None)
+    if configured is None:
+        return DEFAULT_G1_FULL_EVAL_INTERVAL if is_g1_motion_format(motion_format) else 0
+    configured = int(configured)
+    if configured < 0:
+        raise ValueError("--full_eval_interval must be non-negative.")
+    if configured > 0 and not is_g1_motion_format(motion_format):
+        raise ValueError("Training-triggered full eval currently requires a G1 motion format.")
+    return configured
+
+
+def resolve_full_eval_variants(feature_type, configured):
+    configured = (configured or "auto").strip()
+    if configured in ("", "auto", "default"):
+        return list(DEFAULT_FULL_EVAL_VARIANTS.get(feature_type, ("auto",)))
+    variants = [value.strip() for value in configured.split(",") if value.strip()]
+    if not variants:
+        raise ValueError("--full_eval_variants must not be empty.")
+    return variants
+
+
+def resolve_motion_energy_frame(feature_type, configured):
+    configured = configured or "auto"
+    if configured == "auto":
+        if feature_type in (
+            BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE,
+            WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+            WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE,
+        ):
+            return "root_local"
+        return "world"
+    if configured not in ("world", "root_local"):
+        raise ValueError("--motion_energy_frame must be one of: auto, world, root_local")
+    return configured
+
+
+def resolve_motion_energy_keypoint_weights(feature_type):
+    if feature_type == WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE:
+        return {
+            "torso_link": 0.40,
+            "left_ankle_roll_link": 0.30,
+            "right_ankle_roll_link": 0.30,
+        }
+    return None
+
+
+def slice_eval_batch(batch, stop):
+    pose, cond, filename, wavname = batch
+    return pose[:stop], slice_cond(cond, slice(None, stop)), filename[:stop], wavname[:stop]
+
+
+def iter_limited_eval_batches(loader, max_eval_clips=0):
+    emitted = 0
+    for batch in loader:
+        if max_eval_clips and emitted >= max_eval_clips:
+            break
+        batch_size = cond_batch_size(batch[1])
+        if max_eval_clips and emitted + batch_size > max_eval_clips:
+            batch = slice_eval_batch(batch, max_eval_clips - emitted)
+            batch_size = cond_batch_size(batch[1])
+        emitted += batch_size
+        yield batch
 
 
 DEFAULT_MODEL_CONFIG = {
@@ -303,9 +453,15 @@ def build_checkpoint_config(
     g1_kin_loss_max_fraction=0.0,
     g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
     g1_root_quat_order="xyzw",
+    lambda_g1_root_angular=0.0,
+    g1_root_angular_velocity_margin=3.141592653589793,
+    g1_root_angular_acceleration_margin=18.84955592153876,
+    g1_root_angular_acceleration_weight=0.25,
+    g1_root_angular_max_fraction=0.05,
     lambda_motion_energy=0.0,
     lambda_motion_intensity=None,
     lambda_motion_beatness=0.0,
+    motion_energy_frame="world",
     motion_beatness_warmup_start_epoch=100,
     motion_beatness_warmup_epochs=400,
     motion_beatness_max_fraction=0.1,
@@ -315,6 +471,8 @@ def build_checkpoint_config(
     energy_smoothness_weight=0.1,
     motion_energy_norm_p05=None,
     motion_energy_norm_p95=None,
+    motion_beatness_norm_p05=None,
+    motion_beatness_norm_p95=None,
     epoch_offset=0,
 ):
     motion_format = validate_motion_format(motion_format)
@@ -356,11 +514,17 @@ def build_checkpoint_config(
         "g1_kin_loss_max_fraction": g1_kin_loss_max_fraction,
         "g1_fk_model_path": g1_fk_model_path,
         "g1_root_quat_order": g1_root_quat_order,
+        "lambda_g1_root_angular": lambda_g1_root_angular,
+        "g1_root_angular_velocity_margin": g1_root_angular_velocity_margin,
+        "g1_root_angular_acceleration_margin": g1_root_angular_acceleration_margin,
+        "g1_root_angular_acceleration_weight": g1_root_angular_acceleration_weight,
+        "g1_root_angular_max_fraction": g1_root_angular_max_fraction,
         "lambda_motion_energy": lambda_motion_energy,
         "lambda_motion_intensity": lambda_motion_energy
         if lambda_motion_intensity is None
         else lambda_motion_intensity,
         "lambda_motion_beatness": lambda_motion_beatness,
+        "motion_energy_frame": motion_energy_frame,
         "motion_beatness_warmup_start_epoch": motion_beatness_warmup_start_epoch,
         "motion_beatness_warmup_epochs": motion_beatness_warmup_epochs,
         "motion_beatness_max_fraction": motion_beatness_max_fraction,
@@ -370,6 +534,8 @@ def build_checkpoint_config(
         "energy_smoothness_weight": energy_smoothness_weight,
         "motion_energy_norm_p05": motion_energy_norm_p05,
         "motion_energy_norm_p95": motion_energy_norm_p95,
+        "motion_beatness_norm_p05": motion_beatness_norm_p05,
+        "motion_beatness_norm_p95": motion_beatness_norm_p95,
         "epoch_offset": epoch_offset,
     }
 
@@ -502,9 +668,9 @@ def build_beat_estimator_from_checkpoint(
         )
         if key in config
     }
-    if checkpoint_summary["motion_format"] != G1_MOTION_FORMAT:
+    if not is_g1_motion_format(checkpoint_summary["motion_format"]):
         model_kwargs.pop("output_activation", None)
-    if checkpoint_summary["motion_format"] == G1_MOTION_FORMAT:
+    if is_g1_motion_format(checkpoint_summary["motion_format"]):
         model = G1BeatDistanceEstimator(**model_kwargs)
     else:
         model = BeatDistanceEstimator(**model_kwargs)
@@ -587,6 +753,9 @@ def build_train_postfix(
         postfix["g1_fk_acc"] = _format_loss_value(g1_stats.get("g1_fk_acc_loss", 0.0))
         postfix["g1_foot"] = _format_loss_value(g1_stats.get("g1_foot_loss", 0.0))
         postfix["g1_kin"] = _format_loss_value(g1_stats.get("g1_kin_contribution", 0.0))
+        postfix["g1_root_ang"] = _format_loss_value(
+            g1_stats.get("g1_root_angular_contribution", 0.0)
+        )
         if "g1_kin_capped" in g1_stats:
             capped_value = g1_stats["g1_kin_capped"]
             capped_value = bool(
@@ -636,10 +805,16 @@ class EDGE:
         g1_kin_loss_max_fraction=0.0,
         g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
         g1_root_quat_order="xyzw",
+        lambda_g1_root_angular=0.0,
+        g1_root_angular_velocity_margin=3.141592653589793,
+        g1_root_angular_acceleration_margin=18.84955592153876,
+        g1_root_angular_acceleration_weight=0.25,
+        g1_root_angular_max_fraction=0.05,
         feature_fusion="linear",
         lambda_motion_energy=0.0,
         lambda_motion_intensity=None,
         lambda_motion_beatness=0.0,
+        motion_energy_frame="auto",
         motion_beatness_warmup_start_epoch=100,
         motion_beatness_warmup_epochs=400,
         motion_beatness_max_fraction=0.1,
@@ -649,6 +824,8 @@ class EDGE:
         energy_smoothness_weight=0.1,
         motion_energy_norm_p05=None,
         motion_energy_norm_p95=None,
+        motion_beatness_norm_p05=None,
+        motion_beatness_norm_p95=None,
     ):
         configure_cuda_math()
         ddp_kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
@@ -692,11 +869,17 @@ class EDGE:
         self.g1_kin_loss_max_fraction = g1_kin_loss_max_fraction
         self.g1_fk_model_path = g1_fk_model_path
         self.g1_root_quat_order = g1_root_quat_order
+        self.lambda_g1_root_angular = lambda_g1_root_angular
+        self.g1_root_angular_velocity_margin = g1_root_angular_velocity_margin
+        self.g1_root_angular_acceleration_margin = g1_root_angular_acceleration_margin
+        self.g1_root_angular_acceleration_weight = g1_root_angular_acceleration_weight
+        self.g1_root_angular_max_fraction = g1_root_angular_max_fraction
         self.lambda_motion_energy = lambda_motion_energy
         self.lambda_motion_intensity = (
             lambda_motion_energy if lambda_motion_intensity is None else lambda_motion_intensity
         )
         self.lambda_motion_beatness = lambda_motion_beatness
+        self.motion_energy_frame = motion_energy_frame
         self.motion_beatness_warmup_start_epoch = motion_beatness_warmup_start_epoch
         self.motion_beatness_warmup_epochs = motion_beatness_warmup_epochs
         self.motion_beatness_max_fraction = motion_beatness_max_fraction
@@ -706,6 +889,8 @@ class EDGE:
         self.energy_smoothness_weight = energy_smoothness_weight
         self.motion_energy_norm_p05 = motion_energy_norm_p05
         self.motion_energy_norm_p95 = motion_energy_norm_p95
+        self.motion_beatness_norm_p05 = motion_beatness_norm_p05
+        self.motion_beatness_norm_p95 = motion_beatness_norm_p95
 
         self.repr_dim = repr_dim = motion_repr_dim(self.motion_format)
 
@@ -751,14 +936,25 @@ class EDGE:
         self.feature_fusion = feature_fusion
         self.use_beats = use_beats
         self.beat_rep = beat_rep
+        self.motion_energy_frame = resolve_motion_energy_frame(
+            self.feature_type,
+            self.motion_energy_frame,
+        )
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
         feature_dim = get_cond_feature_dim(self.feature_type)
 
         if self.feature_type == WAV2CLIP_MOTION_ENERGY_BEAT_FEATURE_TYPE:
             model_cls = Wav2ClipMotionEnergyBeatDecoder
-        elif self.feature_type == WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE:
+        elif self.feature_type == BEAT_FEATURES_8D_MOTION_BEATNESS_FEATURE_TYPE:
+            model_cls = BeatFeatures8DMotionBeatnessDecoder
+        elif self.feature_type in (
+            WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+            WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+        ):
             model_cls = Wav2ClipMotionIntensityBeatnessDecoder
+        elif self.feature_type == WAV2CLIP_BODY_SUPPORT_BEATNESS_FEATURE_TYPE:
+            model_cls = Wav2ClipBodySupportBeatnessDecoder
         else:
             model_cls = BeatDanceDecoder if self.use_beats else DanceDecoder
         model_kwargs = dict(
@@ -779,7 +975,7 @@ class EDGE:
 
         smpl = (
             None
-            if self.motion_format == G1_MOTION_FORMAT
+            if is_g1_motion_format(self.motion_format)
             else SMPLSkeleton(self.accelerator.device)
         )
         beat_estimator = None
@@ -830,9 +1026,15 @@ class EDGE:
             g1_kin_loss_max_fraction=self.g1_kin_loss_max_fraction,
             g1_fk_model_path=self.g1_fk_model_path,
             g1_root_quat_order=self.g1_root_quat_order,
+            lambda_g1_root_angular=self.lambda_g1_root_angular,
+            g1_root_angular_velocity_margin=self.g1_root_angular_velocity_margin,
+            g1_root_angular_acceleration_margin=self.g1_root_angular_acceleration_margin,
+            g1_root_angular_acceleration_weight=self.g1_root_angular_acceleration_weight,
+            g1_root_angular_max_fraction=self.g1_root_angular_max_fraction,
             lambda_motion_energy=self.lambda_motion_energy,
             lambda_motion_intensity=self.lambda_motion_intensity,
             lambda_motion_beatness=self.lambda_motion_beatness,
+            motion_energy_frame=self.motion_energy_frame,
             motion_beatness_warmup_start_epoch=self.motion_beatness_warmup_start_epoch,
             motion_beatness_warmup_epochs=self.motion_beatness_warmup_epochs,
             motion_beatness_max_fraction=self.motion_beatness_max_fraction,
@@ -842,6 +1044,11 @@ class EDGE:
             energy_smoothness_weight=self.energy_smoothness_weight,
             motion_energy_norm_p05=self.motion_energy_norm_p05,
             motion_energy_norm_p95=self.motion_energy_norm_p95,
+            motion_beatness_norm_p05=self.motion_beatness_norm_p05,
+            motion_beatness_norm_p95=self.motion_beatness_norm_p95,
+            motion_energy_keypoint_weights=resolve_motion_energy_keypoint_weights(
+                self.feature_type
+            ),
         )
 
         print(
@@ -873,9 +1080,144 @@ class EDGE:
     def prepare(self, objects):
         return self.accelerator.prepare(*objects)
 
+    def run_training_full_eval(
+        self,
+        opt,
+        global_epoch,
+        ckpt_path,
+        eval_data_loader,
+        eval_dataset_size,
+        variants,
+        wandb_run=None,
+    ):
+        from eval.g1_metrics import run_g1_motion_evaluation, write_json
+        from eval.run_g1_dataset_eval import apply_motion_energy_condition_variant
+
+        if not is_g1_motion_format(self.motion_format):
+            raise ValueError("Training-triggered full eval currently requires a G1 motion format.")
+
+        output_root = Path(getattr(opt, "full_eval_root", "eval")) / opt.exp_name
+        max_eval_clips = int(getattr(opt, "full_eval_max_clips", 0))
+        diagnostic_count = int(getattr(opt, "full_eval_diagnostic_count", 8))
+        enable_fk_metrics = not bool(getattr(opt, "full_eval_disable_fk_metrics", False))
+        progress_total = (
+            min(max_eval_clips, eval_dataset_size)
+            if max_eval_clips
+            else eval_dataset_size
+        )
+        all_metrics = {}
+
+        was_training = self.diffusion.training
+        self.eval()
+        for variant in variants:
+            label = f"ckpt{global_epoch}_{variant}"
+            run_root = output_root / label
+            motion_dir = run_root / "motions"
+            render_dir = run_root / "renders"
+            if run_root.exists():
+                shutil.rmtree(run_root)
+            motion_dir.mkdir(parents=True, exist_ok=True)
+            render_dir.mkdir(parents=True, exist_ok=True)
+
+            print(
+                f"[FULL EVAL at Epoch {global_epoch}] variant={variant} "
+                f"checkpoint={ckpt_path} output={run_root}"
+            )
+            with torch.no_grad():
+                with tqdm(
+                    total=progress_total,
+                    desc=f"Full eval {global_epoch} {variant}",
+                    unit="clip",
+                ) as progress:
+                    for batch in iter_limited_eval_batches(
+                        eval_data_loader,
+                        max_eval_clips=max_eval_clips,
+                    ):
+                        _, cond, _, wavname = batch
+                        render_count = cond_batch_size(cond)
+                        cond = move_cond_to_device(cond, self.accelerator.device)
+                        cond = apply_motion_energy_condition_variant(self, cond, variant)
+                        shape = (render_count, self.horizon, self.repr_dim)
+                        self.diffusion.render_sample(
+                            shape,
+                            slice_cond(cond, slice(None, render_count)),
+                            self.normalizer,
+                            label,
+                            str(render_dir),
+                            fk_out=str(motion_dir),
+                            name=wavname[:render_count],
+                            sound=True,
+                            mode="normal",
+                            render=False,
+                            g1_fk_model_path=self.g1_fk_model_path,
+                            g1_root_quat_order=self.g1_root_quat_order,
+                        )
+                        progress.update(render_count)
+
+            metrics_path = run_root / "metrics.json"
+            metrics = run_g1_motion_evaluation(
+                motion_path=motion_dir,
+                reference_motion_path=Path(opt.data_path) / "test" / "motions_sliced",
+                metrics_path=metrics_path,
+                g1_table_path=run_root / "g1_table.json",
+                motion_audit_path=run_root / "motion_audit.json",
+                paper_report_path=run_root / "paper_report.md",
+                render_dir=render_dir,
+                diagnostic_count=diagnostic_count,
+                checkpoint=str(ckpt_path),
+                feature_type=self.feature_type,
+                use_beats=self.use_beats,
+                beat_rep=self.beat_rep,
+                seed=getattr(opt, "seed", 1234),
+                enable_fk_metrics=enable_fk_metrics,
+                fk_model_path=self.g1_fk_model_path,
+                root_quat_order=self.g1_root_quat_order,
+            )
+            metrics["motion_energy_condition_variant"] = variant
+            metrics["full_eval_checkpoint"] = str(ckpt_path)
+            write_json(metrics_path, metrics)
+            all_metrics[variant] = metrics
+            if wandb_run is not None:
+                wandb.log(
+                    {
+                        f"full_eval/{variant}/{key}": value
+                        for key, value in metrics.items()
+                        if isinstance(value, (int, float))
+                    },
+                    step=global_epoch,
+                )
+            print(
+                f"[FULL EVAL DONE at Epoch {global_epoch}] variant={variant} "
+                f"metrics={metrics_path}"
+            )
+
+        if was_training:
+            self.train()
+        return all_metrics
+
     def train_loop(self, opt):
         feature_cache_mode = getattr(opt, "feature_cache_mode", "off")
         feature_cache_dtype = getattr(opt, "feature_cache_dtype", "float32")
+        full_eval_interval = resolve_full_eval_interval(opt, self.motion_format)
+        full_eval_variants = (
+            resolve_full_eval_variants(
+                self.feature_type,
+                getattr(opt, "full_eval_variants", "auto"),
+            )
+            if full_eval_interval > 0
+            else []
+        )
+        full_eval_batch_size = int(
+            getattr(opt, "full_eval_batch_size", DEFAULT_FULL_EVAL_BATCH_SIZE)
+        )
+        if full_eval_batch_size <= 0:
+            raise ValueError("--full_eval_batch_size must be positive.")
+        full_eval_max_clips = int(getattr(opt, "full_eval_max_clips", 0))
+        if full_eval_max_clips < 0:
+            raise ValueError("--full_eval_max_clips must be non-negative.")
+        full_eval_diagnostic_count = int(getattr(opt, "full_eval_diagnostic_count", 8))
+        if full_eval_diagnostic_count < 0:
+            raise ValueError("--full_eval_diagnostic_count must be non-negative.")
         training_recipe = build_checkpoint_config(
             feature_type=self.feature_type,
             feature_fusion=self.feature_fusion,
@@ -910,9 +1252,15 @@ class EDGE:
             g1_kin_loss_max_fraction=self.g1_kin_loss_max_fraction,
             g1_fk_model_path=self.g1_fk_model_path,
             g1_root_quat_order=self.g1_root_quat_order,
+            lambda_g1_root_angular=self.lambda_g1_root_angular,
+            g1_root_angular_velocity_margin=self.g1_root_angular_velocity_margin,
+            g1_root_angular_acceleration_margin=self.g1_root_angular_acceleration_margin,
+            g1_root_angular_acceleration_weight=self.g1_root_angular_acceleration_weight,
+            g1_root_angular_max_fraction=self.g1_root_angular_max_fraction,
             lambda_motion_energy=self.lambda_motion_energy,
             lambda_motion_intensity=self.lambda_motion_intensity,
             lambda_motion_beatness=self.lambda_motion_beatness,
+            motion_energy_frame=self.motion_energy_frame,
             motion_beatness_warmup_start_epoch=self.motion_beatness_warmup_start_epoch,
             motion_beatness_warmup_epochs=self.motion_beatness_warmup_epochs,
             motion_beatness_max_fraction=self.motion_beatness_max_fraction,
@@ -922,6 +1270,8 @@ class EDGE:
             energy_smoothness_weight=self.energy_smoothness_weight,
             motion_energy_norm_p05=self.motion_energy_norm_p05,
             motion_energy_norm_p95=self.motion_energy_norm_p95,
+            motion_beatness_norm_p05=self.motion_beatness_norm_p05,
+            motion_beatness_norm_p95=self.motion_beatness_norm_p95,
         )
         if self.accelerator.is_main_process:
             beat_mode = (
@@ -951,10 +1301,15 @@ class EDGE:
                 f"lambda_g1_fk_acc={self.lambda_g1_fk_acc} "
                 f"lambda_g1_foot={self.lambda_g1_foot} "
                 f"lambda_g1_kin={self.lambda_g1_kin} "
+                f"lambda_g1_root_angular={self.lambda_g1_root_angular} "
                 f"lambda_motion_energy={self.lambda_motion_energy} "
                 f"lambda_motion_intensity={self.lambda_motion_intensity} "
                 f"lambda_motion_beatness={self.lambda_motion_beatness} "
-                f"lambda_energy_pred={self.lambda_energy_pred}"
+                f"motion_energy_frame={self.motion_energy_frame} "
+                f"lambda_energy_pred={self.lambda_energy_pred} "
+                f"full_eval_interval={full_eval_interval} "
+                f"full_eval_variants="
+                f"{','.join(full_eval_variants) if full_eval_variants else 'disabled'}"
             )
         # load datasets
         train_tensor_dataset_path = os.path.join(
@@ -1062,6 +1417,14 @@ class EDGE:
             num_workers=opt.test_num_workers,
             pin_memory=pin_memory,
         )
+        full_eval_data_loader = None
+        if full_eval_interval > 0:
+            full_eval_data_loader = build_eval_dataloader(
+                test_dataset,
+                batch_size=full_eval_batch_size,
+                num_workers=opt.test_num_workers,
+                pin_memory=pin_memory,
+            )
 
         train_data_loader = self.accelerator.prepare(train_data_loader)
         wandb_run = None
@@ -1085,7 +1448,11 @@ class EDGE:
                 f"feature_cache_mode={feature_cache_mode} "
                 f"feature_cache_dtype={feature_cache_dtype} "
                 f"tensor_cache_reused={tensor_cache_reused} "
-                f"wandb_log_interval={opt.wandb_log_interval}"
+                f"wandb_log_interval={opt.wandb_log_interval} "
+                f"full_eval_interval={full_eval_interval} "
+                f"full_eval_batch_size={full_eval_batch_size} "
+                f"full_eval_max_clips={full_eval_max_clips} "
+                f"full_eval_diagnostic_count={full_eval_diagnostic_count}"
             )
 
         epoch_offset = int(getattr(opt, "epoch_offset", 0))
@@ -1122,6 +1489,11 @@ class EDGE:
             avg_g1_fk_acc_loss = zero_metric.clone()
             avg_g1_kin_contrib = zero_metric.clone()
             avg_g1_kin_cap_hits = zero_metric.clone()
+            avg_g1_root_angular_loss = zero_metric.clone()
+            avg_g1_root_angular_vel_loss = zero_metric.clone()
+            avg_g1_root_angular_acc_loss = zero_metric.clone()
+            avg_g1_root_angular_contrib = zero_metric.clone()
+            avg_g1_root_angular_cap_hits = zero_metric.clone()
             avg_energy_pred_loss = zero_metric.clone()
             avg_energy_smoothness_loss = zero_metric.clone()
             avg_energy_pred_contrib = zero_metric.clone()
@@ -1138,6 +1510,19 @@ class EDGE:
             avg_motion_intensity_mean_pred = zero_metric.clone()
             avg_motion_beatness_mean_gt = zero_metric.clone()
             avg_motion_beatness_mean_pred = zero_metric.clone()
+            avg_body_intensity_pred_loss = zero_metric.clone()
+            avg_body_intensity_smoothness_loss = zero_metric.clone()
+            avg_body_intensity_mean_gt = zero_metric.clone()
+            avg_body_intensity_mean_pred = zero_metric.clone()
+            avg_support_beatness_pred_loss = zero_metric.clone()
+            avg_support_beatness_mean_gt = zero_metric.clone()
+            avg_support_beatness_mean_pred = zero_metric.clone()
+            avg_upper_beatness_pred_loss = zero_metric.clone()
+            avg_upper_beatness_mean_gt = zero_metric.clone()
+            avg_upper_beatness_mean_pred = zero_metric.clone()
+            avg_support_contact_pred_loss = zero_metric.clone()
+            avg_support_contact_mean_gt = zero_metric.clone()
+            avg_support_contact_mean_pred = zero_metric.clone()
             # train
             self.train()
             train_loop = train_data_loader
@@ -1218,6 +1603,26 @@ class EDGE:
                         g1_stats.get("g1_kin_capped", zero_metric),
                         metric_device,
                     )
+                    avg_g1_root_angular_loss += _metric_tensor(
+                        g1_stats.get("g1_root_angular_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_g1_root_angular_vel_loss += _metric_tensor(
+                        g1_stats.get("g1_root_angular_velocity_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_g1_root_angular_acc_loss += _metric_tensor(
+                        g1_stats.get("g1_root_angular_acceleration_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_g1_root_angular_contrib += _metric_tensor(
+                        g1_stats.get("g1_root_angular_contribution", zero_metric),
+                        metric_device,
+                    )
+                    avg_g1_root_angular_cap_hits += _metric_tensor(
+                        g1_stats.get("g1_root_angular_capped", zero_metric),
+                        metric_device,
+                    )
                     energy_stats = getattr(self.diffusion, "last_motion_energy_stats", {})
                     avg_energy_pred_loss += _metric_tensor(
                         energy_stats.get("energy_pred_loss", zero_metric),
@@ -1281,6 +1686,58 @@ class EDGE:
                     )
                     avg_motion_beatness_mean_pred += _metric_tensor(
                         energy_stats.get("pred_beatness_mean", zero_metric),
+                        metric_device,
+                    )
+                    avg_body_intensity_pred_loss += _metric_tensor(
+                        energy_stats.get("body_intensity_pred_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_body_intensity_smoothness_loss += _metric_tensor(
+                        energy_stats.get("body_intensity_smoothness_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_body_intensity_mean_gt += _metric_tensor(
+                        energy_stats.get("body_intensity_mean_gt", zero_metric),
+                        metric_device,
+                    )
+                    avg_body_intensity_mean_pred += _metric_tensor(
+                        energy_stats.get("body_intensity_mean_pred", zero_metric),
+                        metric_device,
+                    )
+                    avg_support_beatness_pred_loss += _metric_tensor(
+                        energy_stats.get("support_beatness_pred_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_support_beatness_mean_gt += _metric_tensor(
+                        energy_stats.get("support_beatness_mean_gt", zero_metric),
+                        metric_device,
+                    )
+                    avg_support_beatness_mean_pred += _metric_tensor(
+                        energy_stats.get("support_beatness_mean_pred", zero_metric),
+                        metric_device,
+                    )
+                    avg_upper_beatness_pred_loss += _metric_tensor(
+                        energy_stats.get("upper_beatness_pred_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_upper_beatness_mean_gt += _metric_tensor(
+                        energy_stats.get("upper_beatness_mean_gt", zero_metric),
+                        metric_device,
+                    )
+                    avg_upper_beatness_mean_pred += _metric_tensor(
+                        energy_stats.get("upper_beatness_mean_pred", zero_metric),
+                        metric_device,
+                    )
+                    avg_support_contact_pred_loss += _metric_tensor(
+                        energy_stats.get("support_contact_pred_loss", zero_metric),
+                        metric_device,
+                    )
+                    avg_support_contact_mean_gt += _metric_tensor(
+                        energy_stats.get("support_contact_mean_gt", zero_metric),
+                        metric_device,
+                    )
+                    avg_support_contact_mean_pred += _metric_tensor(
+                        energy_stats.get("support_contact_mean_pred", zero_metric),
                         metric_device,
                     )
                     if hasattr(train_loop, "set_postfix") and (
@@ -1360,6 +1817,11 @@ class EDGE:
                     "g1/fk_acc_loss": _metric_float(avg_g1_fk_acc_loss) / num_train_batches,
                     "g1/kin_contribution": _metric_float(avg_g1_kin_contrib) / num_train_batches,
                     "g1/kin_cap_hit_rate": _metric_float(avg_g1_kin_cap_hits) / num_train_batches,
+                    "g1/root_angular_loss": _metric_float(avg_g1_root_angular_loss) / num_train_batches,
+                    "g1/root_angular_velocity_loss": _metric_float(avg_g1_root_angular_vel_loss) / num_train_batches,
+                    "g1/root_angular_acceleration_loss": _metric_float(avg_g1_root_angular_acc_loss) / num_train_batches,
+                    "g1/root_angular_contribution": _metric_float(avg_g1_root_angular_contrib) / num_train_batches,
+                    "g1/root_angular_cap_hit_rate": _metric_float(avg_g1_root_angular_cap_hits) / num_train_batches,
                     "motion_energy/predictor_loss": _metric_float(avg_energy_pred_loss) / num_train_batches,
                     "motion_energy/smoothness_loss": _metric_float(avg_energy_smoothness_loss) / num_train_batches,
                     "motion_energy/predictor_contribution": _metric_float(avg_energy_pred_contrib) / num_train_batches,
@@ -1378,12 +1840,31 @@ class EDGE:
                     "motion_beatness/cap_hit_rate": _metric_float(avg_motion_beatness_cap_hits) / num_train_batches,
                     "motion_beatness/mean_gt": _metric_float(avg_motion_beatness_mean_gt) / num_train_batches,
                     "motion_beatness/mean_pred": _metric_float(avg_motion_beatness_mean_pred) / num_train_batches,
+                    "body_intensity/pred_loss": _metric_float(avg_body_intensity_pred_loss) / num_train_batches,
+                    "body_intensity/smoothness_loss": _metric_float(avg_body_intensity_smoothness_loss) / num_train_batches,
+                    "body_intensity/mean_gt": _metric_float(avg_body_intensity_mean_gt) / num_train_batches,
+                    "body_intensity/mean_pred": _metric_float(avg_body_intensity_mean_pred) / num_train_batches,
+                    "support_beatness/pred_loss": _metric_float(avg_support_beatness_pred_loss) / num_train_batches,
+                    "support_beatness/valley_loss": _metric_float(avg_motion_beatness_loss) / num_train_batches,
+                    "support_beatness/contribution": _metric_float(avg_motion_beatness_contrib) / num_train_batches,
+                    "support_beatness/mean_gt": _metric_float(avg_support_beatness_mean_gt) / num_train_batches,
+                    "support_beatness/mean_pred": _metric_float(avg_support_beatness_mean_pred) / num_train_batches,
+                    "upper_beatness/pred_loss": _metric_float(avg_upper_beatness_pred_loss) / num_train_batches,
+                    "upper_beatness/mean_gt": _metric_float(avg_upper_beatness_mean_gt) / num_train_batches,
+                    "upper_beatness/mean_pred": _metric_float(avg_upper_beatness_mean_pred) / num_train_batches,
+                    "support_contact/pred_loss": _metric_float(avg_support_contact_pred_loss) / num_train_batches,
+                    "support_contact/mean_gt": _metric_float(avg_support_contact_mean_gt) / num_train_batches,
+                    "support_contact/mean_pred": _metric_float(avg_support_contact_mean_pred) / num_train_batches,
                     "checkpoint/saved": 0,
                 }
             else:
                 epoch_log_dict = None
             # Save model
-            if (epoch % opt.save_interval) == 0:
+            full_eval_due = (
+                full_eval_interval > 0 and global_epoch % full_eval_interval == 0
+            )
+            should_save = (epoch % opt.save_interval) == 0 or full_eval_due
+            if should_save:
                 # everyone waits here for the val loop to finish ( don't start next train epoch early)
                 self.accelerator.wait_for_everyone()
                 # save only if on main thread
@@ -1412,7 +1893,7 @@ class EDGE:
                         "config": training_recipe,
                     }
                     ckpt_path = os.path.join(wdir, f"train-{global_epoch}.pt")
-                    torch.save(ckpt, ckpt_path)
+                    save_checkpoint_atomic(ckpt, ckpt_path)
                     if epoch_log_dict is not None:
                         epoch_log_dict["checkpoint/saved"] = 1
                         epoch_log_dict["checkpoint/path"] = ckpt_path
@@ -1424,23 +1905,43 @@ class EDGE:
                     ):
                         wandb.log(epoch_log_dict, step=global_epoch)
                         epoch_logged_to_wandb = True
-                    # generate a sample
-                    render_count = 2
-                    shape = (render_count, self.horizon, self.repr_dim)
-                    print("Generating Sample")
-                    # draw a music from the test dataset
-                    (x, cond, filename, wavnames) = next(iter(test_data_loader))
-                    cond = move_cond_to_device(cond, self.accelerator.device)
-                    self.diffusion.render_sample(
-                        shape,
-                        slice_cond(cond, slice(None, render_count)),
-                        self.normalizer,
-                        global_epoch,
-                        os.path.join(opt.render_dir, "train_" + opt.exp_name),
-                        name=wavnames[:render_count],
-                        sound=True,
-                    )
+                    if getattr(opt, "skip_train_sample_render", False):
+                        print(f"[SAMPLE RENDER SKIPPED at Epoch {global_epoch}]")
+                    else:
+                        # generate a sample
+                        render_count = 2
+                        shape = (render_count, self.horizon, self.repr_dim)
+                        print("Generating Sample")
+                        # draw a music from the test dataset
+                        (x, cond, filename, wavnames) = next(iter(test_data_loader))
+                        cond = move_cond_to_device(cond, self.accelerator.device)
+                        self.diffusion.render_sample(
+                            shape,
+                            slice_cond(cond, slice(None, render_count)),
+                            self.normalizer,
+                            global_epoch,
+                            os.path.join(opt.render_dir, "train_" + opt.exp_name),
+                            name=wavnames[:render_count],
+                            sound=True,
+                            g1_fk_model_path=self.g1_fk_model_path,
+                            g1_root_quat_order=self.g1_root_quat_order,
+                            g1_render_backend=getattr(opt, "g1_render_backend", "mujoco"),
+                            g1_render_width=getattr(opt, "g1_render_width", 960),
+                            g1_render_height=getattr(opt, "g1_render_height", 720),
+                            g1_mujoco_gl=getattr(opt, "g1_mujoco_gl", "egl"),
+                        )
                     print(f"[MODEL SAVED at Epoch {global_epoch}]")
+                    if full_eval_due:
+                        self.run_training_full_eval(
+                            opt,
+                            global_epoch,
+                            ckpt_path,
+                            full_eval_data_loader,
+                            len(test_dataset),
+                            full_eval_variants,
+                            wandb_run=wandb_run,
+                        )
+                self.accelerator.wait_for_everyone()
             if (
                 self.accelerator.is_main_process
                 and wandb_run is not None

@@ -60,6 +60,7 @@ def write_feature(path, feature_type):
         "baseline": 35,
         "jukebox": 4800,
         "gaussian_beat": 1,
+        "beat_features_8d": 8,
         "wav2clip_stft_beat": 706,
     }
     dim = dims[feature_type]
@@ -77,6 +78,19 @@ def write_beat(path):
         audio_mask=np.zeros((150,), dtype=np.float32),
         audio_dist=np.zeros((150,), dtype=np.int64),
         audio_spacing=np.ones((150,), dtype=np.float32) * 10,
+    )
+
+
+def write_motion_control_v3(path):
+    np.savez(
+        path,
+        motion_intensity_envelope=np.zeros((150, 1), dtype=np.float32),
+        motion_beatness_envelope=np.zeros((150, 1), dtype=np.float32),
+        weighted_fk_speed=np.zeros((150,), dtype=np.float32),
+        smoothed_weighted_fk_speed=np.zeros((150,), dtype=np.float32),
+        audio_beat_frames=np.array([10, 30, 60], dtype=np.int64),
+        intensity_peaks=np.array([20, 70], dtype=np.int64),
+        beatness_peaks=np.array([10, 30, 60], dtype=np.int64),
     )
 
 
@@ -114,6 +128,24 @@ def build_minimal_g1_dataset(root, feature_type="jukebox", use_beats=False):
             write_feature(split_dir / f"{feature_type}_feats" / f"{name}.npy", feature_type)
             if use_beats:
                 write_beat(split_dir / "beat_feats" / f"{name}.npz")
+
+
+def build_minimal_g1_beat8d_motion_beatness_dataset(root):
+    names = ["clip_a_slice0", "clip_b_slice0"]
+    for split in ("train", "test"):
+        split_dir = root / split
+        (split_dir / "motions_sliced").mkdir(parents=True)
+        (split_dir / "wavs_sliced").mkdir(parents=True)
+        (split_dir / "beat_features_8d_feats").mkdir(parents=True)
+        (split_dir / "motion_control_v3_local_feats").mkdir(parents=True)
+
+        for name in names:
+            write_g1_motion(split_dir / "motions_sliced" / f"{name}.pkl")
+            write_wav_placeholder(split_dir / "wavs_sliced" / f"{name}.wav")
+            write_feature(split_dir / "beat_features_8d_feats" / f"{name}.npy", "beat_features_8d")
+            write_motion_control_v3(
+                split_dir / "motion_control_v3_local_feats" / f"{name}.npz"
+            )
 
 
 class ValidatePreprocessedDataTests(unittest.TestCase):
@@ -204,6 +236,53 @@ class ValidatePreprocessedDataTests(unittest.TestCase):
             )
 
         self.assertEqual(summary["cache_versions"]["motion_format"], "g1")
+        self.assertEqual(summary["train"]["count"], 2)
+
+    def test_validate_preprocessed_dataset_accepts_g1_beat_features_8d(self):
+        module = load_module()
+
+        with TemporaryDirectory() as tmpdir:
+            data_root = Path(tmpdir) / "data"
+            processed_root = Path(tmpdir) / "dataset_backups"
+            build_minimal_g1_dataset(data_root, feature_type="beat_features_8d")
+            processed_root.mkdir()
+
+            summary = module.validate_preprocessed_dataset(
+                data_path=data_root,
+                processed_data_dir=processed_root,
+                feature_type="beat_features_8d",
+                use_beats=False,
+                beat_rep="distance",
+                sample_count=2,
+                motion_format="g1",
+            )
+
+        self.assertEqual(summary["train"]["feature_dir"], "beat_features_8d_feats")
+        self.assertEqual(summary["train"]["count"], 2)
+
+    def test_validate_preprocessed_dataset_accepts_g1_beat8d_motion_beatness(self):
+        module = load_module()
+
+        with TemporaryDirectory() as tmpdir:
+            data_root = Path(tmpdir) / "data"
+            processed_root = Path(tmpdir) / "dataset_backups"
+            build_minimal_g1_beat8d_motion_beatness_dataset(data_root)
+            processed_root.mkdir()
+
+            summary = module.validate_preprocessed_dataset(
+                data_path=data_root,
+                processed_data_dir=processed_root,
+                feature_type="beat_features_8d_motion_beatness",
+                use_beats=False,
+                beat_rep="distance",
+                sample_count=2,
+                motion_format="g1",
+            )
+
+        self.assertEqual(
+            summary["train"]["feature_dir"],
+            "beat_features_8d_feats+motion_control_v3_local_feats",
+        )
         self.assertEqual(summary["train"]["count"], 2)
 
     def test_validate_preprocessed_dataset_accepts_current_memmap_tensor_cache(self):

@@ -12,7 +12,7 @@ import args
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DATA_DIR = REPO_ROOT / "data"
-ENV_PYTHON = REPO_ROOT.parents[1] / ".venv311" / "bin" / "python"
+ENV_PYTHON = REPO_ROOT / ".venv311" / "bin" / "python"
 
 
 @contextmanager
@@ -60,6 +60,10 @@ class TrainArgParserTests(unittest.TestCase):
         self.assertEqual(beat_opt.feature_cache_dtype, "float32")
         self.assertEqual(beat_opt.wandb_log_interval, 1)
         self.assertEqual(baseline_opt.wandb_log_interval, 1)
+        self.assertIsNone(beat_opt.full_eval_interval)
+        self.assertIsNone(baseline_opt.full_eval_interval)
+        self.assertEqual(beat_opt.full_eval_batch_size, 32)
+        self.assertEqual(beat_opt.full_eval_variants, "auto")
         self.assertFalse(beat_opt.learning_rate_was_explicit)
         self.assertFalse(baseline_opt.learning_rate_was_explicit)
 
@@ -89,6 +93,45 @@ class TrainArgParserTests(unittest.TestCase):
             opt = args.parse_train_opt()
 
         self.assertEqual(opt.wandb_log_interval, 5)
+
+    def test_train_parser_accepts_training_full_eval_arguments(self):
+        with argv_context(
+            "train.py",
+            "--full_eval_interval",
+            "500",
+            "--full_eval_root",
+            "eval/experiments",
+            "--full_eval_batch_size",
+            "16",
+            "--full_eval_max_clips",
+            "64",
+            "--full_eval_variants",
+            "pred_controls,zero_beatness",
+            "--full_eval_diagnostic_count",
+            "3",
+            "--full_eval_disable_fk_metrics",
+            "--motion_energy_frame",
+            "root_local",
+            "--lambda_g1_root_angular",
+            "0.02",
+            "--g1_render_backend",
+            "mujoco",
+            "--g1_mujoco_gl",
+            "egl",
+        ):
+            opt = args.parse_train_opt()
+
+        self.assertEqual(opt.full_eval_interval, 500)
+        self.assertEqual(opt.full_eval_root, "eval/experiments")
+        self.assertEqual(opt.full_eval_batch_size, 16)
+        self.assertEqual(opt.full_eval_max_clips, 64)
+        self.assertEqual(opt.full_eval_variants, "pred_controls,zero_beatness")
+        self.assertEqual(opt.full_eval_diagnostic_count, 3)
+        self.assertTrue(opt.full_eval_disable_fk_metrics)
+        self.assertEqual(opt.motion_energy_frame, "root_local")
+        self.assertEqual(opt.lambda_g1_root_angular, 0.02)
+        self.assertEqual(opt.g1_render_backend, "mujoco")
+        self.assertEqual(opt.g1_mujoco_gl, "egl")
 
     def test_train_parser_accepts_phase0_arguments(self):
         with argv_context(
@@ -224,6 +267,71 @@ class TrainArgParserTests(unittest.TestCase):
         self.assertEqual(opt.g1_mujoco_gl, "egl")
 
 
+class TrainingFullEvalHelperTests(unittest.TestCase):
+    def test_full_eval_defaults_to_500_for_g1_only(self):
+        from EDGE import resolve_full_eval_interval
+
+        self.assertEqual(
+            resolve_full_eval_interval(SimpleNamespace(full_eval_interval=None), "g1"),
+            500,
+        )
+        self.assertEqual(
+            resolve_full_eval_interval(SimpleNamespace(full_eval_interval=None), "g1_yaw_delta"),
+            500,
+        )
+        self.assertEqual(
+            resolve_full_eval_interval(SimpleNamespace(full_eval_interval=None), "smpl"),
+            0,
+        )
+
+    def test_full_eval_auto_variants_for_motion_control_feature(self):
+        from EDGE import resolve_full_eval_variants
+        from feature_config import (
+            WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+            WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+        )
+
+        self.assertEqual(
+            resolve_full_eval_variants(
+                WAV2CLIP_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+                "auto",
+            ),
+            [
+                "pred_controls",
+                "oracle_controls",
+                "flat_intensity",
+                "zero_beatness",
+                "zero_all_controls",
+            ],
+        )
+        self.assertEqual(
+            resolve_full_eval_variants(
+                WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+                "auto",
+            ),
+            [
+                "pred_controls",
+                "oracle_controls",
+                "flat_intensity",
+                "zero_beatness",
+                "zero_all_controls",
+            ],
+        )
+
+    def test_motion_energy_frame_auto_uses_root_local_for_local_feature(self):
+        from EDGE import resolve_motion_energy_frame
+        from feature_config import WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE
+
+        self.assertEqual(
+            resolve_motion_energy_frame(
+                WAV2CLIP_LOCAL_MOTION_INTENSITY_BEATNESS_FEATURE_TYPE,
+                "auto",
+            ),
+            "root_local",
+        )
+        self.assertEqual(resolve_motion_energy_frame("jukebox", "auto"), "world")
+
+
 class TrainWiringTests(unittest.TestCase):
     def test_train_passes_phase0_options_into_edge(self):
         opt = SimpleNamespace(
@@ -267,6 +375,9 @@ class TrainWiringTests(unittest.TestCase):
             use_beats=opt.use_beats,
             beat_rep=opt.beat_rep,
             lambda_acc=opt.lambda_acc,
+            lambda_acc_final=None,
+            lambda_acc_warmup_start_epoch=0,
+            lambda_acc_warmup_epochs=0,
             lambda_beat=opt.lambda_beat,
             beat_a=opt.beat_a,
             beat_c=opt.beat_c,
@@ -287,21 +398,42 @@ class TrainWiringTests(unittest.TestCase):
             lambda_g1_kin=1.0,
             g1_kin_loss_warmup_epochs=0,
             g1_kin_loss_max_fraction=0.0,
+            lambda_g1_root_angular=0.0,
+            g1_root_angular_velocity_margin=3.141592653589793,
+            g1_root_angular_acceleration_margin=18.84955592153876,
+            g1_root_angular_acceleration_weight=0.25,
+            g1_root_angular_max_fraction=0.05,
+            lambda_motion_energy=0.0,
+            lambda_motion_intensity=None,
+            lambda_motion_beatness=0.0,
+            motion_energy_frame="auto",
+            motion_beatness_warmup_start_epoch=100,
+            motion_beatness_warmup_epochs=400,
+            motion_beatness_max_fraction=0.1,
+            lambda_energy_pred=0.0,
+            energy_teacher_forcing_epochs=100,
+            energy_pred_mix_prob=0.5,
+            energy_smoothness_weight=0.1,
+            motion_energy_norm_p05=None,
+            motion_energy_norm_p95=None,
+            motion_beatness_norm_p05=None,
+            motion_beatness_norm_p95=None,
             g1_fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
             g1_root_quat_order="xyzw",
+            feature_fusion="linear",
         )
         fake_model.train_loop.assert_called_once_with(opt)
 
 
 class CreateDatasetEntrypointTests(unittest.TestCase):
-    def test_dataset_folder_falls_back_to_shared_repo_data_in_worktree(self):
+    def test_dataset_folder_falls_back_to_repo_local_data(self):
         create_dataset_module = reload_data_module("create_dataset")
-        shared_root = REPO_ROOT.parents[1] / "data" / "edge_aistpp"
+        repo_local_root = DATA_DIR / "edge_aistpp"
 
         with patch.object(create_dataset_module, "DATA_DIR", DATA_DIR):
             resolved = create_dataset_module._resolve_dataset_folder("edge_aistpp")
 
-        self.assertEqual(resolved, shared_root)
+        self.assertEqual(resolved, repo_local_root)
 
     def test_train_help_runs_from_repo_root(self):
         completed = subprocess.run(
@@ -335,6 +467,21 @@ class CreateDatasetEntrypointTests(unittest.TestCase):
 
         self.assertEqual(completed.returncode, 0, completed.stderr)
         self.assertIn("--extract-jukebox", completed.stdout)
+        self.assertIn("--extract-beat-features-8d", completed.stdout)
+
+    def test_test_feature_resolver_accepts_beat_features_8d(self):
+        sys.modules.pop("test", None)
+        test_module = importlib.import_module("test")
+        feature_func = test_module.get_feature_func("beat_features_8d")
+
+        self.assertTrue(callable(feature_func))
+
+    def test_test_feature_resolver_accepts_beat8d_motion_beatness(self):
+        sys.modules.pop("test", None)
+        test_module = importlib.import_module("test")
+        feature_func = test_module.get_feature_func("beat_features_8d_motion_beatness")
+
+        self.assertTrue(callable(feature_func))
 
     def test_create_dataset_uses_data_relative_paths(self):
         create_dataset_module = reload_data_module("create_dataset")
@@ -343,11 +490,12 @@ class CreateDatasetEntrypointTests(unittest.TestCase):
             extract_baseline=True,
             extract_jukebox=True,
             extract_beats=False,
+            extract_wav2clip_stft_beat=False,
             stride=0.5,
             length=5.0,
         )
         expected_root = DATA_DIR
-        expected_dataset_root = REPO_ROOT.parents[1] / "data" / "edge_aistpp"
+        expected_dataset_root = DATA_DIR / "edge_aistpp"
 
         with patch.object(create_dataset_module, "split_data") as split_data, patch.object(
             create_dataset_module, "slice_aistpp"
@@ -399,6 +547,7 @@ class CreateDatasetEntrypointTests(unittest.TestCase):
             extract_baseline=False,
             extract_jukebox=False,
             extract_beats=True,
+            extract_wav2clip_stft_beat=False,
             stride=0.5,
             length=5.0,
         )
@@ -427,6 +576,7 @@ class CreateDatasetEntrypointTests(unittest.TestCase):
             extract_baseline=False,
             extract_jukebox=True,
             extract_beats=False,
+            extract_wav2clip_stft_beat=False,
             stride=0.5,
             length=5.0,
         )
