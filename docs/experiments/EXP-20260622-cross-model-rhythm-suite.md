@@ -68,13 +68,15 @@ The `beat8d_beatness_1000_pred` row proves predicted beatness is rhythm-active r
 
 The training-check-acceptance verdict is to reject `beat8d_beatness_1000_pred` as a mainline checkpoint and accept the new rhythm suite as the default checkpoint gate. Evidence and split metric-direction tables are recorded in `eval/cross_model_rhythm_suite_20260622/acceptance_report.md`.
 
-2026-06-30 evaluation policy update: use `v3b_1500_pred` and the 8D raw-diffusion family as stable raw-diffusion reference anchors for future model comparisons. This is a qualitative/render-informed role, not a claim that either row wins every metric or is the final accepted model. They are useful because render inspection shows them as comparatively natural and stable relative to later failure modes, while their metrics expose different strengths and weaknesses:
+2026-06-30 evaluation policy update: use `v3b_1500_pred` and the single 8D raw-diffusion row `beat8d_1000_auto` as stable raw-diffusion reference anchors for future model comparisons. This is a qualitative/render-informed role, not a claim that either row wins every metric or is the final accepted model. They are useful because render inspection shows them as comparatively natural and stable relative to later failure modes, while their metrics expose different strengths and weaknesses:
 
 - `v3b_1500_pred` is the balanced raw-diffusion anchor for overall motion naturalness, rhythm, and distribution behavior.
-- `beat8d_beatness_1000_pred` and `beat8d_1000_auto` are 8D rhythm/control anchors that help diagnose whether a new method improves real condition use or merely changes the metric profile.
+- `beat8d_1000_auto` is the single-8D raw-diffusion anchor for beat/control behavior.
+
+Do not treat other 8D variants, including `beat8d_beatness_1000_pred`, as stable baselines. They remain useful diagnostic rows, but not comparison anchors, because the added beatness variant improves some rhythm metrics while failing distribution/penetration and endpoint-quality checks.
 
 Future acceptance reports should compare every new route against both anchors on the same fixed clips, seeds, render settings, and metric suite. Metrics are diagnostic evidence, not the final judge. A checkpoint should not be promoted only because `G1BeatF1`, `G1FKBAS`, or another single metric improves; qualitative render inspection and robot feasibility diagnostics must agree. If a model beats these anchors on rhythm but regresses in support/contact, ground behavior, endpoint jerk, root stability, or visual naturalness, report it as a failure mode or metric-hacking risk rather than a better model.
 
 ## Next Action
 
-Use this suite as the default ckpt500/ckpt1000 acceptance gate for V6a/contact-support-aware experiments and future prior/latent routes. Include `v3b_1500_pred` and the 8D raw-diffusion anchors in matched render and metric comparisons. Do not accept a checkpoint on beat metrics alone.
+Use this suite as the default ckpt500/ckpt1000 acceptance gate for V6a/contact-support-aware experiments and future prior/latent routes. Include `v3b_1500_pred` and `beat8d_1000_auto` in matched render and metric comparisons. Do not accept a checkpoint on beat metrics alone.

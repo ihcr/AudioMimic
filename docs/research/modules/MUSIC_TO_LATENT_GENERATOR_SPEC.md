@@ -261,8 +261,8 @@ route is being tested:
 v3b_1500_pred:
   balanced raw-diffusion reference for render naturalness and overall motion
 
-8D raw-diffusion anchors:
-  beat8d_1000_auto and beat8d_beatness_1000_pred for rhythm/control behavior
+beat8d_1000_auto:
+  single-8D raw-diffusion reference for rhythm/control behavior
 ```
 
 These anchors are not promoted because they win every metric. They are retained
@@ -273,6 +273,10 @@ sole acceptance rule. If a new model improves beat scores but looks less natural
 or regresses on support/contact, ground behavior, endpoint jerk, root stability,
 or motion feasibility, call that out as a failure mode rather than accepting the
 checkpoint.
+
+Do not include other 8D variants as stable anchors. Variants such as
+`beat8d_beatness_1000_pred` can stay in diagnostic tables, but they are not the
+8D raw-diffusion baseline for future acceptance comparisons.
 
 ## Ablation Matrix
 
