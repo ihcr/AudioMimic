@@ -2,6 +2,7 @@ import glob
 import json
 import pickle
 import random
+from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
 
 import matplotlib
@@ -535,9 +536,6 @@ def compute_fk_foot_diagnostics(
 
 
 def evaluate_g1_fk_metrics(motion, fk_model_path, root_quat_order="xyzw", bap_tolerance=DEFAULT_BAP_TOLERANCE):
-    audio_path = motion.get("audio_path")
-    if not audio_path:
-        return None
     fk_result = forward_g1_kinematics(
         motion,
         fk_model_path,
@@ -547,11 +545,15 @@ def evaluate_g1_fk_metrics(motion, fk_model_path, root_quat_order="xyzw", bap_to
         fk_result["keypoints"],
         fps=motion["fps"],
     )
-    audio_beats = load_audio_beat_frames(
-        audio_path,
-        fps=int(round(motion["fps"])),
-        seq_len=motion["root_pos"].shape[0],
-    )
+    audio_path = motion.get("audio_path")
+    if audio_path:
+        audio_beats = load_audio_beat_frames(
+            audio_path,
+            fps=int(round(motion["fps"])),
+            seq_len=motion["root_pos"].shape[0],
+        )
+    else:
+        audio_beats = np.empty(0, dtype=np.int64)
     timing = compute_beat_timing_report(
         generated_beats=motion_beats,
         target_beats=audio_beats,
@@ -1232,6 +1234,34 @@ def load_motion_dir(motion_path, sample_limit=None, seed=1234):
     return motion_files, motions, bad_files
 
 
+def _process_map_with_progress(worker, items, desc, unit, workers):
+    if workers <= 1:
+        return [worker(item) for item in tqdm(items, desc=desc, unit=unit)]
+    chunksize = max(1, min(16, len(items) // max(workers * 4, 1)))
+    with ProcessPoolExecutor(max_workers=workers) as executor:
+        return list(
+            tqdm(
+                executor.map(worker, items, chunksize=chunksize),
+                total=len(items),
+                desc=desc,
+                unit=unit,
+            )
+        )
+
+
+def _evaluate_g1_beats_worker(motion):
+    return evaluate_g1_beats(motion)
+
+
+def _evaluate_g1_fk_metrics_worker(args):
+    motion, fk_model_path, root_quat_order = args
+    return evaluate_g1_fk_metrics(
+        motion,
+        fk_model_path=fk_model_path,
+        root_quat_order=root_quat_order,
+    )
+
+
 def run_g1_motion_evaluation(
     motion_path,
     reference_motion_path,
@@ -1251,6 +1281,7 @@ def run_g1_motion_evaluation(
     fk_model_path=None,
     root_quat_order="xyzw",
     failure_panel_path=None,
+    metric_workers=0,
 ):
     motion_files, motions, bad_files = load_motion_dir(
         motion_path,
@@ -1278,22 +1309,26 @@ def run_g1_motion_evaluation(
         )
         for motion in motions
     ]
-    beat_records = [
-        evaluate_g1_beats(motion)
-        for motion in tqdm(motions, desc="G1 beat metrics", unit="file")
-    ]
+    metric_workers = int(metric_workers or 0)
+    beat_records = _process_map_with_progress(
+        _evaluate_g1_beats_worker,
+        motions,
+        desc="G1 beat metrics",
+        unit="file",
+        workers=metric_workers,
+    )
     fk_records = []
     if enable_fk_metrics:
         if fk_model_path is None:
             raise ValueError("fk_model_path is required when enable_fk_metrics is true")
-        fk_records = [
-            evaluate_g1_fk_metrics(
-                motion,
-                fk_model_path=fk_model_path,
-                root_quat_order=root_quat_order,
-            )
-            for motion in tqdm(motions, desc="G1 FK metrics", unit="file")
-        ]
+        fk_args = [(motion, fk_model_path, root_quat_order) for motion in motions]
+        fk_records = _process_map_with_progress(
+            _evaluate_g1_fk_metrics_worker,
+            fk_args,
+            desc="G1 FK metrics",
+            unit="file",
+            workers=metric_workers,
+        )
     metrics = {
         "checkpoint": checkpoint,
         "feature_type": feature_type,
@@ -1307,6 +1342,7 @@ def run_g1_motion_evaluation(
         "BadFileCount": len(bad_files),
         "FiniteMotionRate": len(motions) / max(len(motion_files), 1),
         "fk_metrics_enabled": bool(enable_fk_metrics),
+        "metric_workers": metric_workers,
     }
     if enable_fk_metrics:
         metrics.update(

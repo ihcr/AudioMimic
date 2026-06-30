@@ -907,7 +907,10 @@ def compose_comparison(render_results, output_path, width, height, layout="auto"
         command.extend(["-loop", "1", "-i", str(banner_path)])
         banner_index = len(render_results)
         total_width = int(width) * len(render_results)
-        filters.append(f"{''.join(video_labels)}hstack=inputs={len(video_labels)}[stack]")
+        if len(video_labels) == 1:
+            filters.append(f"{video_labels[0]}copy[stack]")
+        else:
+            filters.append(f"{''.join(video_labels)}hstack=inputs={len(video_labels)}[stack]")
         filters.append(f"[{banner_index}:v]scale={total_width}:56[banner]")
         filters.append("[banner][stack]vstack=inputs=2[v]")
 

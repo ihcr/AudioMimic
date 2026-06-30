@@ -187,6 +187,77 @@ class G1MetricTests(unittest.TestCase):
         self.assertEqual(audit["failure_panel_path"], str(root / "failure_panel.json"))
         self.assertIn("G1FootBeatF1", audit["per_file"][0])
 
+    def test_fk_support_metrics_are_reported_without_audio_path(self):
+        g1_module = reload_module("eval.g1_metrics")
+
+        with TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            motion_dir = root / "motions"
+            reference_dir = root / "reference"
+            render_dir = root / "renders"
+            motion_dir.mkdir()
+            reference_dir.mkdir()
+            write_g1_motion(motion_dir / "gen.pkl", audio_path="")
+            write_g1_motion(reference_dir / "ref.pkl", audio_path="")
+
+            fk_keypoints = np.array(
+                [
+                    [[0.0, 0.0, 0.2], [0.0, 0.0, 0.1]],
+                    [[0.0, 0.0, 0.1], [0.1, 0.0, 0.1]],
+                    [[0.0, 0.0, 0.2], [0.2, 0.0, 0.1]],
+                    [[0.0, 0.0, 0.1], [0.3, 0.0, 0.1]],
+                    [[0.0, 0.0, 0.2], [0.4, 0.0, 0.1]],
+                    [[0.0, 0.0, 0.1], [0.5, 0.0, 0.1]],
+                ],
+                dtype=np.float32,
+            )
+            fk_result = {
+                "keypoints": fk_keypoints,
+                "keypoint_names": ["pelvis", "left_lowest_foot_geom"],
+                "left_foot_points": fk_keypoints[:, 1],
+                "right_foot_points": fk_keypoints[:, 1],
+                "metadata": {
+                    "model_path": "third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
+                    "root_quat_order": "wxyz",
+                    "joint_names": ["joint"],
+                },
+            }
+
+            with patch.object(
+                g1_module,
+                "load_audio_beat_frames",
+                side_effect=AssertionError("audio should not be loaded"),
+            ), patch.object(
+                g1_module,
+                "detect_fk_motion_beat_frames",
+                return_value=np.array([1, 3], dtype=np.int64),
+            ), patch.object(
+                g1_module,
+                "forward_g1_kinematics",
+                return_value=fk_result,
+            ):
+                metrics = g1_module.run_g1_motion_evaluation(
+                    motion_path=motion_dir,
+                    reference_motion_path=reference_dir,
+                    metrics_path=root / "metrics_fk_no_audio.json",
+                    g1_table_path=root / "table_fk_no_audio.json",
+                    motion_audit_path=root / "audit_fk_no_audio.json",
+                    paper_report_path=root / "report_fk_no_audio.md",
+                    render_dir=render_dir,
+                    diagnostic_count=0,
+                    use_beats=False,
+                    enable_fk_metrics=True,
+                    fk_model_path="third_party/unitree_g1_description/g1_29dof_rev_1_0.xml",
+                    root_quat_order="wxyz",
+                )
+
+        self.assertIn("G1FootSliding", metrics)
+        self.assertIn("G1GroundPenetration", metrics)
+        self.assertIn("G1NoNearSupportRate", metrics)
+        self.assertIn("G1FootHighLiftRate", metrics)
+        self.assertEqual(metrics["num_fk_audio_beats"], 0)
+        self.assertEqual(metrics["G1BeatF1"], 0.0)
+
     def test_g1_metrics_are_finite_and_do_not_report_smpl_only_names(self):
         g1_module = reload_module("eval.g1_metrics")
 
