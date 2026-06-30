@@ -6,7 +6,7 @@ usage() {
 Usage:
   scripts/setup_new_server.sh [options]
 
-Sets up the wav2clip-stft-beat branch on a new server.
+Sets up this Musics2Dance branch on a new server.
 
 Data sources, choose at most one:
   --artifact-source SRC      rsync source root. Examples:
@@ -36,6 +36,8 @@ Options:
 
 Environment:
   PYTHON_BIN                 Python used to create .venv311. Default: python3.11.
+  REQUIREMENTS_PIP_ARGS      Extra pip args for requirements-new-server.txt.
+                             Default: --no-build-isolation --use-deprecated=legacy-resolver
   HF_TOKEN                   Hugging Face token for private repos.
 
 Examples:
@@ -52,6 +54,9 @@ EOF
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 PYTHON_BIN="${PYTHON_BIN:-python3.11}"
+if [[ -z "${REQUIREMENTS_PIP_ARGS+x}" ]]; then
+  REQUIREMENTS_PIP_ARGS="--no-build-isolation --use-deprecated=legacy-resolver"
+fi
 
 ARTIFACT_SOURCE=""
 HF_REPO=""
@@ -205,7 +210,7 @@ install_env() {
   # shellcheck disable=SC1091
   source "$REPO_ROOT/.venv311/bin/activate"
   log "Upgrading pip tooling."
-  python -m pip install --upgrade pip setuptools wheel
+  python -m pip install --upgrade pip 'setuptools<81' wheel
 
   if [[ "$SKIP_TORCH" -eq 0 ]]; then
     if python -c 'import torch, torchaudio' >/dev/null 2>&1; then
@@ -221,7 +226,8 @@ install_env() {
   fi
 
   log "Installing repo dependencies from requirements-new-server.txt."
-  python -m pip install -r "$REPO_ROOT/requirements-new-server.txt"
+  read -r -a requirements_pip_args <<< "$REQUIREMENTS_PIP_ARGS"
+  python -m pip install "${requirements_pip_args[@]}" -r "$REPO_ROOT/requirements-new-server.txt"
 
   if [[ "$FETCH_G1_MODEL" -eq 1 && ! -f "$REPO_ROOT/$G1_MODEL_REL" ]]; then
     log "Fetching Unitree G1 model files."

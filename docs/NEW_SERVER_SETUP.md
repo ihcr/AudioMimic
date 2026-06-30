@@ -9,6 +9,9 @@ EDGE checkout or the old `yukun` Conda environment for code.
 - Source branch: `codex/wav2clip-stage-20260526`.
 - Target compute style: Isambard SSH login plus Slurm jobs.
 - Preferred Python entrypoint inside the repo: `.venv311/bin/python`.
+- Current Isambard GPU nodes report NVIDIA driver CUDA `12.7`; install PyTorch
+  from the CUDA `12.6` wheel index rather than the default PyPI CUDA `13.0`
+  wheels.
 - Slurm runtime outputs: `slurm/`, `setup_logs/`, `runs/`, `wandb/`, `renders/`,
   `eval/`, and `data/` are runtime artifacts, not source files.
 - MuJoCo/G1 render or FK eval paths should export:
@@ -72,21 +75,61 @@ vary by Isambard image, so record the working module commands in `setup_logs/`.
 ```bash
 cd "$M2D_ROOT"
 python3.11 -m venv .venv311
-.venv311/bin/python -m pip install --upgrade pip setuptools wheel
-.venv311/bin/python -m pip install -r requirements-new-server.txt
+.venv311/bin/python -m pip install --upgrade pip 'setuptools<81' wheel
+.venv311/bin/python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu126
+.venv311/bin/python -m pip install --no-build-isolation --use-deprecated=legacy-resolver -r requirements-new-server.txt
 .venv311/bin/python -m pip install -r requirements-g1-fk.txt
 ```
 
-If the cluster image needs a custom PyTorch wheel index, install torch before
-the repo requirements using the wheel index appropriate for the GPU/CUDA stack.
-Do not assume the direct-attached 4090 `cu126` wheel index is correct for every
-Isambard node.
+If the cluster image changes, re-check the GPU-node driver with a short Slurm
+job before changing the PyTorch wheel index. Do not infer the correct wheel from
+the login node alone.
+
+The pinned `jukebox`/`jukemirlib` dependencies are old enough that isolated
+builds can fail with `ModuleNotFoundError: No module named 'pkg_resources'`.
+`scripts/setup_new_server.sh` therefore installs `requirements-new-server.txt`
+with `--no-build-isolation --use-deprecated=legacy-resolver` by default. Override
+`REQUIREMENTS_PIP_ARGS` only if the dependency set has been modernized. Keep
+`setuptools<81`: newer setuptools releases remove the legacy `pkg_resources`
+API these pinned packages still import, and current aarch64 PyTorch wheels also
+require `setuptools<82`.
 
 Validate the interpreter:
 
 ```bash
 .venv311/bin/python --version
 .venv311/bin/python -m pip list | head
+```
+
+Validate CUDA from a short Slurm GPU job, not from the login node. Expected
+current output should include:
+
+```text
+torch 2.12.1+cu126
+cuda_available True
+cuda_version 12.6
+device0 NVIDIA GH200 120GB
+```
+
+For this branch, the repeatable setup command on Isambard after runtime data has
+already been transferred is:
+
+```bash
+PYTHONUNBUFFERED=1 scripts/setup_new_server.sh --skip-data --torch-index-url https://download.pytorch.org/whl/cu126 2>&1 | tee setup_logs/isambard_env_setup_$(date -u +%Y%m%d).log
+```
+
+If the environment was first created without the wheel index and PyPI installed
+CUDA `13.0` packages, torch may import on the login node but fail on GPU nodes
+with an old-driver warning. Replace the wheels explicitly:
+
+```bash
+.venv311/bin/python -m pip install --force-reinstall torch==2.12.1+cu126 torchaudio==2.11.0+cu126 --index-url https://download.pytorch.org/whl/cu126
+```
+
+Then remove any remaining non-`cu12` NVIDIA runtime packages shown by:
+
+```bash
+.venv311/bin/python -m pip list --format=freeze | grep -E '^(nvidia|cuda|torch|torchaudio)'
 ```
 
 ## Runtime Data Transfer
@@ -128,6 +171,25 @@ are authoritative after the transfer.
 
 Do not rsync `.venv311`. Rebuild it on Isambard so binary wheels match the
 cluster image.
+
+If the transferred tree was originally built with symlinks, check for absolute
+links back to the old 4090 path:
+
+```bash
+find data/finedance_g1_fkbeats -type l -lname '/home/tianhup/*' | head
+```
+
+For the current migration, `data/finedance_g1_fkbeats/{train,test}/wavs_sliced`
+and `baseline_feats` should be repo-local directory symlinks to
+`data/finedance_aistpp/{train,test}/...`, not per-file symlinks to the old
+machine. The fixed layout is:
+
+```text
+data/finedance_g1_fkbeats/train/wavs_sliced -> ../../finedance_aistpp/train/wavs_sliced
+data/finedance_g1_fkbeats/test/wavs_sliced -> ../../finedance_aistpp/test/wavs_sliced
+data/finedance_g1_fkbeats/train/baseline_feats -> ../../finedance_aistpp/train/baseline_feats
+data/finedance_g1_fkbeats/test/baseline_feats -> ../../finedance_aistpp/test/baseline_feats
+```
 
 ## Hugging Face Policy
 

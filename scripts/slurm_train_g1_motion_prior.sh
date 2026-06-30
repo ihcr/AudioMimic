@@ -17,6 +17,10 @@ Environment overrides:
   ACCOUNT                Optional Slurm account.
   WANDB_MODE             W&B mode. Default: online
   BATCH_SIZE             Training batch size. Default: 256
+  NUM_WORKERS            DataLoader workers. Default: 0
+  CACHE_BATCH_SIZE       Cache build batch size. Default: 256
+  MIXED_PRECISION        AMP precision: no, fp16, or bf16. Default: fp16
+  LEARNING_RATE          Training learning rate. Default: 2e-4
   EPOCHS                 Training epochs. Default: 500
   SAVE_INTERVAL          Checkpoint interval. Default: 100
   EVAL_INTERVAL          Lightweight eval interval. Default: 50
@@ -57,6 +61,10 @@ MEMORY="${MEMORY:-64G}"
 GPUS="${GPUS:-1}"
 WANDB_MODE="${WANDB_MODE:-online}"
 BATCH_SIZE="${BATCH_SIZE:-256}"
+NUM_WORKERS="${NUM_WORKERS:-0}"
+CACHE_BATCH_SIZE="${CACHE_BATCH_SIZE:-256}"
+MIXED_PRECISION="${MIXED_PRECISION:-fp16}"
+LEARNING_RATE="${LEARNING_RATE:-2e-4}"
 EPOCHS="${EPOCHS:-500}"
 SAVE_INTERVAL="${SAVE_INTERVAL:-100}"
 EVAL_INTERVAL="${EVAL_INTERVAL:-50}"
@@ -111,13 +119,17 @@ echo "[\$(date -u +%Y-%m-%dT%H:%M:%SZ)] Starting $EXP_NAME"
   --latent_dim 128 \\
   --temporal_downsample 2 \\
   --batch_size "$BATCH_SIZE" \\
+  --num_workers "$NUM_WORKERS" \\
+  --cache_batch_size "$CACHE_BATCH_SIZE" \\
   --epochs "$EPOCHS" \\
-  --learning_rate 2e-4 \\
+  --learning_rate "$LEARNING_RATE" \\
   --weight_decay 0.02 \\
+  --mixed_precision "$MIXED_PRECISION" \\
   --save_interval "$SAVE_INTERVAL" \\
   --eval_interval "$EVAL_INTERVAL" \\
   --full_eval_interval "$FULL_EVAL_INTERVAL" \\
   --wandb_pj_name Musics2Dance \\
+  --wandb_mode "$WANDB_MODE" \\
   2>&1 | tee -a "$TEE_LOG"
 echo "[\$(date -u +%Y-%m-%dT%H:%M:%SZ)] Finished $EXP_NAME"
 EOF

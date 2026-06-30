@@ -9,6 +9,9 @@ data/finedance_g1_fkbeats/*
 data/finedance_g1_wav2clip_stft_beat_concat_norm_dataset_backups/
 data/finedance_g1_wav2clip_stft_beat_stream_adapter_dataset_backups/
 data/finedance_g1_v6b_motion_prior_dataset_backups/
+data/finedance_g1_v6b_beat8d_latent_dataset_backups/
+data/finedance_g1_v6b_beat8d_latent_dataset_backups_smoke/
+data/finedance_g1_v6bc_music_control_latent_dataset_backups/
 data/g1_aistpp/
 data/g1_aistpp_full/
 data/g1_aistpp_full_fkbeats/
@@ -22,6 +25,7 @@ wandb/
 renders/
 videos/
 .ipynb_checkpoints/
+.vscode/
 __pycache__/
 *.pyc
 *.pyo

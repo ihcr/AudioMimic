@@ -42,7 +42,9 @@ calling the interpreter directly so commands also work when an activation script
 is not present:
 ```.bash
 .venv311/bin/python --version
-.venv311/bin/python -m pip install -r requirements.txt
+.venv311/bin/python -m pip install --upgrade pip 'setuptools<81' wheel
+.venv311/bin/python -m pip install torch torchaudio --index-url https://download.pytorch.org/whl/cu126
+.venv311/bin/python -m pip install --no-build-isolation --use-deprecated=legacy-resolver -r requirements-new-server.txt
 ```
 If a future clone has an activation script, activation is also fine:
 ```.bash

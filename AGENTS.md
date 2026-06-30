@@ -29,10 +29,16 @@ Large checkpoints, datasets, cached features, renders, and Slurm outputs are run
 - Long-running `tmux` training sessions must show live output when attached.
   Prefer `PYTHONUNBUFFERED=1 ... 2>&1 | tee -a setup_logs/<experiment>.log`
   inside the tmux pane instead of redirecting stdout/stderr away from the pane.
+- Every time a training job is launched or resumed, report the exact real-time
+  log-follow command for the user, including the Slurm job ID and log path.
+  Prefer `tail -f slurm/<experiment>/.../train_<jobid>.out` for Slurm runs and
+  the tee log under `setup_logs/` as the fallback or curated log.
 
 ## Common Commands
+- `PYTHONUNBUFFERED=1 scripts/setup_new_server.sh --skip-data --torch-index-url https://download.pytorch.org/whl/cu126`
 - `python data/create_dataset.py --extract-baseline --extract-jukebox`
-- `scripts/bootstrap_finedance_g1_4090.sh --run-validation`
+- `scripts/bootstrap_finedance_g1_4090.sh --run-validation` on direct-attached
+  4090 servers only
 - `accelerate launch train.py --feature_type jukebox ...`
 - `python test.py --music_dir custom_music --checkpoint checkpoint.pt --no_render`
 - `python -m unittest discover -s tests`
