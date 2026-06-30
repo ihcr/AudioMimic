@@ -254,6 +254,26 @@ Every candidate must decode to motion and run the same G1 gates:
 - control sensitivity: zero support beatness, flat intensity, zero all controls;
 - latent diagnostics: latent norm, latent variance, decoder reconstruction gap.
 
+Use stable raw-diffusion anchors in every comparison, even when a new latent
+route is being tested:
+
+```text
+v3b_1500_pred:
+  balanced raw-diffusion reference for render naturalness and overall motion
+
+8D raw-diffusion anchors:
+  beat8d_1000_auto and beat8d_beatness_1000_pred for rhythm/control behavior
+```
+
+These anchors are not promoted because they win every metric. They are retained
+because qualitative render inspection makes them the most useful stable
+references for detecting whether a new route is genuinely better or only
+exploits the metric suite. Treat metrics as diagnostic evidence, not as the
+sole acceptance rule. If a new model improves beat scores but looks less natural
+or regresses on support/contact, ground behavior, endpoint jerk, root stability,
+or motion feasibility, call that out as a failure mode rather than accepting the
+checkpoint.
+
 ## Ablation Matrix
 
 | Ablation | Question | Accept signal |
