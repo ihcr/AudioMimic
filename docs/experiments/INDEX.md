@@ -12,6 +12,13 @@ Use this ledger as the source of truth for nontrivial research, ablations, train
 | [EXP-20260520-finedance-g1-gaussian-beat](EXP-20260520-finedance-g1-gaussian-beat.md) | finished | `wav2clip-stft-beat` branch on local 4090 clone | FineDance+G1 pure GaussianBeat conditioning, all other r01 controls held fixed, 1000-epoch schedule | `runs/train/EXP-20260520-finedance-g1-gaussian-beat_r01_linear/weights/train-1000.pt`; full eval `eval/EXP-20260520-finedance-g1-gaussian-beat/r01_linear_1000/metrics.json`; benchmark `eval/EXP-20260520-finedance-g1-gaussian-beat/comparison_g1_metrics.md` | Use as a lower-bound beat-only baseline; do not promote over Librosa35 without a hybrid feature follow-up |
 | [EXP-20260522-gaussian-beat-condition-ablation](EXP-20260522-gaussian-beat-condition-ablation.md) | finished | `wav2clip-stft-beat` branch on local 4090 clone | Inference-only ablation of pure GaussianBeat condition: real, shifted, random, constant, unconditional | `eval/EXP-20260522-gaussian-beat-condition-ablation/comparison_g1_metrics.md`; `condition_sensitivity_vs_no_beat_uncond.md`; `condition_sensitivity_vs_real.md` | Use GaussianBeat only as a weak lower-bound/auxiliary rhythm probe; design richer conditioning with condition-sensitivity checks |
 
+## Stage Reports
+
+| ID | Status | Scope | Latest Artifact | Next Action |
+|---|---|---|---|---|
+| [EXP-20260617-music2dance-progress-report](EXP-20260617-music2dance-progress-report.md) | active_summary | Music2Dance FineDance/G1/Wav2CLIP/beat-control/yaw-delta progress through V5, 8D beat-only, and DiscoForcing-inspired compound rhythm planning | Consolidated stage report dated 2026-06-17 | First build rhythm eval suite and `V6a_compound_rhythm_only_yaw_delta`; then add contact-aware beatness; add Wav2CLIP semantics only after rhythm controllability is verified |
+| [NEXT-20260617-rhythm-eval-plan](NEXT-20260617-rhythm-eval-plan.md) | execution_plan | Student-facing next-step plan for rhythm/action evaluation before new training | Metric definitions, literature/project-origin notes, implementation steps, and pass criteria | Implement rhythm eval suite first; do not start new V6 training until the current models are re-evaluated with these metrics |
+
 ## Archived Experiments
 
 | ID | Final Status | Main Conclusion | Key Artifacts |

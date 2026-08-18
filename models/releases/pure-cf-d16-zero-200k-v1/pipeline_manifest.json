@@ -1,0 +1,46 @@
+{
+  "schema_version": "musics2dance_inference_pipeline_v1",
+  "experiment_id": "EXP-20260804-v6f-x-pure-commit-forcing-final",
+  "repository_branch": "prior-dev",
+  "method": "pure_commit_forcing",
+  "training_profile": "minimum_latent_width_final_commit_forcing",
+  "deployment_contract": "K64_H8_C4_strict_causal",
+  "music_conditioning": false,
+  "generator_training_seed": 1234,
+  "generator_update": 200000,
+  "residual_width": 16,
+  "codebook_size": 512,
+  "oracle_context_floor": 0.0,
+  "cache_schema_version": "g1_paper_faithful_dc_v4_latent_width",
+  "cache_manifest_digest": "27ab6cdc81bade18509c96307e37e5db74e5248d464cd03c1157788693329593",
+  "source_split_digest": "675679c3d94d4e048e4050b1247106436cb074dc87853467ed3f6a22567fe6d1",
+  "normalizer_sha256": "d8b3a0ada3f5d396a87db233b8cb57933daba1d095c7d84d9c36095a9932fbfb",
+  "streaming_statistics_sha256": "390f7581f14547863b5a2f16eb4e8a933eadf26f190d071820eff395c5f0562c",
+  "files": {
+    "generator": {
+      "path": "pure-cf-d16-zero-seed1234-update200000-inference.pt",
+      "size_bytes": 929933103,
+      "sha256": "add4da47b30dcda409bd3d69b4e2acd1e295a223616afd104442e19452e42e9f",
+      "exact_resume_training": false
+    },
+    "q0": {
+      "path": "q0-d16-seed1234-update100000.pt",
+      "size_bytes": 1039232553,
+      "sha256": "413e319bbe49e69384682c34f18b072bbecd519e1787b6cce1c182fc1dad26a0",
+      "stage": "q0_base",
+      "update": 100000
+    },
+    "codec": {
+      "path": "codec-d16-seed1234-train300.pt",
+      "size_bytes": 155323831,
+      "sha256": "45285b832ceea4c9977ffac21dca238c693ccbf22fa96cd83e3cf3e0960e799b",
+      "epoch": 300
+    }
+  },
+  "total_size_bytes": 2124489487,
+  "inference_entrypoint": "python -m eval.run_g1_paper_faithful_dc_eval",
+  "data_prerequisite": "prepared FineDance-G1 motion directory; normally data/finedance_g1_fkbeats",
+  "teacher_checkpoint_required": false,
+  "source_full_generator_sha256": "79500ceebdea2c3d54af2b504728eb32055f690f19a9ea964b7ada482e9ad9ca",
+  "release_url": "https://github.com/lbtwyk/Musics2Dance/releases/tag/pure-cf-d16-zero-200k-v1"
+}

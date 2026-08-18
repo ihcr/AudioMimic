@@ -25,6 +25,17 @@ FPS = 30.0
 ROOT_UP_AXIS = 2
 ROOT_FLAT_AXES = (0, 1)
 SMPL_ONLY_METRIC_NAMES = ("PFC", "Distg", "Distk", "Divk", "Divm")
+RHYTHM_BODY_GROUPS = {
+    "Wrist": ("left_wrist_yaw_link", "right_wrist_yaw_link"),
+    "Foot": (
+        "left_ankle_roll_link",
+        "right_ankle_roll_link",
+        "left_lowest_foot_geom",
+        "right_lowest_foot_geom",
+    ),
+    "Torso": ("pelvis", "torso_link"),
+    "FullBody": (),
+}
 
 
 def _as_float_array(value, name, ndim=None):
@@ -304,6 +315,40 @@ def detect_fk_motion_beat_frames(keypoints, fps=FPS, sigma=5):
     return np.asarray(argrelextrema(smoothed, np.less)[0], dtype=np.int64)
 
 
+def _keypoint_indices(keypoint_names, selected_names=()):
+    keypoint_names = list(keypoint_names or [])
+    if not keypoint_names:
+        return np.zeros(0, dtype=np.int64)
+    if not selected_names:
+        return np.arange(len(keypoint_names), dtype=np.int64)
+    selected = [
+        idx for idx, name in enumerate(keypoint_names)
+        if name in set(selected_names)
+    ]
+    return np.asarray(selected, dtype=np.int64)
+
+
+def _select_keypoints(keypoints, keypoint_names, selected_names=()):
+    keypoints = _as_float_array(keypoints, "keypoints", ndim=3)
+    indices = _keypoint_indices(keypoint_names, selected_names)
+    if indices.size == 0:
+        return np.zeros((keypoints.shape[0], 0, 3), dtype=np.float32)
+    return keypoints[:, indices, :]
+
+
+def detect_keypoint_group_motion_beat_frames(
+    keypoints,
+    keypoint_names,
+    selected_names=(),
+    fps=FPS,
+    sigma=5,
+):
+    selected_keypoints = _select_keypoints(keypoints, keypoint_names, selected_names)
+    if selected_keypoints.shape[1] == 0:
+        return np.zeros(0, dtype=np.int64)
+    return detect_fk_motion_beat_frames(selected_keypoints, fps=fps, sigma=sigma)
+
+
 def _greedy_match_offsets(generated_beats, target_beats, tolerance):
     generated_beats = np.sort(np.asarray(generated_beats, dtype=np.int64).reshape(-1))
     target_beats = np.sort(np.asarray(target_beats, dtype=np.int64).reshape(-1))
@@ -338,9 +383,82 @@ def compute_beat_timing_report(generated_beats, target_beats, tolerance=DEFAULT_
         "precision": float(precision),
         "recall": float(recall),
         "f1": float(f1),
+        "false_positive_rate": float(1.0 - precision),
         "timing_mean_frames": finite_mean(offsets),
         "timing_std_frames": float(np.std(offsets)) if offsets.size else 0.0,
     }
+
+
+def compute_beat_density_report(generated_beats, target_beats, seq_len, fps):
+    generated_beats = np.asarray(generated_beats, dtype=np.int64).reshape(-1)
+    target_beats = np.asarray(target_beats, dtype=np.int64).reshape(-1)
+    duration_seconds = max(float(seq_len) / max(float(fps), 1e-6), 1e-6)
+    generated_density = float(generated_beats.size) / duration_seconds
+    target_density = float(target_beats.size) / duration_seconds
+    return {
+        "motion_density": generated_density,
+        "target_density": target_density,
+        "density_ratio": generated_density / max(target_density, 1e-6),
+    }
+
+
+def _rate_near_frames(frame_mask, target_frames, tolerance=DEFAULT_BAP_TOLERANCE):
+    frame_mask = np.asarray(frame_mask, dtype=bool).reshape(-1)
+    target_frames = np.asarray(target_frames, dtype=np.int64).reshape(-1)
+    if target_frames.size == 0:
+        return 0.0
+    hits = 0
+    for frame in target_frames:
+        start = max(int(frame) - int(tolerance), 0)
+        stop = min(int(frame) + int(tolerance) + 1, frame_mask.size)
+        if start < stop and bool(np.any(frame_mask[start:stop])):
+            hits += 1
+    return float(hits / target_frames.size)
+
+
+def _mean_keypoint_jerk(keypoints, fps):
+    keypoints = _as_float_array(keypoints, "keypoints", ndim=3)
+    if keypoints.shape[0] < 4 or keypoints.shape[1] == 0:
+        return 0.0
+    velocity = np.diff(keypoints, axis=0) * float(fps)
+    acceleration = np.diff(velocity, axis=0) * float(fps)
+    jerk = np.diff(acceleration, axis=0) * float(fps)
+    return finite_mean(np.linalg.norm(jerk, axis=-1))
+
+
+def compute_fk_body_rhythm_metrics(
+    fk_result,
+    target_beats,
+    fps,
+    tolerance=DEFAULT_BAP_TOLERANCE,
+):
+    keypoints = _as_float_array(fk_result["keypoints"], "keypoints", ndim=3)
+    keypoint_names = fk_result.get("keypoint_names", [])
+    metrics = {}
+    for label, selected_names in RHYTHM_BODY_GROUPS.items():
+        beats = detect_keypoint_group_motion_beat_frames(
+            keypoints,
+            keypoint_names,
+            selected_names=selected_names,
+            fps=fps,
+        )
+        timing = compute_beat_timing_report(
+            generated_beats=beats,
+            target_beats=target_beats,
+            tolerance=tolerance,
+        )
+        prefix = f"G1{label}Beat"
+        metrics.update(
+            {
+                f"{prefix}Precision": timing["precision"],
+                f"{prefix}Recall": timing["recall"],
+                f"{prefix}F1": timing["f1"],
+                f"{prefix}TimingMeanFrames": timing["timing_mean_frames"],
+                f"{prefix}TimingStdFrames": timing["timing_std_frames"],
+                f"{prefix}OffbeatRate": timing["false_positive_rate"],
+            }
+        )
+    return metrics
 
 
 def compute_fk_foot_diagnostics(fk_result, fps, contact_height_margin=0.03):
@@ -369,6 +487,64 @@ def compute_fk_foot_diagnostics(fk_result, fps, contact_height_margin=0.03):
     }
 
 
+def compute_fk_support_diagnostics(
+    fk_result,
+    target_beats,
+    tolerance=DEFAULT_BAP_TOLERANCE,
+    contact_height_margin=0.03,
+    near_support_height=0.08,
+    high_lift_height=0.16,
+):
+    left = _as_float_array(fk_result["left_foot_points"], "left_foot_points", ndim=2)
+    right = _as_float_array(fk_result["right_foot_points"], "right_foot_points", ndim=2)
+    feet = np.stack([left, right], axis=1)
+    if feet.shape[0] == 0:
+        return {
+            "G1FootContactOnBeatRate": 0.0,
+            "G1NearSupportOnBeatRate": 0.0,
+            "G1NoNearSupportRate": 0.0,
+            "G1FootHighLiftRate": 0.0,
+        }
+    ground = float(np.percentile(feet[:, :, ROOT_UP_AXIS], 1.0))
+    foot_heights = feet[:, :, ROOT_UP_AXIS] - ground
+    contact_frames = np.any(foot_heights <= contact_height_margin, axis=1)
+    near_support_frames = np.any(foot_heights <= near_support_height, axis=1)
+    high_lift = foot_heights > high_lift_height
+    return {
+        "G1FootContactOnBeatRate": _rate_near_frames(
+            contact_frames,
+            target_beats,
+            tolerance=tolerance,
+        ),
+        "G1NearSupportOnBeatRate": _rate_near_frames(
+            near_support_frames,
+            target_beats,
+            tolerance=tolerance,
+        ),
+        "G1NoNearSupportRate": float(np.mean(~near_support_frames)),
+        "G1FootHighLiftRate": float(np.mean(high_lift)),
+    }
+
+
+def compute_fk_endpoint_diagnostics(fk_result, fps):
+    keypoints = _as_float_array(fk_result["keypoints"], "keypoints", ndim=3)
+    keypoint_names = fk_result.get("keypoint_names", [])
+    wrist_keypoints = _select_keypoints(
+        keypoints,
+        keypoint_names,
+        RHYTHM_BODY_GROUPS["Wrist"],
+    )
+    foot_keypoints = _select_keypoints(
+        keypoints,
+        keypoint_names,
+        RHYTHM_BODY_GROUPS["Foot"],
+    )
+    return {
+        "G1WristJerkMean": _mean_keypoint_jerk(wrist_keypoints, fps),
+        "G1FootJerkMean": _mean_keypoint_jerk(foot_keypoints, fps),
+    }
+
+
 def evaluate_g1_fk_metrics(motion, fk_model_path, root_quat_order="xyzw", bap_tolerance=DEFAULT_BAP_TOLERANCE):
     audio_path = motion.get("audio_path")
     if not audio_path:
@@ -392,7 +568,28 @@ def evaluate_g1_fk_metrics(motion, fk_model_path, root_quat_order="xyzw", bap_to
         target_beats=audio_beats,
         tolerance=bap_tolerance,
     )
+    density = compute_beat_density_report(
+        generated_beats=motion_beats,
+        target_beats=audio_beats,
+        seq_len=motion["root_pos"].shape[0],
+        fps=motion["fps"],
+    )
     diagnostics = compute_fk_foot_diagnostics(fk_result, fps=motion["fps"])
+    support_diagnostics = compute_fk_support_diagnostics(
+        fk_result,
+        target_beats=audio_beats,
+        tolerance=bap_tolerance,
+    )
+    endpoint_diagnostics = compute_fk_endpoint_diagnostics(
+        fk_result,
+        fps=motion["fps"],
+    )
+    body_rhythm = compute_fk_body_rhythm_metrics(
+        fk_result,
+        target_beats=audio_beats,
+        fps=motion["fps"],
+        tolerance=bap_tolerance,
+    )
     return {
         "G1FKBAS": compute_bas_score(
             music_beats=audio_beats,
@@ -407,12 +604,19 @@ def evaluate_g1_fk_metrics(motion, fk_model_path, root_quat_order="xyzw", bap_to
         "G1BeatPrecision": timing["precision"],
         "G1BeatRecall": timing["recall"],
         "G1BeatF1": timing["f1"],
+        "G1BeatOffbeatRate": timing["false_positive_rate"],
         "G1BeatTimingMeanFrames": timing["timing_mean_frames"],
         "G1BeatTimingStdFrames": timing["timing_std_frames"],
+        "G1MotionBeatDensity": density["motion_density"],
+        "G1TargetBeatDensity": density["target_density"],
+        "G1BeatDensityRatio": density["density_ratio"],
         "num_fk_generated_beats": timing["num_generated_beats"],
         "num_fk_audio_beats": timing["num_target_beats"],
         "num_fk_matched_beats": timing["matched"],
         **diagnostics,
+        **support_diagnostics,
+        **endpoint_diagnostics,
+        **body_rhythm,
         "fk_metadata": fk_result.get("metadata", {}),
     }
 
@@ -657,28 +861,47 @@ def aggregate_fk_metrics(fk_records):
     fk_records = [record for record in fk_records if record is not None]
     if not fk_records:
         return {}
-    return {
+    mean_keys = [
+        "G1BeatPrecision",
+        "G1BeatRecall",
+        "G1BeatF1",
+        "G1BeatOffbeatRate",
+        "G1BeatTimingMeanFrames",
+        "G1BeatTimingStdFrames",
+        "G1MotionBeatDensity",
+        "G1TargetBeatDensity",
+        "G1BeatDensityRatio",
+        "G1FootSliding",
+        "G1FootClearanceMean",
+        "G1FootContactOnBeatRate",
+        "G1NearSupportOnBeatRate",
+        "G1NoNearSupportRate",
+        "G1FootHighLiftRate",
+        "G1WristJerkMean",
+        "G1FootJerkMean",
+    ]
+    for label in RHYTHM_BODY_GROUPS:
+        prefix = f"G1{label}Beat"
+        mean_keys.extend(
+            [
+                f"{prefix}Precision",
+                f"{prefix}Recall",
+                f"{prefix}F1",
+                f"{prefix}TimingMeanFrames",
+                f"{prefix}TimingStdFrames",
+                f"{prefix}OffbeatRate",
+            ]
+        )
+
+    aggregate = {
         "G1FKBAS": finite_mean([record["G1FKBAS"] for record in fk_records]),
         "G1FKBAS_direction": BAS_DIRECTION,
         "G1FKRoboPerformBAS": finite_mean(
             [record["G1FKRoboPerformBAS"] for record in fk_records]
         ),
         "G1FKRoboPerformBAS_direction": ROBOPERFORM_BAS_DIRECTION,
-        "G1BeatPrecision": finite_mean([record["G1BeatPrecision"] for record in fk_records]),
-        "G1BeatRecall": finite_mean([record["G1BeatRecall"] for record in fk_records]),
-        "G1BeatF1": finite_mean([record["G1BeatF1"] for record in fk_records]),
-        "G1BeatTimingMeanFrames": finite_mean(
-            [record["G1BeatTimingMeanFrames"] for record in fk_records]
-        ),
-        "G1BeatTimingStdFrames": finite_mean(
-            [record["G1BeatTimingStdFrames"] for record in fk_records]
-        ),
-        "G1FootSliding": finite_mean([record["G1FootSliding"] for record in fk_records]),
         "G1GroundPenetration": finite_max(
             [record["G1GroundPenetration"] for record in fk_records]
-        ),
-        "G1FootClearanceMean": finite_mean(
-            [record["G1FootClearanceMean"] for record in fk_records]
         ),
         "num_fk_scored_files": len(fk_records),
         "num_fk_generated_beats": int(
@@ -691,6 +914,9 @@ def aggregate_fk_metrics(fk_records):
             sum(record["num_fk_matched_beats"] for record in fk_records)
         ),
     }
+    for key in mean_keys:
+        aggregate[key] = finite_mean([record[key] for record in fk_records if key in record])
+    return aggregate
 
 
 def json_safe(payload):
@@ -742,7 +968,21 @@ def build_g1_table(metrics, method_name):
             {
                 "G1 FK Beat Align.": metrics["G1FKBAS"],
                 "G1 FK RoboPerform BAS": metrics["G1FKRoboPerformBAS"],
+                "G1 Beat Precision": metrics["G1BeatPrecision"],
+                "G1 Beat Recall": metrics["G1BeatRecall"],
                 "G1 Beat F1": metrics["G1BeatF1"],
+                "G1 Beat Timing Mean": metrics["G1BeatTimingMeanFrames"],
+                "G1 Beat Timing Std": metrics["G1BeatTimingStdFrames"],
+                "G1 Motion Beat Density": metrics["G1MotionBeatDensity"],
+                "G1 Beat Offbeat Rate": metrics["G1BeatOffbeatRate"],
+                "G1 Wrist Beat F1": metrics["G1WristBeatF1"],
+                "G1 Foot Beat F1": metrics["G1FootBeatF1"],
+                "G1 Torso Beat F1": metrics["G1TorsoBeatF1"],
+                "G1 Foot Contact On Beat": metrics["G1FootContactOnBeatRate"],
+                "G1 Near Support On Beat": metrics["G1NearSupportOnBeatRate"],
+                "G1 No Near Support": metrics["G1NoNearSupportRate"],
+                "G1 Foot High Lift": metrics["G1FootHighLiftRate"],
+                "G1 Wrist Jerk": metrics["G1WristJerkMean"],
                 "G1 Foot Sliding": metrics["G1FootSliding"],
             }
         )
@@ -779,8 +1019,20 @@ def render_g1_paper_report(metrics, table):
                 f"- FK beat alignment: {metrics['G1FKBAS']}",
                 f"- FK RoboPerform BAS: {metrics['G1FKRoboPerformBAS']}",
                 f"- Beat F1: {metrics['G1BeatF1']}",
+                f"- Beat precision: {metrics['G1BeatPrecision']}",
+                f"- Beat recall: {metrics['G1BeatRecall']}",
+                f"- Beat offbeat false-positive rate: {metrics['G1BeatOffbeatRate']}",
                 f"- Beat timing mean frames: {metrics['G1BeatTimingMeanFrames']}",
                 f"- Beat timing std frames: {metrics['G1BeatTimingStdFrames']}",
+                f"- Motion beat density: {metrics['G1MotionBeatDensity']}",
+                f"- Wrist beat F1: {metrics['G1WristBeatF1']}",
+                f"- Foot beat F1: {metrics['G1FootBeatF1']}",
+                f"- Torso beat F1: {metrics['G1TorsoBeatF1']}",
+                f"- Foot contact on beat: {metrics['G1FootContactOnBeatRate']}",
+                f"- Near support on beat: {metrics['G1NearSupportOnBeatRate']}",
+                f"- No-near-support rate: {metrics['G1NoNearSupportRate']}",
+                f"- Foot high-lift rate: {metrics['G1FootHighLiftRate']}",
+                f"- Wrist jerk mean: {metrics['G1WristJerkMean']}",
                 f"- Foot sliding: {metrics['G1FootSliding']}",
                 f"- Ground penetration: {metrics['G1GroundPenetration']}",
                 "",

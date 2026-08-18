@@ -1,4 +1,6 @@
 from dataclasses import dataclass
+import hashlib
+import json
 from pathlib import Path
 import xml.etree.ElementTree as ET
 
@@ -123,6 +125,9 @@ class G1TorchKinematics(nn.Module):
         if root_quat_order not in ("wxyz", "xyzw"):
             raise ValueError("root_quat_order must be 'wxyz' or 'xyzw'")
         self.root_quat_order = root_quat_order
+        self.model_path = str(Path(model_path).resolve())
+        with open(self.model_path, "rb") as handle:
+            self.model_sha256 = hashlib.sha256(handle.read()).hexdigest()
         bodies, foot_geoms = parse_g1_mjcf(model_path)
         self.body_names = [body.name for body in bodies]
         self.keypoint_names = list(DEFAULT_KEYPOINT_BODIES) + list(LOWEST_FOOT_NAMES)
@@ -161,6 +166,35 @@ class G1TorchKinematics(nn.Module):
                 f"{foot_name}_geom_radii",
                 torch.tensor(radii, dtype=torch.float32),
             )
+
+    def manifest(self):
+        payload = {
+            "name": "G1TorchKinematicsV1",
+            "model_path": self.model_path,
+            "model_sha256": self.model_sha256,
+            "root_quat_order": self.root_quat_order,
+            "body_names": list(self.body_names),
+            "parent_ids": list(self.parent_id_list),
+            "joint_indices": list(self.joint_index_list),
+            "foot_body_names": list(FOOT_BODY_NAMES),
+            "foot_body_indices": list(self.foot_body_index_list),
+            "sole_names": list(LOWEST_FOOT_NAMES),
+            "sole_definition": {
+                foot_name: {
+                    "geom_offsets": getattr(
+                        self, f"{foot_name}_geom_offsets"
+                    ).detach().cpu().tolist(),
+                    "geom_radii": getattr(
+                        self, f"{foot_name}_geom_radii"
+                    ).detach().cpu().tolist(),
+                    "selection": "minimum geom center z minus radius",
+                }
+                for foot_name in FOOT_BODY_NAMES
+            },
+        }
+        canonical = json.dumps(payload, sort_keys=True, separators=(",", ":"))
+        payload["sha256"] = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+        return payload
 
     def _root_quaternion_wxyz(self, root_rot):
         if self.root_quat_order == "wxyz":

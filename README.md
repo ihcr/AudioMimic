@@ -1,4 +1,62 @@
 ![EDGE cover image](media/edge_cover.png)
+
+## AudioMimic: Online Music-to-Robot Dance
+
+AudioMimic is the integration and deployment repository for the complete G1
+dance system:
+
+```text
+causal music condition -> online K64/H8/C4 motion generation
+                       -> 30 Hz to 50 Hz SONIC reference
+                       -> MuJoCo or real Unitree G1 tracking
+```
+
+The original EDGE training code remains in this repository, while the current
+SONIC deployment path is provided by:
+
+```text
+run_g1_paper_faithful_dc_sonic.py
+stream_to_sonic.py
+sonic_bridge.py
+model/g1_paper_faithful_dc_runtime.py
+```
+
+The validated `pure-cf-d16-zero-200k-v1` release is motion-only: it uses K64
+motion history and S66 boundary state, but does not yet consume live music.
+Model training and new checkpoint development continue in Musics2Dance;
+compatible releases are installed into AudioMimic without changing the SONIC
+interface.
+
+Install the current model, codec, q0 checkpoint, and K64 seed from an existing
+local Musics2Dance checkout:
+
+```bash
+cd ~/AudioMimic
+bash scripts/install_pure_cf_release.sh ~/Musics2Dance-prior-dev
+```
+
+If the local checkout is absent, the same script downloads the published
+release. The `.pt` and `.pkl` artifacts are intentionally ignored by Git; the
+release manifest and SHA256 identities remain under
+`models/releases/pure-cf-d16-zero-200k-v1/`.
+
+Verify the migrated runtime:
+
+```bash
+conda activate audiomimic
+python -m unittest \
+  tests.test_g1_paper_faithful_dc_runtime \
+  tests.test_sonic_bridge \
+  tests.test_offline_sonic_playback
+```
+
+The full three-terminal SONIC startup procedure, online Open-loop/JIT commands,
+offline playback, recording, and measured capability results are documented in
+[`操作手册_AudioMimic_SONIC.md`](操作手册_AudioMimic_SONIC.md).
+The current end-to-end status and prioritized work toward a real-time
+music-driven G1 are tracked in
+[`docs/ROADMAP_REALTIME_MUSIC_TO_G1.md`](docs/ROADMAP_REALTIME_MUSIC_TO_G1.md).
+
 ## EDGE &mdash; Official PyTorch implementation
 **EDGE: Editable Dance Generation From Music** (CVPR 2023)<br>
 Jonathan Tseng, Rodrigo Castellon, C. Karen Liu<br>
