@@ -55,7 +55,7 @@ offline playback, recording, and measured capability results are documented in
 [`操作手册_AudioMimic_SONIC.md`](操作手册_AudioMimic_SONIC.md).
 The current end-to-end status and prioritized work toward a real-time
 music-driven G1 are tracked in
-[`docs/ROADMAP_REALTIME_MUSIC_TO_G1.md`](docs/ROADMAP_REALTIME_MUSIC_TO_G1.md).
+[`ROADMAP_REALTIME_MUSIC_TO_G1.md`](ROADMAP_REALTIME_MUSIC_TO_G1.md).
 
 ## EDGE &mdash; Official PyTorch implementation
 **EDGE: Editable Dance Generation From Music** (CVPR 2023)<br>
