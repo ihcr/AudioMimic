@@ -54,3 +54,29 @@ AGENTS.md
 # Local artifact manifests and experiment outputs.
 hf_manifest.json
 eval/EXP-*/
+
+# Local SONIC telemetry is large; commit derived metrics and reports instead.
+eval/generation_to_execution_gap/m0_*/
+eval/generation_to_execution_gap/m2_*/
+eval/generation_to_execution_gap/m4_*/
+eval/generation_to_execution_gap/phase_a_alignment_comparison/
+eval/generation_to_execution_gap/phase_a_alignment_repeats/
+eval/generation_to_execution_gap/phase_a_r01_check/
+eval/generation_to_execution_gap/phase_a_r01_r02/
+eval/generation_to_execution_gap/phase_a_rate075_repeats/
+eval/generation_to_execution_gap/phase_a_rate090_check/
+eval/generation_to_execution_gap/phase_a_rate_comparison/
+eval/generation_to_execution_gap/phase_c_m0_m2_final/
+eval/generation_to_execution_gap/phase_c_m0_r01_vs_m2/
+eval/generation_to_execution_gap/phase_c_m0_repeats/
+eval/generation_to_execution_gap/phase_c_m4_r01_check/
+eval/generation_to_execution_gap/phase_c_m4_repeats/
+eval/gt_sonic_capability/known_trackable_runs/
+eval/gt_sonic_capability/retargeted_gt_runs_v2/
+eval/gt_sonic_capability/runs/
+eval/gt_sonic_capability/known_trackable_analysis/all_9x/
+eval/gt_sonic_capability/known_trackable_analysis/low_3x/
+eval/gt_sonic_capability/known_trackable_analysis/medium_3x/
+eval/gt_sonic_capability/known_trackable_analysis/low_walking_control_release_r01/
+eval/human_study/design_20260820/
+eval/human_study/**/private_key.json

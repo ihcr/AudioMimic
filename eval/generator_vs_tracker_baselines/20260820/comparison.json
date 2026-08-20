@@ -1,0 +1,505 @@
+{
+  "schema_version": "generator_vs_sonic_capability_v1",
+  "scope": {
+    "routes": [
+      "M0",
+      "M2",
+      "M4"
+    ],
+    "execution_repeats_per_route": 3,
+    "reference_scope": "song098 exports; M0 has two matched files, M2/M4 have three",
+    "aesthetic_evidence": false,
+    "gate_status": "diagnostic_only"
+  },
+  "routes": {
+    "M0": {
+      "reference_samples": 2,
+      "reference_dynamic": {
+        "energy": 2.395997742410353,
+        "velocity_p95": 3.3578625395894033,
+        "acceleration_p95": 42.31952587142586,
+        "jerk_p95": 819.106472621206
+      },
+      "reference_music": {
+        "bas_music_to_motion": 0.2569529563590115,
+        "bas_motion_to_music": 0.4197050850801921,
+        "impact_best_correlation": 0.031820751619305546,
+        "speed_best_correlation": -0.011964446207004095
+      },
+      "nearest_gt_dynamic_tier": "low",
+      "dynamic_tier_distances": {
+        "low": {
+          "log_euclidean_distance": 0.3248790562908633,
+          "ratios": {
+            "energy": 1.35249626127721,
+            "velocity_p95": 1.176220658314735,
+            "acceleration_p95": 1.3935807510344318,
+            "jerk_p95": 1.55433859654261
+          }
+        },
+        "medium": {
+          "log_euclidean_distance": 0.5876936706220787,
+          "ratios": {
+            "energy": 0.4020341093918307,
+            "velocity_p95": 0.597769286792787,
+            "acceleration_p95": 0.6577642252625662,
+            "jerk_p95": 0.7166831670624578
+          }
+        },
+        "high": {
+          "log_euclidean_distance": 0.9758101130904627,
+          "ratios": {
+            "energy": 0.2503324544738551,
+            "velocity_p95": 0.5126036578565354,
+            "acceleration_p95": 0.44377079238110434,
+            "jerk_p95": 0.41251937787049403
+          }
+        }
+      },
+      "execution": {
+        "runs": 3,
+        "successes": 3,
+        "aligned_rmse_rad": {
+          "mean": 0.17630567140634493,
+          "std": 0.0004372554615291284
+        },
+        "empkpe_m": {
+          "mean": 0.07899569045954068,
+          "std": 0.0003959788598802592
+        },
+        "lag_ms": {
+          "mean": 20.0,
+          "std": 0.0
+        },
+        "minimum_base_height_m": {
+          "mean": 0.6368900822069431,
+          "std": 0.004511173544440834
+        },
+        "amplitude_retention": {
+          "mean": 0.9115723491572388,
+          "std": 0.0010061508173899864
+        },
+        "energy_retention": {
+          "mean": 0.4681515987524126,
+          "std": 0.006142746468745126
+        },
+        "low_band_retention": {
+          "mean": 0.8016002636389797,
+          "std": 0.0023617909367751834
+        },
+        "mid_band_retention": {
+          "mean": 0.4268611822959271,
+          "std": 0.0014413777955470488
+        },
+        "high_band_retention": {
+          "mean": 0.22694089592361433,
+          "std": 0.008663248344604975
+        },
+        "arms_high_band_retention": {
+          "mean": 0.20400769254766304,
+          "std": 0.010093858749396814
+        }
+      },
+      "nearest_native_tier_baseline": {
+        "aligned_rmse_rad": 0.11255347566519318,
+        "empkpe_m": 0.06304158152788046,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9391011213972059,
+        "energy_retention": 0.6254244094663566,
+        "low_band_retention": 0.9419215026170148,
+        "mid_band_retention": 0.6580033697860687,
+        "high_band_retention": 0.31346231587735196,
+        "arms_high_band_retention": 0.20837165148961345
+      },
+      "nearest_gt_tier_baseline": {
+        "aligned_rmse_rad": 0.15400299674184442,
+        "empkpe_m": 0.10230123666414208,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9206980696679805,
+        "energy_retention": 0.6700890769634421,
+        "low_band_retention": 0.8675918789337862,
+        "mid_band_retention": 0.5955421214588429,
+        "high_band_retention": 0.8902521281888408,
+        "arms_high_band_retention": 0.5990168730292343
+      },
+      "relative_to_nearest_native_tier": {
+        "aligned_rmse_rad": 1.566416944162542,
+        "empkpe_m": 1.2530727901330398,
+        "lag_ms": 0.5,
+        "amplitude_retention": 0.9706860404990152,
+        "energy_retention": 0.7485342619611904,
+        "low_band_retention": 0.8510266104041903,
+        "mid_band_retention": 0.6487218787871999,
+        "high_band_retention": 0.7239814307133787,
+        "arms_high_band_retention": 0.9790568490926995
+      },
+      "relative_to_nearest_gt_tier": {
+        "aligned_rmse_rad": 1.14481974465657,
+        "empkpe_m": 0.7721870530156524,
+        "lag_ms": 1.0,
+        "amplitude_retention": 0.990088259320417,
+        "energy_retention": 0.6986408446976571,
+        "low_band_retention": 0.9239370297288791,
+        "mid_band_retention": 0.7167606906633,
+        "high_band_retention": 0.2549175550810652,
+        "arms_high_band_retention": 0.34057086157856303
+      },
+      "native_gate_diagnostics": {
+        "checks": {
+          "aligned_rmse": false,
+          "empkpe": true,
+          "amplitude": true,
+          "energy": true,
+          "low_band": false,
+          "mid_band": false,
+          "high_band": false
+        },
+        "passed": 3,
+        "total": 7,
+        "interpretation": "diagnostic mean-vs-envelope comparison; not a statistical acceptance test"
+      },
+      "gt_gate_diagnostics": {
+        "checks": {
+          "aligned_rmse": true,
+          "empkpe": true,
+          "amplitude": true,
+          "energy": false,
+          "low_band": true,
+          "mid_band": false,
+          "high_band": false
+        },
+        "passed": 4,
+        "total": 7,
+        "interpretation": "diagnostic mean-vs-envelope comparison; not a statistical acceptance test"
+      }
+    },
+    "M2": {
+      "reference_samples": 3,
+      "reference_dynamic": {
+        "energy": 1.9339232504526997,
+        "velocity_p95": 3.04881802946329,
+        "acceleration_p95": 37.316543036140466,
+        "jerk_p95": 718.088334985077
+      },
+      "reference_music": {
+        "bas_music_to_motion": 0.24689571484438347,
+        "bas_motion_to_music": 0.3859867972791253,
+        "impact_best_correlation": 0.02535403078815937,
+        "speed_best_correlation": -0.015933659556517234
+      },
+      "nearest_gt_dynamic_tier": "low",
+      "dynamic_tier_distances": {
+        "low": {
+          "log_euclidean_distance": 0.1937939365051256,
+          "ratios": {
+            "energy": 1.0916637856273816,
+            "velocity_p95": 1.0679659180258305,
+            "acceleration_p95": 1.2288326723770353,
+            "jerk_p95": 1.3626463129055097
+          }
+        },
+        "medium": {
+          "log_euclidean_distance": 0.7336258871365634,
+          "ratios": {
+            "energy": 0.32450076970679614,
+            "velocity_p95": 0.5427529440368674,
+            "acceleration_p95": 0.5800038283561503,
+            "jerk_p95": 0.6282966126501447
+          }
+        },
+        "high": {
+          "log_euclidean_distance": 1.1244131379440736,
+          "ratios": {
+            "energy": 0.20205517955240473,
+            "velocity_p95": 0.46542562586047337,
+            "acceleration_p95": 0.3913085397597269,
+            "jerk_p95": 0.3616445030108945
+          }
+        }
+      },
+      "execution": {
+        "runs": 3,
+        "successes": 3,
+        "aligned_rmse_rad": {
+          "mean": 0.18504718370384474,
+          "std": 0.0268240551350899
+        },
+        "empkpe_m": {
+          "mean": 0.08741230742454072,
+          "std": 0.013687549301607836
+        },
+        "lag_ms": {
+          "mean": 60.0,
+          "std": 56.568542494923804
+        },
+        "minimum_base_height_m": {
+          "mean": 0.6327290282220265,
+          "std": 0.012980392885529874
+        },
+        "amplitude_retention": {
+          "mean": 0.9061702111613125,
+          "std": 0.00779166288138069
+        },
+        "energy_retention": {
+          "mean": 0.5220052902538512,
+          "std": 0.03855370410199775
+        },
+        "low_band_retention": {
+          "mean": 0.8075130062246374,
+          "std": 0.010221455204457486
+        },
+        "mid_band_retention": {
+          "mean": 0.412930609557923,
+          "std": 0.03509601015508717
+        },
+        "high_band_retention": {
+          "mean": 0.3946125799733111,
+          "std": 0.2515603015720865
+        },
+        "arms_high_band_retention": {
+          "mean": 0.3300473560454707,
+          "std": 0.2180849349836414
+        }
+      },
+      "nearest_native_tier_baseline": {
+        "aligned_rmse_rad": 0.11255347566519318,
+        "empkpe_m": 0.06304158152788046,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9391011213972059,
+        "energy_retention": 0.6254244094663566,
+        "low_band_retention": 0.9419215026170148,
+        "mid_band_retention": 0.6580033697860687,
+        "high_band_retention": 0.31346231587735196,
+        "arms_high_band_retention": 0.20837165148961345
+      },
+      "nearest_gt_tier_baseline": {
+        "aligned_rmse_rad": 0.15400299674184442,
+        "empkpe_m": 0.10230123666414208,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9206980696679805,
+        "energy_retention": 0.6700890769634421,
+        "low_band_retention": 0.8675918789337862,
+        "mid_band_retention": 0.5955421214588429,
+        "high_band_retention": 0.8902521281888408,
+        "arms_high_band_retention": 0.5990168730292343
+      },
+      "relative_to_nearest_native_tier": {
+        "aligned_rmse_rad": 1.6440823582764759,
+        "empkpe_m": 1.3865817656538673,
+        "lag_ms": 1.5,
+        "amplitude_retention": 0.9649335843759845,
+        "energy_retention": 0.8346416966668319,
+        "low_band_retention": 0.8573039302968032,
+        "mid_band_retention": 0.6275509040207131,
+        "high_band_retention": 1.258883636040355,
+        "arms_high_band_retention": 1.583935980187412
+      },
+      "relative_to_nearest_gt_tier": {
+        "aligned_rmse_rad": 1.201581706971844,
+        "empkpe_m": 0.8544599290770829,
+        "lag_ms": 3.0,
+        "amplitude_retention": 0.984220822237732,
+        "energy_retention": 0.7790088037539077,
+        "low_band_retention": 0.9307521495210608,
+        "mid_band_retention": 0.6933692759571836,
+        "high_band_retention": 0.4432593503327247,
+        "arms_high_band_retention": 0.5509817350827163
+      },
+      "native_gate_diagnostics": {
+        "checks": {
+          "aligned_rmse": false,
+          "empkpe": true,
+          "amplitude": true,
+          "energy": true,
+          "low_band": false,
+          "mid_band": false,
+          "high_band": true
+        },
+        "passed": 4,
+        "total": 7,
+        "interpretation": "diagnostic mean-vs-envelope comparison; not a statistical acceptance test"
+      },
+      "gt_gate_diagnostics": {
+        "checks": {
+          "aligned_rmse": true,
+          "empkpe": true,
+          "amplitude": true,
+          "energy": false,
+          "low_band": true,
+          "mid_band": false,
+          "high_band": false
+        },
+        "passed": 4,
+        "total": 7,
+        "interpretation": "diagnostic mean-vs-envelope comparison; not a statistical acceptance test"
+      }
+    },
+    "M4": {
+      "reference_samples": 3,
+      "reference_dynamic": {
+        "energy": 1.7891947704054278,
+        "velocity_p95": 2.9143430199474083,
+        "acceleration_p95": 36.09510250389573,
+        "jerk_p95": 691.7483773548141
+      },
+      "reference_music": {
+        "bas_music_to_motion": 0.24210141013533149,
+        "bas_motion_to_music": 0.3943937582700095,
+        "impact_best_correlation": 0.030547315362670132,
+        "speed_best_correlation": -0.012349097023851792
+      },
+      "nearest_gt_dynamic_tier": "low",
+      "dynamic_tier_distances": {
+        "low": {
+          "log_euclidean_distance": 0.16155111804592834,
+          "ratios": {
+            "energy": 1.0099672444748216,
+            "velocity_p95": 1.0208608676091475,
+            "acceleration_p95": 1.1886106713215174,
+            "jerk_p95": 1.3126635400371676
+          }
+        },
+        "medium": {
+          "log_euclidean_distance": 0.7849570974139664,
+          "ratios": {
+            "energy": 0.30021619524768006,
+            "velocity_p95": 0.518813598818885,
+            "acceleration_p95": 0.5610192138347782,
+            "jerk_p95": 0.6052502751034048
+          }
+        },
+        "high": {
+          "log_euclidean_distance": 1.17516666438712,
+          "ratios": {
+            "energy": 0.18693403189804317,
+            "velocity_p95": 0.44489697677034046,
+            "acceleration_p95": 0.3785002763947862,
+            "jerk_p95": 0.3483791421598198
+          }
+        }
+      },
+      "execution": {
+        "runs": 3,
+        "successes": 3,
+        "aligned_rmse_rad": {
+          "mean": 0.1677789631187383,
+          "std": 0.0004251098917202068
+        },
+        "empkpe_m": {
+          "mean": 0.07545147397453295,
+          "std": 0.0006132026365453349
+        },
+        "lag_ms": {
+          "mean": 20.0,
+          "std": 0.0
+        },
+        "minimum_base_height_m": {
+          "mean": 0.6583066020802485,
+          "std": 0.003993898557403497
+        },
+        "amplitude_retention": {
+          "mean": 0.8715392353562731,
+          "std": 0.0034353999656018645
+        },
+        "energy_retention": {
+          "mean": 0.5029953782327959,
+          "std": 0.000738239842811489
+        },
+        "low_band_retention": {
+          "mean": 0.7849454624639035,
+          "std": 0.004620141149532805
+        },
+        "mid_band_retention": {
+          "mean": 0.4673484927390674,
+          "std": 0.011433602417508253
+        },
+        "high_band_retention": {
+          "mean": 0.2442775221934711,
+          "std": 0.006054656967714207
+        },
+        "arms_high_band_retention": {
+          "mean": 0.22684233723652533,
+          "std": 0.003797258882960201
+        }
+      },
+      "nearest_native_tier_baseline": {
+        "aligned_rmse_rad": 0.11255347566519318,
+        "empkpe_m": 0.06304158152788046,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9391011213972059,
+        "energy_retention": 0.6254244094663566,
+        "low_band_retention": 0.9419215026170148,
+        "mid_band_retention": 0.6580033697860687,
+        "high_band_retention": 0.31346231587735196,
+        "arms_high_band_retention": 0.20837165148961345
+      },
+      "nearest_gt_tier_baseline": {
+        "aligned_rmse_rad": 0.15400299674184442,
+        "empkpe_m": 0.10230123666414208,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9206980696679805,
+        "energy_retention": 0.6700890769634421,
+        "low_band_retention": 0.8675918789337862,
+        "mid_band_retention": 0.5955421214588429,
+        "high_band_retention": 0.8902521281888408,
+        "arms_high_band_retention": 0.5990168730292343
+      },
+      "relative_to_nearest_native_tier": {
+        "aligned_rmse_rad": 1.4906599918586383,
+        "empkpe_m": 1.1968524923690904,
+        "lag_ms": 0.5,
+        "amplitude_retention": 0.9280568572419406,
+        "energy_retention": 0.8042464774631626,
+        "low_band_retention": 0.8333448809513613,
+        "mid_band_retention": 0.7102524306083914,
+        "high_band_retention": 0.7792883221377376,
+        "arms_high_band_retention": 1.088642987733063
+      },
+      "relative_to_nearest_gt_tier": {
+        "aligned_rmse_rad": 1.0894525864323703,
+        "empkpe_m": 0.7375421493900638,
+        "lag_ms": 1.0,
+        "amplitude_retention": 0.946606997525872,
+        "energy_retention": 0.7506395724463327,
+        "low_band_retention": 0.904740444814387,
+        "mid_band_retention": 0.7847446484461054,
+        "high_band_retention": 0.27439139369477006,
+        "arms_high_band_retention": 0.3786910643925293
+      },
+      "native_gate_diagnostics": {
+        "checks": {
+          "aligned_rmse": true,
+          "empkpe": true,
+          "amplitude": false,
+          "energy": true,
+          "low_band": false,
+          "mid_band": false,
+          "high_band": true
+        },
+        "passed": 4,
+        "total": 7,
+        "interpretation": "diagnostic mean-vs-envelope comparison; not a statistical acceptance test"
+      },
+      "gt_gate_diagnostics": {
+        "checks": {
+          "aligned_rmse": true,
+          "empkpe": true,
+          "amplitude": true,
+          "energy": false,
+          "low_band": true,
+          "mid_band": false,
+          "high_band": false
+        },
+        "passed": 4,
+        "total": 7,
+        "interpretation": "diagnostic mean-vs-envelope comparison; not a statistical acceptance test"
+      }
+    }
+  },
+  "cross_route": {
+    "lowest_aligned_rmse": "M4",
+    "highest_energy_retention": "M2",
+    "music_condition_advantage_supported": false,
+    "reason": "M2/M4 do not improve the preregistered automatic music metrics over unconditional M0; the present single-song, small-sample evidence is insufficient."
+  }
+}

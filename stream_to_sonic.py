@@ -41,6 +41,11 @@ def parse_args() -> argparse.Namespace:
         help="quaternion storage order in the input pickle",
     )
     parser.add_argument("--output_dir", default="", help="optional playback metadata directory")
+    parser.add_argument(
+        "--overwrite_output",
+        action="store_true",
+        help="allow replacing files in an existing non-empty output directory",
+    )
     parser.add_argument("--port", default=5556, type=int)
     parser.add_argument("--topic", default="pose")
     parser.add_argument("--startup_wait", default=2.0, type=float)
@@ -374,6 +379,13 @@ def run(args: argparse.Namespace) -> None:
         raise ValueError("playback_rate must be positive")
     if args.align_from_feedback_seconds > 0.0 and not args.record_feedback:
         raise ValueError("feedback alignment requires --record_feedback")
+    if args.output_dir:
+        output_dir = Path(args.output_dir).expanduser().resolve()
+        if output_dir.exists() and any(output_dir.iterdir()) and not args.overwrite_output:
+            raise FileExistsError(
+                f"output directory is not empty: {output_dir}; choose a new run ID or use "
+                "--overwrite_output"
+            )
     motion_path = Path(args.pkl).expanduser().resolve()
     motion = load_g1_motion(motion_path)
     if args.root_quat_order == "wxyz":
@@ -383,12 +395,15 @@ def run(args: argparse.Namespace) -> None:
             fps=motion.fps,
             root_pos=motion.root_pos,
         )
+    input_motion_frames = motion.frames
     max_frames = motion.frames
     if args.max_seconds > 0.0:
         max_frames = min(max_frames, int(np.floor(args.max_seconds * motion.fps)))
         if max_frames <= 0:
             raise ValueError("max_seconds is shorter than one source frame")
         motion = _slice_motion(motion, 0, max_frames)
+    selected_source_frames = motion.frames
+    selected_source_duration_seconds = motion.frames / motion.fps
     motion = retime_g1_motion(motion, args.playback_rate)
 
     try:
@@ -401,6 +416,7 @@ def run(args: argparse.Namespace) -> None:
     publisher.setsockopt(zmq.LINGER, 0)
     publisher.bind(f"tcp://*:{int(args.port)}")
     packets: list[dict] = []
+    reference_records: list[dict] = []
     emitted_reference_frames = 0
     sonic_records: list[dict] = []
     sim_state_records: list[dict] = []
@@ -480,7 +496,21 @@ def run(args: argparse.Namespace) -> None:
                     )
                 time.sleep(min(remaining, 0.01))
             publisher.send(pack_zmq_message(fields, topic=args.topic, version=1))
+            sent_at = time.monotonic()
             emitted_reference_frames += reference_motion.frames
+            for frame_offset in range(reference_motion.frames):
+                reference_records.append(
+                    {
+                        "frame_index": int(fields["frame_index"][frame_offset]),
+                        "intended_time_seconds": float(fields["frame_index"][frame_offset])
+                        / float(args.sonic_reference_fps),
+                        "packet_index": packet_index,
+                        "packet_sent_monotonic_seconds": sent_at,
+                        "joint_pos": fields["joint_pos"][frame_offset].tolist(),
+                        "joint_vel": fields["joint_vel"][frame_offset].tolist(),
+                        "body_quat_wxyz": fields["body_quat_w"][frame_offset].tolist(),
+                    }
+                )
             packets.append(
                 {
                     "packet_index": packet_index,
@@ -526,6 +556,7 @@ def run(args: argparse.Namespace) -> None:
                 )
             time.sleep(min(remaining, 0.01))
         elapsed = time.monotonic() - started_at
+        finished_at = time.monotonic()
         print(
             f"Offline stream complete: {motion.frames} source frames "
             f"({motion.frames / motion.fps:.3f}s), {emitted_reference_frames} SONIC frames "
@@ -552,6 +583,13 @@ def run(args: argparse.Namespace) -> None:
                 "source_frames": motion.frames,
                 "source_fps": motion.fps,
                 "source_duration_seconds": motion.frames / motion.fps,
+                "input_motion_frames": input_motion_frames,
+                "selected_source_frames": selected_source_frames,
+                "selected_source_duration_seconds": selected_source_duration_seconds,
+                "playback_frames": motion.frames,
+                "playback_duration_seconds": motion.frames / motion.fps,
+                "playback_started_monotonic_seconds": started_at,
+                "playback_finished_monotonic_seconds": finished_at,
                 "playback_rate": float(args.playback_rate),
                 "sonic_reference_fps": args.sonic_reference_fps,
                 "preview_seconds": args.preview_seconds,
@@ -567,6 +605,22 @@ def run(args: argparse.Namespace) -> None:
                 "s66_records": len(s66_records),
                 "root_xy_tracking": False,
                 "packets": packets,
+            },
+        )
+        # Future-preview packets overlap. Keep the earliest published value for
+        # each execution frame so this file always describes one 50 Hz timeline.
+        unique_reference_records = {
+            record["frame_index"]: record for record in reversed(reference_records)
+        }
+        ordered_reference_records = [
+            unique_reference_records[index] for index in sorted(unique_reference_records)
+        ]
+        _write_json(
+            Path(args.output_dir) / "reference.json",
+            {
+                "schema_version": "sonic_reference_timeline_v1",
+                "fps": float(args.sonic_reference_fps),
+                "records": ordered_reference_records,
             },
         )
         if args.record_feedback:

@@ -2,6 +2,14 @@
 
 Use this ledger as the source of truth for nontrivial research, ablations, training runs, evaluations, and paper-to-method trials in this repo.
 
+## Evaluation Standard
+
+All new generator, tracker and end-to-end results must follow
+[`AudioMimic Music-to-G1 Evaluation Map v1.0`](../evaluation/EVALUATION_MAP_MUSIC_TO_G1.md).
+Its machine-readable metric registry is [`eval/evaluation_map_v1.json`](../../eval/evaluation_map_v1.json).
+An experiment may mark unavailable metrics as N/A, but must not silently redefine a metric, omit failed runs,
+or replace the multidimensional scorecard with one aggregate score.
+
 ## Active Experiments
 
 | ID | Status | Branch/Worktree | Core Change | Latest Artifact | Next Action |
@@ -18,6 +26,9 @@ Use this ledger as the source of truth for nontrivial research, ablations, train
 |---|---|---|---|---|
 | [EXP-20260617-music2dance-progress-report](EXP-20260617-music2dance-progress-report.md) | active_summary | Music2Dance FineDance/G1/Wav2CLIP/beat-control/yaw-delta progress through V5, 8D beat-only, and DiscoForcing-inspired compound rhythm planning | Consolidated stage report dated 2026-06-17 | First build rhythm eval suite and `V6a_compound_rhythm_only_yaw_delta`; then add contact-aware beatness; add Wav2CLIP semantics only after rhythm controllability is verified |
 | [NEXT-20260617-rhythm-eval-plan](NEXT-20260617-rhythm-eval-plan.md) | execution_plan | Student-facing next-step plan for rhythm/action evaluation before new training | Metric definitions, literature/project-origin notes, implementation steps, and pass criteria | Implement rhythm eval suite first; do not start new V6 training until the current models are re-evaluated with these metrics |
+| [NEXT-20260819-generation-to-execution-gap](NEXT-20260819-generation-to-execution-gap.md) | running | Complete `M_ref`/`M_exec` evaluation for motion quality, music matching, SONIC fidelity, human preference and realtime behavior | [SONIC baseline comparison](RESULT-20260820-generator-vs-sonic-baselines.md): all routes 3/3 stable with strong dynamic-detail loss. [Fixed-trajectory pairing audit](RESULT-20260820-music-pairing-sensitivity.md): M2/M4 correct song098 clock does not outperform most shifts or wrong song | Obtain M2 checkpoint and run causal paired/shifted/shuffled/silence regeneration; expand to 3 songs x 3 generation seeds x 3 SONIC repeats and blinded study |
+| [NEXT-20260819-gt-sonic-capability](NEXT-20260819-gt-sonic-capability.md) | finished | Calibrate SONIC tracking fidelity with low/medium/high SONIC-native and retargeted-GT references | Correct initialization produced 9/9 stable SONIC-native and 9/9 stable retargeted-GT runs; high-tier GT RMSE/EMPKPE 0.323 rad/0.160 m | Treat gates as diagnostic envelopes; use the frozen initialization and metrics for subsequent generator comparisons |
+| [Human evaluation protocol](../evaluation/HUMAN_EVALUATION_PROTOCOL.md) | running | Blinded pairwise generator-quality, music-match and execution-retention studies | [Song098 pilot](RESULT-20260820-blind-video-pilot.md): 6/6 clips eligible, 9 canonical trials, `pilot_ready=true`, `paper_ready=false` | Expand the identical renderer to 3 songs x 3 generation seeds and 3 SONIC repeats per reference, then start the approved participant study |
 
 ## Archived Experiments
 

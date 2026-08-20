@@ -1,0 +1,11 @@
+{
+  "run_id": "sonic_native_medium_macarena_001__A545_M_r03",
+  "level": "medium",
+  "repeat": 3,
+  "motion": "macarena_001__A545_M",
+  "status": "complete",
+  "reference_duration_seconds": 27.5,
+  "pre_stream_height_m": 0.78,
+  "streamer_exit_status": 0,
+  "post_stream_height_m": 0.7756
+}

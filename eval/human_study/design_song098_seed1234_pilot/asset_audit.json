@@ -1,0 +1,16 @@
+{
+  "assets_total": 6,
+  "eligible_assets": 6,
+  "ineligible_assets": {},
+  "minimum_paper_design": {
+    "songs": 3,
+    "generation_seeds_per_song": 3,
+    "routes": [
+      "M0",
+      "M2",
+      "M4"
+    ],
+    "tracker_repeats_per_reference": 3,
+    "participants": 24
+  }
+}

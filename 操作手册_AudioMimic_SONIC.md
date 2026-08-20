@@ -352,6 +352,7 @@ catch_up [1]
 | Resampler | 每个 C4 重建 adapter，30→50 Hz 相位反复归零 | C4 使用持续 adapter，保持 `13/13/14` |
 | Frame index | online runtime 每次固定推进 13 帧 | 改为连续 committed clock |
 | 起始状态 | 从 `macarena` 直接热切到任意 GT，最大跳变约 1.57 rad | GT 测试使用 3 s measured-pose alignment + 1 s hold |
+| Elastic band | band 保持到 ZMQ alignment 后才释放会造成初始化跌倒 | 先在内置 Macarena CONTROL 下释放并无约束站稳，再开启 ZMQ |
 | Online 调度 | inference 约 50 ms 与 C4 执行 267 ms 串行相加 | synthetic open-loop 改为绝对 deadline 双缓冲 |
 | MuJoCo 性能 | 图像发布使仿真明显慢于真实时间 | 定量组关闭 image publish，RTF 从 0.63 提升到 0.965 |
 
@@ -363,11 +364,98 @@ catch_up [1]
 |---|---|---|---:|---:|
 | M2 32 s | C4，连续 resampler | 稳定 | 0.156 rad | 0.660 m |
 | M2 32 s | full sequence | 稳定 | 0.161 rad | 0.660 m |
-| 平缓 AIST GT | aligned + full | 稳定 | 0.142 rad | 0.740 m |
-| 平缓 AIST GT | aligned + C4 | 稳定 | 0.140 rad | 0.742 m |
-| 激烈 AIST GT | aligned + full | GT 开始约 4.21 s 后摔倒 | 0.302 rad | 0.200 m |
+| Retargeted GT low | corrected init + aligned full | 3/3 稳定 | 0.154 rad | 0.702 m（均值） |
+| Retargeted GT medium | corrected init + aligned full | 3/3 稳定 | 0.199 rad | 0.697 m（均值） |
+| Retargeted GT high | corrected init + aligned full | 3/3 稳定 | 0.323 rad | 0.701 m（均值） |
 
-平缓 GT 的 full 与 C4 结果基本一致，因此 C4 packet scheduling 不是 tracking 退化来源。激烈 GT 的腿部速度 P95 为 10.60 rad/s，而稳定 M2 约为 4.16 rad/s；该失败属于 reference 动态可执行性问题。
+旧流程中“激烈 AIST GT 在 4.21 s 后摔倒”的结论无效：当时 elastic band 在 ZMQ
+alignment 后才释放，失稳由初始化状态机污染。修正后 high GT 三次均稳定，但 aligned
+RMSE/EMPKPE 达到 0.323 rad/0.160 m，明显差于 SONIC-native high 的
+0.175 rad/0.089 m。因此当前结论是外部分布 tracking fidelity 下降，而不是 GT
+reference 必然不可执行。早期 full/C4 对照仍支持 packet 切分不是主要退化来源。
+
+#### 无窗口定量实验的强制初始化顺序
+
+2026-08-20 复查发现，自动化实验若在 elastic band 仍启用时进入 ZMQ streaming，随后在
+alignment 末端才释放 band，会造成与 reference 本身无关的瞬时跌倒。正式定量组必须：
+
+1. MuJoCo 以 elastic band enabled 启动；
+2. SONIC 显示 `Init Done` 后按 `]` 进入 CONTROL；
+3. 保持内置 Macarena 3 s，再在 MuJoCo 端执行 `release`；
+4. 无约束站立 3 s，并确认 base height 正常；
+5. 此时才按 Enter 开启 `ZMQ STREAMING MODE`；
+6. 启动 reference player，执行 3 s measured-state alignment + 1 s hold。
+
+修正后，SONIC 原生 low/medium/high reference 经
+`50 Hz SONIC CSV -> 30 Hz MuJoCo-order PKL -> 50 Hz ZMQ` 完整桥接回放，正式 9 次
+运行全部无 fall。三个 tier 的 aligned RMSE 为 0.1126/0.1375/0.1745 rad，EMPKPE
+为 0.0630/0.0633/0.0891 m，能量保留率为 0.625/0.666/0.447，高动态组的最低
+base height 均值仍为 0.660 m。结果说明接口与基础稳定性成立，但动态越强，pose error
+越大，动作能量、高频和手臂细节损失越明显。转换器为
+[`eval/prepare_sonic_capability_references.py`](eval/prepare_sonic_capability_references.py)，
+实验协议见
+[`docs/experiments/NEXT-20260819-gt-sonic-capability.md`](docs/experiments/NEXT-20260819-gt-sonic-capability.md)。
+
+完成上述初始化后，Phase-A low repeat 的命令为：
+
+```bash
+cd ~/AudioMimic
+conda activate audiomimic
+bash scripts/run_sonic_known_trackable_capability.sh low 1
+```
+
+完整无窗口 9-run suite：
+
+```bash
+python scripts/run_sonic_capability_suite.py \
+  --levels low medium high \
+  --repeats 1 2 3
+
+python scripts/run_sonic_capability_suite.py \
+  --source retargeted_gt \
+  --levels low medium high \
+  --repeats 1 2 3
+```
+
+完成 capability 和 M0/M2/M4 三次重复后，使用统一逐关节口径生成对照：
+
+```bash
+cd ~/AudioMimic
+conda activate audiomimic
+python eval/compare_generator_to_sonic_capability.py
+```
+
+当前结果为 M0/M2/M4 全部 3/3 稳定，aligned RMSE 为
+0.1763/0.1850/0.1678 rad，幅度保留率为 0.912/0.906/0.872，逐关节中位动态能量
+保留率为 0.468/0.522/0.503。三类 reference 的动态强度均最接近低动态 GT；主要损失
+位于中高频动态表达，而不是生存稳定性。结果解释与限制见
+[`docs/experiments/RESULT-20260820-generator-vs-sonic-baselines.md`](docs/experiments/RESULT-20260820-generator-vs-sonic-baselines.md)。
+
+现有固定轨迹的音乐配对敏感性诊断：
+
+```bash
+conda activate audiomimic
+python eval/analyze_music_pairing_sensitivity.py
+```
+
+该命令比较正确 song098 时钟、循环 time-shift 与 song065 错配，只能评价既有动作的时间
+对齐，不能替代使用 checkpoint 重新生成 paired/shifted/shuffled/silence 的因果消融。
+
+生成 song098/seed1234 的无标签盲评 pilot 视频：
+
+```bash
+cd ~/AudioMimic
+MUJOCO_GL=egl \
+  ~/GR00T-WholeBodyControl/.venv_sim/bin/python \
+  scripts/render_song098_blind_pilot.py
+
+python eval/build_human_pairwise_study.py \
+  --assets eval/human_study/assets_song098_seed1234_pilot.json \
+  --output_dir eval/human_study/design_song098_seed1234_pilot
+```
+
+该步骤输出 6 个 16 s 独立视频和 9 个 blind pairwise trials，只用于内部 pilot。正式盲评
+仍需 3 首歌、每首 3 个 generation seeds，以及每条 reference 的 3 次 SONIC repeats。
 
 ### 10.4 Open-loop 双缓冲
 

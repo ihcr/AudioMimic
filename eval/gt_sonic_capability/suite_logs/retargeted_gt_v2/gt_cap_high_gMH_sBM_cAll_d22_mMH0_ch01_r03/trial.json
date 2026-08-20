@@ -1,0 +1,14 @@
+{
+  "run_id": "gt_cap_high_gMH_sBM_cAll_d22_mMH0_ch01_r03",
+  "source": "retargeted_gt",
+  "level": "high",
+  "repeat": 3,
+  "motion": "gMH_sBM_cAll_d22_mMH0_ch01",
+  "status": "complete",
+  "reference_duration_seconds": 11.966666666666667,
+  "pre_stream_height_m": 0.7802,
+  "streamer_exit_status": 0,
+  "post_stream_height_m": 0.7368,
+  "minimum_base_height_m": 0.6864764401766588,
+  "fell_below_height_threshold": false
+}

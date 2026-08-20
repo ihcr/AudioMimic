@@ -1,0 +1,4943 @@
+[
+  {
+    "run_id": "sonic_native_high_dance_in_da_party_001__A464_M_r01",
+    "run_dir": "/home/tianhup/AudioMimic/eval/gt_sonic_capability/known_trackable_runs/sonic_native_high_dance_in_da_party_001__A464_M_r01",
+    "motion_sha256": "47a51b03698d95841e6404a3cc385af96831c784a01887003602ec2864cb6dc2",
+    "playback_duration_seconds": 13.933403743954841,
+    "tracking_analysis_duration_seconds": 9.899999999999789,
+    "tracking_truncated_at_fall": false,
+    "excluded_alignment_seconds": 4.0,
+    "analysis_fps": 50.0,
+    "feedback_samples": 697,
+    "active_joints": 29,
+    "global_lag_seconds": 0.02,
+    "raw_position_rmse_rad": 0.1753163666980026,
+    "raw_velocity_rmse_rad_s": 1.515233484377898,
+    "lag_compensated_position_rmse_rad": 0.17457677732786694,
+    "minimum_base_height_m": 0.6588936941142265,
+    "survival_seconds": 9.933403743954841,
+    "total_survival_including_alignment_seconds": 13.933403743954841,
+    "fell_below_height_threshold": false,
+    "groups": {
+      "legs": {
+        "raw_position_rmse_rad": 0.16079288499839547,
+        "raw_velocity_rmse_rad_s": 1.5948891472905675,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 48.999999999999986,
+          "mean": 23.333333333333332
+        },
+        "lag_compensated_position_rmse_rad": 0.15760496382806324,
+        "amplitude_retention": {
+          "median": 0.8512727960582306,
+          "p95": 1.0508743936585463,
+          "mean": 0.8155775996432442
+        },
+        "energy_retention": {
+          "median": 0.4760311690995064,
+          "p95": 0.6822372808008014,
+          "mean": 0.4746178211217615
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.8257799677623354,
+            "p95": 1.7012127842117735,
+            "mean": 0.8859179551417666
+          },
+          "mid_1_3": {
+            "median": 0.5170446375822846,
+            "p95": 0.6643996964757102,
+            "mean": 0.4758101748216194
+          },
+          "high_3_8": {
+            "median": 0.27956454940778297,
+            "p95": 0.8534858953506327,
+            "mean": 0.3610891647985182
+          }
+        }
+      },
+      "waist": {
+        "raw_position_rmse_rad": 0.12605532853175966,
+        "raw_velocity_rmse_rad_s": 1.181065835429065,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 38.0,
+          "mean": 26.666666666666668
+        },
+        "lag_compensated_position_rmse_rad": 0.12349160229175539,
+        "amplitude_retention": {
+          "median": 1.1333044344026064,
+          "p95": 1.182222386819206,
+          "mean": 0.9732487713752547
+        },
+        "energy_retention": {
+          "median": 1.128350972802278,
+          "p95": 1.1728524593380738,
+          "mean": 0.903284511472096
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 1.0855908765241187,
+            "p95": 1.9272340329957003,
+            "mean": 1.1626804882698978
+          },
+          "mid_1_3": {
+            "median": 1.1569616457089011,
+            "p95": 1.3594924116558487,
+            "mean": 0.9705704031199561
+          },
+          "high_3_8": {
+            "median": 1.0184828734282645,
+            "p95": 1.0639266029684828,
+            "mean": 0.8304346111354777
+          }
+        }
+      },
+      "arms": {
+        "raw_position_rmse_rad": 0.19519531694221975,
+        "raw_velocity_rmse_rad_s": 1.5088604173023035,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 121.99999999999996,
+          "mean": 35.714285714285715
+        },
+        "lag_compensated_position_rmse_rad": 0.19639829452536875,
+        "amplitude_retention": {
+          "median": 0.9341659580993633,
+          "p95": 1.2468796037658976,
+          "mean": 0.9313088213356379
+        },
+        "energy_retention": {
+          "median": 0.4329243394234639,
+          "p95": 0.6115061408920269,
+          "mean": 0.40466089586695136
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.8359531933338162,
+            "p95": 1.504378036017096,
+            "mean": 0.9191992907420292
+          },
+          "mid_1_3": {
+            "median": 0.3939829814519853,
+            "p95": 0.7138428632216496,
+            "mean": 0.41511385802515727
+          },
+          "high_3_8": {
+            "median": 0.19729427164801597,
+            "p95": 0.26302639403110123,
+            "mean": 0.18079623351271246
+          }
+        }
+      },
+      "full_body": {
+        "raw_position_rmse_rad": 0.1753163666980026,
+        "raw_velocity_rmse_rad_s": 1.515233484377898,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 80.0,
+          "mean": 29.655172413793103
+        },
+        "lag_compensated_position_rmse_rad": 0.17457677732786694,
+        "amplitude_retention": {
+          "median": 0.9014908797531572,
+          "p95": 1.190639961611047,
+          "mean": 0.8877586554670216
+        },
+        "energy_retention": {
+          "median": 0.45208781727992875,
+          "p95": 0.9687227411469314,
+          "mean": 0.48519034241430153
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.8465863877245994,
+            "p95": 1.8299513323572616,
+            "mean": 0.9306154136861827
+          },
+          "mid_1_3": {
+            "median": 0.4748551808487651,
+            "p95": 1.0039284409807692,
+            "mean": 0.4976905972266034
+          },
+          "high_3_8": {
+            "median": 0.23106082388635357,
+            "p95": 1.0357301584886929,
+            "mean": 0.32260417517815954
+          }
+        }
+      }
+    },
+    "per_joint": {
+      "left_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1082437766451284,
+        "aligned_rmse_rad": 0.10078623848751775,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.894641309518575,
+        "energy_retention": 0.46211610263161323,
+        "band_power_retention": {
+          "low_0_1": 1.8730589573414549,
+          "mid_1_3": 0.4101668884476175,
+          "high_3_8": 0.23106082388635357
+        }
+      },
+      "right_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10782996060334746,
+        "aligned_rmse_rad": 0.10729300836690968,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.7289620958145342,
+        "energy_retention": 0.7292803936639134,
+        "band_power_retention": {
+          "low_0_1": 0.6859903253111379,
+          "mid_1_3": 0.5677499027332519,
+          "high_3_8": 1.0472283485289784
+        }
+      },
+      "waist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13067894360725682,
+        "aligned_rmse_rad": 0.12897510774332663,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.1333044344026064,
+        "energy_retention": 1.1777970689531623,
+        "band_power_retention": {
+          "low_0_1": 1.0855908765241187,
+          "mid_1_3": 1.1569616457089011,
+          "high_3_8": 1.0689759062507294
+        }
+      },
+      "left_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.18149797865437786,
+        "aligned_rmse_rad": 0.16452550851089429,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.8079042825978862,
+        "energy_retention": 0.40720589931765955,
+        "band_power_retention": {
+          "low_0_1": 0.8771255753983593,
+          "mid_1_3": 0.37957499613683193,
+          "high_3_8": 0.14647628190646841
+        }
+      },
+      "right_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.15341201229747542,
+        "aligned_rmse_rad": 0.14559629202898403,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9316307936074538,
+        "energy_retention": 0.5064059815999667,
+        "band_power_retention": {
+          "low_0_1": 1.5606113698329436,
+          "mid_1_3": 0.2661524959439831,
+          "high_3_8": 0.3335322118445654
+        }
+      },
+      "waist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.08827883330881968,
+        "aligned_rmse_rad": 0.08787229033666426,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.5987841648576627,
+        "energy_retention": 0.4037054926608478,
+        "band_power_retention": {
+          "low_0_1": 0.38170064901525413,
+          "mid_1_3": 0.37275373355656866,
+          "high_3_8": 0.40384505372743906
+        }
+      },
+      "left_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.15694995481905963,
+        "aligned_rmse_rad": 0.15437635807439443,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.7732367778395682,
+        "energy_retention": 0.48994623556739947,
+        "band_power_retention": {
+          "low_0_1": 1.200519079279991,
+          "mid_1_3": 0.6557883418273772,
+          "high_3_8": 0.2429886566602081
+        }
+      },
+      "right_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12108917542697865,
+        "aligned_rmse_rad": 0.11023691435144269,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.9248419194187327,
+        "energy_retention": 0.6437474611855281,
+        "band_power_retention": {
+          "low_0_1": 0.8005441029114044,
+          "mid_1_3": 0.6749246854903395,
+          "high_3_8": 0.6949693427501685
+        }
+      },
+      "waist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.15099569146526864,
+        "aligned_rmse_rad": 0.1453984081206257,
+        "lag_ms": 40.0,
+        "amplitude_retention": 1.187657714865495,
+        "energy_retention": 1.128350972802278,
+        "band_power_retention": {
+          "low_0_1": 2.0207499392703205,
+          "mid_1_3": 1.3819958300943984,
+          "high_3_8": 1.0184828734282645
+        }
+      },
+      "left_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1628084385962803,
+        "aligned_rmse_rad": 0.1575947183520653,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.7439943466022235,
+        "energy_retention": 0.3969050226199332,
+        "band_power_retention": {
+          "low_0_1": 0.7029323032975501,
+          "mid_1_3": 0.5056084154634447,
+          "high_3_8": 0.3508887008460699
+        }
+      },
+      "right_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1433848303698593,
+        "aligned_rmse_rad": 0.13592985098211288,
+        "lag_ms": 40.0,
+        "amplitude_retention": 1.1095989499829475,
+        "energy_retention": 0.40233674554014814,
+        "band_power_retention": {
+          "low_0_1": 0.38043923797180557,
+          "mid_1_3": 0.5284808597011244,
+          "high_3_8": 0.3519675262018393
+        }
+      },
+      "left_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.09884321560973934,
+        "aligned_rmse_rad": 0.09562566923444057,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.7108572362975799,
+        "energy_retention": 0.2168446161126493,
+        "band_power_retention": {
+          "low_0_1": 0.5024176090656509,
+          "mid_1_3": 0.17413350638224456,
+          "high_3_8": 0.20240597022663387
+        }
+      },
+      "right_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06860897977956654,
+        "aligned_rmse_rad": 0.06552182267182893,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.1926281261080816,
+        "energy_retention": 0.6752305471147616,
+        "band_power_retention": {
+          "low_0_1": 1.147459733189804,
+          "mid_1_3": 0.5126358810857639,
+          "high_3_8": 0.20701321082555876
+        }
+      },
+      "left_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.033627707130263695,
+        "aligned_rmse_rad": 0.033627707130263695,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.0028270293931274,
+        "energy_retention": 0.6257028639702098,
+        "band_power_retention": {
+          "low_0_1": 0.8485654050247203,
+          "mid_1_3": 0.6083968182030731,
+          "high_3_8": 0.2932287867120508
+        }
+      },
+      "right_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.18839891273589723,
+        "aligned_rmse_rad": 0.18839891273589723,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.253564501292688,
+        "energy_retention": 0.17691498507946582,
+        "band_power_retention": {
+          "low_0_1": 0.04312999297391104,
+          "mid_1_3": 0.09747159268639859,
+          "high_3_8": 0.26590031210351517
+        }
+      },
+      "left_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1776847138864341,
+        "aligned_rmse_rad": 0.1776847138864341,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.8132573526199773,
+        "energy_retention": 0.40798638348556554,
+        "band_power_retention": {
+          "low_0_1": 0.8465863877245994,
+          "mid_1_3": 0.36647885346672265,
+          "high_3_8": 0.10796507121427322
+        }
+      },
+      "right_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1438067667767604,
+        "aligned_rmse_rad": 0.1438067667767604,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9421057506797338,
+        "energy_retention": 0.45208781727992875,
+        "band_power_retention": {
+          "low_0_1": 0.9907638363576117,
+          "mid_1_3": 0.6812466790163831,
+          "high_3_8": 0.2585910263206033
+        }
+      },
+      "left_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.22805262248914876,
+        "aligned_rmse_rad": 0.22805262248914876,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9014908797531572,
+        "energy_retention": 0.5155992731396751,
+        "band_power_retention": {
+          "low_0_1": 0.8029945304999505,
+          "mid_1_3": 0.6247506949785755,
+          "high_3_8": 0.14696121797732994
+        }
+      },
+      "right_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.23545020582206622,
+        "aligned_rmse_rad": 0.23545020582206622,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.714238309898036,
+        "energy_retention": 0.33925288914562457,
+        "band_power_retention": {
+          "low_0_1": 0.8551045818579698,
+          "mid_1_3": 0.3906564062474152,
+          "high_3_8": 0.22786776816467091
+        }
+      },
+      "left_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.2690625404236324,
+        "aligned_rmse_rad": 0.2690625404236324,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.0425439896927435,
+        "energy_retention": 0.4087248229145092,
+        "band_power_retention": {
+          "low_0_1": 0.738228772528295,
+          "mid_1_3": 0.7743786338885732,
+          "high_3_8": 0.08661404606984215
+        }
+      },
+      "right_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.15005268572474453,
+        "aligned_rmse_rad": 0.1423197943142,
+        "lag_ms": 80.0,
+        "amplitude_retention": 0.8359412377058365,
+        "energy_retention": 0.2849988603978675,
+        "band_power_retention": {
+          "low_0_1": 0.8253199989430332,
+          "mid_1_3": 0.24442890312290005,
+          "high_3_8": 0.26756003462119077
+        }
+      },
+      "left_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.19083467231736403,
+        "aligned_rmse_rad": 0.18915635135106043,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.6078257956406478,
+        "energy_retention": 0.08791147044356351,
+        "band_power_retention": {
+          "low_0_1": 0.848723221568298,
+          "mid_1_3": 0.06835624351167795,
+          "high_3_8": 0.057981275879995055
+        }
+      },
+      "right_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13667829817128782,
+        "aligned_rmse_rad": 0.13667829817128782,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.8964302798694581,
+        "energy_retention": 0.5771929990797853,
+        "band_power_retention": {
+          "low_0_1": 0.9784705967324747,
+          "mid_1_3": 0.6633180611458651,
+          "high_3_8": 0.26058520294412996
+        }
+      },
+      "left_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13153729222485996,
+        "aligned_rmse_rad": 0.12971251335112127,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9262261655189928,
+        "energy_retention": 0.5019369956517217,
+        "band_power_retention": {
+          "low_0_1": 0.5712418697456051,
+          "mid_1_3": 0.5551268926767462,
+          "high_3_8": 0.19218257306939807
+        }
+      },
+      "right_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.3010465036264158,
+        "aligned_rmse_rad": 0.29985253359201924,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.025351002212339,
+        "energy_retention": 0.43903194107947013,
+        "band_power_retention": {
+          "low_0_1": 0.7900780539702841,
+          "mid_1_3": 0.4748551808487651,
+          "high_3_8": 0.23067364764264775
+        }
+      },
+      "left_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.20775125249745927,
+        "aligned_rmse_rad": 0.20775125249745927,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.7701743422035318,
+        "energy_retention": 0.4603666412673046,
+        "band_power_retention": {
+          "low_0_1": 0.7237724437259285,
+          "mid_1_3": 0.42148710943724793,
+          "high_3_8": 0.21601628525432695
+        }
+      },
+      "right_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.3354773098149335,
+        "aligned_rmse_rad": 0.3339606123125977,
+        "lag_ms": -20.0,
+        "amplitude_retention": 1.347632347987556,
+        "energy_retention": 0.4268167377674577,
+        "band_power_retention": {
+          "low_0_1": 1.3638870350903936,
+          "mid_1_3": 0.30791870697514123,
+          "high_3_8": 0.1286767740011194
+        }
+      },
+      "left_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.18056947395233075,
+        "aligned_rmse_rad": 0.17645970607304665,
+        "lag_ms": 200.0,
+        "amplitude_retention": 0.9600164815943887,
+        "energy_retention": 0.462846629812329,
+        "band_power_retention": {
+          "low_0_1": 1.765289894880972,
+          "mid_1_3": 0.3340378583163807,
+          "high_3_8": 0.1880067956169211
+        }
+      },
+      "right_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1429554446549156,
+        "aligned_rmse_rad": 0.12982474285241596,
+        "lag_ms": 80.0,
+        "amplitude_retention": 0.9673333905680641,
+        "energy_retention": 0.26327607973040495,
+        "band_power_retention": {
+          "low_0_1": 0.7765506168654589,
+          "mid_1_3": 0.23319150247778947,
+          "high_3_8": 0.12687535549133414
+        }
+      }
+    }
+  },
+  {
+    "run_id": "sonic_native_high_dance_in_da_party_001__A464_M_r02",
+    "run_dir": "/home/tianhup/AudioMimic/eval/gt_sonic_capability/known_trackable_runs/sonic_native_high_dance_in_da_party_001__A464_M_r02",
+    "motion_sha256": "47a51b03698d95841e6404a3cc385af96831c784a01887003602ec2864cb6dc2",
+    "playback_duration_seconds": 13.933416126994416,
+    "tracking_analysis_duration_seconds": 9.87999999999979,
+    "tracking_truncated_at_fall": false,
+    "excluded_alignment_seconds": 4.0,
+    "analysis_fps": 50.0,
+    "feedback_samples": 696,
+    "active_joints": 29,
+    "global_lag_seconds": 0.02,
+    "raw_position_rmse_rad": 0.1753208705349475,
+    "raw_velocity_rmse_rad_s": 1.5359270390828708,
+    "lag_compensated_position_rmse_rad": 0.17479396359636135,
+    "minimum_base_height_m": 0.6619181989224503,
+    "survival_seconds": 9.933416126994416,
+    "total_survival_including_alignment_seconds": 13.933416126994416,
+    "fell_below_height_threshold": false,
+    "groups": {
+      "legs": {
+        "raw_position_rmse_rad": 0.162317275347523,
+        "raw_velocity_rmse_rad_s": 1.6182009012502176,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 48.999999999999986,
+          "mean": 23.333333333333332
+        },
+        "lag_compensated_position_rmse_rad": 0.15922298791826486,
+        "amplitude_retention": {
+          "median": 0.8447091480717723,
+          "p95": 1.050273515780864,
+          "mean": 0.8227004418871701
+        },
+        "energy_retention": {
+          "median": 0.47416883150768335,
+          "p95": 0.685456204245631,
+          "mean": 0.4737902215214595
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.8558328947414638,
+            "p95": 1.6846677168570172,
+            "mean": 0.9009523842075465
+          },
+          "mid_1_3": {
+            "median": 0.5118886011047765,
+            "p95": 0.6474910433993205,
+            "mean": 0.477106709483764
+          },
+          "high_3_8": {
+            "median": 0.2759712207573739,
+            "p95": 0.975719833731173,
+            "mean": 0.3725047522567601
+          }
+        }
+      },
+      "waist": {
+        "raw_position_rmse_rad": 0.12541347556012974,
+        "raw_velocity_rmse_rad_s": 1.2208468894082842,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 38.0,
+          "mean": 26.666666666666668
+        },
+        "lag_compensated_position_rmse_rad": 0.1232513941425472,
+        "amplitude_retention": {
+          "median": 1.1957093184299787,
+          "p95": 1.2065132461967352,
+          "mean": 1.0019510726277618
+        },
+        "energy_retention": {
+          "median": 1.171409818726591,
+          "p95": 1.1748493847543253,
+          "mean": 0.9167063890962908
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 1.1449164175511923,
+            "p95": 2.150665238274999,
+            "mean": 1.2941996406559404
+          },
+          "mid_1_3": {
+            "median": 1.110796368007564,
+            "p95": 1.3534347960019735,
+            "mean": 0.9528126059719293
+          },
+          "high_3_8": {
+            "median": 0.9383840316402668,
+            "p95": 1.0129802746000438,
+            "mean": 0.7557812958174458
+          }
+        }
+      },
+      "arms": {
+        "raw_position_rmse_rad": 0.19420836153061524,
+        "raw_velocity_rmse_rad_s": 1.5240639503917637,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 121.99999999999996,
+          "mean": 32.857142857142854
+        },
+        "lag_compensated_position_rmse_rad": 0.19571092467652626,
+        "amplitude_retention": {
+          "median": 0.924455758537102,
+          "p95": 1.2172846309448957,
+          "mean": 0.9211057706120954
+        },
+        "energy_retention": {
+          "median": 0.431254658614625,
+          "p95": 0.6218090554745569,
+          "mean": 0.4024763673650228
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.8188140582872712,
+            "p95": 1.5160161152505036,
+            "mean": 0.9103102301473156
+          },
+          "mid_1_3": {
+            "median": 0.39125299269257136,
+            "p95": 0.7109315771043185,
+            "mean": 0.4171516939267091
+          },
+          "high_3_8": {
+            "median": 0.17974793955488716,
+            "p95": 0.29775570243407834,
+            "mean": 0.1830283404208932
+          }
+        }
+      },
+      "full_body": {
+        "raw_position_rmse_rad": 0.17532087053494752,
+        "raw_velocity_rmse_rad_s": 1.5359270390828703,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 80.0,
+          "mean": 28.275862068965516
+        },
+        "lag_compensated_position_rmse_rad": 0.17479396359636135,
+        "amplitude_retention": {
+          "median": 0.9062511312641763,
+          "p95": 1.2029119369411496,
+          "mean": 0.8887496313482298
+        },
+        "energy_retention": {
+          "median": 0.4428508651891216,
+          "p95": 1.003590741039808,
+          "mean": 0.4851817575398864
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.846643283186873,
+            "p95": 1.781019265198323,
+            "mean": 0.9461507156731311
+          },
+          "mid_1_3": {
+            "median": 0.47000703414470263,
+            "p95": 0.9743543218341735,
+            "mean": 0.49737386367913383
+          },
+          "high_3_8": {
+            "median": 0.23001674124711582,
+            "p95": 0.988114860280118,
+            "mean": 0.320682678635378
+          }
+        }
+      }
+    },
+    "per_joint": {
+      "left_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10881141458295683,
+        "aligned_rmse_rad": 0.10063400384267318,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.8765363216989196,
+        "energy_retention": 0.4500850783852435,
+        "band_power_retention": {
+          "low_0_1": 1.878690229561282,
+          "mid_1_3": 0.4205544364394219,
+          "high_3_8": 0.21852069123223689
+        }
+      },
+      "right_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10626712563160673,
+        "aligned_rmse_rad": 0.10601910248770734,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.8128819744446252,
+        "energy_retention": 0.7518621245096355,
+        "band_power_retention": {
+          "low_0_1": 0.8877301120187643,
+          "mid_1_3": 0.6342882560503907,
+          "high_3_8": 1.2641716575959943
+        }
+      },
+      "waist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12867515944645438,
+        "aligned_rmse_rad": 0.1282358031233615,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.2077136826152637,
+        "energy_retention": 1.175231558757407,
+        "band_power_retention": {
+          "low_0_1": 1.1449164175511923,
+          "mid_1_3": 1.110796368007564,
+          "high_3_8": 0.9383840316402668
+        }
+      },
+      "left_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1834995251871718,
+        "aligned_rmse_rad": 0.16841227141037085,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.8095502785213372,
+        "energy_retention": 0.41080007025270115,
+        "band_power_retention": {
+          "low_0_1": 0.8853167794267558,
+          "mid_1_3": 0.3793506676704726,
+          "high_3_8": 0.1641478933336953
+        }
+      },
+      "right_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1550189669141247,
+        "aligned_rmse_rad": 0.14742135404957663,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9522411272473155,
+        "energy_retention": 0.49825258463012323,
+        "band_power_retention": {
+          "low_0_1": 1.5259220246444376,
+          "mid_1_3": 0.28384881817417384,
+          "high_3_8": 0.3175536342859019
+        }
+      },
+      "waist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.08259205988214675,
+        "aligned_rmse_rad": 0.081635776390419,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.6024302168380431,
+        "energy_retention": 0.4034777898048742,
+        "band_power_retention": {
+          "low_0_1": 0.4752673971723173,
+          "mid_1_3": 0.36724682857353846,
+          "high_3_8": 0.30769110977205144
+        }
+      },
+      "left_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.15884228237077036,
+        "aligned_rmse_rad": 0.15626784398773275,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.7749684478239788,
+        "energy_retention": 0.5009425188645803,
+        "band_power_retention": {
+          "low_0_1": 1.1440306359044246,
+          "mid_1_3": 0.663627783492457,
+          "high_3_8": 0.23001674124711582
+        }
+      },
+      "right_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12395704729165158,
+        "aligned_rmse_rad": 0.11232105076415681,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.9115956625363472,
+        "energy_retention": 0.6311240876659912,
+        "band_power_retention": {
+          "low_0_1": 0.8227312009970505,
+          "mid_1_3": 0.621028077066152,
+          "high_3_8": 0.7397137960235927
+        }
+      },
+      "waist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.15429476511556445,
+        "aligned_rmse_rad": 0.1493004217717354,
+        "lag_ms": 40.0,
+        "amplitude_retention": 1.1957093184299787,
+        "energy_retention": 1.171409818726591,
+        "band_power_retention": {
+          "low_0_1": 2.262415107244311,
+          "mid_1_3": 1.3803946213346856,
+          "high_3_8": 1.021268746040019
+        }
+      },
+      "left_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1671589795537143,
+        "aligned_rmse_rad": 0.16265358449346368,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.7469698743292139,
+        "energy_retention": 0.39146866726101415,
+        "band_power_retention": {
+          "low_0_1": 0.6744829185304156,
+          "mid_1_3": 0.5019044376391005,
+          "high_3_8": 0.3321193645608651
+        }
+      },
+      "right_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1501306807990552,
+        "aligned_rmse_rad": 0.14231378466107036,
+        "lag_ms": 40.0,
+        "amplitude_retention": 1.145929213092051,
+        "energy_retention": 0.4055169540964115,
+        "band_power_retention": {
+          "low_0_1": 0.44526031913769415,
+          "mid_1_3": 0.5218727645704524,
+          "high_3_8": 0.29086602540048223
+        }
+      },
+      "left_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10044020626373848,
+        "aligned_rmse_rad": 0.09790147971478122,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.7108128557241374,
+        "energy_retention": 0.18358269937130964,
+        "band_power_retention": {
+          "low_0_1": 0.48198901552101847,
+          "mid_1_3": 0.19485655685546682,
+          "high_3_8": 0.154438111134103
+        }
+      },
+      "right_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06841579423891286,
+        "aligned_rmse_rad": 0.06529191220250447,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.155608287248149,
+        "energy_retention": 0.6813007900621293,
+        "band_power_retention": {
+          "low_0_1": 1.1417476242130653,
+          "mid_1_3": 0.5177108022354515,
+          "high_3_8": 0.2482750373273512
+        }
+      },
+      "left_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.03312077156821379,
+        "aligned_rmse_rad": 0.03312077156821379,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9720097634353476,
+        "energy_retention": 0.6093463973149131,
+        "band_power_retention": {
+          "low_0_1": 0.8650225062960547,
+          "mid_1_3": 0.5910475965808293,
+          "high_3_8": 0.27148154231992977
+        }
+      },
+      "right_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.18836277885667796,
+        "aligned_rmse_rad": 0.18836277885667796,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.24503554532399255,
+        "energy_retention": 0.19172982710265393,
+        "band_power_retention": {
+          "low_0_1": 0.04170022165245815,
+          "mid_1_3": 0.09303353076055594,
+          "high_3_8": 0.2804608991948181
+        }
+      },
+      "left_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.17691082173073022,
+        "aligned_rmse_rad": 0.17691082173073022,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.8144288470773065,
+        "energy_retention": 0.412378304235837,
+        "band_power_retention": {
+          "low_0_1": 0.8454302650276221,
+          "mid_1_3": 0.36538307445851276,
+          "high_3_8": 0.08981822527845502
+        }
+      },
+      "right_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.14283985307953337,
+        "aligned_rmse_rad": 0.14283985307953337,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9482084195515965,
+        "energy_retention": 0.4498691428468112,
+        "band_power_retention": {
+          "low_0_1": 0.9836500446831704,
+          "mid_1_3": 0.6657831797408317,
+          "high_3_8": 0.22818222288104772
+        }
+      },
+      "left_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.2289906149307093,
+        "aligned_rmse_rad": 0.2289906149307093,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9062511312641763,
+        "energy_retention": 0.5124620486546596,
+        "band_power_retention": {
+          "low_0_1": 0.7938983791343479,
+          "mid_1_3": 0.6310952510320077,
+          "high_3_8": 0.15561936910822768
+        }
+      },
+      "right_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.23502213307571748,
+        "aligned_rmse_rad": 0.23502213307571748,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.7184359629287371,
+        "energy_retention": 0.33189229951958704,
+        "band_power_retention": {
+          "low_0_1": 0.846643283186873,
+          "mid_1_3": 0.3836288943291541,
+          "high_3_8": 0.20538541277826206
+        }
+      },
+      "left_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.27182250116648426,
+        "aligned_rmse_rad": 0.27182250116648426,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.024864256226593,
+        "energy_retention": 0.40756212900274236,
+        "band_power_retention": {
+          "low_0_1": 0.757578785663977,
+          "mid_1_3": 0.7696912525740893,
+          "high_3_8": 0.08403076281187369
+        }
+      },
+      "right_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1482629569456819,
+        "aligned_rmse_rad": 0.1402417357078063,
+        "lag_ms": 80.0,
+        "amplitude_retention": 0.8111430604729049,
+        "energy_retention": 0.2920617877656092,
+        "band_power_retention": {
+          "low_0_1": 0.7855311551746155,
+          "mid_1_3": 0.26035281881423417,
+          "high_3_8": 0.2667263099738216
+        }
+      },
+      "left_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.19018677118045818,
+        "aligned_rmse_rad": 0.1889504608675838,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.5971076689669194,
+        "energy_retention": 0.08892444752545423,
+        "band_power_retention": {
+          "low_0_1": 0.8562717372985419,
+          "mid_1_3": 0.06855805001386756,
+          "high_3_8": 0.061437304193969706
+        }
+      },
+      "right_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1339025614328004,
+        "aligned_rmse_rad": 0.1339025614328004,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.8935758651195779,
+        "energy_retention": 0.5897750445427872,
+        "band_power_retention": {
+          "low_0_1": 0.9740951913328862,
+          "mid_1_3": 0.679291751851365,
+          "high_3_8": 0.3108488991052907
+        }
+      },
+      "left_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13019635876007635,
+        "aligned_rmse_rad": 0.12887809068929607,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9238501859211348,
+        "energy_retention": 0.4947167148822041,
+        "band_power_retention": {
+          "low_0_1": 0.5691366137396575,
+          "mid_1_3": 0.5486239485297325,
+          "high_3_8": 0.21962536181790968
+        }
+      },
+      "right_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.3022398521529984,
+        "aligned_rmse_rad": 0.3013138011380379,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0129339587912505,
+        "energy_retention": 0.4428508651891216,
+        "band_power_retention": {
+          "low_0_1": 0.7596033359691551,
+          "mid_1_3": 0.47000703414470263,
+          "high_3_8": 0.29070551961111785
+        }
+      },
+      "left_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.20662478456814729,
+        "aligned_rmse_rad": 0.20662478456814729,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.778875738715352,
+        "energy_retention": 0.4575929256686551,
+        "band_power_retention": {
+          "low_0_1": 0.7103885852046073,
+          "mid_1_3": 0.41712291092662995,
+          "high_3_8": 0.18290093376351169
+        }
+      },
+      "right_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.3290409679207392,
+        "aligned_rmse_rad": 0.3272609999596286,
+        "lag_ms": -20.0,
+        "amplitude_retention": 1.3318264120959968,
+        "energy_retention": 0.42003858300171465,
+        "band_power_retention": {
+          "low_0_1": 1.452210198033298,
+          "mid_1_3": 0.29655249249270277,
+          "high_3_8": 0.12167171984209114
+        }
+      },
+      "left_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.17685258919298677,
+        "aligned_rmse_rad": 0.17343296730822944,
+        "lag_ms": 200.0,
+        "amplitude_retention": 0.9250613311530693,
+        "energy_retention": 0.44247073422753536,
+        "band_power_retention": {
+          "low_0_1": 1.634512818653886,
+          "mid_1_3": 0.34752301748146214,
+          "high_3_8": 0.17659494534626263
+        }
+      },
+      "right_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.14511343927997092,
+        "aligned_rmse_rad": 0.13185544065505658,
+        "lag_ms": 80.0,
+        "amplitude_retention": 0.9671839015053477,
+        "energy_retention": 0.271544974788409,
+        "band_power_retention": {
+          "low_0_1": 0.7921978515469202,
+          "mid_1_3": 0.2386668248548783,
+          "high_3_8": 0.1271414128056987
+        }
+      }
+    }
+  },
+  {
+    "run_id": "sonic_native_high_dance_in_da_party_001__A464_M_r03",
+    "run_dir": "/home/tianhup/AudioMimic/eval/gt_sonic_capability/known_trackable_runs/sonic_native_high_dance_in_da_party_001__A464_M_r03",
+    "motion_sha256": "47a51b03698d95841e6404a3cc385af96831c784a01887003602ec2864cb6dc2",
+    "playback_duration_seconds": 13.933407992008142,
+    "tracking_analysis_duration_seconds": 9.899999999999789,
+    "tracking_truncated_at_fall": false,
+    "excluded_alignment_seconds": 4.0,
+    "analysis_fps": 50.0,
+    "feedback_samples": 697,
+    "active_joints": 29,
+    "global_lag_seconds": 0.02,
+    "raw_position_rmse_rad": 0.17459030634861247,
+    "raw_velocity_rmse_rad_s": 1.5273225648172744,
+    "lag_compensated_position_rmse_rad": 0.17403005072736583,
+    "minimum_base_height_m": 0.6578067226250636,
+    "survival_seconds": 9.933407992008142,
+    "total_survival_including_alignment_seconds": 13.933407992008142,
+    "fell_below_height_threshold": false,
+    "groups": {
+      "legs": {
+        "raw_position_rmse_rad": 0.161065973445697,
+        "raw_velocity_rmse_rad_s": 1.617706865606266,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 48.999999999999986,
+          "mean": 21.666666666666668
+        },
+        "lag_compensated_position_rmse_rad": 0.15789083370097026,
+        "amplitude_retention": {
+          "median": 0.8454246180651094,
+          "p95": 1.042296157636096,
+          "mean": 0.813245113951332
+        },
+        "energy_retention": {
+          "median": 0.4614175280312143,
+          "p95": 0.6736368491288605,
+          "mean": 0.4726533044342205
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.8405971335304181,
+            "p95": 1.7373382451932575,
+            "mean": 0.8992243069188168
+          },
+          "mid_1_3": {
+            "median": 0.5273636376902107,
+            "p95": 0.6523631854204247,
+            "mean": 0.4755761137233749
+          },
+          "high_3_8": {
+            "median": 0.2794324691092952,
+            "p95": 0.8868724080152623,
+            "mean": 0.368790667108099
+          }
+        }
+      },
+      "waist": {
+        "raw_position_rmse_rad": 0.12388173748272126,
+        "raw_velocity_rmse_rad_s": 1.1882051938657674,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 38.0,
+          "mean": 26.666666666666668
+        },
+        "lag_compensated_position_rmse_rad": 0.12157686181162873,
+        "amplitude_retention": {
+          "median": 1.1490249412194224,
+          "p95": 1.2138212717107628,
+          "mean": 0.9834327794040559
+        },
+        "energy_retention": {
+          "median": 1.0931143234862477,
+          "p95": 1.1412272343683325,
+          "mean": 0.8801851657716565
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 1.1373447814872903,
+            "p95": 1.979507879671331,
+            "mean": 1.189638857141439
+          },
+          "mid_1_3": {
+            "median": 1.1388061444718867,
+            "p95": 1.4000073208617108,
+            "mean": 0.976659387778672
+          },
+          "high_3_8": {
+            "median": 0.9465046894937805,
+            "p95": 0.9976449375865749,
+            "mean": 0.7871044863499023
+          }
+        }
+      },
+      "arms": {
+        "raw_position_rmse_rad": 0.1939485293994324,
+        "raw_velocity_rmse_rad_s": 1.5120825636106727,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 114.99999999999997,
+          "mean": 34.285714285714285
+        },
+        "lag_compensated_position_rmse_rad": 0.19545008748007672,
+        "amplitude_retention": {
+          "median": 0.9348640707586953,
+          "p95": 1.219224932006436,
+          "mean": 0.9233631767988971
+        },
+        "energy_retention": {
+          "median": 0.44281898296263134,
+          "p95": 0.623097584993686,
+          "mean": 0.40593110088133477
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.8300731732726652,
+            "p95": 1.5320723971833363,
+            "mean": 0.9186893464260116
+          },
+          "mid_1_3": {
+            "median": 0.3975858101244662,
+            "p95": 0.7106302372316964,
+            "mean": 0.4200205359389499
+          },
+          "high_3_8": {
+            "median": 0.17661495732415483,
+            "p95": 0.29768433462936744,
+            "mean": 0.18549658144987785
+          }
+        }
+      },
+      "full_body": {
+        "raw_position_rmse_rad": 0.17459030634861247,
+        "raw_velocity_rmse_rad_s": 1.5273225648172746,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 80.0,
+          "mean": 28.275862068965516
+        },
+        "lag_compensated_position_rmse_rad": 0.17403005072736583,
+        "amplitude_retention": {
+          "median": 0.8916558179009054,
+          "p95": 1.1983477906985835,
+          "mean": 0.8840111786487143
+        },
+        "energy_retention": {
+          "median": 0.44638131328276004,
+          "p95": 0.9472184161050754,
+          "mean": 0.4826010538918724
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.8498824408799063,
+            "p95": 1.7860795678972876,
+            "mean": 0.9386641070487685
+          },
+          "mid_1_3": {
+            "median": 0.49762482458114954,
+            "p95": 0.9897435406982603,
+            "mean": 0.5005923803848901
+          },
+          "high_3_8": {
+            "median": 0.2538684210164438,
+            "p95": 0.98059818822231,
+            "mean": 0.3235777105050064
+          }
+        }
+      }
+    },
+    "per_joint": {
+      "left_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10692924874183987,
+        "aligned_rmse_rad": 0.09923832737672758,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.8743420360329781,
+        "energy_retention": 0.44299983870725074,
+        "band_power_retention": {
+          "low_0_1": 1.8458388196969677,
+          "mid_1_3": 0.39463689979900246,
+          "high_3_8": 0.2574800794738754
+        }
+      },
+      "right_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10188526774424699,
+        "aligned_rmse_rad": 0.10140157154422515,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.7344145707625604,
+        "energy_retention": 0.7283745550333189,
+        "band_power_retention": {
+          "low_0_1": 0.724190214941049,
+          "mid_1_3": 0.5417329490761869,
+          "high_3_8": 1.1909313728244146
+        }
+      },
+      "waist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12779781944975932,
+        "aligned_rmse_rad": 0.12685428803022433,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.1490249412194224,
+        "energy_retention": 1.1465731133552308,
+        "band_power_retention": {
+          "low_0_1": 1.1373447814872903,
+          "mid_1_3": 1.1388061444718867,
+          "high_3_8": 1.0033271873746632
+        }
+      },
+      "left_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.17816704610077902,
+        "aligned_rmse_rad": 0.16347672609431535,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.8165072000972406,
+        "energy_retention": 0.41773645448611324,
+        "band_power_retention": {
+          "low_0_1": 0.8973574389256996,
+          "mid_1_3": 0.39329405701078785,
+          "high_3_8": 0.15733098775399168
+        }
+      },
+      "right_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.15529137485908803,
+        "aligned_rmse_rad": 0.14732503650945442,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9487304304786494,
+        "energy_retention": 0.47983521735517787,
+        "band_power_retention": {
+          "low_0_1": 1.6485650478720404,
+          "mid_1_3": 0.27713631154053714,
+          "high_3_8": 0.30011137593240356
+        }
+      },
+      "waist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.08740489949342674,
+        "aligned_rmse_rad": 0.08737323839183214,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.580252533005167,
+        "energy_retention": 0.40086806047349127,
+        "band_power_retention": {
+          "low_0_1": 0.35849023268969105,
+          "mid_1_3": 0.36214234507021564,
+          "high_3_8": 0.41148158218126324
+        }
+      },
+      "left_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.15911566040383332,
+        "aligned_rmse_rad": 0.15641019557528704,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.7803995753742423,
+        "energy_retention": 0.4859223062349161,
+        "band_power_retention": {
+          "low_0_1": 1.2208902246090079,
+          "mid_1_3": 0.6404157175661997,
+          "high_3_8": 0.24117599387230013
+        }
+      },
+      "right_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1250278621399565,
+        "aligned_rmse_rad": 0.11424676653483465,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.8883801009523564,
+        "energy_retention": 0.6288514533888492,
+        "band_power_retention": {
+          "low_0_1": 0.7929334499380812,
+          "mid_1_3": 0.6669656461311441,
+          "high_3_8": 0.6380968913532294
+        }
+      },
+      "waist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.14855354433215076,
+        "aligned_rmse_rad": 0.1425321980187125,
+        "lag_ms": 40.0,
+        "amplitude_retention": 1.2210208639875784,
+        "energy_retention": 1.0931143234862477,
+        "band_power_retention": {
+          "low_0_1": 2.0730815572473356,
+          "mid_1_3": 1.4290296737939134,
+          "high_3_8": 0.9465046894937805
+        }
+      },
+      "left_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.16394977687424497,
+        "aligned_rmse_rad": 0.15876385838586715,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.743007309019991,
+        "energy_retention": 0.39509947321673716,
+        "band_power_retention": {
+          "low_0_1": 0.6984009098480962,
+          "mid_1_3": 0.5129943263042346,
+          "high_3_8": 0.3437462775235281
+        }
+      },
+      "right_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1424696488439804,
+        "aligned_rmse_rad": 0.1338464897066081,
+        "lag_ms": 40.0,
+        "amplitude_retention": 1.1051008415703132,
+        "energy_retention": 0.41853631299731786,
+        "band_power_retention": {
+          "low_0_1": 0.37936048444271914,
+          "mid_1_3": 0.5612059903715485,
+          "high_3_8": 0.33139347470528174
+        }
+      },
+      "left_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10325602276903072,
+        "aligned_rmse_rad": 0.10054196090057546,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.7185582903174562,
+        "energy_retention": 0.19168019755475899,
+        "band_power_retention": {
+          "low_0_1": 0.5078990597581119,
+          "mid_1_3": 0.18003511739771558,
+          "high_3_8": 0.18367365401949856
+        }
+      },
+      "right_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06645604217728678,
+        "aligned_rmse_rad": 0.06366857833968909,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.1643381807650919,
+        "energy_retention": 0.677893319338941,
+        "band_power_retention": {
+          "low_0_1": 1.1448120084155302,
+          "mid_1_3": 0.529792647207115,
+          "high_3_8": 0.22500342763312028
+        }
+      },
+      "left_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.03438676241898008,
+        "aligned_rmse_rad": 0.03438676241898008,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.990910507144464,
+        "energy_retention": 0.6194841805356139,
+        "band_power_retention": {
+          "low_0_1": 0.8611147612847999,
+          "mid_1_3": 0.5979322683796329,
+          "high_3_8": 0.3047703996229265
+        }
+      },
+      "right_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1881690006704269,
+        "aligned_rmse_rad": 0.1881690006704269,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.25097040511705515,
+        "energy_retention": 0.19392658999238152,
+        "band_power_retention": {
+          "low_0_1": 0.04084606440650266,
+          "mid_1_3": 0.09060504993622182,
+          "high_3_8": 0.25875356228618684
+        }
+      },
+      "left_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.17560068681539992,
+        "aligned_rmse_rad": 0.17560068681539992,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.8129196815809286,
+        "energy_retention": 0.41923922376380235,
+        "band_power_retention": {
+          "low_0_1": 0.8499683529760453,
+          "mid_1_3": 0.3709789313711498,
+          "high_3_8": 0.10595912121017269
+        }
+      },
+      "right_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.14435962621078421,
+        "aligned_rmse_rad": 0.14435962621078421,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9486179019154762,
+        "energy_retention": 0.44638131328276004,
+        "band_power_retention": {
+          "low_0_1": 0.9916857303059488,
+          "mid_1_3": 0.6807351768745515,
+          "high_3_8": 0.2756259947140465
+        }
+      },
+      "left_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.22889578185877904,
+        "aligned_rmse_rad": 0.22889578185877904,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9050448528327797,
+        "energy_retention": 0.5299241645289419,
+        "band_power_retention": {
+          "low_0_1": 0.8211774353553749,
+          "mid_1_3": 0.6340195869997656,
+          "high_3_8": 0.19327718509259345
+        }
+      },
+      "right_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.23774651019693135,
+        "aligned_rmse_rad": 0.23774651019693135,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.7211335380333547,
+        "energy_retention": 0.33114910673402786,
+        "band_power_retention": {
+          "low_0_1": 0.8600168317054614,
+          "mid_1_3": 0.3959745615652372,
+          "high_3_8": 0.20842040485645646
+        }
+      },
+      "left_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.26842980157354557,
+        "aligned_rmse_rad": 0.26842980157354557,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.0130292315311553,
+        "energy_retention": 0.4055938524791686,
+        "band_power_retention": {
+          "low_0_1": 0.717634450908238,
+          "mid_1_3": 0.7661496350378227,
+          "high_3_8": 0.10135512140156204
+        }
+      },
+      "right_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.15072354537413551,
+        "aligned_rmse_rad": 0.14281089066277347,
+        "lag_ms": 80.0,
+        "amplitude_retention": 0.8427468100446373,
+        "energy_retention": 0.2942773304154192,
+        "band_power_retention": {
+          "low_0_1": 0.8102639056654241,
+          "mid_1_3": 0.24461985111043377,
+          "high_3_8": 0.2538684210164438
+        }
+      },
+      "left_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1915232075323604,
+        "aligned_rmse_rad": 0.19023908583181692,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.575155227974423,
+        "energy_retention": 0.08760507117897937,
+        "band_power_retention": {
+          "low_0_1": 0.8498824408799063,
+          "mid_1_3": 0.06401288715265885,
+          "high_3_8": 0.06124317553602125
+        }
+      },
+      "right_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13393797649113054,
+        "aligned_rmse_rad": 0.13393797649113054,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.8916558179009054,
+        "energy_retention": 0.5935921895770102,
+        "band_power_retention": {
+          "low_0_1": 0.9873418798519118,
+          "mid_1_3": 0.6765703904859224,
+          "high_3_8": 0.3386498230435351
+        }
+      },
+      "left_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12920773159423243,
+        "aligned_rmse_rad": 0.1278767210785834,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9211102396019144,
+        "energy_retention": 0.49202240691031585,
+        "band_power_retention": {
+          "low_0_1": 0.5635015581685373,
+          "mid_1_3": 0.5532202309607387,
+          "high_3_8": 0.16955626062881113
+        }
+      },
+      "right_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.3023213194422593,
+        "aligned_rmse_rad": 0.30157005396206954,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0164130646781169,
+        "energy_retention": 0.4551784123226123,
+        "band_power_retention": {
+          "low_0_1": 0.7885604008412862,
+          "mid_1_3": 0.49762482458114954,
+          "high_3_8": 0.26738157659007467
+        }
+      },
+      "left_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.20678937742481515,
+        "aligned_rmse_rad": 0.20678937742481515,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.7688859386533986,
+        "energy_retention": 0.4640534119565688,
+        "band_power_retention": {
+          "low_0_1": 0.7081884778327016,
+          "mid_1_3": 0.4241926888777826,
+          "high_3_8": 0.1982652025311391
+        }
+      },
+      "right_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.32538907032457337,
+        "aligned_rmse_rad": 0.32367072555050636,
+        "lag_ms": -20.0,
+        "amplitude_retention": 1.3211574700260749,
+        "energy_retention": 0.43925665264250263,
+        "band_power_retention": {
+          "low_0_1": 1.4435663932524885,
+          "mid_1_3": 0.31011317367122665,
+          "high_3_8": 0.14644773673082562
+        }
+      },
+      "left_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.18081931737008322,
+        "aligned_rmse_rad": 0.17822175501609694,
+        "lag_ms": 180.0,
+        "amplitude_retention": 0.9575287340527417,
+        "energy_retention": 0.44817117369376197,
+        "band_power_retention": {
+          "low_0_1": 1.6964406901977682,
+          "mid_1_3": 0.34914002797535953,
+          "high_3_8": 0.1374656812613009
+        }
+      },
+      "right_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.14508594251165,
+        "aligned_rmse_rad": 0.1334189513232028,
+        "lag_ms": 80.0,
+        "amplitude_retention": 0.9749678861422404,
+        "energy_retention": 0.2680908572220851,
+        "band_power_retention": {
+          "low_0_1": 0.8019055009102646,
+          "mid_1_3": 0.23310192044167177,
+          "high_3_8": 0.13245694398173832
+        }
+      }
+    }
+  },
+  {
+    "run_id": "sonic_native_low_walking_quip_360_R_002__A428_M_r01",
+    "run_dir": "/home/tianhup/AudioMimic/eval/gt_sonic_capability/known_trackable_runs/sonic_native_low_walking_quip_360_R_002__A428_M_r01",
+    "motion_sha256": "3b52ec025274fe920469c1439251bc56cd844ed87ed15e57c1a5c790a54597c9",
+    "playback_duration_seconds": 13.100139193003997,
+    "tracking_analysis_duration_seconds": 9.079999999999806,
+    "tracking_truncated_at_fall": false,
+    "excluded_alignment_seconds": 4.0,
+    "analysis_fps": 50.0,
+    "feedback_samples": 656,
+    "active_joints": 29,
+    "global_lag_seconds": 0.04,
+    "raw_position_rmse_rad": 0.11657101594859429,
+    "raw_velocity_rmse_rad_s": 0.6173311077562098,
+    "lag_compensated_position_rmse_rad": 0.11303550281349826,
+    "minimum_base_height_m": 0.7316637248254098,
+    "survival_seconds": 9.100139193003997,
+    "total_survival_including_alignment_seconds": 13.100139193003997,
+    "fell_below_height_threshold": false,
+    "groups": {
+      "legs": {
+        "raw_position_rmse_rad": 0.11467159630622827,
+        "raw_velocity_rmse_rad_s": 0.7305519084776413,
+        "lag_ms": {
+          "median": 40.0,
+          "p95": 60.0,
+          "mean": 28.333333333333332
+        },
+        "lag_compensated_position_rmse_rad": 0.10732700099380674,
+        "amplitude_retention": {
+          "median": 0.9714426998085822,
+          "p95": 1.1303017549006704,
+          "mean": 0.9353156540985738
+        },
+        "energy_retention": {
+          "median": 0.7747081803871136,
+          "p95": 1.12843371276644,
+          "mean": 0.777799885216953
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 1.0186849836129062,
+            "p95": 1.164436702513279,
+            "mean": 0.916330883935458
+          },
+          "mid_1_3": {
+            "median": 0.7328721912037678,
+            "p95": 1.5103568996695231,
+            "mean": 0.8100972167316817
+          },
+          "high_3_8": {
+            "median": 0.3372072688698964,
+            "p95": 1.2403496807774097,
+            "mean": 0.4984383363199438
+          }
+        }
+      },
+      "waist": {
+        "raw_position_rmse_rad": 0.08931523426351631,
+        "raw_velocity_rmse_rad_s": 0.5253886981891235,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 20.0,
+          "mean": 20.0
+        },
+        "lag_compensated_position_rmse_rad": 0.08841069667985936,
+        "amplitude_retention": {
+          "median": 1.2951216275461843,
+          "p95": 1.9166164876448177,
+          "mean": 1.3784926442751047
+        },
+        "energy_retention": {
+          "median": 1.1815078653779174,
+          "p95": 1.2341201768445098,
+          "mean": 0.906069772475635
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 2.513462828808484,
+            "p95": 3.5178473752159207,
+            "mean": 2.4965834171991
+          },
+          "mid_1_3": {
+            "median": 1.0643003392584527,
+            "p95": 1.2684637083723473,
+            "mean": 0.8501698015461399
+          },
+          "high_3_8": {
+            "median": 0.3818361438309227,
+            "p95": 0.4284094858597355,
+            "mean": 0.3553677543769145
+          }
+        }
+      },
+      "arms": {
+        "raw_position_rmse_rad": 0.12315748275267953,
+        "raw_velocity_rmse_rad_s": 0.5223067145696297,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 93.99999999999999,
+          "mean": 1.4285714285714286
+        },
+        "lag_compensated_position_rmse_rad": 0.12214024328689937,
+        "amplitude_retention": {
+          "median": 0.8826816391283219,
+          "p95": 1.2612461954460015,
+          "mean": 0.8379543241999532
+        },
+        "energy_retention": {
+          "median": 0.42882728839160533,
+          "p95": 0.9999633022639149,
+          "mean": 0.514777402045275
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.6516550326634345,
+            "p95": 1.6910582505123224,
+            "mean": 0.7983230082312777
+          },
+          "mid_1_3": {
+            "median": 0.49553861210457695,
+            "p95": 1.0898677344867265,
+            "mean": 0.5410543339673025
+          },
+          "high_3_8": {
+            "median": 0.20809446205731075,
+            "p95": 1.9353160541935885,
+            "mean": 0.5136138294786342
+          }
+        }
+      },
+      "full_body": {
+        "raw_position_rmse_rad": 0.11657101594859429,
+        "raw_velocity_rmse_rad_s": 0.6173311077562098,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 71.99999999999996,
+          "mean": 14.482758620689655
+        },
+        "lag_compensated_position_rmse_rad": 0.11303550281349828,
+        "amplitude_retention": {
+          "median": 0.9408949400041934,
+          "p95": 1.3801819231488683,
+          "mean": 0.9341595283037085
+        },
+        "energy_retention": {
+          "median": 0.625916538877503,
+          "p95": 1.1852613159846086,
+          "mean": 0.6640928127125584
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.950312907595558,
+            "p95": 2.41736722433724,
+            "mean": 1.022835964622782
+          },
+          "mid_1_3": {
+            "median": 0.6638300840291117,
+            "p95": 1.2709092516592246,
+            "mean": 0.6843598855503736
+          },
+          "high_3_8": {
+            "median": 0.3131674988052538,
+            "p95": 1.8746517814531847,
+            "mean": 0.4909640314369291
+          }
+        }
+      }
+    },
+    "per_joint": {
+      "left_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.11748180650060423,
+        "aligned_rmse_rad": 0.09995928265573106,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.9856586404387697,
+        "energy_retention": 0.9986938966069878,
+        "band_power_retention": {
+          "low_0_1": 1.1742687365309097,
+          "mid_1_3": 0.8019142983784239,
+          "high_3_8": 0.3212091415440529
+        }
+      },
+      "right_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.060218521106218253,
+        "aligned_rmse_rad": 0.05449696935211697,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9519208365364131,
+        "energy_retention": 0.7495842879520946,
+        "band_power_retention": {
+          "low_0_1": 1.0259413465419347,
+          "mid_1_3": 0.6450740209120058,
+          "high_3_8": 0.21547132129337582
+        }
+      },
+      "waist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12693900507961547,
+        "aligned_rmse_rad": 0.1259869818809842,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.9856714721002215,
+        "energy_retention": 1.2399659892296868,
+        "band_power_retention": {
+          "low_0_1": 2.513462828808484,
+          "mid_1_3": 1.0643003392584527,
+          "high_3_8": 0.4335843016407147
+        }
+      },
+      "left_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.14089542056704513,
+        "aligned_rmse_rad": 0.10994066807184204,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.937101306188155,
+        "energy_retention": 0.6089457533372585,
+        "band_power_retention": {
+          "low_0_1": 0.7829334270265178,
+          "mid_1_3": 0.6638300840291117,
+          "high_3_8": 0.3110596966553283
+        }
+      },
+      "right_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06263562172348351,
+        "aligned_rmse_rad": 0.061661529453197014,
+        "lag_ms": -20.0,
+        "amplitude_retention": 0.9911819574506565,
+        "energy_retention": 1.0640895746593213,
+        "band_power_retention": {
+          "low_0_1": 1.0188448695859704,
+          "mid_1_3": 1.9088864112666386,
+          "high_3_8": 0.6086950246178835
+        }
+      },
+      "waist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06763783527027367,
+        "aligned_rmse_rad": 0.06624514038832627,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.8546848331789073,
+        "energy_retention": 0.29673546281930074,
+        "band_power_retention": {
+          "low_0_1": 3.6294456581500807,
+          "mid_1_3": 0.19506053821718666,
+          "high_3_8": 0.2506828176591061
+        }
+      },
+      "left_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12703491792611182,
+        "aligned_rmse_rad": 0.11766878488235798,
+        "lag_ms": 40.0,
+        "amplitude_retention": 1.1536409858599446,
+        "energy_retention": 1.079891064347925,
+        "band_power_retention": {
+          "low_0_1": 1.1417628731684337,
+          "mid_1_3": 0.9466840448197408,
+          "high_3_8": 0.2623796626829744
+        }
+      },
+      "right_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.04951116804172233,
+        "aligned_rmse_rad": 0.04951116804172233,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.1112060204794463,
+        "energy_retention": 1.0308779549315308,
+        "band_power_retention": {
+          "low_0_1": 1.1563923110443082,
+          "mid_1_3": 1.0861892593112068,
+          "high_3_8": 0.3952155886815115
+        }
+      },
+      "waist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.05694949906706003,
+        "aligned_rmse_rad": 0.05571254349831244,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.2951216275461843,
+        "energy_retention": 1.1815078653779174,
+        "band_power_retention": {
+          "low_0_1": 1.346841764638736,
+          "mid_1_3": 1.29114852716278,
+          "high_3_8": 0.3818361438309227
+        }
+      },
+      "left_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1413153092891142,
+        "aligned_rmse_rad": 0.10019934767630616,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9376951790898264,
+        "energy_retention": 0.625916538877503,
+        "band_power_retention": {
+          "low_0_1": 0.7639335987716538,
+          "mid_1_3": 0.6277745331705693,
+          "high_3_8": 0.17429304190836004
+        }
+      },
+      "right_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10287186447086559,
+        "aligned_rmse_rad": 0.10287186447086559,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.1106382565905786,
+        "energy_retention": 0.7998320728221325,
+        "band_power_retention": {
+          "low_0_1": 1.0185250976398421,
+          "mid_1_3": 1.184287299271884,
+          "high_3_8": 0.42859820319989583
+        }
+      },
+      "left_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.04721894678407456,
+        "aligned_rmse_rad": 0.04721894678407456,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.0266133602920948,
+        "energy_retention": 0.5312189088999708,
+        "band_power_retention": {
+          "low_0_1": 1.3482435840437785,
+          "mid_1_3": 0.7304676993894997,
+          "high_3_8": 0.22249904163966283
+        }
+      },
+      "right_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.04068998296752809,
+        "aligned_rmse_rad": 0.03943623933843152,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9250120546495968,
+        "energy_retention": 1.0280491031497017,
+        "band_power_retention": {
+          "low_0_1": 0.8211101668838984,
+          "mid_1_3": 0.7760165796334648,
+          "high_3_8": 2.077678006770213
+        }
+      },
+      "left_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.02219697259962083,
+        "aligned_rmse_rad": 0.014307426178217479,
+        "lag_ms": 40.0,
+        "amplitude_retention": 1.0093738951595523,
+        "energy_retention": 1.1877636163890692,
+        "band_power_retention": {
+          "low_0_1": 0.950312907595558,
+          "mid_1_3": 0.9458787932171718,
+          "high_3_8": 1.8853132236281138
+        }
+      },
+      "right_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.2180529543540336,
+        "aligned_rmse_rad": 0.2179681040888991,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.13724907220695465,
+        "energy_retention": 0.08582087780256888,
+        "band_power_retention": {
+          "low_0_1": 0.00729703098843381,
+          "mid_1_3": 0.025893348149419338,
+          "high_3_8": 0.3131674988052538
+        }
+      },
+      "left_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.05655333514078317,
+        "aligned_rmse_rad": 0.05380981048605672,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9853248208129789,
+        "energy_retention": 0.9107432846615373,
+        "band_power_retention": {
+          "low_0_1": 1.0131997537927777,
+          "mid_1_3": 0.8336502799573159,
+          "high_3_8": 0.6775638446106859
+        }
+      },
+      "right_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.04813637403400686,
+        "aligned_rmse_rad": 0.04007143762383293,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.932962261114677,
+        "energy_retention": 0.862450362855903,
+        "band_power_retention": {
+          "low_0_1": 0.8184179435185295,
+          "mid_1_3": 1.2405503384038916,
+          "high_3_8": 1.858659618190791
+        }
+      },
+      "left_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.05107402747810274,
+        "aligned_rmse_rad": 0.05107402747810274,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9408949400041934,
+        "energy_retention": 0.5888402774788866,
+        "band_power_retention": {
+          "low_0_1": 1.0988422992487161,
+          "mid_1_3": 0.4064313581155006,
+          "high_3_8": 0.712652236626835
+        }
+      },
+      "right_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12962136457475437,
+        "aligned_rmse_rad": 0.12640363112492242,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9572267591783947,
+        "energy_retention": 0.5133427073981583,
+        "band_power_retention": {
+          "low_0_1": 0.856916109083217,
+          "mid_1_3": 0.4783231501385052,
+          "high_3_8": 0.3532053961957399
+        }
+      },
+      "left_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13156968455571097,
+        "aligned_rmse_rad": 0.1294434450311756,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.8441044132899127,
+        "energy_retention": 0.44769502687650853,
+        "band_power_retention": {
+          "low_0_1": 0.44660000241777204,
+          "mid_1_3": 0.5264122736787373,
+          "high_3_8": 0.08014123441860102
+        }
+      },
+      "right_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10774048872505063,
+        "aligned_rmse_rad": 0.10591903653926188,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.9212588649667309,
+        "energy_retention": 0.21251470805181144,
+        "band_power_retention": {
+          "low_0_1": 0.5853232072870932,
+          "mid_1_3": 0.1550307574474267,
+          "high_3_8": 0.1072386071392717
+        }
+      },
+      "left_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12318184972150252,
+        "aligned_rmse_rad": 0.1096174878281879,
+        "lag_ms": 120.0,
+        "amplitude_retention": 0.46196268411238667,
+        "energy_retention": 0.16867005378798328,
+        "band_power_retention": {
+          "low_0_1": 0.2930825298803465,
+          "mid_1_3": 0.20439173946736452,
+          "high_3_8": 0.04328432414321933
+        }
+      },
+      "right_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06293876002628918,
+        "aligned_rmse_rad": 0.059758296229478786,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.8214806192625136,
+        "energy_retention": 0.7880905725339497,
+        "band_power_retention": {
+          "low_0_1": 0.6233629709929008,
+          "mid_1_3": 1.0087309477620992,
+          "high_3_8": 0.6374990524817513
+        }
+      },
+      "left_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.05249611266840617,
+        "aligned_rmse_rad": 0.05000857701979306,
+        "lag_ms": 40.0,
+        "amplitude_retention": 1.16666941544093,
+        "energy_retention": 0.9848401787100298,
+        "band_power_retention": {
+          "low_0_1": 1.377584483602602,
+          "mid_1_3": 0.8058621834644067,
+          "high_3_8": 0.7855112743359614
+        }
+      },
+      "right_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.11633787424785766,
+        "aligned_rmse_rad": 0.11525983583277802,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.5417959804420285,
+        "energy_retention": 0.39528128299403253,
+        "band_power_retention": {
+          "low_0_1": 0.3277823866993958,
+          "mid_1_3": 0.46466495053041657,
+          "high_3_8": 0.30003884161979105
+        }
+      },
+      "left_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.18389669106400128,
+        "aligned_rmse_rad": 0.18380790092292362,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.7474463121951216,
+        "energy_retention": 0.4099595499067022,
+        "band_power_retention": {
+          "low_0_1": 0.433184227848379,
+          "mid_1_3": 0.44931445712833945,
+          "high_3_8": 0.19368988247495866
+        }
+      },
+      "right_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.14316722021535627,
+        "aligned_rmse_rad": 0.14273488009614146,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.4368887868839917,
+        "energy_retention": 0.22030131377093787,
+        "band_power_retention": {
+          "low_0_1": 2.273223817630375,
+          "mid_1_3": 0.1613501265687482,
+          "high_3_8": 0.06336365328547829
+        }
+      },
+      "left_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.28129905982043996,
+        "aligned_rmse_rad": 0.24793794413134468,
+        "lag_ms": -500.0,
+        "amplitude_retention": 0.2400657783417817,
+        "energy_retention": 0.11430862948580378,
+        "band_power_retention": {
+          "low_0_1": 0.13545994630606878,
+          "mid_1_3": 0.14178822870568752,
+          "high_3_8": 0.09490146116638369
+        }
+      },
+      "right_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.07183330500736222,
+        "aligned_rmse_rad": 0.0691623814362843,
+        "lag_ms": 80.0,
+        "amplitude_retention": 0.6797751869945997,
+        "energy_retention": 0.13276065294897718,
+        "band_power_retention": {
+          "low_0_1": 0.6799470943339683,
+          "mid_1_3": 0.07653011340483694,
+          "high_3_8": 0.048524770424108916
+        }
+      }
+    }
+  },
+  {
+    "run_id": "sonic_native_low_walking_quip_360_R_002__A428_M_r02",
+    "run_dir": "/home/tianhup/AudioMimic/eval/gt_sonic_capability/known_trackable_runs/sonic_native_low_walking_quip_360_R_002__A428_M_r02",
+    "motion_sha256": "3b52ec025274fe920469c1439251bc56cd844ed87ed15e57c1a5c790a54597c9",
+    "playback_duration_seconds": 13.100216418970376,
+    "tracking_analysis_duration_seconds": 9.059999999999807,
+    "tracking_truncated_at_fall": false,
+    "excluded_alignment_seconds": 4.0,
+    "analysis_fps": 50.0,
+    "feedback_samples": 655,
+    "active_joints": 29,
+    "global_lag_seconds": 0.04,
+    "raw_position_rmse_rad": 0.11445474395627549,
+    "raw_velocity_rmse_rad_s": 0.6239361465813735,
+    "lag_compensated_position_rmse_rad": 0.11076678370193264,
+    "minimum_base_height_m": 0.7312875113873241,
+    "survival_seconds": 9.100216418970376,
+    "total_survival_including_alignment_seconds": 13.100216418970376,
+    "fell_below_height_threshold": false,
+    "groups": {
+      "legs": {
+        "raw_position_rmse_rad": 0.11410013204600586,
+        "raw_velocity_rmse_rad_s": 0.7374910431622766,
+        "lag_ms": {
+          "median": 40.0,
+          "p95": 60.0,
+          "mean": 28.333333333333332
+        },
+        "lag_compensated_position_rmse_rad": 0.10649622622410643,
+        "amplitude_retention": {
+          "median": 0.9828439254355953,
+          "p95": 1.1565290810385938,
+          "mean": 0.9396879042685841
+        },
+        "energy_retention": {
+          "median": 0.7421385728441954,
+          "p95": 1.1297986670122449,
+          "mean": 0.7724829402823432
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.9629358156537564,
+            "p95": 1.1435028792367359,
+            "mean": 0.9089967813664436
+          },
+          "mid_1_3": {
+            "median": 0.7465161975481942,
+            "p95": 1.5372573983625841,
+            "mean": 0.8118284653671353
+          },
+          "high_3_8": {
+            "median": 0.3321881160482058,
+            "p95": 1.1345053502565479,
+            "mean": 0.4754397128755125
+          }
+        }
+      },
+      "waist": {
+        "raw_position_rmse_rad": 0.07281408049870162,
+        "raw_velocity_rmse_rad_s": 0.5258845294540044,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 38.0,
+          "mean": 26.666666666666668
+        },
+        "lag_compensated_position_rmse_rad": 0.07180069005535517,
+        "amplitude_retention": {
+          "median": 1.288506597284166,
+          "p95": 1.5618532289479572,
+          "mean": 1.2478060671907303
+        },
+        "energy_retention": {
+          "median": 1.131671466934982,
+          "p95": 1.1502106375071466,
+          "mean": 0.8635864973194107
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 2.165246609493778,
+            "p95": 3.771729017445718,
+            "mean": 2.4878535672968787
+          },
+          "mid_1_3": {
+            "median": 1.0088366584227646,
+            "p95": 1.2266586028607644,
+            "mean": 0.8213126543193532
+          },
+          "high_3_8": {
+            "median": 0.36113297401303207,
+            "p95": 0.445145694618093,
+            "mean": 0.3620877102390824
+          }
+        }
+      },
+      "arms": {
+        "raw_position_rmse_rad": 0.1218210078813511,
+        "raw_velocity_rmse_rad_s": 0.5300413094023498,
+        "lag_ms": {
+          "median": 30.0,
+          "p95": 93.99999999999999,
+          "mean": 4.285714285714286
+        },
+        "lag_compensated_position_rmse_rad": 0.12078486160509376,
+        "amplitude_retention": {
+          "median": 0.8799965266170694,
+          "p95": 1.238506458647311,
+          "mean": 0.8328338312775371
+        },
+        "energy_retention": {
+          "median": 0.4290498466968059,
+          "p95": 0.976701363041365,
+          "mean": 0.5095223981987734
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.6658066845920374,
+            "p95": 1.7147822832160875,
+            "mean": 0.8097711202076004
+          },
+          "mid_1_3": {
+            "median": 0.4748782942611347,
+            "p95": 1.1635958005987586,
+            "mean": 0.5448435120894396
+          },
+          "high_3_8": {
+            "median": 0.19288878816843236,
+            "p95": 1.8674336741254798,
+            "mean": 0.48484657417761706
+          }
+        }
+      },
+      "full_body": {
+        "raw_position_rmse_rad": 0.1144547439562755,
+        "raw_velocity_rmse_rad_s": 0.6239361465813735,
+        "lag_ms": {
+          "median": 40.0,
+          "p95": 80.0,
+          "mean": 16.551724137931036
+        },
+        "lag_compensated_position_rmse_rad": 0.11076678370193264,
+        "amplitude_retention": {
+          "median": 0.9370932129708789,
+          "p95": 1.3887914660707,
+          "mean": 0.9199774720924386
+        },
+        "energy_retention": {
+          "median": 0.6266878910646907,
+          "p95": 1.1440309139830918,
+          "mean": 0.6549609775906615
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.9295098581548586,
+            "p95": 2.2730893854714993,
+            "mean": 1.0244247503860124
+          },
+          "mid_1_3": {
+            "median": 0.6550598377899465,
+            "p95": 1.293744085945231,
+            "mean": 0.6839203005729598
+          },
+          "high_3_8": {
+            "median": 0.29381040780425804,
+            "p95": 1.7007938017569004,
+            "mean": 0.46825488702448403
+          }
+        }
+      }
+    },
+    "per_joint": {
+      "left_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1165352858851574,
+        "aligned_rmse_rad": 0.09944818995294917,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.9706824328355949,
+        "energy_retention": 0.9757841001627651,
+        "band_power_retention": {
+          "low_0_1": 1.1351007897897978,
+          "mid_1_3": 0.8379725573064418,
+          "high_3_8": 0.22646499681427232
+        }
+      },
+      "right_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.059423552801637344,
+        "aligned_rmse_rad": 0.05304540180763525,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.91016184798355,
+        "energy_retention": 0.7350720209049044,
+        "band_power_retention": {
+          "low_0_1": 0.9939231733938932,
+          "mid_1_3": 0.6129452093276015,
+          "high_3_8": 0.23709270576680722
+        }
+      },
+      "waist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.09157412702324706,
+        "aligned_rmse_rad": 0.0905950705744585,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.5922250769106008,
+        "energy_retention": 1.1522705453484983,
+        "band_power_retention": {
+          "low_0_1": 2.165246609493778,
+          "mid_1_3": 1.0088366584227646,
+          "high_3_8": 0.4544804413519887
+        }
+      },
+      "left_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1397257012534498,
+        "aligned_rmse_rad": 0.10917131224734954,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9325995646674177,
+        "energy_retention": 0.6090477199839583,
+        "band_power_retention": {
+          "low_0_1": 0.7780422788814033,
+          "mid_1_3": 0.6550598377899465,
+          "high_3_8": 0.3058895252524212
+        }
+      },
+      "right_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06295296327232695,
+        "aligned_rmse_rad": 0.06279832427273341,
+        "lag_ms": -20.0,
+        "amplitude_retention": 1.035433423665514,
+        "energy_retention": 1.0990977859904758,
+        "band_power_retention": {
+          "low_0_1": 1.070623700377564,
+          "mid_1_3": 2.0141250053133417,
+          "high_3_8": 0.6494661270271987
+        }
+      },
+      "waist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06956042661991911,
+        "aligned_rmse_rad": 0.06791083523608603,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.8626865273774244,
+        "energy_retention": 0.30681747967475176,
+        "band_power_retention": {
+          "low_0_1": 3.9502270627737115,
+          "mid_1_3": 0.20424026340364143,
+          "high_3_8": 0.2706497153522264
+        }
+      },
+      "left_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12632209973788835,
+        "aligned_rmse_rad": 0.11692897533984271,
+        "lag_ms": 40.0,
+        "amplitude_retention": 1.1607725611782698,
+        "energy_retention": 1.0837154171289844,
+        "band_power_retention": {
+          "low_0_1": 1.141437774674047,
+          "mid_1_3": 0.944652099391316,
+          "high_3_8": 0.24519005288659357
+        }
+      },
+      "right_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.04507087336338824,
+        "aligned_rmse_rad": 0.04507087336338824,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.1530571427424952,
+        "energy_retention": 1.0159830132028793,
+        "band_power_retention": {
+          "low_0_1": 1.146026895924467,
+          "mid_1_3": 1.0378154194714662,
+          "high_3_8": 0.3955814382905437
+        }
+      },
+      "waist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.05178027872655049,
+        "aligned_rmse_rad": 0.050301875109322776,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.288506597284166,
+        "energy_retention": 1.131671466934982,
+        "band_power_retention": {
+          "low_0_1": 1.3480870296231464,
+          "mid_1_3": 1.2508610411316534,
+          "high_3_8": 0.36113297401303207
+        }
+      },
+      "left_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1460557873633483,
+        "aligned_rmse_rad": 0.10346771040181897,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9324036325161553,
+        "energy_retention": 0.6266878910646907,
+        "band_power_retention": {
+          "low_0_1": 0.779848543864482,
+          "mid_1_3": 0.6373656743458757,
+          "high_3_8": 0.20776774047717025
+        }
+      },
+      "right_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10099860904276357,
+        "aligned_rmse_rad": 0.10099860904276357,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.0660572584802004,
+        "energy_retention": 0.7492051247834862,
+        "band_power_retention": {
+          "low_0_1": 0.9319484579136197,
+          "mid_1_3": 1.147092992675602,
+          "high_3_8": 0.3584867068439904
+        }
+      },
+      "left_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.0442392643780504,
+        "aligned_rmse_rad": 0.0442392643780504,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.017719844867371,
+        "energy_retention": 0.495674871207991,
+        "band_power_retention": {
+          "low_0_1": 1.2813997420112315,
+          "mid_1_3": 0.6834367570583064,
+          "high_3_8": 0.18769280735293803
+        }
+      },
+      "right_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.039944176711266835,
+        "aligned_rmse_rad": 0.03891003610940465,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9259220678083283,
+        "energy_retention": 1.0082715998432454,
+        "band_power_retention": {
+          "low_0_1": 0.8138975480437498,
+          "mid_1_3": 0.7806623466273032,
+          "high_3_8": 1.733876928957446
+        }
+      },
+      "left_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.0225091028707896,
+        "aligned_rmse_rad": 0.014666820541140038,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9950054180355957,
+        "energy_retention": 1.1673219660388514,
+        "band_power_retention": {
+          "low_0_1": 0.9295098581548586,
+          "mid_1_3": 0.9144501735717052,
+          "high_3_8": 1.6511691109560827
+        }
+      },
+      "right_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.2178541146558295,
+        "aligned_rmse_rad": 0.2177762064653635,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.12880243518019327,
+        "energy_retention": 0.08091634000000412,
+        "band_power_retention": {
+          "low_0_1": 0.006495454871799242,
+          "mid_1_3": 0.026244415429951064,
+          "high_3_8": 0.29381040780425804
+        }
+      },
+      "left_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.058476143378429185,
+        "aligned_rmse_rad": 0.05595141984049647,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9973334374051389,
+        "energy_retention": 0.9037883033549086,
+        "band_power_retention": {
+          "low_0_1": 1.0065972591762984,
+          "mid_1_3": 0.8190631043460355,
+          "high_3_8": 0.5996663783756413
+        }
+      },
+      "right_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.04763597028256922,
+        "aligned_rmse_rad": 0.03947646650098937,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9370932129708789,
+        "energy_retention": 0.8794466751193588,
+        "band_power_retention": {
+          "low_0_1": 0.8246688246005478,
+          "mid_1_3": 1.3223327824876163,
+          "high_3_8": 2.1154676294375427
+        }
+      },
+      "left_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.045896482748363665,
+        "aligned_rmse_rad": 0.045896482748363665,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.0388514062939325,
+        "energy_retention": 0.6015452466796898,
+        "band_power_retention": {
+          "low_0_1": 1.1252856673179217,
+          "mid_1_3": 0.4209678405334188,
+          "high_3_8": 0.711780455138748
+        }
+      },
+      "right_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12662097876548722,
+        "aligned_rmse_rad": 0.12296771529752445,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9524277276440893,
+        "energy_retention": 0.5254186574474307,
+        "band_power_retention": {
+          "low_0_1": 0.8697187812334676,
+          "mid_1_3": 0.4932503592489554,
+          "high_3_8": 0.4225772872480636
+        }
+      },
+      "left_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13278444593457076,
+        "aligned_rmse_rad": 0.1304251085220166,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.8565851619197418,
+        "energy_retention": 0.4512840357582892,
+        "band_power_retention": {
+          "low_0_1": 0.5435373023851674,
+          "mid_1_3": 0.49266636285016957,
+          "high_3_8": 0.09246346185200635
+        }
+      },
+      "right_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10874887042883816,
+        "aligned_rmse_rad": 0.10649852286306434,
+        "lag_ms": 80.0,
+        "amplitude_retention": 0.903407891314397,
+        "energy_retention": 0.206964911620492,
+        "band_power_retention": {
+          "low_0_1": 0.6108519628525246,
+          "mid_1_3": 0.14187875213741385,
+          "high_3_8": 0.11708738274009355
+        }
+      },
+      "left_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12282425680803119,
+        "aligned_rmse_rad": 0.10928394492936046,
+        "lag_ms": 120.0,
+        "amplitude_retention": 0.45859255399200416,
+        "energy_retention": 0.16842970541177193,
+        "band_power_retention": {
+          "low_0_1": 0.2968812480048738,
+          "mid_1_3": 0.20732107310627465,
+          "high_3_8": 0.045768323852974385
+        }
+      },
+      "right_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06322201398711429,
+        "aligned_rmse_rad": 0.05980957175962125,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.8255707838811507,
+        "energy_retention": 0.7820418492785408,
+        "band_power_retention": {
+          "low_0_1": 0.6239094015121701,
+          "mid_1_3": 1.078122041120143,
+          "high_3_8": 0.35745977727552547
+        }
+      },
+      "left_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.04898047233830504,
+        "aligned_rmse_rad": 0.046305333307790325,
+        "lag_ms": 40.0,
+        "amplitude_retention": 1.1215840658549354,
+        "energy_retention": 0.9597020047634295,
+        "band_power_retention": {
+          "low_0_1": 1.3754425906250172,
+          "mid_1_3": 0.7841147376219927,
+          "high_3_8": 0.8255541182799735
+        }
+      },
+      "right_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.11439044342182011,
+        "aligned_rmse_rad": 0.11304063759106821,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.5536292742037422,
+        "energy_retention": 0.39632240760578,
+        "band_power_retention": {
+          "low_0_1": 0.34345535323494125,
+          "mid_1_3": 0.45709022567209984,
+          "high_3_8": 0.2862091596684095
+        }
+      },
+      "left_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.18021927139831728,
+        "aligned_rmse_rad": 0.18014952807623244,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.7147042178210069,
+        "energy_retention": 0.4068156576353227,
+        "band_power_retention": {
+          "low_0_1": 0.4206982245597828,
+          "mid_1_3": 0.44640231612599485,
+          "high_3_8": 0.19808476898392666
+        }
+      },
+      "right_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.14602736921355725,
+        "aligned_rmse_rad": 0.1456562845453484,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.455648045261723,
+        "energy_retention": 0.21425874780070778,
+        "band_power_retention": {
+          "low_0_1": 2.344984569456648,
+          "mid_1_3": 0.17680413796178143,
+          "high_3_8": 0.053594776513154536
+        }
+      },
+      "left_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.2749192664590212,
+        "aligned_rmse_rad": 0.24164930739490054,
+        "lag_ms": -500.0,
+        "amplitude_retention": 0.23248184501969188,
+        "energy_retention": 0.11952553073921476,
+        "band_power_retention": {
+          "low_0_1": 0.14276768877154672,
+          "mid_1_3": 0.15612371202756187,
+          "high_3_8": 0.11591412479071936
+        }
+      },
+      "right_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.07151942419771026,
+        "aligned_rmse_rad": 0.06855462840466969,
+        "lag_ms": 80.0,
+        "amplitude_retention": 0.6594012355654102,
+        "energy_retention": 0.1407872746437762,
+        "band_power_retention": {
+          "low_0_1": 0.7077039676719048,
+          "mid_1_3": 0.08179082010946213,
+          "high_3_8": 0.05901240040628728
+        }
+      }
+    }
+  },
+  {
+    "run_id": "sonic_native_low_walking_quip_360_R_002__A428_M_r03",
+    "run_dir": "/home/tianhup/AudioMimic/eval/gt_sonic_capability/known_trackable_runs/sonic_native_low_walking_quip_360_R_002__A428_M_r03",
+    "motion_sha256": "3b52ec025274fe920469c1439251bc56cd844ed87ed15e57c1a5c790a54597c9",
+    "playback_duration_seconds": 13.100103606993798,
+    "tracking_analysis_duration_seconds": 9.079999999999806,
+    "tracking_truncated_at_fall": false,
+    "excluded_alignment_seconds": 4.0,
+    "analysis_fps": 50.0,
+    "feedback_samples": 655,
+    "active_joints": 29,
+    "global_lag_seconds": 0.04,
+    "raw_position_rmse_rad": 0.11747181583643584,
+    "raw_velocity_rmse_rad_s": 0.625424153228095,
+    "lag_compensated_position_rmse_rad": 0.11385814048014858,
+    "minimum_base_height_m": 0.7308320749882198,
+    "survival_seconds": 9.100103606993798,
+    "total_survival_including_alignment_seconds": 13.100103606993798,
+    "fell_below_height_threshold": false,
+    "groups": {
+      "legs": {
+        "raw_position_rmse_rad": 0.11616553886750937,
+        "raw_velocity_rmse_rad_s": 0.7401574000183834,
+        "lag_ms": {
+          "median": 40.0,
+          "p95": 60.0,
+          "mean": 28.333333333333332
+        },
+        "lag_compensated_position_rmse_rad": 0.1087095502332848,
+        "amplitude_retention": {
+          "median": 0.9937972123351735,
+          "p95": 1.1546440930443234,
+          "mean": 0.9494190508358406
+        },
+        "energy_retention": {
+          "median": 0.7661155424426682,
+          "p95": 1.150582016445486,
+          "mean": 0.7788854878911313
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.9889973887484111,
+            "p95": 1.163373252251126,
+            "mean": 0.917861118911703
+          },
+          "mid_1_3": {
+            "median": 0.7471896039308231,
+            "p95": 1.4797557396594032,
+            "mean": 0.8108723473294747
+          },
+          "high_3_8": {
+            "median": 0.34679166820323504,
+            "p95": 1.3027696293999242,
+            "mean": 0.5198922475860676
+          }
+        }
+      },
+      "waist": {
+        "raw_position_rmse_rad": 0.09042044475431797,
+        "raw_velocity_rmse_rad_s": 0.539891817494331,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 38.0,
+          "mean": 26.666666666666668
+        },
+        "lag_compensated_position_rmse_rad": 0.08929301527412842,
+        "amplitude_retention": {
+          "median": 1.2882069936913696,
+          "p95": 1.9691991633940182,
+          "mean": 1.3986961412610162
+        },
+        "energy_retention": {
+          "median": 1.2095885202327885,
+          "p95": 1.255227783567903,
+          "mean": 0.9223960283003763
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 2.49721766012142,
+            "p95": 3.706029438058352,
+            "mean": 2.5597003612996354
+          },
+          "mid_1_3": {
+            "median": 1.1205511735521714,
+            "p95": 1.2707435766904787,
+            "mean": 0.8709083144228371
+          },
+          "high_3_8": {
+            "median": 0.41129884133913563,
+            "p95": 0.43171147590465514,
+            "mean": 0.36439120571330047
+          }
+        }
+      },
+      "arms": {
+        "raw_position_rmse_rad": 0.12355693841537288,
+        "raw_velocity_rmse_rad_s": 0.5274643201457621,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 107.0,
+          "mean": 4.285714285714286
+        },
+        "lag_compensated_position_rmse_rad": 0.12253678310176505,
+        "amplitude_retention": {
+          "median": 0.8828460692098632,
+          "p95": 1.2820475087582432,
+          "mean": 0.8479533815969696
+        },
+        "energy_retention": {
+          "median": 0.42680310841853236,
+          "p95": 0.986569708356992,
+          "mean": 0.5114554671611324
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.6898469649130046,
+            "p95": 1.7008722738135376,
+            "mean": 0.8083230224405894
+          },
+          "mid_1_3": {
+            "median": 0.4909265810263686,
+            "p95": 1.112693209714276,
+            "mean": 0.5389745653489897
+          },
+          "high_3_8": {
+            "median": 0.2241317042430972,
+            "p95": 1.861824505004789,
+            "mean": 0.49748696839407847
+          }
+        }
+      },
+      "full_body": {
+        "raw_position_rmse_rad": 0.11747181583643583,
+        "raw_velocity_rmse_rad_s": 0.625424153228095,
+        "lag_ms": {
+          "median": 40.0,
+          "p95": 91.99999999999996,
+          "mean": 16.551724137931036
+        },
+        "lag_compensated_position_rmse_rad": 0.11385814048014858,
+        "amplitude_retention": {
+          "median": 0.9393152112165453,
+          "p95": 1.4374911112797115,
+          "mean": 0.9469125646955419
+        },
+        "energy_retention": {
+          "median": 0.6236687984568762,
+          "p95": 1.208185991346561,
+          "mean": 0.6646272579258813
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.9459417421006273,
+            "p95": 2.4283415053587896,
+            "mean": 1.034826097414055
+          },
+          "mid_1_3": {
+            "median": 0.6551201875391479,
+            "p95": 1.2597178671613902,
+            "mean": 0.6858219664175194
+          },
+          "high_3_8": {
+            "median": 0.3334090410225441,
+            "p95": 1.9268004584748593,
+            "mean": 0.49298959123068314
+          }
+        }
+      }
+    },
+    "per_joint": {
+      "left_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12151155457534774,
+        "aligned_rmse_rad": 0.1046457643127309,
+        "lag_ms": 60.0,
+        "amplitude_retention": 1.0059224835230882,
+        "energy_retention": 0.9964980842583505,
+        "band_power_retention": {
+          "low_0_1": 1.1866595092647139,
+          "mid_1_3": 0.8392590203224983,
+          "high_3_8": 0.34801181475173465
+        }
+      },
+      "right_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06077807628211451,
+        "aligned_rmse_rad": 0.05519630914000657,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9393152112165453,
+        "energy_retention": 0.7506222598989697,
+        "band_power_retention": {
+          "low_0_1": 1.0003355260797506,
+          "mid_1_3": 0.652808257325952,
+          "high_3_8": 0.2138836278884175
+        }
+      },
+      "waist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13046813235758,
+        "aligned_rmse_rad": 0.12933514186502934,
+        "lag_ms": 40.0,
+        "amplitude_retention": 2.044864960027646,
+        "energy_retention": 1.2602988128273602,
+        "band_power_retention": {
+          "low_0_1": 2.49721766012142,
+          "mid_1_3": 1.1205511735521714,
+          "high_3_8": 0.4339795464119351
+        }
+      },
+      "left_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13878006548095592,
+        "aligned_rmse_rad": 0.10814008524043306,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9344454071010957,
+        "energy_retention": 0.6083897940432299,
+        "band_power_retention": {
+          "low_0_1": 0.7857690513858646,
+          "mid_1_3": 0.6551201875391479,
+          "high_3_8": 0.3117314721908314
+        }
+      },
+      "right_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06500561331911991,
+        "aligned_rmse_rad": 0.06408756178049849,
+        "lag_ms": -20.0,
+        "amplitude_retention": 1.0352350127108232,
+        "energy_retention": 1.0532205540550346,
+        "band_power_retention": {
+          "low_0_1": 1.0810459824335668,
+          "mid_1_3": 1.884769796593982,
+          "high_3_8": 0.528596632373736
+        }
+      },
+      "waist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06837598884419357,
+        "aligned_rmse_rad": 0.06686185586407425,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.8630164700640328,
+        "energy_retention": 0.2973007518409801,
+        "band_power_retention": {
+          "low_0_1": 3.840341857829122,
+          "mid_1_3": 0.20474214823271586,
+          "high_3_8": 0.2478952293888306
+        }
+      },
+      "left_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1325595613068352,
+        "aligned_rmse_rad": 0.12342464696792414,
+        "lag_ms": 40.0,
+        "amplitude_retention": 1.1661390635275826,
+        "energy_retention": 1.1051727769777042,
+        "band_power_retention": {
+          "low_0_1": 1.1443208601490997,
+          "mid_1_3": 0.9870586492560679,
+          "high_3_8": 0.30852243621332487
+        }
+      },
+      "right_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.05022149158051042,
+        "aligned_rmse_rad": 0.05022149158051042,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.1431225330444807,
+        "energy_retention": 1.0263370241164769,
+        "band_power_retention": {
+          "low_0_1": 1.1383728326860125,
+          "mid_1_3": 1.075160245389087,
+          "high_3_8": 0.4433673785047007
+        }
+      },
+      "waist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.053201137933409956,
+        "aligned_rmse_rad": 0.05170357219089677,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.2882069936913696,
+        "energy_retention": 1.2095885202327885,
+        "band_power_retention": {
+          "low_0_1": 1.341541565948364,
+          "mid_1_3": 1.287431621483624,
+          "high_3_8": 0.41129884133913563
+        }
+      },
+      "left_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.14535505265750628,
+        "aligned_rmse_rad": 0.10244642317854175,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9382047516920546,
+        "energy_retention": 0.6236687984568762,
+        "band_power_retention": {
+          "low_0_1": 0.777918152894039,
+          "mid_1_3": 0.6178971315629503,
+          "high_3_8": 0.2390601131408434
+        }
+      },
+      "right_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10739693266396295,
+        "aligned_rmse_rad": 0.10739693266396295,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.145239117194384,
+        "energy_retention": 0.7816088249863667,
+        "band_power_retention": {
+          "low_0_1": 0.9776592514170717,
+          "mid_1_3": 1.148380602167476,
+          "high_3_8": 0.41745262152594975
+        }
+      },
+      "left_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.04603078673537323,
+        "aligned_rmse_rad": 0.04603078673537323,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.0487766742445281,
+        "energy_retention": 0.5238008122960188,
+        "band_power_retention": {
+          "low_0_1": 1.3490716051711311,
+          "mid_1_3": 0.6736482851840992,
+          "high_3_8": 0.23335340767777885
+        }
+      },
+      "right_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.04172555679978199,
+        "aligned_rmse_rad": 0.04063677711004204,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9300196305287218,
+        "energy_retention": 1.0203970258843686,
+        "band_power_retention": {
+          "low_0_1": 0.8177855470639289,
+          "mid_1_3": 0.7820140028359078,
+          "high_3_8": 1.6784680151165887
+        }
+      },
+      "left_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.02234316803090285,
+        "aligned_rmse_rad": 0.014386762353661634,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9972772203092738,
+        "energy_retention": 1.2060821980172196,
+        "band_power_retention": {
+          "low_0_1": 0.9459417421006273,
+          "mid_1_3": 0.9467257680797666,
+          "high_3_8": 2.092355420713708
+        }
+      },
+      "right_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.21807381970831427,
+        "aligned_rmse_rad": 0.21799772893680508,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.14035327591962232,
+        "energy_retention": 0.09567141417528162,
+        "band_power_retention": {
+          "low_0_1": 0.007332899860202204,
+          "mid_1_3": 0.028570148156315086,
+          "high_3_8": 0.3334090410225441
+        }
+      },
+      "left_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.056675475554906284,
+        "aligned_rmse_rad": 0.05384286913128068,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9991136480644901,
+        "energy_retention": 0.9149352373810814,
+        "band_power_retention": {
+          "low_0_1": 1.0148259194352716,
+          "mid_1_3": 0.8256258271923984,
+          "high_3_8": 0.6505388647156832
+        }
+      },
+      "right_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.048460357089934694,
+        "aligned_rmse_rad": 0.04057280664757306,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9272850369115465,
+        "energy_retention": 0.848186760237725,
+        "band_power_retention": {
+          "low_0_1": 0.8144577192564854,
+          "mid_1_3": 1.2181472356780398,
+          "high_3_8": 2.202343700511447
+        }
+      },
+      "left_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.046959574737243825,
+        "aligned_rmse_rad": 0.046959574737243825,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9903172043610733,
+        "energy_retention": 0.5930782264491957,
+        "band_power_retention": {
+          "low_0_1": 1.1106583253599793,
+          "mid_1_3": 0.41951453752446977,
+          "high_3_8": 0.6567448910522852
+        }
+      },
+      "right_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1302746429905682,
+        "aligned_rmse_rad": 0.12681456968577362,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.9574573294300627,
+        "energy_retention": 0.5062758992588704,
+        "band_power_retention": {
+          "low_0_1": 0.8583192933095056,
+          "mid_1_3": 0.4752038240359826,
+          "high_3_8": 0.3455715216547354
+        }
+      },
+      "left_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13159431362519006,
+        "aligned_rmse_rad": 0.1293213630424727,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.8384071015081798,
+        "energy_retention": 0.4393321114521654,
+        "band_power_retention": {
+          "low_0_1": 0.4743948588186833,
+          "mid_1_3": 0.5053612795735972,
+          "high_3_8": 0.08517238396040717
+        }
+      },
+      "right_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1107351495657089,
+        "aligned_rmse_rad": 0.10882879648212793,
+        "lag_ms": 80.0,
+        "amplitude_retention": 0.9330047389415649,
+        "energy_retention": 0.1985787508504285,
+        "band_power_retention": {
+          "low_0_1": 0.5526933288887447,
+          "mid_1_3": 0.13940102052123604,
+          "high_3_8": 0.1157404530443813
+        }
+      },
+      "left_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12408350802667853,
+        "aligned_rmse_rad": 0.11049503172227983,
+        "lag_ms": 120.0,
+        "amplitude_retention": 0.45463499494601983,
+        "energy_retention": 0.16468732413321338,
+        "band_power_retention": {
+          "low_0_1": 0.2892729668053131,
+          "mid_1_3": 0.19644226857079392,
+          "high_3_8": 0.04848655743588512
+        }
+      },
+      "right_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06375769844804059,
+        "aligned_rmse_rad": 0.06079125371752403,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.830723000748126,
+        "energy_retention": 0.7890504834515162,
+        "band_power_retention": {
+          "low_0_1": 0.6280371158694871,
+          "mid_1_3": 1.055910272656865,
+          "high_3_8": 0.45923491209675565
+        }
+      },
+      "left_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.051352792210070414,
+        "aligned_rmse_rad": 0.048789704142429655,
+        "lag_ms": 40.0,
+        "amplitude_retention": 1.1447579369842016,
+        "energy_retention": 0.9683549989191739,
+        "band_power_retention": {
+          "low_0_1": 1.3647888125974497,
+          "mid_1_3": 0.8035804194499075,
+          "high_3_8": 0.7884168322251012
+        }
+      },
+      "right_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.11425667350801863,
+        "aligned_rmse_rad": 0.11321184578349792,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.5507765627631265,
+        "energy_retention": 0.40091104224679525,
+        "band_power_retention": {
+          "low_0_1": 0.3394723524819972,
+          "mid_1_3": 0.47649188247914,
+          "high_3_8": 0.25975627521053285
+        }
+      },
+      "left_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.18235495132754623,
+        "aligned_rmse_rad": 0.18223173395706768,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.7437208549567078,
+        "energy_retention": 0.41427410538489934,
+        "band_power_retention": {
+          "low_0_1": 0.44008723893458734,
+          "mid_1_3": 0.4585945401752931,
+          "high_3_8": 0.21491000080841552
+        }
+      },
+      "right_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.14922069155491624,
+        "aligned_rmse_rad": 0.1488213679191889,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.5370138563386069,
+        "energy_retention": 0.22179875789603629,
+        "band_power_retention": {
+          "low_0_1": 2.325027273214845,
+          "mid_1_3": 0.1733459605896322,
+          "high_3_8": 0.06610599164788665
+        }
+      },
+      "left_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.2807296978476342,
+        "aligned_rmse_rad": 0.24715722898627712,
+        "lag_ms": -500.0,
+        "amplitude_retention": 0.2481979703794029,
+        "energy_retention": 0.11734735021549221,
+        "band_power_retention": {
+          "low_0_1": 0.1549507616738048,
+          "mid_1_3": 0.15502510533593836,
+          "high_3_8": 0.10578030286099645
+        }
+      },
+      "right_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.07242904420189983,
+        "aligned_rmse_rad": 0.06913369959840764,
+        "lag_ms": 100.0,
+        "amplitude_retention": 0.6849153350423531,
+        "energy_retention": 0.13872177990693907,
+        "band_power_retention": {
+          "low_0_1": 0.7516568139565222,
+          "mid_1_3": 0.08205581464300585,
+          "high_3_8": 0.05650986020524001
+        }
+      }
+    }
+  },
+  {
+    "run_id": "sonic_native_medium_macarena_001__A545_M_r01",
+    "run_dir": "/home/tianhup/AudioMimic/eval/gt_sonic_capability/known_trackable_runs/sonic_native_medium_macarena_001__A545_M_r01",
+    "motion_sha256": "57ed481eb8714d9dc0948f12ea68133b99a68d557a86b0c5bc0c033d2a45ad50",
+    "playback_duration_seconds": 31.50006588298129,
+    "tracking_analysis_duration_seconds": 27.459999999999415,
+    "tracking_truncated_at_fall": false,
+    "excluded_alignment_seconds": 4.0,
+    "analysis_fps": 50.0,
+    "feedback_samples": 1575,
+    "active_joints": 29,
+    "global_lag_seconds": 0.02,
+    "raw_position_rmse_rad": 0.13908074842958273,
+    "raw_velocity_rmse_rad_s": 0.847745082991368,
+    "lag_compensated_position_rmse_rad": 0.13795689031512218,
+    "minimum_base_height_m": 0.6601803570964416,
+    "survival_seconds": 27.50006588298129,
+    "total_survival_including_alignment_seconds": 31.50006588298129,
+    "fell_below_height_threshold": false,
+    "groups": {
+      "legs": {
+        "raw_position_rmse_rad": 0.12306238171151289,
+        "raw_velocity_rmse_rad_s": 0.6606126903643081,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 40.0,
+          "mean": 20.0
+        },
+        "lag_compensated_position_rmse_rad": 0.12111163524447166,
+        "amplitude_retention": {
+          "median": 0.9229293939576506,
+          "p95": 1.1723396826725412,
+          "mean": 0.8921171143395036
+        },
+        "energy_retention": {
+          "median": 0.6523511943777696,
+          "p95": 0.969740239081978,
+          "mean": 0.645871451264251
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.6969810466648145,
+            "p95": 1.1965629217184506,
+            "mean": 0.750730913722495
+          },
+          "mid_1_3": {
+            "median": 0.6221060049455194,
+            "p95": 0.8816108570577381,
+            "mean": 0.6039072742298305
+          },
+          "high_3_8": {
+            "median": 0.7765604790745804,
+            "p95": 1.4766840760670679,
+            "mean": 0.8476601073801602
+          }
+        }
+      },
+      "waist": {
+        "raw_position_rmse_rad": 0.07205942882787367,
+        "raw_velocity_rmse_rad_s": 0.4210052401332472,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 38.0,
+          "mean": 20.0
+        },
+        "lag_compensated_position_rmse_rad": 0.07206893585144848,
+        "amplitude_retention": {
+          "median": 0.8909898938617463,
+          "p95": 1.0014668636393698,
+          "mean": 0.8766592497117691
+        },
+        "energy_retention": {
+          "median": 0.7812316916484427,
+          "p95": 0.8759752300392983,
+          "mean": 0.6389540565401963
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.9154028276187769,
+            "p95": 1.0655235890907053,
+            "mean": 0.8281420533350857
+          },
+          "mid_1_3": {
+            "median": 0.645820494628965,
+            "p95": 0.649308932021425,
+            "mean": 0.5480362388241156
+          },
+          "high_3_8": {
+            "median": 0.995579827811215,
+            "p95": 1.7419050442912773,
+            "mean": 0.9505441237729286
+          }
+        }
+      },
+      "arms": {
+        "raw_position_rmse_rad": 0.16116768143971183,
+        "raw_velocity_rmse_rad_s": 1.037608317569159,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 101.99999999999996,
+          "mean": 32.857142857142854
+        },
+        "lag_compensated_position_rmse_rad": 0.16043086431183212,
+        "amplitude_retention": {
+          "median": 0.9739906357830715,
+          "p95": 1.173488873946543,
+          "mean": 0.9426860828907506
+        },
+        "energy_retention": {
+          "median": 0.6343144561170431,
+          "p95": 1.0640981303396326,
+          "mean": 0.6001387107786301
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.8791466180520162,
+            "p95": 1.8357098786517096,
+            "mean": 0.9710778163922411
+          },
+          "mid_1_3": {
+            "median": 0.6203081815700713,
+            "p95": 1.0547735033041985,
+            "mean": 0.6171857427627125
+          },
+          "high_3_8": {
+            "median": 0.5261167257697014,
+            "p95": 0.8783237249460875,
+            "mean": 0.4354048201622897
+          }
+        }
+      },
+      "full_body": {
+        "raw_position_rmse_rad": 0.1390807484295827,
+        "raw_velocity_rmse_rad_s": 0.847745082991368,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 60.0,
+          "mean": 26.20689655172414
+        },
+        "lag_compensated_position_rmse_rad": 0.13795689031512215,
+        "amplitude_retention": {
+          "median": 0.9461080878750184,
+          "p95": 1.174426972307996,
+          "mean": 0.9149306304027536
+        },
+        "energy_retention": {
+          "median": 0.6642015586730151,
+          "p95": 1.0148007224489028,
+          "mean": 0.6230779839893937
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.8620791556986823,
+            "p95": 1.4360601946695413,
+            "mean": 0.8651133294540196
+          },
+          "mid_1_3": {
+            "median": 0.6324917460484034,
+            "p95": 1.0113873716856332,
+            "mean": 0.6045378071002858
+          },
+          "high_3_8": {
+            "median": 0.6228253977310775,
+            "p95": 1.477750235188189,
+            "mean": 0.6592834876604402
+          }
+        }
+      }
+    },
+    "per_joint": {
+      "left_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.09534324278265585,
+        "aligned_rmse_rad": 0.09534324278265585,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.1660778137661763,
+        "energy_retention": 0.678342361718947,
+        "band_power_retention": {
+          "low_0_1": 1.1708671071759604,
+          "mid_1_3": 0.6326384903006813,
+          "high_3_8": 1.4734855987037039
+        }
+      },
+      "right_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.07574561825755174,
+        "aligned_rmse_rad": 0.07066287606615103,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.6927269195927155,
+        "energy_retention": 0.4874157533267093,
+        "band_power_retention": {
+          "low_0_1": 0.5635947304800188,
+          "mid_1_3": 0.4448937519283934,
+          "high_3_8": 0.6236085560086759
+        }
+      },
+      "waist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.09684102565268644,
+        "aligned_rmse_rad": 0.09658764454953508,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0137420825035501,
+        "energy_retention": 0.8865022898605045,
+        "band_power_retention": {
+          "low_0_1": 1.0822036736986973,
+          "mid_1_3": 0.6496965361761429,
+          "high_3_8": 0.995579827811215
+        }
+      },
+      "left_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.09661453993921068,
+        "aligned_rmse_rad": 0.09187626768738523,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.8975790895641834,
+        "energy_retention": 0.640500830082524,
+        "band_power_retention": {
+          "low_0_1": 0.687388321791641,
+          "mid_1_3": 0.6996133011298122,
+          "high_3_8": 0.9908700777324496
+        }
+      },
+      "right_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.07526056504836447,
+        "aligned_rmse_rad": 0.0716759588919224,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0945929721863144,
+        "energy_retention": 1.0386993925786907,
+        "band_power_retention": {
+          "low_0_1": 0.7065737715379882,
+          "mid_1_3": 0.8989385287952626,
+          "high_3_8": 1.480593326177846
+        }
+      },
+      "waist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.04559550797571697,
+        "aligned_rmse_rad": 0.04440298060040806,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.7252457727700111,
+        "energy_retention": 0.2491281881116418,
+        "band_power_retention": {
+          "low_0_1": 0.48681965868778293,
+          "mid_1_3": 0.3485916856672389,
+          "high_3_8": 0.03122247516295332
+        }
+      },
+      "left_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13389438292335396,
+        "aligned_rmse_rad": 0.13389438292335396,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.112467414750282,
+        "energy_retention": 0.8178889465846467,
+        "band_power_retention": {
+          "low_0_1": 1.2279689172703832,
+          "mid_1_3": 0.8169334650652053,
+          "high_3_8": 1.2586714353601096
+        }
+      },
+      "right_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.07906531739029679,
+        "aligned_rmse_rad": 0.0715497188901622,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.7246272949751358,
+        "energy_retention": 0.49098673229026385,
+        "band_power_retention": {
+          "low_0_1": 0.5469386891359063,
+          "mid_1_3": 0.3792079069391875,
+          "high_3_8": 0.7864094858799696
+        }
+      },
+      "waist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06419150451555272,
+        "aligned_rmse_rad": 0.06419150451555272,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.8909898938617463,
+        "energy_retention": 0.7812316916484427,
+        "band_power_retention": {
+          "low_0_1": 0.9154028276187769,
+          "mid_1_3": 0.645820494628965,
+          "high_3_8": 1.8248300683446177
+        }
+      },
+      "left_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.0887030443896025,
+        "aligned_rmse_rad": 0.08480218808364604,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.8770890314553856,
+        "energy_retention": 0.6642015586730151,
+        "band_power_retention": {
+          "low_0_1": 0.6791670946011593,
+          "mid_1_3": 0.7710670578614066,
+          "high_3_8": 0.766711472269191
+        }
+      },
+      "right_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1152522005573225,
+        "aligned_rmse_rad": 0.1124801432485519,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.1799930780025427,
+        "energy_retention": 0.6799219404042185,
+        "band_power_retention": {
+          "low_0_1": 0.6155091799674407,
+          "mid_1_3": 0.6115735195903574,
+          "high_3_8": 0.733802142718995
+        }
+      },
+      "left_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.04675393269166628,
+        "aligned_rmse_rad": 0.04478163065950965,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.7712776682226362,
+        "energy_retention": 0.45717404710931525,
+        "band_power_retention": {
+          "low_0_1": 0.33142847923268176,
+          "mid_1_3": 0.9632606851956733,
+          "high_3_8": 0.6037765325383595
+        }
+      },
+      "right_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.05574870824619604,
+        "aligned_rmse_rad": 0.05544182450148514,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.1174474466238364,
+        "energy_retention": 1.222225326069682,
+        "band_power_retention": {
+          "low_0_1": 1.574787712935648,
+          "mid_1_3": 1.0757623263701546,
+          "high_3_8": 0.7280074324388258
+        }
+      },
+      "left_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.021739244866991934,
+        "aligned_rmse_rad": 0.019915348416220453,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9661013508466034,
+        "energy_retention": 0.9133191134937587,
+        "band_power_retention": {
+          "low_0_1": 0.9303259585142515,
+          "mid_1_3": 0.8674336710906727,
+          "high_3_8": 0.8650050957686172
+        }
+      },
+      "right_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.22846425263511766,
+        "aligned_rmse_rad": 0.22845048187402953,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.14829161901940305,
+        "energy_retention": 0.12209275240921341,
+        "band_power_retention": {
+          "low_0_1": 0.04241445091721562,
+          "mid_1_3": 0.0665032775714103,
+          "high_3_8": 0.35836299086625045
+        }
+      },
+      "left_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13374848994191407,
+        "aligned_rmse_rad": 0.13182115030410219,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0346767600983624,
+        "energy_retention": 0.7899242118161084,
+        "band_power_retention": {
+          "low_0_1": 0.8620791556986823,
+          "mid_1_3": 0.9206575210840229,
+          "high_3_8": 0.5135953902989162
+        }
+      },
+      "right_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.0972693604219636,
+        "aligned_rmse_rad": 0.09615431574708085,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0826061247232315,
+        "energy_retention": 0.7707539402063259,
+        "band_power_retention": {
+          "low_0_1": 1.0046105241381342,
+          "mid_1_3": 0.6324917460484034,
+          "high_3_8": 0.5791312953199386
+        }
+      },
+      "left_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.14847336041438547,
+        "aligned_rmse_rad": 0.14438858517480815,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.8997507000402828,
+        "energy_retention": 0.6155313704097513,
+        "band_power_retention": {
+          "low_0_1": 0.7852187505460168,
+          "mid_1_3": 0.5298755305230665,
+          "high_3_8": 0.4837650864953235
+        }
+      },
+      "right_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1785014415614969,
+        "aligned_rmse_rad": 0.17640125441837773,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9461080878750184,
+        "energy_retention": 0.6015566631992725,
+        "band_power_retention": {
+          "low_0_1": 1.0528039927319581,
+          "mid_1_3": 0.5282087899625105,
+          "high_3_8": 0.35063602058079063
+        }
+      },
+      "left_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.17611562113975077,
+        "aligned_rmse_rad": 0.17611562113975077,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9641421363677933,
+        "energy_retention": 0.5520800979684841,
+        "band_power_retention": {
+          "low_0_1": 0.8955589279729863,
+          "mid_1_3": 0.5068464967900863,
+          "high_3_8": 0.15402254031993973
+        }
+      },
+      "right_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.17000411325564446,
+        "aligned_rmse_rad": 0.1612954419612359,
+        "lag_ms": 180.0,
+        "amplitude_retention": 1.2775658104029979,
+        "energy_retention": 0.9789527172542216,
+        "band_power_retention": {
+          "low_0_1": 2.320279614981539,
+          "mid_1_3": 1.043471829345607,
+          "high_3_8": 0.9653603044959931
+        }
+      },
+      "left_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.25151496969174764,
+        "aligned_rmse_rad": 0.24278022623629908,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.805959279889149,
+        "energy_retention": 0.1718922484903924,
+        "band_power_retention": {
+          "low_0_1": 1.09590513907417,
+          "mid_1_3": 0.11938928386185739,
+          "high_3_8": 0.046690831130966955
+        }
+      },
+      "right_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10362620996194617,
+        "aligned_rmse_rad": 0.10245700418683677,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0150320171173157,
+        "energy_retention": 0.7664018234178004,
+        "band_power_retention": {
+          "low_0_1": 0.9926950036033904,
+          "mid_1_3": 0.5991104150052426,
+          "high_3_8": 0.8314578744192153
+        }
+      },
+      "left_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.11272103858259687,
+        "aligned_rmse_rad": 0.11272103858259687,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.8508907414588134,
+        "energy_retention": 0.7314729825406042,
+        "band_power_retention": {
+          "low_0_1": 0.6887483623306712,
+          "mid_1_3": 0.7782458586960587,
+          "high_3_8": 0.6228253977310775
+        }
+      },
+      "right_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.15152877573735807,
+        "aligned_rmse_rad": 0.15152877573735807,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9838391351983498,
+        "energy_retention": 0.5919046579343349,
+        "band_power_retention": {
+          "low_0_1": 0.7597715056957897,
+          "mid_1_3": 0.608124617091739,
+          "high_3_8": 0.28003993752555906
+        }
+      },
+      "left_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.15801828071433352,
+        "aligned_rmse_rad": 0.15801828071433352,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.920276516055807,
+        "energy_retention": 0.6767242542997514,
+        "band_power_retention": {
+          "low_0_1": 0.9139427496828336,
+          "mid_1_3": 0.6927961202930123,
+          "high_3_8": 0.5386380612404865
+        }
+      },
+      "right_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.210160293144587,
+        "aligned_rmse_rad": 0.20955035472304204,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9868346705122322,
+        "energy_retention": 0.4111101802545515,
+        "band_power_retention": {
+          "low_0_1": 0.8556604428548673,
+          "mid_1_3": 0.4186359150509085,
+          "high_3_8": 0.06204947119657551
+        }
+      },
+      "left_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10953317646603554,
+        "aligned_rmse_rad": 0.10860708546283013,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.8224606960095299,
+        "energy_retention": 0.17523390476273548,
+        "band_power_retention": {
+          "low_0_1": 0.8627343081310461,
+          "mid_1_3": 0.17642742418275711,
+          "high_3_8": 0.1271560339319091
+        }
+      },
+      "right_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.28335232294259927,
+        "aligned_rmse_rad": 0.28197671869078,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.5645961577904499,
+        "energy_retention": 0.10609155877651312,
+        "band_power_retention": {
+          "low_0_1": 0.4368875031589358,
+          "mid_1_3": 0.1053801596624523,
+          "high_3_8": 0.04291637968429337
+        }
+      }
+    }
+  },
+  {
+    "run_id": "sonic_native_medium_macarena_001__A545_M_r02",
+    "run_dir": "/home/tianhup/AudioMimic/eval/gt_sonic_capability/known_trackable_runs/sonic_native_medium_macarena_001__A545_M_r02",
+    "motion_sha256": "57ed481eb8714d9dc0948f12ea68133b99a68d557a86b0c5bc0c033d2a45ad50",
+    "playback_duration_seconds": 31.500152517983224,
+    "tracking_analysis_duration_seconds": 27.479999999999414,
+    "tracking_truncated_at_fall": false,
+    "excluded_alignment_seconds": 4.0,
+    "analysis_fps": 50.0,
+    "feedback_samples": 1575,
+    "active_joints": 29,
+    "global_lag_seconds": 0.02,
+    "raw_position_rmse_rad": 0.13847356725853593,
+    "raw_velocity_rmse_rad_s": 0.8551756910320911,
+    "lag_compensated_position_rmse_rad": 0.13739940051460808,
+    "minimum_base_height_m": 0.6606915774165179,
+    "survival_seconds": 27.500152517983224,
+    "total_survival_including_alignment_seconds": 31.500152517983224,
+    "fell_below_height_threshold": false,
+    "groups": {
+      "legs": {
+        "raw_position_rmse_rad": 0.12227521177449976,
+        "raw_velocity_rmse_rad_s": 0.669305320626069,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 40.0,
+          "mean": 20.0
+        },
+        "lag_compensated_position_rmse_rad": 0.12039347332957569,
+        "amplitude_retention": {
+          "median": 0.9279510921171641,
+          "p95": 1.1729537687702805,
+          "mean": 0.8943171265196995
+        },
+        "energy_retention": {
+          "median": 0.6608797718258861,
+          "p95": 0.982332715998727,
+          "mean": 0.6538624143488527
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.6958494474592976,
+            "p95": 1.2021596206215492,
+            "mean": 0.7533240984494026
+          },
+          "mid_1_3": {
+            "median": 0.6193303458993034,
+            "p95": 0.8726810962031717,
+            "mean": 0.6007399485259993
+          },
+          "high_3_8": {
+            "median": 0.8006182859649347,
+            "p95": 1.5063752344095869,
+            "mean": 0.8759108814136044
+          }
+        }
+      },
+      "waist": {
+        "raw_position_rmse_rad": 0.06748717742209176,
+        "raw_velocity_rmse_rad_s": 0.4282261906119492,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 38.0,
+          "mean": 20.0
+        },
+        "lag_compensated_position_rmse_rad": 0.0675852226556052,
+        "amplitude_retention": {
+          "median": 0.8882033572069435,
+          "p95": 0.9652197507239139,
+          "mean": 0.8649588760321626
+        },
+        "energy_retention": {
+          "median": 0.7801246513361816,
+          "p95": 0.8778083579723013,
+          "mean": 0.635336754784385
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.9049076464986436,
+            "p95": 1.0643397155095824,
+            "mean": 0.8233535847711527
+          },
+          "mid_1_3": {
+            "median": 0.6311065551813362,
+            "p95": 0.6385675423679371,
+            "mean": 0.546737716996809
+          },
+          "high_3_8": {
+            "median": 1.132585401292243,
+            "p95": 1.7701565965280035,
+            "mean": 0.9997772023962076
+          }
+        }
+      },
+      "arms": {
+        "raw_position_rmse_rad": 0.16102232536573396,
+        "raw_velocity_rmse_rad_s": 1.044805862207212,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 101.99999999999996,
+          "mean": 32.857142857142854
+        },
+        "lag_compensated_position_rmse_rad": 0.16032131009384668,
+        "amplitude_retention": {
+          "median": 0.972389820747242,
+          "p95": 1.1649845287738112,
+          "mean": 0.9442758952094404
+        },
+        "energy_retention": {
+          "median": 0.6275736788134159,
+          "p95": 1.053714014311312,
+          "mean": 0.5966231780538427
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.8768040477681891,
+            "p95": 1.840515822442151,
+            "mean": 0.9728889469119427
+          },
+          "mid_1_3": {
+            "median": 0.6300528696797411,
+            "p95": 1.025997631985521,
+            "mean": 0.6128612064265171
+          },
+          "high_3_8": {
+            "median": 0.4806755030814693,
+            "p95": 0.8141284636678745,
+            "mean": 0.4140895521938211
+          }
+        }
+      },
+      "full_body": {
+        "raw_position_rmse_rad": 0.13847356725853593,
+        "raw_velocity_rmse_rad_s": 0.8551756910320911,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 60.0,
+          "mean": 26.20689655172414
+        },
+        "lag_compensated_position_rmse_rad": 0.13739940051460808,
+        "amplitude_retention": {
+          "median": 0.9429918843192967,
+          "p95": 1.1759490601964917,
+          "mean": 0.91539809238845
+        },
+        "energy_retention": {
+          "median": 0.6688677845235341,
+          "p95": 1.0309539393792477,
+          "mean": 0.6243132320445927
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.8619135248386568,
+            "p95": 1.4425387035010355,
+            "mean": 0.8665653514646031
+          },
+          "mid_1_3": {
+            "median": 0.6305971031441272,
+            "p95": 0.9747435394202032,
+            "mean": 0.6010051525266779
+          },
+          "high_3_8": {
+            "median": 0.5803222136070751,
+            "p95": 1.5123161343711826,
+            "mean": 0.6657764108574266
+          }
+        }
+      }
+    },
+    "per_joint": {
+      "left_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.09274879624231663,
+        "aligned_rmse_rad": 0.09274879624231663,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.1639678944916465,
+        "energy_retention": 0.6870262896102863,
+        "band_power_retention": {
+          "low_0_1": 1.1839169884293868,
+          "mid_1_3": 0.6305971031441272,
+          "high_3_8": 1.4885525345247996
+        }
+      },
+      "right_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.0754719993282909,
+        "aligned_rmse_rad": 0.07027183179950051,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.695701172954498,
+        "energy_retention": 0.4912232327933397,
+        "band_power_retention": {
+          "low_0_1": 0.5670120974287655,
+          "mid_1_3": 0.43734171925917065,
+          "high_3_8": 0.7777999737631938
+        }
+      },
+      "waist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.0882472821914774,
+        "aligned_rmse_rad": 0.08818757746860624,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9737771277813551,
+        "energy_retention": 0.8886621031540923,
+        "band_power_retention": {
+          "low_0_1": 1.082054389844131,
+          "mid_1_3": 0.6393965409442262,
+          "high_3_8": 1.132585401292243
+        }
+      },
+      "left_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.0966938495654256,
+        "aligned_rmse_rad": 0.09187724097875008,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.8834917253825959,
+        "energy_retention": 0.65109768430069,
+        "band_power_retention": {
+          "low_0_1": 0.6878486985647795,
+          "mid_1_3": 0.7057955529952206,
+          "high_3_8": 0.9752718873223315
+        }
+      },
+      "right_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.07549857425839789,
+        "aligned_rmse_rad": 0.07209423084342388,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.1094809491254118,
+        "energy_retention": 1.077906561511865,
+        "band_power_retention": {
+          "low_0_1": 0.7036383742201504,
+          "mid_1_3": 0.8818311664477289,
+          "high_3_8": 1.5281585342687714
+        }
+      },
+      "waist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.04560426362882149,
+        "aligned_rmse_rad": 0.04439288898948685,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.7328961431081894,
+        "energy_retention": 0.23722350986288132,
+        "band_power_retention": {
+          "low_0_1": 0.4830987179706836,
+          "mid_1_3": 0.3697100548648647,
+          "high_3_8": 0.025748365453291462
+        }
+      },
+      "left_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13202474074937076,
+        "aligned_rmse_rad": 0.13202474074937076,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.1189121334685053,
+        "energy_retention": 0.8236041072908715,
+        "band_power_retention": {
+          "low_0_1": 1.2244561710786366,
+          "mid_1_3": 0.8048948860813495,
+          "high_3_8": 1.3474163491818083
+        }
+      },
+      "right_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.07778437798052701,
+        "aligned_rmse_rad": 0.0703223454908724,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.7264835923787455,
+        "energy_retention": 0.492053359650736,
+        "band_power_retention": {
+          "low_0_1": 0.5442282812464122,
+          "mid_1_3": 0.3810635207335783,
+          "high_3_8": 0.8606162888271222
+        }
+      },
+      "waist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.06161351859692303,
+        "aligned_rmse_rad": 0.06161351859692303,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.8882033572069435,
+        "energy_retention": 0.7801246513361816,
+        "band_power_retention": {
+          "low_0_1": 0.9049076464986436,
+          "mid_1_3": 0.6311065551813362,
+          "high_3_8": 1.840997840443088
+        }
+      },
+      "left_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.08805354179863922,
+        "aligned_rmse_rad": 0.08431789832838585,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.8853243153860698,
+        "energy_retention": 0.6706618593510821,
+        "band_power_retention": {
+          "low_0_1": 0.6880605206984446,
+          "mid_1_3": 0.7638187437347956,
+          "high_3_8": 0.8166532379938679
+        }
+      },
+      "right_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1095659321556177,
+        "aligned_rmse_rad": 0.1068474759871767,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.1839365039997218,
+        "energy_retention": 0.7009956208216755,
+        "band_power_retention": {
+          "low_0_1": 0.642927911563761,
+          "mid_1_3": 0.6080635886544795,
+          "high_3_8": 0.7845833339360014
+        }
+      },
+      "left_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.04642175352638193,
+        "aligned_rmse_rad": 0.044398250300423284,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.7831256248609587,
+        "energy_retention": 0.45108224737898134,
+        "band_power_retention": {
+          "low_0_1": 0.32459755589849876,
+          "mid_1_3": 0.9299226688541248,
+          "high_3_8": 0.5803222136070751
+        }
+      },
+      "right_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.055837816355737785,
+        "aligned_rmse_rad": 0.05551809155564619,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.1107800436984963,
+        "energy_retention": 1.2267793151260076,
+        "band_power_retention": {
+          "low_0_1": 1.5879270584493028,
+          "mid_1_3": 1.0656912974773944,
+          "high_3_8": 0.7467207914372335
+        }
+      },
+      "left_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.021418826637270613,
+        "aligned_rmse_rad": 0.01963787666764031,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9591926651984988,
+        "energy_retention": 0.9041359333061597,
+        "band_power_retention": {
+          "low_0_1": 0.9344839764438354,
+          "mid_1_3": 0.8651946750939885,
+          "high_3_8": 0.7038631114752056
+        }
+      },
+      "right_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.22853563350744002,
+        "aligned_rmse_rad": 0.22852660101751945,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.14941238161637338,
+        "energy_retention": 0.13230719738736446,
+        "band_power_retention": {
+          "low_0_1": 0.04408810024527203,
+          "mid_1_3": 0.06983257550388389,
+          "high_3_8": 0.33677561049539506
+        }
+      },
+      "left_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13395107563863617,
+        "aligned_rmse_rad": 0.13209086860599975,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0339792119107387,
+        "energy_retention": 0.7863779665439686,
+        "band_power_retention": {
+          "low_0_1": 0.8619135248386568,
+          "mid_1_3": 0.9227110695576809,
+          "high_3_8": 0.48342596443340474
+        }
+      },
+      "right_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.09692913195300068,
+        "aligned_rmse_rad": 0.09569161940521387,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0999805725406728,
+        "energy_retention": 0.7654401982689876,
+        "band_power_retention": {
+          "low_0_1": 1.0213096050829618,
+          "mid_1_3": 0.6350471708767083,
+          "high_3_8": 0.5562605786240814
+        }
+      },
+      "left_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.14755902109750488,
+        "aligned_rmse_rad": 0.14373696959057455,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9129102999150314,
+        "energy_retention": 0.6177787526685139,
+        "band_power_retention": {
+          "low_0_1": 0.7793110880639245,
+          "mid_1_3": 0.5353495727614743,
+          "high_3_8": 0.4857334527610899
+        }
+      },
+      "right_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1799072090372046,
+        "aligned_rmse_rad": 0.17800302427811104,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9429918843192967,
+        "energy_retention": 0.5975583734936485,
+        "band_power_retention": {
+          "low_0_1": 1.039916973409463,
+          "mid_1_3": 0.5250962779021953,
+          "high_3_8": 0.40550626241366555
+        }
+      },
+      "left_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.17626416669501327,
+        "aligned_rmse_rad": 0.17626416669501327,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9599419335041472,
+        "energy_retention": 0.5554634615275658,
+        "band_power_retention": {
+          "low_0_1": 0.8914283976777321,
+          "mid_1_3": 0.5050196340417754,
+          "high_3_8": 0.17291678906658106
+        }
+      },
+      "right_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.16829391719829967,
+        "aligned_rmse_rad": 0.16035349904008472,
+        "lag_ms": 180.0,
+        "amplitude_retention": 1.265650001056539,
+        "energy_retention": 0.9605250061803223,
+        "band_power_retention": {
+          "low_0_1": 2.3096092412860125,
+          "mid_1_3": 1.0046241197975891,
+          "high_3_8": 0.9393141406676367
+        }
+      },
+      "left_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.25308189262997827,
+        "aligned_rmse_rad": 0.24483513761559464,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.8163625952465597,
+        "energy_retention": 0.1695242719672548,
+        "band_power_retention": {
+          "low_0_1": 1.1151752409868692,
+          "mid_1_3": 0.11681933855085885,
+          "high_3_8": 0.04420356704082589
+        }
+      },
+      "right_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10226242715139525,
+        "aligned_rmse_rad": 0.10119585239784992,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0145915989293077,
+        "energy_retention": 0.7709610358216125,
+        "band_power_retention": {
+          "low_0_1": 0.9915560781118805,
+          "mid_1_3": 0.6250585684827739,
+          "high_3_8": 0.7106723876029932
+        }
+      },
+      "left_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.11075723230677348,
+        "aligned_rmse_rad": 0.11075723230677348,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.852359694447986,
+        "energy_retention": 0.724078334694134,
+        "band_power_retention": {
+          "low_0_1": 0.6974730457869518,
+          "mid_1_3": 0.7858805315166223,
+          "high_3_8": 0.5782794037980243
+        }
+      },
+      "right_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.14978659095971977,
+        "aligned_rmse_rad": 0.14978659095971977,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9848377079903368,
+        "energy_retention": 0.5862795731032977,
+        "band_power_retention": {
+          "low_0_1": 0.7609134399562366,
+          "mid_1_3": 0.6034290226995976,
+          "high_3_8": 0.2601165514248951
+        }
+      },
+      "left_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.16045362671456773,
+        "aligned_rmse_rad": 0.16045362671456773,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9205553424406003,
+        "energy_retention": 0.6688677845235341,
+        "band_power_retention": {
+          "low_0_1": 0.9115739587481783,
+          "mid_1_3": 0.6873498197532373,
+          "high_3_8": 0.4779250417295338
+        }
+      },
+      "right_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.2094448978395365,
+        "aligned_rmse_rad": 0.2087839860139117,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9918746618814338,
+        "energy_retention": 0.40570397196516217,
+        "band_power_retention": {
+          "low_0_1": 0.8553369918051473,
+          "mid_1_3": 0.4126994781133326,
+          "high_3_8": 0.0698119950217459
+        }
+      },
+      "left_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1100026071454403,
+        "aligned_rmse_rad": 0.10893816698313163,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.8273189302378572,
+        "energy_retention": 0.17775368212111267,
+        "band_power_retention": {
+          "low_0_1": 0.862179697858646,
+          "mid_1_3": 0.181393432608678,
+          "high_3_8": 0.13215249293840256
+        }
+      },
+      "right_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.2829618730835064,
+        "aligned_rmse_rad": 0.28163463755276774,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.5585046141865314,
+        "energy_retention": 0.10388764353185558,
+        "band_power_retention": {
+          "low_0_1": 0.4294514202801222,
+          "mid_1_3": 0.1044107376408654,
+          "high_3_8": 0.045131813321062815
+        }
+      }
+    }
+  },
+  {
+    "run_id": "sonic_native_medium_macarena_001__A545_M_r03",
+    "run_dir": "/home/tianhup/AudioMimic/eval/gt_sonic_capability/known_trackable_runs/sonic_native_medium_macarena_001__A545_M_r03",
+    "motion_sha256": "57ed481eb8714d9dc0948f12ea68133b99a68d557a86b0c5bc0c033d2a45ad50",
+    "playback_duration_seconds": 31.500137677998282,
+    "tracking_analysis_duration_seconds": 27.459999999999415,
+    "tracking_truncated_at_fall": false,
+    "excluded_alignment_seconds": 4.0,
+    "analysis_fps": 50.0,
+    "feedback_samples": 1575,
+    "active_joints": 29,
+    "global_lag_seconds": 0.02,
+    "raw_position_rmse_rad": 0.13823856166556148,
+    "raw_velocity_rmse_rad_s": 0.851830215571649,
+    "lag_compensated_position_rmse_rad": 0.1371723839112744,
+    "minimum_base_height_m": 0.6619231855844933,
+    "survival_seconds": 27.500137677998282,
+    "total_survival_including_alignment_seconds": 31.500137677998282,
+    "fell_below_height_threshold": false,
+    "groups": {
+      "legs": {
+        "raw_position_rmse_rad": 0.12132515412284854,
+        "raw_velocity_rmse_rad_s": 0.6759902061165862,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 40.0,
+          "mean": 20.0
+        },
+        "lag_compensated_position_rmse_rad": 0.11942335491966106,
+        "amplitude_retention": {
+          "median": 0.9279681364067847,
+          "p95": 1.1641128492232193,
+          "mean": 0.8907054885798162
+        },
+        "energy_retention": {
+          "median": 0.6573988935775801,
+          "p95": 1.0087224605967327,
+          "mean": 0.6584530596646587
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.6975767980991876,
+            "p95": 1.1884916666769234,
+            "mean": 0.7517654085058519
+          },
+          "mid_1_3": {
+            "median": 0.6231819302438621,
+            "p95": 0.8864125817070204,
+            "mean": 0.6064802498492982
+          },
+          "high_3_8": {
+            "median": 0.8186366891423885,
+            "p95": 1.5763978100144607,
+            "mean": 0.8832752503316198
+          }
+        }
+      },
+      "waist": {
+        "raw_position_rmse_rad": 0.0758578495313186,
+        "raw_velocity_rmse_rad_s": 0.42748112297528523,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 38.0,
+          "mean": 20.0
+        },
+        "lag_compensated_position_rmse_rad": 0.07592979915075844,
+        "amplitude_retention": {
+          "median": 0.8894703611708441,
+          "p95": 1.0070709996449947,
+          "mean": 0.8805388315341824
+        },
+        "energy_retention": {
+          "median": 0.7918454481808206,
+          "p95": 0.8793478447622299,
+          "mean": 0.6394512337698247
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.9161490145923036,
+            "p95": 1.07472093153877,
+            "mean": 0.8239731146582191
+          },
+          "mid_1_3": {
+            "median": 0.6444847098816857,
+            "p95": 0.6498599848637255,
+            "mean": 0.5562099138863831
+          },
+          "high_3_8": {
+            "median": 1.0047348244507022,
+            "p95": 1.8650507529506173,
+            "mean": 0.9974732190975644
+          }
+        }
+      },
+      "arms": {
+        "raw_position_rmse_rad": 0.1604205058427449,
+        "raw_velocity_rmse_rad_s": 1.0354796449671195,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 101.99999999999996,
+          "mean": 32.857142857142854
+        },
+        "lag_compensated_position_rmse_rad": 0.15973915539509312,
+        "amplitude_retention": {
+          "median": 0.975947021936858,
+          "p95": 1.167686984343151,
+          "mean": 0.9448493085471245
+        },
+        "energy_retention": {
+          "median": 0.6330043553562881,
+          "p95": 1.0759030885495444,
+          "mean": 0.6008704841719409
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.876820594070824,
+            "p95": 1.8289139350121524,
+            "mean": 0.971791202551017
+          },
+          "mid_1_3": {
+            "median": 0.6299051132323956,
+            "p95": 1.0632329600185604,
+            "mean": 0.6177370291076262
+          },
+          "high_3_8": {
+            "median": 0.5207320277798244,
+            "p95": 0.8931154988810426,
+            "mean": 0.44568682550548155
+          }
+        }
+      },
+      "full_body": {
+        "raw_position_rmse_rad": 0.13823856166556148,
+        "raw_velocity_rmse_rad_s": 0.851830215571649,
+        "lag_ms": {
+          "median": 20.0,
+          "p95": 60.0,
+          "mean": 26.20689655172414
+        },
+        "lag_compensated_position_rmse_rad": 0.1371723839112744,
+        "amplitude_retention": {
+          "median": 0.947142618990176,
+          "p95": 1.1653351721329763,
+          "mean": 0.9157921612834511
+        },
+        "energy_retention": {
+          "median": 0.6644536403699965,
+          "p95": 1.083198486729173,
+          "mean": 0.6286888688169846
+        },
+        "band_power_retention": {
+          "low_0_1": {
+            "median": 0.857438244352239,
+            "p95": 1.4250247045677702,
+            "mean": 0.8654545200606591
+          },
+          "mid_1_3": {
+            "median": 0.6302700713832522,
+            "p95": 1.0194942181051838,
+            "mean": 0.6067141774950862
+          },
+          "high_3_8": {
+            "median": 0.6580569338623786,
+            "p95": 1.5774287984139481,
+            "mean": 0.6838392489085819
+          }
+        }
+      }
+    },
+    "per_joint": {
+      "left_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.09110481942405327,
+        "aligned_rmse_rad": 0.09110481942405327,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.1604458804939486,
+        "energy_retention": 0.6878805748408,
+        "band_power_retention": {
+          "low_0_1": 1.1644953539593987,
+          "mid_1_3": 0.6335481616377678,
+          "high_3_8": 1.5801781008125815
+        }
+      },
+      "right_hip_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.07661823106269978,
+        "aligned_rmse_rad": 0.07147974993310559,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.6935413252396424,
+        "energy_retention": 0.48741971482058355,
+        "band_power_retention": {
+          "low_0_1": 0.5656718199369347,
+          "mid_1_3": 0.4453697752471778,
+          "high_3_8": 0.6269119622641336
+        }
+      },
+      "waist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10636232525029418,
+        "aligned_rmse_rad": 0.10618971846161993,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0201377372532336,
+        "energy_retention": 0.8890703332712754,
+        "band_power_retention": {
+          "low_0_1": 1.0923400334217108,
+          "mid_1_3": 0.6504572376395077,
+          "high_3_8": 1.0047348244507022
+        }
+      },
+      "left_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.09714920520909556,
+        "aligned_rmse_rad": 0.0923286090518629,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.8956985713384733,
+        "energy_retention": 0.6503441467851636,
+        "band_power_retention": {
+          "low_0_1": 0.6883267268879855,
+          "mid_1_3": 0.7148856867122096,
+          "high_3_8": 0.9645402148401154
+        }
+      },
+      "right_hip_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.07348205095028167,
+        "aligned_rmse_rad": 0.06985786840694028,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0987404012998585,
+        "energy_retention": 1.1340881702380854,
+        "band_power_retention": {
+          "low_0_1": 0.7065653610190548,
+          "mid_1_3": 0.9207649845767497,
+          "high_3_8": 1.573304844815998
+        }
+      },
+      "waist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.04525414778962763,
+        "aligned_rmse_rad": 0.04404082218453519,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.7320083961784694,
+        "energy_retention": 0.23743791985737825,
+        "band_power_retention": {
+          "low_0_1": 0.46343029596064284,
+          "mid_1_3": 0.3736877941379558,
+          "high_3_8": 0.027043421169161124
+        }
+      },
+      "left_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.12931721437733545,
+        "aligned_rmse_rad": 0.12931721437733545,
+        "lag_ms": 0.0,
+        "amplitude_retention": 1.1023851471729647,
+        "energy_retention": 0.8239604643569879,
+        "band_power_retention": {
+          "low_0_1": 1.2178204933316759,
+          "mid_1_3": 0.8194585091782144,
+          "high_3_8": 1.3666526319892636
+        }
+      },
+      "right_hip_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.07828737525820194,
+        "aligned_rmse_rad": 0.07101351890169176,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.7160331584126176,
+        "energy_retention": 0.48652302848863643,
+        "band_power_retention": {
+          "low_0_1": 0.5390485794958909,
+          "mid_1_3": 0.3781772800694309,
+          "high_3_8": 0.8440014770537791
+        }
+      },
+      "waist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.062468855293927796,
+        "aligned_rmse_rad": 0.062468855293927796,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.8894703611708441,
+        "energy_retention": 0.7918454481808206,
+        "band_power_retention": {
+          "low_0_1": 0.9161490145923036,
+          "mid_1_3": 0.6444847098816857,
+          "high_3_8": 1.9606414116728301
+        }
+      },
+      "left_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.08721208736452174,
+        "aligned_rmse_rad": 0.08368375530908226,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.8871263388853691,
+        "energy_retention": 0.6644536403699965,
+        "band_power_retention": {
+          "low_0_1": 0.6885882351793206,
+          "mid_1_3": 0.755286706977919,
+          "high_3_8": 0.8145927526022101
+        }
+      },
+      "right_knee_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10519551007450667,
+        "aligned_rmse_rad": 0.10228422974884782,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.168594699892328,
+        "energy_retention": 0.7198036701828237,
+        "band_power_retention": {
+          "low_0_1": 0.6454809563868612,
+          "mid_1_3": 0.6128156988499566,
+          "high_3_8": 0.8092290650400156
+        }
+      },
+      "left_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.046556335863056755,
+        "aligned_rmse_rad": 0.04449051532450282,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.7711774966993564,
+        "energy_retention": 0.4745031177295756,
+        "band_power_retention": {
+          "low_0_1": 0.31707312717762853,
+          "mid_1_3": 0.9546818737918146,
+          "high_3_8": 0.6981521425775258
+        }
+      },
+      "right_shoulder_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.05443449290242773,
+        "aligned_rmse_rad": 0.05426412556822994,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.1096310635194941,
+        "energy_retention": 1.204118610276489,
+        "band_power_retention": {
+          "low_0_1": 1.5631608453918342,
+          "mid_1_3": 1.0642181972792304,
+          "high_3_8": 0.6580569338623786
+        }
+      },
+      "left_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.021752521700389656,
+        "aligned_rmse_rad": 0.01987651160267735,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9615674441176212,
+        "energy_retention": 0.906150516344717,
+        "band_power_retention": {
+          "low_0_1": 0.9307802582565737,
+          "mid_1_3": 0.8583060702681511,
+          "high_3_8": 0.822680625682567
+        }
+      },
+      "right_ankle_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.2286637703460024,
+        "aligned_rmse_rad": 0.22864147753436836,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.14839662329140177,
+        "energy_retention": 0.12712505900742108,
+        "band_power_retention": {
+          "low_0_1": 0.04290508682836913,
+          "mid_1_3": 0.07156179925018892,
+          "high_3_8": 0.3831113729348534
+        }
+      },
+      "left_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.13364971142948617,
+        "aligned_rmse_rad": 0.13178121289197564,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0342209119023926,
+        "energy_retention": 0.7826064765394881,
+        "band_power_retention": {
+          "low_0_1": 0.8634590235821683,
+          "mid_1_3": 0.911152538082614,
+          "high_3_8": 0.48342343118916364
+        }
+      },
+      "right_shoulder_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.09608466403316208,
+        "aligned_rmse_rad": 0.09487275809937823,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0935361271915498,
+        "energy_retention": 0.7651795945857547,
+        "band_power_retention": {
+          "low_0_1": 1.0127342876468435,
+          "mid_1_3": 0.6302700713832522,
+          "high_3_8": 0.5909181729909545
+        }
+      },
+      "left_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.14673134689404227,
+        "aligned_rmse_rad": 0.14294486819843993,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9087936538233933,
+        "energy_retention": 0.6149303069044197,
+        "band_power_retention": {
+          "low_0_1": 0.7851036534758026,
+          "mid_1_3": 0.5347792715904951,
+          "high_3_8": 0.45239373790536386
+        }
+      },
+      "right_ankle_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1783682037952678,
+        "aligned_rmse_rad": 0.1762780038327673,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.947142618990176,
+        "energy_retention": 0.59875742363627,
+        "band_power_retention": {
+          "low_0_1": 1.0463983773123562,
+          "mid_1_3": 0.5328090538333178,
+          "high_3_8": 0.3617062180385559
+        }
+      },
+      "left_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.17612527629013977,
+        "aligned_rmse_rad": 0.17612527629013977,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9609830547672088,
+        "energy_retention": 0.5420278479345326,
+        "band_power_retention": {
+          "low_0_1": 0.8901821645594797,
+          "mid_1_3": 0.5030177646820937,
+          "high_3_8": 0.15187540716101983
+        }
+      },
+      "right_shoulder_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.16817316268224153,
+        "aligned_rmse_rad": 0.1599815417177867,
+        "lag_ms": 180.0,
+        "amplitude_retention": 1.2755051230156564,
+        "energy_retention": 1.0068639614658053,
+        "band_power_retention": {
+          "low_0_1": 2.3224553871641724,
+          "mid_1_3": 1.0627024476474303,
+          "high_3_8": 1.0775015219394057
+        }
+      },
+      "left_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.2510097120103714,
+        "aligned_rmse_rad": 0.24287013659880738,
+        "lag_ms": 60.0,
+        "amplitude_retention": 0.8221825606554092,
+        "energy_retention": 0.17411376994152772,
+        "band_power_retention": {
+          "low_0_1": 1.1286834502096785,
+          "mid_1_3": 0.11907095393051975,
+          "high_3_8": 0.049195594015434246
+        }
+      },
+      "right_elbow_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10272420077766238,
+        "aligned_rmse_rad": 0.10168839803989316,
+        "lag_ms": 20.0,
+        "amplitude_retention": 1.0171901461258472,
+        "energy_retention": 0.7786858133670349,
+        "band_power_retention": {
+          "low_0_1": 0.9984669054068066,
+          "mid_1_3": 0.6295401550815389,
+          "high_3_8": 0.7938307172342317
+        }
+      },
+      "left_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.11048481645046468,
+        "aligned_rmse_rad": 0.11048481645046468,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.8572712480938336,
+        "energy_retention": 0.7250578172763058,
+        "band_power_retention": {
+          "low_0_1": 0.6959675581544708,
+          "mid_1_3": 0.7628241151167933,
+          "high_3_8": 0.6694531994066675
+        }
+      },
+      "right_wrist_roll_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.15025501573460015,
+        "aligned_rmse_rad": 0.15025501573460015,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9909109891065073,
+        "energy_retention": 0.5898512865370624,
+        "band_power_retention": {
+          "low_0_1": 0.7576069859806058,
+          "mid_1_3": 0.6124137482558868,
+          "high_3_8": 0.2751274356659145
+        }
+      },
+      "left_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.1597827278408066,
+        "aligned_rmse_rad": 0.1597827278408066,
+        "lag_ms": 0.0,
+        "amplitude_retention": 0.9163141685820776,
+        "energy_retention": 0.6761574241755138,
+        "band_power_retention": {
+          "low_0_1": 0.9090051323171907,
+          "mid_1_3": 0.6879704923022211,
+          "high_3_8": 0.5580406243704851
+        }
+      },
+      "right_wrist_pitch_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.20898045111800512,
+        "aligned_rmse_rad": 0.20840983571580474,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.9914067240388964,
+        "energy_retention": 0.40911950214045434,
+        "band_power_retention": {
+          "low_0_1": 0.85630574927376,
+          "mid_1_3": 0.41758006365145645,
+          "high_3_8": 0.06801544254686794
+        }
+      },
+      "left_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.10882930269188025,
+        "aligned_rmse_rad": 0.10788026765676247,
+        "lag_ms": 40.0,
+        "amplitude_retention": 0.8245411573520275,
+        "energy_retention": 0.17666309591192533,
+        "band_power_retention": {
+          "low_0_1": 0.857438244352239,
+          "mid_1_3": 0.1839396359075412,
+          "high_3_8": 0.12103317292978066
+        }
+      },
+      "right_wrist_yaw_joint": {
+        "active": true,
+        "raw_rmse_rad": 0.2817270560672218,
+        "aligned_rmse_rad": 0.2803451953455324,
+        "lag_ms": 20.0,
+        "amplitude_retention": 0.5630195486094847,
+        "energy_retention": 0.10723846052570189,
+        "band_power_retention": {
+          "low_0_1": 0.43253797449735987,
+          "mid_1_3": 0.10893635039437527,
+          "high_3_8": 0.04499176118691236
+        }
+      }
+    }
+  }
+]

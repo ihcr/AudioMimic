@@ -1,0 +1,2485 @@
+{
+  "schema_version": "audiomimic_human_pairwise_v1",
+  "seed": 20260820,
+  "participants_planned": 24,
+  "trials_per_task_cap": 6,
+  "eligible_assets": 6,
+  "candidate_trials": 9,
+  "coverage": {
+    "generator_quality": {
+      "candidate_trials": 3,
+      "songs": [
+        "098"
+      ],
+      "generation_seeds": [
+        "1234"
+      ]
+    },
+    "music_match": {
+      "candidate_trials": 3,
+      "songs": [
+        "098"
+      ],
+      "generation_seeds": [
+        "1234"
+      ]
+    },
+    "execution_retention": {
+      "candidate_trials": 3,
+      "songs": [
+        "098"
+      ],
+      "generation_seeds": [
+        "1234"
+      ]
+    }
+  },
+  "pilot_ready": true,
+  "paper_ready": false,
+  "paper_blockers": [
+    "need 3 songs with complete M0/M2/M4 references; found 1",
+    "need 3 generation seeds per song",
+    "need 3 tracker repeats for every matched reference; 3 route-window groups incomplete"
+  ],
+  "complete_songs": [
+    "098"
+  ],
+  "complete_generation_seeds_per_song": {
+    "098": 1
+  },
+  "ready": false,
+  "media": {
+    "clip_508676c5cd": "media/clip_508676c5cd.mp4",
+    "clip_474a1a79c3": "media/clip_474a1a79c3.mp4",
+    "clip_45792af26f": "media/clip_45792af26f.mp4",
+    "clip_2d90c78d42": "media/clip_2d90c78d42.mp4",
+    "clip_1e2c57023a": "media/clip_1e2c57023a.mp4",
+    "clip_1576c6249c": "media/clip_1576c6249c.mp4"
+  },
+  "public_assignments": [
+    {
+      "participant_id": "P001",
+      "trials": [
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_1576c6249c",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_474a1a79c3",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_2d90c78d42",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P002",
+      "trials": [
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1576c6249c",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_474a1a79c3",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_2d90c78d42",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P003",
+      "trials": [
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_2d90c78d42",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_474a1a79c3",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1576c6249c",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P004",
+      "trials": [
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_2d90c78d42",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1576c6249c",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_474a1a79c3",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P005",
+      "trials": [
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_1576c6249c",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_2d90c78d42",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_474a1a79c3",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P006",
+      "trials": [
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_474a1a79c3",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_1576c6249c",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_2d90c78d42",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P007",
+      "trials": [
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_2d90c78d42",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_474a1a79c3",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1576c6249c",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P008",
+      "trials": [
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_474a1a79c3",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1576c6249c",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_2d90c78d42",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P009",
+      "trials": [
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_2d90c78d42",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_1576c6249c",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_474a1a79c3",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P010",
+      "trials": [
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_474a1a79c3",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_2d90c78d42",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_1576c6249c",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P011",
+      "trials": [
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_2d90c78d42",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_474a1a79c3",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_1576c6249c",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P012",
+      "trials": [
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_2d90c78d42",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1576c6249c",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_474a1a79c3",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P013",
+      "trials": [
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1576c6249c",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_474a1a79c3",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_2d90c78d42",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P014",
+      "trials": [
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1576c6249c",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_2d90c78d42",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_474a1a79c3",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P015",
+      "trials": [
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_2d90c78d42",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_1576c6249c",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_474a1a79c3",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P016",
+      "trials": [
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_474a1a79c3",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_2d90c78d42",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1576c6249c",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P017",
+      "trials": [
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_474a1a79c3",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1576c6249c",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_2d90c78d42",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P018",
+      "trials": [
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_474a1a79c3",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1576c6249c",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_2d90c78d42",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P019",
+      "trials": [
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_2d90c78d42",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_1576c6249c",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_474a1a79c3",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P020",
+      "trials": [
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_474a1a79c3",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1576c6249c",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_2d90c78d42",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P021",
+      "trials": [
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_1576c6249c",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_474a1a79c3",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_2d90c78d42",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P022",
+      "trials": [
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_2d90c78d42",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1576c6249c",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_474a1a79c3",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P023",
+      "trials": [
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_1576c6249c",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_474a1a79c3",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_2d90c78d42",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        }
+      ]
+    },
+    {
+      "participant_id": "P024",
+      "trials": [
+        {
+          "trial_id": "execution_retention_0008",
+          "task": "execution_retention",
+          "left_asset": "clip_2d90c78d42",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0001",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0007",
+          "task": "execution_retention",
+          "left_asset": "clip_474a1a79c3",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0002",
+          "task": "music_match",
+          "left_asset": "clip_508676c5cd",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "music_match_0006",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_45792af26f",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "execution_retention_0009",
+          "task": "execution_retention",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_1576c6249c",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0003",
+          "task": "generator_quality",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        },
+        {
+          "trial_id": "music_match_0004",
+          "task": "music_match",
+          "left_asset": "clip_1e2c57023a",
+          "right_asset": "clip_508676c5cd",
+          "questions": [
+            "H-RHYTHM",
+            "H-STYLE"
+          ]
+        },
+        {
+          "trial_id": "generator_quality_0005",
+          "task": "generator_quality",
+          "left_asset": "clip_45792af26f",
+          "right_asset": "clip_1e2c57023a",
+          "questions": [
+            "H-NATURAL",
+            "H-DANCE",
+            "H-EXPRESS"
+          ]
+        }
+      ]
+    }
+  ]
+}

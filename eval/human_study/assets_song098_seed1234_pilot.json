@@ -1,0 +1,111 @@
+{
+  "schema_version": "audiomimic_human_assets_v1",
+  "inventory_date": "2026-08-20",
+  "scope": "song098 seed1234 pilot only; not paper-complete",
+  "minimum_paper_design": {
+    "songs": 3,
+    "generation_seeds_per_song": 3,
+    "routes": [
+      "M0",
+      "M2",
+      "M4"
+    ],
+    "tracker_repeats_per_reference": 3,
+    "participants": 24
+  },
+  "assets": [
+    {
+      "asset_id": "song098_seed1234_w04_20_m0_reference",
+      "path": "eval/human_study/media/song098_seed1234_pilot/song098_seed1234_w04_20_m0_reference.mp4",
+      "route": "M0",
+      "representation": "reference",
+      "song_id": "098",
+      "generation_seed": 1234,
+      "window_id": "w04_20",
+      "duration_seconds": 16.0,
+      "camera_profile": "front_follow_az180_el-12_d3",
+      "render_profile": "g1_mujoco_640x480_30fps_v1",
+      "label_free": true,
+      "audio_embedded": true,
+      "eligible": true
+    },
+    {
+      "asset_id": "song098_seed1234_w04_20_m0_execution",
+      "path": "eval/human_study/media/song098_seed1234_pilot/song098_seed1234_w04_20_m0_execution.mp4",
+      "route": "M0",
+      "representation": "execution",
+      "song_id": "098",
+      "generation_seed": 1234,
+      "window_id": "w04_20",
+      "duration_seconds": 16.0,
+      "camera_profile": "front_follow_az180_el-12_d3",
+      "render_profile": "g1_mujoco_640x480_30fps_v1",
+      "label_free": true,
+      "audio_embedded": true,
+      "eligible": true,
+      "tracker_repeat": 1
+    },
+    {
+      "asset_id": "song098_seed1234_w04_20_m2_reference",
+      "path": "eval/human_study/media/song098_seed1234_pilot/song098_seed1234_w04_20_m2_reference.mp4",
+      "route": "M2",
+      "representation": "reference",
+      "song_id": "098",
+      "generation_seed": 1234,
+      "window_id": "w04_20",
+      "duration_seconds": 16.0,
+      "camera_profile": "front_follow_az180_el-12_d3",
+      "render_profile": "g1_mujoco_640x480_30fps_v1",
+      "label_free": true,
+      "audio_embedded": true,
+      "eligible": true
+    },
+    {
+      "asset_id": "song098_seed1234_w04_20_m2_execution",
+      "path": "eval/human_study/media/song098_seed1234_pilot/song098_seed1234_w04_20_m2_execution.mp4",
+      "route": "M2",
+      "representation": "execution",
+      "song_id": "098",
+      "generation_seed": 1234,
+      "window_id": "w04_20",
+      "duration_seconds": 16.0,
+      "camera_profile": "front_follow_az180_el-12_d3",
+      "render_profile": "g1_mujoco_640x480_30fps_v1",
+      "label_free": true,
+      "audio_embedded": true,
+      "eligible": true,
+      "tracker_repeat": 1
+    },
+    {
+      "asset_id": "song098_seed1234_w04_20_m4_reference",
+      "path": "eval/human_study/media/song098_seed1234_pilot/song098_seed1234_w04_20_m4_reference.mp4",
+      "route": "M4",
+      "representation": "reference",
+      "song_id": "098",
+      "generation_seed": 1234,
+      "window_id": "w04_20",
+      "duration_seconds": 16.0,
+      "camera_profile": "front_follow_az180_el-12_d3",
+      "render_profile": "g1_mujoco_640x480_30fps_v1",
+      "label_free": true,
+      "audio_embedded": true,
+      "eligible": true
+    },
+    {
+      "asset_id": "song098_seed1234_w04_20_m4_execution",
+      "path": "eval/human_study/media/song098_seed1234_pilot/song098_seed1234_w04_20_m4_execution.mp4",
+      "route": "M4",
+      "representation": "execution",
+      "song_id": "098",
+      "generation_seed": 1234,
+      "window_id": "w04_20",
+      "duration_seconds": 16.0,
+      "camera_profile": "front_follow_az180_el-12_d3",
+      "render_profile": "g1_mujoco_640x480_30fps_v1",
+      "label_free": true,
+      "audio_embedded": true,
+      "eligible": true,
+      "tracker_repeat": 1
+    }
+  ]
+}

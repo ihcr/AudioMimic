@@ -1,0 +1,11 @@
+{
+  "run_id": "sonic_native_high_dance_in_da_party_001__A464_M_r01",
+  "level": "high",
+  "repeat": 1,
+  "motion": "dance_in_da_party_001__A464_M",
+  "status": "complete",
+  "reference_duration_seconds": 9.933333333333334,
+  "pre_stream_height_m": 0.7792,
+  "streamer_exit_status": 0,
+  "post_stream_height_m": 0.7867
+}

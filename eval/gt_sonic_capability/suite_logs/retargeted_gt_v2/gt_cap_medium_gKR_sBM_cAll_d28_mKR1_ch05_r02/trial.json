@@ -1,0 +1,14 @@
+{
+  "run_id": "gt_cap_medium_gKR_sBM_cAll_d28_mKR1_ch05_r02",
+  "source": "retargeted_gt",
+  "level": "medium",
+  "repeat": 2,
+  "motion": "gKR_sBM_cAll_d28_mKR1_ch05",
+  "status": "complete",
+  "reference_duration_seconds": 10.633333333333333,
+  "pre_stream_height_m": 0.7796,
+  "streamer_exit_status": 0,
+  "post_stream_height_m": 0.7506,
+  "minimum_base_height_m": 0.7075389352971018,
+  "fell_below_height_threshold": false
+}

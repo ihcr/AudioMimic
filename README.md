@@ -53,9 +53,43 @@ python -m unittest \
 The full three-terminal SONIC startup procedure, online Open-loop/JIT commands,
 offline playback, recording, and measured capability results are documented in
 [`操作手册_AudioMimic_SONIC.md`](操作手册_AudioMimic_SONIC.md).
+Headless quantitative runs must enter CONTROL on the bundled reference, release
+the MuJoCo elastic band, verify unassisted standing, and only then enable ZMQ;
+the validated capability protocol is in
+[`docs/experiments/NEXT-20260819-gt-sonic-capability.md`](docs/experiments/NEXT-20260819-gt-sonic-capability.md).
 The current end-to-end status and prioritized work toward a real-time
 music-driven G1 are tracked in
 [`ROADMAP_REALTIME_MUSIC_TO_G1.md`](ROADMAP_REALTIME_MUSIC_TO_G1.md).
+
+### Validated status (2026-08-20)
+
+- The motion-only K64/H8/C4 generator runs within the real-time budget
+  (typically 48--55 ms inference for a 267 ms C4 execution window), and the
+  AudioMimic-to-SONIC protocol is operational in MuJoCo.
+- With the frozen startup protocol (Macarena CONTROL, elastic-band release,
+  unassisted standing, then ZMQ and 3 s alignment + 1 s hold), SONIC completed
+  9/9 native-reference runs, 9/9 retargeted-GT runs, and 3/3 runs for each of
+  the fixed M0, M2, and M4 60 s trajectories without a fall.
+- For M0/M2/M4, aligned joint RMSE is 0.1763/0.1850/0.1678 rad. Median
+  per-joint motion-energy retention is 0.468/0.522/0.503, showing that the main
+  generation-to-execution gap is dynamic-detail attenuation rather than basic
+  stability.
+- The current M2/M4 pickles are fixed evaluation rollouts. They support
+  reference and tracking analysis, but do not constitute a live causal
+  music-to-motion runtime. Correct-song, shifted-song, and wrong-song tests on
+  these fixed trajectories also do not yet establish a causal music-condition
+  benefit.
+- The immediate blocker is the releasable M2 checkpoint and exact causal music
+  feature contract. After that, the next milestone is an Open-loop live-music
+  demo using the validated SONIC boundary, followed by tracker-aware
+  Closed-loop training with time-aligned measured state.
+
+Evaluation definitions and evidence levels are frozen in
+[`docs/evaluation/EVALUATION_MAP_MUSIC_TO_G1.md`](docs/evaluation/EVALUATION_MAP_MUSIC_TO_G1.md).
+The executable evaluation order, commands, metric meanings, and paper provenance
+are documented in [`eval/README.md`](eval/README.md).
+The latest quantitative comparison is in
+[`docs/experiments/RESULT-20260820-generator-vs-sonic-baselines.md`](docs/experiments/RESULT-20260820-generator-vs-sonic-baselines.md).
 
 ## EDGE &mdash; Official PyTorch implementation
 **EDGE: Editable Dance Generation From Music** (CVPR 2023)<br>

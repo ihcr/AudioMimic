@@ -1,0 +1,101 @@
+[
+  {
+    "run_id": "sonic_native_low_walking_quip_360_R_002__A428_M_r01",
+    "level": "low",
+    "repeat": 1,
+    "motion": "walking_quip_360_R_002__A428_M",
+    "status": "complete",
+    "reference_duration_seconds": 9.1,
+    "pre_stream_height_m": 0.78,
+    "streamer_exit_status": 0,
+    "post_stream_height_m": 0.7864
+  },
+  {
+    "run_id": "sonic_native_low_walking_quip_360_R_002__A428_M_r02",
+    "level": "low",
+    "repeat": 2,
+    "motion": "walking_quip_360_R_002__A428_M",
+    "status": "complete",
+    "reference_duration_seconds": 9.1,
+    "pre_stream_height_m": 0.7801,
+    "streamer_exit_status": 0,
+    "post_stream_height_m": 0.7862
+  },
+  {
+    "run_id": "sonic_native_low_walking_quip_360_R_002__A428_M_r03",
+    "level": "low",
+    "repeat": 3,
+    "motion": "walking_quip_360_R_002__A428_M",
+    "status": "complete",
+    "reference_duration_seconds": 9.1,
+    "pre_stream_height_m": 0.7806,
+    "streamer_exit_status": 0,
+    "post_stream_height_m": 0.7862
+  },
+  {
+    "run_id": "sonic_native_medium_macarena_001__A545_M_r01",
+    "level": "medium",
+    "repeat": 1,
+    "motion": "macarena_001__A545_M",
+    "status": "complete",
+    "reference_duration_seconds": 27.5,
+    "pre_stream_height_m": 0.7799,
+    "streamer_exit_status": 0,
+    "post_stream_height_m": 0.7749
+  },
+  {
+    "run_id": "sonic_native_medium_macarena_001__A545_M_r02",
+    "level": "medium",
+    "repeat": 2,
+    "motion": "macarena_001__A545_M",
+    "status": "complete",
+    "reference_duration_seconds": 27.5,
+    "pre_stream_height_m": 0.7795,
+    "streamer_exit_status": 0,
+    "post_stream_height_m": 0.7752
+  },
+  {
+    "run_id": "sonic_native_medium_macarena_001__A545_M_r03",
+    "level": "medium",
+    "repeat": 3,
+    "motion": "macarena_001__A545_M",
+    "status": "complete",
+    "reference_duration_seconds": 27.5,
+    "pre_stream_height_m": 0.78,
+    "streamer_exit_status": 0,
+    "post_stream_height_m": 0.7756
+  },
+  {
+    "run_id": "sonic_native_high_dance_in_da_party_001__A464_M_r01",
+    "level": "high",
+    "repeat": 1,
+    "motion": "dance_in_da_party_001__A464_M",
+    "status": "complete",
+    "reference_duration_seconds": 9.933333333333334,
+    "pre_stream_height_m": 0.7792,
+    "streamer_exit_status": 0,
+    "post_stream_height_m": 0.7867
+  },
+  {
+    "run_id": "sonic_native_high_dance_in_da_party_001__A464_M_r02",
+    "level": "high",
+    "repeat": 2,
+    "motion": "dance_in_da_party_001__A464_M",
+    "status": "complete",
+    "reference_duration_seconds": 9.933333333333334,
+    "pre_stream_height_m": 0.7793,
+    "streamer_exit_status": 0,
+    "post_stream_height_m": 0.7864
+  },
+  {
+    "run_id": "sonic_native_high_dance_in_da_party_001__A464_M_r03",
+    "level": "high",
+    "repeat": 3,
+    "motion": "dance_in_da_party_001__A464_M",
+    "status": "complete",
+    "reference_duration_seconds": 9.933333333333334,
+    "pre_stream_height_m": 0.7793,
+    "streamer_exit_status": 0,
+    "post_stream_height_m": 0.7861
+  }
+]

@@ -1,0 +1,427 @@
+{
+  "schema_version": "sonic_capability_analysis_v2",
+  "calibration_source": "retargeted_gt",
+  "manifest": "/home/tianhup/AudioMimic/eval/gt_sonic_capability/selection_20260819/selection_manifest.json",
+  "planned_runs": 9,
+  "analyzed_runs": 9,
+  "missing_runs": [],
+  "tier_summary": {
+    "low": {
+      "runs": 3,
+      "successes": 3,
+      "success_rate": 1.0,
+      "global_lag_ms": {
+        "mean": 20.0,
+        "std": 0.0,
+        "median": 20.0
+      },
+      "raw_joint_rmse_rad": {
+        "mean": 0.15537894767626528,
+        "std": 0.0002613617838248898,
+        "median": 0.15523058792545003
+      },
+      "aligned_joint_rmse_rad": {
+        "mean": 0.15400299674184442,
+        "std": 0.00020733654202322987,
+        "median": 0.15386579721257668
+      },
+      "root_relative_empkpe_m": {
+        "mean": 0.10230123666414208,
+        "std": 0.0005286987628740878,
+        "median": 0.10208209118936803
+      },
+      "amplitude_retention_median": {
+        "mean": 0.9206980696679805,
+        "std": 0.005374899188086931,
+        "median": 0.9204008841783734
+      },
+      "energy_retention_median": {
+        "mean": 0.6700890769634421,
+        "std": 0.0359724208357279,
+        "median": 0.6606209561388197
+      },
+      "low_band_retention_median": {
+        "mean": 0.8675918789337862,
+        "std": 0.008385648395401029,
+        "median": 0.8673777586762106
+      },
+      "mid_band_retention_median": {
+        "mean": 0.5955421214588429,
+        "std": 0.018355664767655384,
+        "median": 0.6044299138711736
+      },
+      "high_band_retention_median": {
+        "mean": 0.8902521281888408,
+        "std": 0.058188447435158004,
+        "median": 0.866634811209462
+      },
+      "arms_high_band_retention_median": {
+        "mean": 0.5990168730292343,
+        "std": 0.06381094338724938,
+        "median": 0.5775049000700463
+      },
+      "left_contact_f1": {
+        "mean": 0.5184112165607538,
+        "std": 0.048527851216796834,
+        "median": 0.5253456221198156
+      },
+      "right_contact_f1": {
+        "mean": 0.6008510323561942,
+        "std": 0.01345127617768691,
+        "median": 0.5968819599109132
+      }
+    },
+    "medium": {
+      "runs": 3,
+      "successes": 3,
+      "success_rate": 1.0,
+      "global_lag_ms": {
+        "mean": 20.0,
+        "std": 0.0,
+        "median": 20.0
+      },
+      "raw_joint_rmse_rad": {
+        "mean": 0.2024932542968315,
+        "std": 0.0007902677835870392,
+        "median": 0.20197525013310114
+      },
+      "aligned_joint_rmse_rad": {
+        "mean": 0.19939580802177082,
+        "std": 0.0004667256766480809,
+        "median": 0.19917909972514886
+      },
+      "root_relative_empkpe_m": {
+        "mean": 0.11329552896022704,
+        "std": 0.00039074454745874067,
+        "median": 0.11340658771028023
+      },
+      "amplitude_retention_median": {
+        "mean": 0.8357897658813661,
+        "std": 0.0033426690086957303,
+        "median": 0.8357962442881277
+      },
+      "energy_retention_median": {
+        "mean": 0.7219401831223574,
+        "std": 0.02340229841608145,
+        "median": 0.7191149207493757
+      },
+      "low_band_retention_median": {
+        "mean": 0.8980281399214823,
+        "std": 0.028262704985118643,
+        "median": 0.9147387137855366
+      },
+      "mid_band_retention_median": {
+        "mean": 0.5560406473647707,
+        "std": 0.016609417683669317,
+        "median": 0.5549082980113662
+      },
+      "high_band_retention_median": {
+        "mean": 0.973436812096368,
+        "std": 0.06471823976173674,
+        "median": 1.0138364282053982
+      },
+      "arms_high_band_retention_median": {
+        "mean": 0.5193604266834804,
+        "std": 0.05508599814784454,
+        "median": 0.49100758879431294
+      },
+      "left_contact_f1": {
+        "mean": 0.765606890529491,
+        "std": 0.025886871935789875,
+        "median": 0.7789473684210526
+      },
+      "right_contact_f1": {
+        "mean": 0.5557465888404512,
+        "std": 0.0918660180655129,
+        "median": 0.5943152454780362
+      }
+    },
+    "high": {
+      "runs": 3,
+      "successes": 3,
+      "success_rate": 1.0,
+      "global_lag_ms": {
+        "mean": 20.0,
+        "std": 0.0,
+        "median": 20.0
+      },
+      "raw_joint_rmse_rad": {
+        "mean": 0.32345127504666754,
+        "std": 0.0020805235536466744,
+        "median": 0.3223401233204877
+      },
+      "aligned_joint_rmse_rad": {
+        "mean": 0.3230977285283911,
+        "std": 0.002109114429221477,
+        "median": 0.32198535611413415
+      },
+      "root_relative_empkpe_m": {
+        "mean": 0.15992261367143934,
+        "std": 0.001306288224967615,
+        "median": 0.15966815910549037
+      },
+      "amplitude_retention_median": {
+        "mean": 0.8095175675563772,
+        "std": 0.002975827491148382,
+        "median": 0.8103810892551419
+      },
+      "energy_retention_median": {
+        "mean": 0.6556860479104326,
+        "std": 0.04052904123804932,
+        "median": 0.6287779633994481
+      },
+      "low_band_retention_median": {
+        "mean": 0.6226317019089728,
+        "std": 0.006743145773832485,
+        "median": 0.6230489393018712
+      },
+      "mid_band_retention_median": {
+        "mean": 0.7194673356300795,
+        "std": 0.04140781679341177,
+        "median": 0.7250067736842982
+      },
+      "high_band_retention_median": {
+        "mean": 0.7214449500194698,
+        "std": 0.08452282773629557,
+        "median": 0.6959052778309873
+      },
+      "arms_high_band_retention_median": {
+        "mean": 0.278777160812531,
+        "std": 0.02907931725070939,
+        "median": 0.25884879308540376
+      },
+      "left_contact_f1": {
+        "mean": 0.4233466393354191,
+        "std": 0.041067793822782486,
+        "median": 0.40217391304347827
+      },
+      "right_contact_f1": {
+        "mean": 0.4618900140353319,
+        "std": 0.018192697689500766,
+        "median": 0.45161290322580644
+      }
+    }
+  },
+  "empirical_gates": {
+    "status": "provisional_gt_calibration",
+    "successful_runs": 9,
+    "rule": "Error ceilings use successful-GT P95; retention floors use successful-GT P05. Freeze only after reviewing all three dynamic tiers.",
+    "tracking_lag_p95_ms": 20.0,
+    "aligned_joint_rmse_p95_rad": 0.32442455451229213,
+    "root_relative_empkpe_p95_m": 0.16084794068833974,
+    "amplitude_retention_p05": 0.807463670728292,
+    "energy_retention_p05": 0.626698593933123,
+    "low_band_retention_p05": 0.6177229908633861,
+    "mid_band_retention_p05": 0.543736223395492,
+    "high_band_retention_p05": 0.6582139333533419
+  },
+  "runs": [
+    {
+      "run_id": "gt_cap_low_gLH_sBM_cAll_d16_mLH0_ch09_r01",
+      "level": "low",
+      "repeat": 1,
+      "motion_id": "gLH_sBM_cAll_d16_mLH0_ch09",
+      "expected_duration_seconds": 11.966666666666667,
+      "success": true,
+      "survival_seconds": 11.966744623961858,
+      "minimum_base_height_m": 0.7196381919230654,
+      "global_lag_ms": 20.0,
+      "raw_joint_rmse_rad": 0.1551599432899539,
+      "aligned_joint_rmse_rad": 0.15384717529677708,
+      "root_relative_empkpe_m": 0.10302989341720178,
+      "root_relative_empkpe_p95_m": 0.27464430397126743,
+      "amplitude_retention_median": 0.927424509515881,
+      "energy_retention_median": 0.6606209561388197,
+      "low_band_retention_median": 0.8779675447567961,
+      "mid_band_retention_median": 0.6122205121345542,
+      "high_band_retention_median": 0.9703287138214637,
+      "arms_high_band_retention_median": 0.6856720097577507,
+      "left_contact_f1": 0.45581395348837206,
+      "right_contact_f1": 0.5968819599109132
+    },
+    {
+      "run_id": "gt_cap_low_gLH_sBM_cAll_d16_mLH0_ch09_r02",
+      "level": "low",
+      "repeat": 2,
+      "motion_id": "gLH_sBM_cAll_d16_mLH0_ch09",
+      "expected_duration_seconds": 11.966666666666667,
+      "success": true,
+      "survival_seconds": 11.96673601999646,
+      "minimum_base_height_m": 0.6826799605259013,
+      "global_lag_ms": 20.0,
+      "raw_joint_rmse_rad": 0.15523058792545003,
+      "aligned_joint_rmse_rad": 0.15386579721257668,
+      "root_relative_empkpe_m": 0.10179172538585639,
+      "root_relative_empkpe_p95_m": 0.2699663499632368,
+      "amplitude_retention_median": 0.9204008841783734,
+      "energy_retention_median": 0.63153585740563,
+      "low_band_retention_median": 0.8673777586762106,
+      "mid_band_retention_median": 0.5699759383708006,
+      "high_band_retention_median": 0.866634811209462,
+      "arms_high_band_retention_median": 0.5775049000700463,
+      "left_contact_f1": 0.5253456221198156,
+      "right_contact_f1": 0.5867237687366168
+    },
+    {
+      "run_id": "gt_cap_low_gLH_sBM_cAll_d16_mLH0_ch09_r03",
+      "level": "low",
+      "repeat": 3,
+      "motion_id": "gLH_sBM_cAll_d16_mLH0_ch09",
+      "expected_duration_seconds": 11.966666666666667,
+      "success": true,
+      "survival_seconds": 11.966767570993397,
+      "minimum_base_height_m": 0.7022889356751931,
+      "global_lag_ms": 20.0,
+      "raw_joint_rmse_rad": 0.1557463118133919,
+      "aligned_joint_rmse_rad": 0.1542960177161795,
+      "root_relative_empkpe_m": 0.10208209118936803,
+      "root_relative_empkpe_p95_m": 0.2666269654749678,
+      "amplitude_retention_median": 0.914268815309687,
+      "energy_retention_median": 0.7181104173458764,
+      "low_band_retention_median": 0.857430333368352,
+      "mid_band_retention_median": 0.6044299138711736,
+      "high_band_retention_median": 0.8337928595355967,
+      "arms_high_band_retention_median": 0.533873709259906,
+      "left_contact_f1": 0.5740740740740741,
+      "right_contact_f1": 0.6189473684210527
+    },
+    {
+      "run_id": "gt_cap_medium_gKR_sBM_cAll_d28_mKR1_ch05_r01",
+      "level": "medium",
+      "repeat": 1,
+      "motion_id": "gKR_sBM_cAll_d28_mKR1_ch05",
+      "expected_duration_seconds": 10.633333333333333,
+      "success": true,
+      "survival_seconds": 10.633441019046586,
+      "minimum_base_height_m": 0.6956284444926887,
+      "global_lag_ms": 20.0,
+      "raw_joint_rmse_rad": 0.20189462095531918,
+      "aligned_joint_rmse_rad": 0.19896422937658303,
+      "root_relative_empkpe_m": 0.11370879742817817,
+      "root_relative_empkpe_p95_m": 0.276868155513282,
+      "amplitude_retention_median": 0.8357962442881277,
+      "energy_retention_median": 0.7191149207493757,
+      "low_band_retention_median": 0.9211170620026307,
+      "mid_band_retention_median": 0.5549082980113662,
+      "high_band_retention_median": 1.0243606927852578,
+      "arms_high_band_retention_median": 0.49100758879431294,
+      "left_contact_f1": 0.7789473684210526,
+      "right_contact_f1": 0.5943152454780362
+    },
+    {
+      "run_id": "gt_cap_medium_gKR_sBM_cAll_d28_mKR1_ch05_r02",
+      "level": "medium",
+      "repeat": 2,
+      "motion_id": "gKR_sBM_cAll_d28_mKR1_ch05",
+      "expected_duration_seconds": 10.633333333333333,
+      "success": true,
+      "survival_seconds": 10.633432876027655,
+      "minimum_base_height_m": 0.7075389352971018,
+      "global_lag_ms": 20.0,
+      "raw_joint_rmse_rad": 0.20360989180207414,
+      "aligned_joint_rmse_rad": 0.20004409496358047,
+      "root_relative_empkpe_m": 0.11277120174222272,
+      "root_relative_empkpe_p95_m": 0.28956202738091896,
+      "amplitude_retention_median": 0.8398804395587421,
+      "energy_retention_median": 0.7519100336434729,
+      "low_band_retention_median": 0.8582286439762797,
+      "mid_band_retention_median": 0.5362881736515759,
+      "high_band_retention_median": 0.8821133152984484,
+      "arms_high_band_retention_median": 0.5963762299792768,
+      "left_contact_f1": 0.7294117647058822,
+      "right_contact_f1": 0.4290220820189275
+    },
+    {
+      "run_id": "gt_cap_medium_gKR_sBM_cAll_d28_mKR1_ch05_r03",
+      "level": "medium",
+      "repeat": 3,
+      "motion_id": "gKR_sBM_cAll_d28_mKR1_ch05",
+      "expected_duration_seconds": 10.633333333333333,
+      "success": true,
+      "survival_seconds": 10.633358628023416,
+      "minimum_base_height_m": 0.6864323551896926,
+      "global_lag_ms": 20.0,
+      "raw_joint_rmse_rad": 0.20197525013310114,
+      "aligned_joint_rmse_rad": 0.19917909972514886,
+      "root_relative_empkpe_m": 0.11340658771028023,
+      "root_relative_empkpe_p95_m": 0.28649358098296585,
+      "amplitude_retention_median": 0.8316926137972285,
+      "energy_retention_median": 0.6947955949742238,
+      "low_band_retention_median": 0.9147387137855366,
+      "mid_band_retention_median": 0.5769254704313699,
+      "high_band_retention_median": 1.0138364282053982,
+      "arms_high_band_retention_median": 0.4706974612768512,
+      "left_contact_f1": 0.7884615384615384,
+      "right_contact_f1": 0.6439024390243901
+    },
+    {
+      "run_id": "gt_cap_high_gMH_sBM_cAll_d22_mMH0_ch01_r01",
+      "level": "high",
+      "repeat": 1,
+      "motion_id": "gMH_sBM_cAll_d22_mMH0_ch01",
+      "expected_duration_seconds": 11.966666666666667,
+      "success": true,
+      "survival_seconds": 11.96690378402127,
+      "minimum_base_height_m": 0.7078147058206226,
+      "global_lag_ms": 20.0,
+      "raw_joint_rmse_rad": 0.3216474285721982,
+      "aligned_joint_rmse_rad": 0.3212571426933083,
+      "root_relative_empkpe_m": 0.158465220165255,
+      "root_relative_empkpe_p95_m": 0.3517994099796803,
+      "amplitude_retention_median": 0.8103810892551419,
+      "energy_retention_median": 0.6287779633994481,
+      "low_band_retention_median": 0.6306738078539842,
+      "mid_band_retention_median": 0.6662110153415686,
+      "high_band_retention_median": 0.6330863703682449,
+      "arms_high_band_retention_median": 0.25884879308540376,
+      "left_contact_f1": 0.3870967741935484,
+      "right_contact_f1": 0.45161290322580644
+    },
+    {
+      "run_id": "gt_cap_high_gMH_sBM_cAll_d22_mMH0_ch01_r02",
+      "level": "high",
+      "repeat": 2,
+      "motion_id": "gMH_sBM_cAll_d22_mMH0_ch01",
+      "expected_duration_seconds": 11.966666666666667,
+      "success": true,
+      "survival_seconds": 11.96681420202367,
+      "minimum_base_height_m": 0.7087530435929407,
+      "global_lag_ms": 20.0,
+      "raw_joint_rmse_rad": 0.3223401233204877,
+      "aligned_joint_rmse_rad": 0.32198535611413415,
+      "root_relative_empkpe_m": 0.15966815910549037,
+      "root_relative_empkpe_p95_m": 0.3591053832329592,
+      "amplitude_retention_median": 0.8055187250437253,
+      "energy_retention_median": 0.7129678327096098,
+      "low_band_retention_median": 0.6230489393018712,
+      "mid_band_retention_median": 0.7671842178643713,
+      "high_band_retention_median": 0.6959052778309873,
+      "arms_high_band_retention_median": 0.31989507892177377,
+      "left_contact_f1": 0.4807692307692307,
+      "right_contact_f1": 0.44660194174757284
+    },
+    {
+      "run_id": "gt_cap_high_gMH_sBM_cAll_d22_mMH0_ch01_r03",
+      "level": "high",
+      "repeat": 3,
+      "motion_id": "gMH_sBM_cAll_d22_mMH0_ch01",
+      "expected_duration_seconds": 11.966666666666667,
+      "success": true,
+      "survival_seconds": 11.966732776956633,
+      "minimum_base_height_m": 0.6864764401766588,
+      "global_lag_ms": 20.0,
+      "raw_joint_rmse_rad": 0.3263662732473167,
+      "aligned_joint_rmse_rad": 0.3260506867777308,
+      "root_relative_empkpe_m": 0.16163446174357265,
+      "root_relative_empkpe_p95_m": 0.3808955443873613,
+      "amplitude_retention_median": 0.8126528883702644,
+      "energy_retention_median": 0.6253123476222396,
+      "low_band_retention_median": 0.6141723585710627,
+      "mid_band_retention_median": 0.7250067736842982,
+      "high_band_retention_median": 0.8353432018591775,
+      "arms_high_band_retention_median": 0.25758761043041545,
+      "left_contact_f1": 0.40217391304347827,
+      "right_contact_f1": 0.48745519713261654
+    }
+  ]
+}
