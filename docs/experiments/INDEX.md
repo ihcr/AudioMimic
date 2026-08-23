@@ -5,10 +5,23 @@ Use this ledger as the source of truth for nontrivial research, ablations, train
 ## Evaluation Standard
 
 All new generator, tracker and end-to-end results must follow
-[`AudioMimic Music-to-G1 Evaluation Map v1.0`](../evaluation/EVALUATION_MAP_MUSIC_TO_G1.md).
+[`AudioMimic Music-to-G1 Evaluation Map v1.2`](../evaluation/EVALUATION_MAP_MUSIC_TO_G1.md).
 Its machine-readable metric registry is [`eval/evaluation_map_v1.json`](../../eval/evaluation_map_v1.json).
+The paper-source audit and frozen music-condition policy are in
+[`LITERATURE_METRIC_AUDIT_20260823.md`](../evaluation/LITERATURE_METRIC_AUDIT_20260823.md).
 An experiment may mark unavailable metrics as N/A, but must not silently redefine a metric, omit failed runs,
 or replace the multidimensional scorecard with one aggregate score.
+
+The paper-level claim, GT-oracle hierarchy, sealed-test protocol, required
+ablations, statistics, and acceptance gates are defined in
+[`AudioMimic ICRA GT-Calibrated Evaluation Plan`](../evaluation/ICRA_GT_CALIBRATED_EVALUATION_PLAN.md).
+The metric map defines *what* each metric measures; the paper plan defines
+*which evidence* is required for each claim.
+
+The current consolidated experiment conclusions and ICRA claim boundary are in
+[`EXPERIMENT_CONCLUSIONS_20260823.md`](EXPERIMENT_CONCLUSIONS_20260823.md).
+Update that ledger after each completed experiment; individual `EXP`, `NEXT` and
+`RESULT` files remain the detailed provenance records.
 
 ## Active Experiments
 

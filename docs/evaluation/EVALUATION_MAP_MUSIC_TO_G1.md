@@ -1,11 +1,20 @@
-# AudioMimic Music-to-G1 Evaluation Map v1.0
+# AudioMimic Music-to-G1 Evaluation Map v1.2
 
-更新日期：2026-08-19
+更新日期：2026-08-23
 
 ## 1. 目的与适用范围
 
 本文档规定 AudioMimic 从音乐条件生成到 SONIC 执行的统一评价协议。它不是一个可选
 指标列表，而是后续模型比较、消融实验和论文表格必须遵守的评价地图。
+
+所有指标的层级分类以
+[`METRIC_TAXONOMY_MUSIC_DANCE_G1.md`](METRIC_TAXONOMY_MUSIC_DANCE_G1.md) 为准；
+机器可读映射为 `eval/metric_taxonomy_v1.json`。任何新增指标必须先指定唯一的
+`大模块 / 子模块`，corruption 操作只能作为校准方法，不能作为模型评分指标。
+
+论文级 claim、三级 GT oracle、sealed-test 设计、实验矩阵和验收 gate 见
+[`ICRA_GT_CALIBRATED_EVALUATION_PLAN.md`](ICRA_GT_CALIBRATED_EVALUATION_PLAN.md)。本文档定义
+指标本身；论文计划定义每项结论需要哪些证据。
 
 系统按以下因果链拆分：
 
@@ -37,11 +46,38 @@ audio A -> motion generator -> reference motion M_ref
 
 | 来源 | 含义 |
 |---|---|
-| Literature | 来自 FACT、EDGE、Lodge、Beat-It、RoboPerform 或 DiscoForcing |
+| Literature | 来自 FACT、EDGE、Lodge、Beat-It、RoboPerform、DiscoForcing、LRCM、MATHDance、PAMD、InfiniteDance、DanceBA 等本地论文 |
 | AudioMimic | 为在线生成、SONIC 跟踪和表现力保留新增的系统指标 |
 
 AudioMimic 新增指标不是冒充已有论文标准。论文中应明确写为 system-specific metrics，
 并公开定义、实现和阈值。
+
+本版的逐篇论文核对、指标取舍和 music feature policy 见
+[`LITERATURE_METRIC_AUDIT_20260823.md`](LITERATURE_METRIC_AUDIT_20260823.md)。本版冻结后，
+所有 generator、GMR/retargeting 和 SONIC execution 实验都必须使用同一套适用指标。
+BAS 是 beat-alignment suite 的 **core** 指标，在所有 paired music-motion 实验中**强制报告**，不能省略。
+它仍然不能单独代表完整音乐性或舞蹈质量；完整 beat-alignment suite 还必须联合
+event Precision/Recall/F1（适用时）、onset/impact correlation、response lag、
+tempo error 和 phase error。
+
+指标有效性校准见
+[`eval/benchmark_v1/gt/benchmark_validity_v1/REPORT.md`](../../eval/benchmark_v1/gt/benchmark_validity_v1/REPORT.md)。
+当前已通过 GT corruption 验证的指标只对其声明的退化类型负责；未通过或尚未校准的
+指标不能直接进入论文主结论。GT 本身被视为高质量经验分布，不强行设为每项指标的
+`1.0`，也不要求每条 GT 在所有指标上都达到最大值。
+
+## 2.1 冻结的主指标组
+
+| 组 | 必须报告 | 说明 |
+|---|---|---|
+| Dance quality | FIDk/FIDg、PFC、FSR、Divk/Divg、velocity/acceleration/jerk、energy、freeze/repetition、penetration/jitter、human preference | 评价动作是否自然、连续、丰富、物理合理 |
+| Music adaptation | BAS、event Precision/Recall/F1（适用时）、onset correlation、response lag、tempo/phase、R@K/MMDist（冻结 encoder 后） | 评价动作是否响应音乐节奏、动态、结构和风格 |
+| SONIC execution | Success/TTF、EMPJPE/EMPKPE、raw/aligned RMSE、lag、amplitude/energy/band/contact retention | 评价 tracker 吃掉多少动作表现力 |
+| Realtime system | deadline miss、latency P50/P95/P99、drop/fallback、realtime factor | 评价是否是真正在线系统 |
+
+`BAS` 的解释必须和 beat count、event F1 或 onset response 一起出现。EDGE 已指出，
+只按局部运动 beat 与音乐 beat 的距离会误罚 half-time/double-time 和合法的过渡动作，
+所以 BAS 是重要证据，但不能作为唯一验收标准。
 
 ## 3. 总体 Evaluation Map
 
@@ -49,7 +85,7 @@ AudioMimic 新增指标不是冒充已有论文标准。论文中应明确写为
 |---|---|---|---|
 | P0 数据与协议 | A、M_ref、M_exec、时钟 | 输入格式和时间轴是否有效 | schema、coverage、audio offset、joint/quaternion order |
 | G 生成质量 | M_ref | 是否是合格的长时 G1 舞蹈 | PFC、FSR、动态统计、C4 连续性、重复率、Div；FID 辅助 |
-| M 音乐匹配 | A 与 M_ref | 动作是否确实由对应音乐解释 | R@K、MMDist、onset response、tempo/phase、phrase；BAS 辅助 |
+| M 音乐匹配 | A 与 M_ref | 动作是否确实由对应音乐解释 | BAS beat-alignment suite、R@K、MMDist、onset response、tempo/phase、phrase |
 | X 可执行性 | M_ref | reference 是否位于 G1/SONIC 可执行域 | joint/root/contact limits、GT-calibrated dynamic envelope |
 | T 跟踪质量 | M_ref 与 M_exec | SONIC 吃掉了多少动作信息 | Success、EMPJPE、EMPKPE、lag、amplitude/energy/band retention |
 | E 执行后质量 | A 与 M_exec | 机器人实际跳出的动作是否仍匹配音乐 | 重算 G/M 指标并报告 retention/degradation |
@@ -97,6 +133,8 @@ Div 也不是越高越好，抖动和不连续动作同样会提高距离，因�
 | G-JERK | Joint jerk distribution | 检测高频抖动和不可执行尖峰 | ↓/→ GT | Core | AudioMimic |
 | G-ENERGY | Motion energy | `mean(||dq||^2)`，衡量动作强度 | → GT | Core | AudioMimic |
 | G-STATIC | Static ratio | 关节速度低于预注册阈值的帧比例 | → GT | Core | AudioMimic |
+| G-FREEZE | Adaptive freeze proportion | 持续时间位于冻结区间且速度低于自适应阈值的帧比例 | → GT | Core | LRCM |
+| G-FREEZE-LR | Freeze length regularity | 冻结片段长度标准差的倒数，检测异常长短冻结 | → GT | Supplementary | LRCM |
 | G-REPEAT | Pose repetition | 间隔超过 2 s 仍近似相同的姿态比例及 self-similarity | ↓/→ GT | Core | AudioMimic |
 | G-C4-POS | C4 position boundary jump | commit 边界位置跳变相对非边界的比值 | ≈1 | Core | AudioMimic |
 | G-C4-VEL | C4 velocity boundary jump | commit 边界速度跳变相对非边界的比值 | ≈1 | Core | AudioMimic |
@@ -112,7 +150,7 @@ Div 也不是越高越好，抖动和不连续动作同样会提高距离，因�
 
 | ID | 指标 | 定义与解释 | 方向 | 等级 | 来源 |
 |---|---|---|---|---|---|
-| M-BAS | Beat Alignment Score | 每个 kinematic beat 到最近 music beat 的指数加权距离 | ↑ | Supplementary | FACT、EDGE、Lodge、Beat-It、DiscoForcing、RoboPerform |
+| M-BAS | Beat Alignment Score | 每个 kinematic beat 到最近 music beat 的指数加权距离 | ↑ | Core | FACT、EDGE、Lodge、Beat-It、DiscoForcing、RoboPerform |
 | M-BEAT-F1 | Beat Precision/Recall/F1 | 在固定容差内评价预测 motion beat 对目标 beat 的命中和覆盖 | ↑ | Conditional | AudioMimic |
 | M-BAP | Beat Assignment Precision | 生成动作是否服从指定的 beat assignment | ↑ | Conditional | Beat-It |
 | M-KPD | Key Pose Distance | 指定 keyframe 上局部关节 Cartesian position 的 MSE | ↓ | Conditional | Beat-It |
@@ -120,8 +158,9 @@ Div 也不是越高越好，抖动和不连续动作同样会提高距离，因�
 | M-RESP-LAG | Music response lag | onset 与 motion response 最大相关处的时差 | 0 | Core | AudioMimic |
 | M-TEMPO | Tempo consistency | motion periodicity 与音乐 tempo/rhythm grid 的偏差 | ↓ | Core | AudioMimic |
 | M-PHASE | Rhythm phase error | 匹配周期内动作 accent 相对音乐相位的圆周误差 | ↓ | Core | AudioMimic |
+| M-RS | Rhythmic Score | 冻结/动作 accent 到期望 beat 的容差加权匹配分数 | ↑ | Supplementary | LRCM |
 
-BAS 是单向指标：它检查产生的 kinematic beat 是否靠近某个 music beat，并不要求每个
+BAS 是 beat-alignment suite 的核心单向指标：它检查产生的 kinematic beat 是否靠近某个 music beat，并不要求每个
 music beat 都有动作响应。高 BAS 可能来自很少的动作 beat，因此必须同时报告 motion
 beat 数量、Precision/Recall/F1 或 onset response。当前模型没有显式 beat assignment 时，
 BAP 和 Beat F1 只能标记 N/A，不能用来否定或证明整体音乐性。
@@ -135,6 +174,7 @@ BAP 和 Beat F1 只能标记 N/A，不能用来否定或证明整体音乐性。
 |---|---|---|---|---|---|
 | M-R1/R2/R3 | Audio-motion retrieval | 正确配对动作能否在 top-1/2/3 被对应音频检索 | ↑ | Core | RoboPerform |
 | M-MMDIST | Multimodal Distance | 配对 audio-motion 在固定联合 embedding 中的平均距离 | ↓ | Core | RoboPerform |
+| M-DS | Dance-music semantic retrieval score | 冻结 retrieval encoder 对配对 audio-motion 的语义匹配分数 | ↑ | Supplementary | MATHDance |
 | M-PHRASE | Phrase-boundary response | 乐句/段落/强度边界附近动作结构变化的命中率和时差 | ↑/0 lag | Core | AudioMimic |
 | M-STYLE | Genre/style/emotion consistency | 固定分类器或盲测对风格、情绪匹配的判断 | ↑ | Core | AudioMimic |
 
@@ -357,4 +397,4 @@ FID、BAS 或单个成功视频均不能单独通过该 gate。
 
 机器可读注册表见 [`eval/evaluation_map_v1.json`](../../eval/evaluation_map_v1.json)。第一轮
 M0/M2/M4 与 SONIC 结果见
-[`FIRST_ROUND_ANALYSIS.md`](../../eval/motion_music_execution/first_round_20260819/FIRST_ROUND_ANALYSIS.md)。
+[`REPORT.md`](../../eval/motion_music_execution/m2_m3_gt_comparison_v2/REPORT.md)。

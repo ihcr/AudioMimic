@@ -1,0 +1,8 @@
+metric_family,status,evidence,note
+jerk,core_validated,"jitter_jerk,lowpass_jerk",Sensitive to both injected high-frequency noise and smoothing.
+motion_energy,core_validated_for_lowpass,lowpass_energy,Do not expect global energy to detect every local freeze or repeat defect.
+static_ratio,core_validated,freeze_static,"Useful for freeze/average-pose collapse, not jitter detection."
+beat_f1,music_diagnostic_validated,freeze_beat_f1,"Useful for event loss, not a general dance-quality score."
+bas,supplementary_only,freeze_bas,"Must be paired with event coverage, lag and phase; never use alone."
+repeat_similarity,needs_revision,repeat_similarity,The current corruption/metric pair does not reliably detect repetition.
+fid_div_retrieval_human,not_yet_validated,,"Requires fixed extractors, negative controls, or human studies."

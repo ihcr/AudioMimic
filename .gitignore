@@ -80,3 +80,14 @@ eval/gt_sonic_capability/known_trackable_analysis/medium_3x/
 eval/gt_sonic_capability/known_trackable_analysis/low_walking_control_release_r01/
 eval/human_study/design_20260820/
 eval/human_study/**/private_key.json
+
+# Keep the public benchmark reports and compact summaries in Git. Large per-clip
+# benchmark tables remain local because the manifests and reports are sufficient
+# to identify and regenerate them.
+eval/benchmark_v1/gt/**/quality_manifest.json
+eval/benchmark_v1/gt/**/quality_manifest.csv
+eval/benchmark_v1/gt/**/windowed_metrics.json
+eval/benchmark_v1/gt/**/windowed_metrics.csv
+eval/benchmark_v1/gt/**/gt_oracle_suite_metrics.json
+eval/benchmark_v1/gt/**/retargeting_loss_metrics.json
+eval/benchmark_v1/gt/**/per_sequence_metrics.csv

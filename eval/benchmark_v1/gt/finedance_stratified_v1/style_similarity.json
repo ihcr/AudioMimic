@@ -1,0 +1,26 @@
+[
+  {
+    "stage": "g1_target",
+    "feature_group": "music",
+    "n_sequences": 203,
+    "same_style_pairs": 5695,
+    "different_style_pairs": 14808,
+    "within_style_distance": 2.98403784067156,
+    "between_style_distance": 2.9900084137022707,
+    "between_minus_within": 0.005970573030710469,
+    "permutation_p_value": 0.46506986027944114,
+    "interpretation": "not established"
+  },
+  {
+    "stage": "g1_target",
+    "feature_group": "dance_quality",
+    "n_sequences": 203,
+    "same_style_pairs": 5695,
+    "different_style_pairs": 14808,
+    "within_style_distance": 3.8060815840366033,
+    "between_style_distance": 3.6602656596265297,
+    "between_minus_within": -0.14581592441007363,
+    "permutation_p_value": 0.8083832335329342,
+    "interpretation": "not established"
+  }
+]

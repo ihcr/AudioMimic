@@ -1,6 +1,69 @@
 {
-  "schema_version": "1.0",
-  "updated": "2026-08-19",
+  "schema_version": "1.2",
+  "updated": "2026-08-23",
+  "freeze_status": {
+    "status": "frozen",
+    "effective_date": "2026-08-23",
+    "change_policy": "Any metric addition, removal or definition change requires a new schema version and a literature audit entry.",
+    "literature_audit": "docs/evaluation/LITERATURE_METRIC_AUDIT_20260823.md",
+    "beat_alignment_suite": {
+      "core": ["M-BAS", "M-ONSET", "M-RESP-LAG", "M-TEMPO-PHASE"],
+      "conditional": ["M-BEAT-F1", "M-BAP", "M-KPD"],
+      "supplementary": ["M-RS"],
+      "interpretation": "Beat alignment is a primary music-dance property. BAS is core within this suite, but no single beat metric is sufficient for overall musicality."
+    },
+    "mandatory_report_metrics": [
+      "M-BAS",
+      "M-ONSET",
+      "M-RESP-LAG",
+      "M-TEMPO-PHASE",
+      "G-DYNAMICS",
+      "G-ENERGY",
+      "G-STATIC",
+      "G-REPEAT",
+      "T-SUCC",
+      "T-TTF",
+      "T-RMSE-RAW",
+      "T-RMSE-ALIGN",
+      "T-LAG",
+      "R-DEADLINE",
+      "R-LATENCY",
+      "R-RTF"
+    ],
+    "conditional_metrics": [
+      "M-BEAT-F1",
+      "M-BAP",
+      "M-KPD",
+      "M-RETRIEVAL",
+      "M-MMDIST",
+      "M-DS"
+    ]
+  },
+  "music_condition_policy": {
+    "required_lower_bound": [
+      "8D beat stream"
+    ],
+    "recommended_mainline": [
+      "MERT semantic stream",
+      "Librosa acoustic stream",
+      "8D beat stream"
+    ],
+    "historical_anchor": [
+      "Wav2CLIP semantic stream",
+      "8D beat stream"
+    ],
+    "ablation_only": [
+      "STFT acoustic stream",
+      "Jukebox semantic stream",
+      "GaussianBeat-only stream"
+    ],
+    "do_not_stack": [
+      "Wav2CLIP",
+      "MERT",
+      "Jukebox"
+    ],
+    "status_note": "MERT is the recommended next implementation; current repository support is established for Wav2CLIP, STFT, Librosa baseline and Jukebox."
+  },
   "system_chain": [
     "audio",
     "generator",
@@ -102,7 +165,7 @@
       "definition": "Frechet distance between generated and GT kinetic feature distributions using a frozen extractor.",
       "direction": "down",
       "unit": "feature distance",
-      "level": "supplementary",
+      "level": "core",
       "source": ["FACT", "Lodge", "DiscoForcing"],
       "required_inputs": ["M_ref_set", "GT_set", "frozen_kinetic_extractor"],
       "aggregation": "matched split and sequence length",
@@ -246,6 +309,36 @@
       "acceptance_rule": "Target GT range; low static ratio is not sufficient without physical quality."
     },
     {
+      "id": "G-FREEZE",
+      "stage": "generator_quality",
+      "name": "Adaptive freeze proportion",
+      "definition": "Fraction of frames in freeze segments whose velocity is below the frozen adaptive threshold.",
+      "direction": "target",
+      "unit": "ratio",
+      "level": "core",
+      "source": ["LRCM"],
+      "required_inputs": ["dof_pos", "fps"],
+      "aggregation": "per trajectory and freeze segment",
+      "applicability": "M_ref and M_exec",
+      "current_status": "missing",
+      "acceptance_rule": "Target the GT calibration interval; report freeze count and segment durations."
+    },
+    {
+      "id": "G-FREEZE-LR",
+      "stage": "generator_quality",
+      "name": "Freeze length regularity",
+      "definition": "Regularity of freeze-segment lengths, computed as 1/(1+std(lengths)).",
+      "direction": "target",
+      "unit": "score",
+      "level": "supplementary",
+      "source": ["LRCM"],
+      "required_inputs": ["dof_pos", "fps"],
+      "aggregation": "per trajectory",
+      "applicability": "M_ref and M_exec",
+      "current_status": "missing",
+      "acceptance_rule": "Report with freeze proportion; do not interpret long intentional holds as failure alone."
+    },
+    {
       "id": "G-REPEAT",
       "stage": "generator_quality",
       "name": "Long-term pose repetition",
@@ -303,7 +396,7 @@
       "aggregation": "per trajectory with beat counts",
       "applicability": "paired audio-motion",
       "current_status": "implemented",
-      "acceptance_rule": "Never use alone; report motion-beat count and coverage."
+      "acceptance_rule": "Use as the primary beat-alignment metric; always report motion-beat count, beat coverage, event timing and complementary onset/phase metrics. Do not use alone for overall musicality."
     },
     {
       "id": "M-BEAT-F1",
@@ -396,6 +489,21 @@
       "acceptance_rule": "M2 paired improvement over M0 with a frozen detector."
     },
     {
+      "id": "M-RS",
+      "stage": "music_alignment",
+      "name": "Rhythmic Score",
+      "definition": "Tolerance-weighted alignment between freeze/motion accents and expected music beat locations.",
+      "direction": "up",
+      "unit": "score",
+      "level": "supplementary",
+      "source": ["LRCM"],
+      "required_inputs": ["music_beats", "motion_accents", "shared_clock"],
+      "aggregation": "per trajectory",
+      "applicability": "paired audio-motion",
+      "current_status": "missing",
+      "acceptance_rule": "Report with BAS and event metrics; do not use alone."
+    },
+    {
       "id": "M-RETRIEVAL",
       "stage": "music_alignment",
       "name": "Audio-motion R@1, R@2 and R@3",
@@ -424,6 +532,21 @@
       "applicability": "music-conditioned generator benchmark",
       "current_status": "missing",
       "acceptance_rule": "M2 must improve over M0; encoder must not be tuned on the test set."
+    },
+    {
+      "id": "M-DS",
+      "stage": "music_alignment",
+      "name": "Dance-music semantic retrieval score",
+      "definition": "Frozen retrieval encoder similarity between paired audio and motion.",
+      "direction": "up",
+      "unit": "embedding similarity",
+      "level": "supplementary",
+      "source": ["MATHDance"],
+      "required_inputs": ["audio_motion_pairs", "frozen_retrieval_encoder"],
+      "aggregation": "held-out set with paired/wrong-song controls",
+      "applicability": "music-conditioned generator benchmark",
+      "current_status": "missing",
+      "acceptance_rule": "Freeze encoder independently; report paired-vs-wrong and metric-human alignment."
     },
     {
       "id": "M-PHRASE",

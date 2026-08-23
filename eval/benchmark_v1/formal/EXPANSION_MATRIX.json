@@ -1,0 +1,751 @@
+{
+  "schema_version": "formal_model_expansion_matrix_v1",
+  "target_models": [
+    "M0",
+    "M2",
+    "M3",
+    "M4"
+  ],
+  "target_sequences": [
+    "012",
+    "065",
+    "098"
+  ],
+  "target_sampling_seeds": [
+    1234,
+    2345,
+    3456
+  ],
+  "stages": [
+    "M_ref",
+    "M_exec"
+  ],
+  "rows": [
+    {
+      "model": "M0",
+      "sequence_id": "012",
+      "sampling_seed": 1234,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "012",
+      "sampling_seed": 1234,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "012",
+      "sampling_seed": 2345,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "012",
+      "sampling_seed": 2345,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "012",
+      "sampling_seed": 3456,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "012",
+      "sampling_seed": 3456,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "065",
+      "sampling_seed": 1234,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "065",
+      "sampling_seed": 1234,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "065",
+      "sampling_seed": 2345,
+      "stage": "M_ref",
+      "status": "available",
+      "artifact_candidates": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/uncond_m0/m0_train1234_sample2345_u200000_best_song065.pkl",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "065",
+      "sampling_seed": 2345,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "065",
+      "sampling_seed": 3456,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "065",
+      "sampling_seed": 3456,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "098",
+      "sampling_seed": 1234,
+      "stage": "M_ref",
+      "status": "available",
+      "artifact_candidates": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/uncond_m0/m0_train1234_sample1234_u200000_best_song098.pkl",
+      "paired_execution_status": "available",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "098",
+      "sampling_seed": 1234,
+      "stage": "M_exec",
+      "status": "available",
+      "artifact_candidates": "m0_song098_seed1234_full_rate100_aligned_r03",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "098",
+      "sampling_seed": 2345,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "098",
+      "sampling_seed": 2345,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "098",
+      "sampling_seed": 3456,
+      "stage": "M_ref",
+      "status": "available",
+      "artifact_candidates": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/uncond_m0/m0_train1234_sample3456_u200000_best_song098.pkl",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M0",
+      "sequence_id": "098",
+      "sampling_seed": 3456,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "012",
+      "sampling_seed": 1234,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "012",
+      "sampling_seed": 1234,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "012",
+      "sampling_seed": 2345,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "012",
+      "sampling_seed": 2345,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "012",
+      "sampling_seed": 3456,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "012",
+      "sampling_seed": 3456,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "065",
+      "sampling_seed": 1234,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "065",
+      "sampling_seed": 1234,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "065",
+      "sampling_seed": 2345,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "065",
+      "sampling_seed": 2345,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "065",
+      "sampling_seed": 3456,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "065",
+      "sampling_seed": 3456,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "098",
+      "sampling_seed": 1234,
+      "stage": "M_ref",
+      "status": "available",
+      "artifact_candidates": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m2_predicted_fms/m2_train1234_sample1234_u100000_best_song098.pkl;/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m2_predicted_fms/m2_train2345_sample1234_u100000_best_song098.pkl;/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m2_predicted_fms/m2_train3456_sample1234_u100000_best_song098.pkl",
+      "paired_execution_status": "available",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "098",
+      "sampling_seed": 1234,
+      "stage": "M_exec",
+      "status": "available",
+      "artifact_candidates": "m2_song098_seed1234_full_rate100_aligned_r03",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "098",
+      "sampling_seed": 2345,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "098",
+      "sampling_seed": 2345,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "098",
+      "sampling_seed": 3456,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M2",
+      "sequence_id": "098",
+      "sampling_seed": 3456,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M3",
+      "sequence_id": "012",
+      "sampling_seed": 1234,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": "M3 pilot uses unrecorded seed; keep separate from balanced matrix."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "012",
+      "sampling_seed": 1234,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": "M3 pilot execution is indexed separately with seed=unknown."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "012",
+      "sampling_seed": 2345,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": "M3 pilot uses unrecorded seed; keep separate from balanced matrix."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "012",
+      "sampling_seed": 2345,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": "M3 pilot execution is indexed separately with seed=unknown."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "012",
+      "sampling_seed": 3456,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": "M3 pilot uses unrecorded seed; keep separate from balanced matrix."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "012",
+      "sampling_seed": 3456,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": "M3 pilot execution is indexed separately with seed=unknown."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "065",
+      "sampling_seed": 1234,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": "M3 pilot uses unrecorded seed; keep separate from balanced matrix."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "065",
+      "sampling_seed": 1234,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": "M3 pilot execution is indexed separately with seed=unknown."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "065",
+      "sampling_seed": 2345,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": "M3 pilot uses unrecorded seed; keep separate from balanced matrix."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "065",
+      "sampling_seed": 2345,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": "M3 pilot execution is indexed separately with seed=unknown."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "065",
+      "sampling_seed": 3456,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": "M3 pilot uses unrecorded seed; keep separate from balanced matrix."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "065",
+      "sampling_seed": 3456,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": "M3 pilot execution is indexed separately with seed=unknown."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "098",
+      "sampling_seed": 1234,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": "M3 pilot uses unrecorded seed; keep separate from balanced matrix."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "098",
+      "sampling_seed": 1234,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": "M3 pilot execution is indexed separately with seed=unknown."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "098",
+      "sampling_seed": 2345,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": "M3 pilot uses unrecorded seed; keep separate from balanced matrix."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "098",
+      "sampling_seed": 2345,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": "M3 pilot execution is indexed separately with seed=unknown."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "098",
+      "sampling_seed": 3456,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": "M3 pilot uses unrecorded seed; keep separate from balanced matrix."
+    },
+    {
+      "model": "M3",
+      "sequence_id": "098",
+      "sampling_seed": 3456,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": "M3 pilot execution is indexed separately with seed=unknown."
+    },
+    {
+      "model": "M4",
+      "sequence_id": "012",
+      "sampling_seed": 1234,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "012",
+      "sampling_seed": 1234,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "012",
+      "sampling_seed": 2345,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "012",
+      "sampling_seed": 2345,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "012",
+      "sampling_seed": 3456,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "012",
+      "sampling_seed": 3456,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "065",
+      "sampling_seed": 1234,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "065",
+      "sampling_seed": 1234,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "065",
+      "sampling_seed": 2345,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "065",
+      "sampling_seed": 2345,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "065",
+      "sampling_seed": 3456,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "065",
+      "sampling_seed": 3456,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "098",
+      "sampling_seed": 1234,
+      "stage": "M_ref",
+      "status": "available",
+      "artifact_candidates": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m4_oracle_fms/m4_train1234_sample1234_u100000_best_song098.pkl;/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m4_oracle_fms/m4_train2345_sample1234_u100000_best_song098.pkl;/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m4_oracle_fms/m4_train3456_sample1234_u100000_best_song098.pkl",
+      "paired_execution_status": "available",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "098",
+      "sampling_seed": 1234,
+      "stage": "M_exec",
+      "status": "available",
+      "artifact_candidates": "m4_song098_seed1234_full_rate100_aligned_r03",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "098",
+      "sampling_seed": 2345,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "098",
+      "sampling_seed": 2345,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "098",
+      "sampling_seed": 3456,
+      "stage": "M_ref",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "pending",
+      "notes": ""
+    },
+    {
+      "model": "M4",
+      "sequence_id": "098",
+      "sampling_seed": 3456,
+      "stage": "M_exec",
+      "status": "pending",
+      "artifact_candidates": "",
+      "paired_execution_status": "requires_M_ref",
+      "notes": ""
+    }
+  ],
+  "counts": {
+    "total": 72,
+    "reference_available": 5,
+    "execution_available": 3,
+    "pending": 64
+  }
+}

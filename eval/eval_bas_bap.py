@@ -2,6 +2,7 @@ import argparse
 import glob
 import pickle
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
@@ -76,11 +77,23 @@ def load_audio_beat_frames_from_features(audio_path, seq_len=None):
     return None
 
 
-def load_audio_beat_frames(wav_path, fps=FPS, seq_len=None):
-    feature_beats = load_audio_beat_frames_from_features(wav_path, seq_len=seq_len)
+@lru_cache(maxsize=256)
+def _load_audio_beat_frames_uncropped(wav_path, fps):
+    """Load one audio beat track once; callers may request different clip lengths."""
+    feature_beats = load_audio_beat_frames_from_features(wav_path, seq_len=None)
     if feature_beats is not None:
         return feature_beats
-    return _load_audio_beat_frames(wav_path, fps=fps, seq_len=seq_len)
+    return _load_audio_beat_frames(wav_path, fps=fps, seq_len=None)
+
+
+def load_audio_beat_frames(wav_path, fps=FPS, seq_len=None):
+    beats = _load_audio_beat_frames_uncropped(str(Path(wav_path)), int(fps))
+    if beats is None:
+        return None
+    beats = np.asarray(beats, dtype=np.int64).reshape(-1)
+    if seq_len is not None:
+        beats = beats[beats < int(seq_len)]
+    return beats.copy()
 
 
 def compute_bas_score(music_beats, motion_beats, sigma_squared=DEFAULT_BAS_SIGMA_SQUARED):

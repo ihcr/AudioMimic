@@ -1,0 +1,80 @@
+{
+  "schema_version": "benchmark_protocol_v1",
+  "status": "calibration_and_reference_frozen_final_test_pending",
+  "roles": {
+    "calibration_38": {
+      "source": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/gt_oracle_suite_v2/gt_oracle_suite_metrics.json",
+      "purpose": "freeze metric definitions, corruption severity and direction checks",
+      "counts": {
+        "aistpp": 20,
+        "finedance": 18
+      },
+      "total": 38,
+      "allowed_for_threshold_tuning": true,
+      "allowed_for_final_paper_ranking": false
+    },
+    "full_reference_1611": {
+      "source": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/gt_oracle_suite_all_v1/gt_oracle_suite_metrics.json",
+      "purpose": "estimate dataset, tempo and style-conditioned GT reference distributions",
+      "counts": {
+        "aistpp": 1408,
+        "finedance": 203
+      },
+      "total": 1611,
+      "allowed_for_threshold_tuning": false,
+      "allowed_for_final_paper_ranking": false
+    },
+    "final_test": {
+      "status": "not_frozen",
+      "purpose": "unbiased final comparison of M2/M3/M_exec",
+      "counts": null,
+      "allowed_for_threshold_tuning": false,
+      "allowed_for_final_paper_ranking": true
+    }
+  },
+  "checks": {
+    "calibration_is_subset_of_full_reference": true,
+    "manifest_matches_full_reference": true,
+    "calibration_ids": [
+      "aistpp:gBR_sBM_cAll_d04_mBR0_ch02",
+      "aistpp:gBR_sBM_cAll_d05_mBR0_ch02",
+      "aistpp:gHO_sBM_cAll_d20_mHO5_ch02",
+      "aistpp:gHO_sBM_cAll_d21_mHO5_ch02",
+      "aistpp:gJB_sBM_cAll_d08_mJB5_ch02",
+      "aistpp:gJB_sBM_cAll_d09_mJB5_ch02",
+      "aistpp:gJS_sBM_cAll_d01_mJS3_ch02",
+      "aistpp:gJS_sBM_cAll_d03_mJS3_ch02",
+      "aistpp:gKR_sBM_cAll_d28_mKR2_ch02",
+      "aistpp:gKR_sBM_cAll_d30_mKR2_ch02",
+      "aistpp:gLH_sBM_cAll_d17_mLH4_ch02",
+      "aistpp:gLH_sBM_cAll_d18_mLH4_ch02",
+      "aistpp:gLO_sBM_cAll_d13_mLO2_ch02",
+      "aistpp:gLO_sBM_cAll_d15_mLO2_ch02",
+      "aistpp:gMH_sBM_cAll_d22_mMH3_ch02",
+      "aistpp:gMH_sBM_cAll_d24_mMH3_ch02",
+      "aistpp:gPO_sBM_cAll_d10_mPO1_ch02",
+      "aistpp:gPO_sBM_cAll_d11_mPO1_ch02",
+      "aistpp:gWA_sBM_cAll_d25_mWA0_ch02",
+      "aistpp:gWA_sBM_cAll_d26_mWA0_ch02",
+      "finedance:012",
+      "finedance:036",
+      "finedance:037",
+      "finedance:063",
+      "finedance:065",
+      "finedance:092",
+      "finedance:098",
+      "finedance:109",
+      "finedance:132",
+      "finedance:137",
+      "finedance:143",
+      "finedance:144",
+      "finedance:161",
+      "finedance:179",
+      "finedance:193",
+      "finedance:198",
+      "finedance:204",
+      "finedance:211"
+    ]
+  },
+  "evaluation_rule": "Use the calibration set only to validate metric directions and corruption sensitivity. Use the full reference suite only to report conditional GT ranges. Freeze a separate final test split before selecting or ranking a model."
+}

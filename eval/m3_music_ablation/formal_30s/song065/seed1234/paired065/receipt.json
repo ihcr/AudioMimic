@@ -1,0 +1,14 @@
+{
+  "label": "paired065",
+  "motion_sequence_id": "065",
+  "condition_sequence_id": "065",
+  "condition_shift_frames": 0,
+  "condition_variant": "normal",
+  "seed": 1234,
+  "duration_seconds": 30.0,
+  "frames": 896,
+  "motion_path": "/home/tianhup/AudioMimic/eval/m3_music_ablation/formal_30s/song065/seed1234/paired065/m3_seed065_paired065.pkl",
+  "codec_sha256": "45285b832ceea4c9977ffac21dca238c693ccbf22fa96cd83e3cf3e0960e799b",
+  "parent_sha256": "add4da47b30dcda409bd3d69b4e2acd1e295a223616afd104442e19452e42e9f",
+  "sidecar_sha256": "0d6dbc2aac8b7f5300d3e874c11a25d3a9392b3daae72daa20692b77ecf28f34"
+}

@@ -1,0 +1,73 @@
+model,sequence_id,sampling_seed,stage,status,artifact_candidates,paired_execution_status,notes
+M0,012,1234,M_ref,pending,,pending,
+M0,012,1234,M_exec,pending,,requires_M_ref,
+M0,012,2345,M_ref,pending,,pending,
+M0,012,2345,M_exec,pending,,requires_M_ref,
+M0,012,3456,M_ref,pending,,pending,
+M0,012,3456,M_exec,pending,,requires_M_ref,
+M0,065,1234,M_ref,pending,,pending,
+M0,065,1234,M_exec,pending,,requires_M_ref,
+M0,065,2345,M_ref,available,/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/uncond_m0/m0_train1234_sample2345_u200000_best_song065.pkl,pending,
+M0,065,2345,M_exec,pending,,requires_M_ref,
+M0,065,3456,M_ref,pending,,pending,
+M0,065,3456,M_exec,pending,,requires_M_ref,
+M0,098,1234,M_ref,available,/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/uncond_m0/m0_train1234_sample1234_u200000_best_song098.pkl,available,
+M0,098,1234,M_exec,available,m0_song098_seed1234_full_rate100_aligned_r03,requires_M_ref,
+M0,098,2345,M_ref,pending,,pending,
+M0,098,2345,M_exec,pending,,requires_M_ref,
+M0,098,3456,M_ref,available,/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/uncond_m0/m0_train1234_sample3456_u200000_best_song098.pkl,pending,
+M0,098,3456,M_exec,pending,,requires_M_ref,
+M2,012,1234,M_ref,pending,,pending,
+M2,012,1234,M_exec,pending,,requires_M_ref,
+M2,012,2345,M_ref,pending,,pending,
+M2,012,2345,M_exec,pending,,requires_M_ref,
+M2,012,3456,M_ref,pending,,pending,
+M2,012,3456,M_exec,pending,,requires_M_ref,
+M2,065,1234,M_ref,pending,,pending,
+M2,065,1234,M_exec,pending,,requires_M_ref,
+M2,065,2345,M_ref,pending,,pending,
+M2,065,2345,M_exec,pending,,requires_M_ref,
+M2,065,3456,M_ref,pending,,pending,
+M2,065,3456,M_exec,pending,,requires_M_ref,
+M2,098,1234,M_ref,available,/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m2_predicted_fms/m2_train1234_sample1234_u100000_best_song098.pkl;/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m2_predicted_fms/m2_train2345_sample1234_u100000_best_song098.pkl;/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m2_predicted_fms/m2_train3456_sample1234_u100000_best_song098.pkl,available,
+M2,098,1234,M_exec,available,m2_song098_seed1234_full_rate100_aligned_r03,requires_M_ref,
+M2,098,2345,M_ref,pending,,pending,
+M2,098,2345,M_exec,pending,,requires_M_ref,
+M2,098,3456,M_ref,pending,,pending,
+M2,098,3456,M_exec,pending,,requires_M_ref,
+M3,012,1234,M_ref,pending,,pending,M3 pilot uses unrecorded seed; keep separate from balanced matrix.
+M3,012,1234,M_exec,pending,,requires_M_ref,M3 pilot execution is indexed separately with seed=unknown.
+M3,012,2345,M_ref,pending,,pending,M3 pilot uses unrecorded seed; keep separate from balanced matrix.
+M3,012,2345,M_exec,pending,,requires_M_ref,M3 pilot execution is indexed separately with seed=unknown.
+M3,012,3456,M_ref,pending,,pending,M3 pilot uses unrecorded seed; keep separate from balanced matrix.
+M3,012,3456,M_exec,pending,,requires_M_ref,M3 pilot execution is indexed separately with seed=unknown.
+M3,065,1234,M_ref,pending,,pending,M3 pilot uses unrecorded seed; keep separate from balanced matrix.
+M3,065,1234,M_exec,pending,,requires_M_ref,M3 pilot execution is indexed separately with seed=unknown.
+M3,065,2345,M_ref,pending,,pending,M3 pilot uses unrecorded seed; keep separate from balanced matrix.
+M3,065,2345,M_exec,pending,,requires_M_ref,M3 pilot execution is indexed separately with seed=unknown.
+M3,065,3456,M_ref,pending,,pending,M3 pilot uses unrecorded seed; keep separate from balanced matrix.
+M3,065,3456,M_exec,pending,,requires_M_ref,M3 pilot execution is indexed separately with seed=unknown.
+M3,098,1234,M_ref,pending,,pending,M3 pilot uses unrecorded seed; keep separate from balanced matrix.
+M3,098,1234,M_exec,pending,,requires_M_ref,M3 pilot execution is indexed separately with seed=unknown.
+M3,098,2345,M_ref,pending,,pending,M3 pilot uses unrecorded seed; keep separate from balanced matrix.
+M3,098,2345,M_exec,pending,,requires_M_ref,M3 pilot execution is indexed separately with seed=unknown.
+M3,098,3456,M_ref,pending,,pending,M3 pilot uses unrecorded seed; keep separate from balanced matrix.
+M3,098,3456,M_exec,pending,,requires_M_ref,M3 pilot execution is indexed separately with seed=unknown.
+M4,012,1234,M_ref,pending,,pending,
+M4,012,1234,M_exec,pending,,requires_M_ref,
+M4,012,2345,M_ref,pending,,pending,
+M4,012,2345,M_exec,pending,,requires_M_ref,
+M4,012,3456,M_ref,pending,,pending,
+M4,012,3456,M_exec,pending,,requires_M_ref,
+M4,065,1234,M_ref,pending,,pending,
+M4,065,1234,M_exec,pending,,requires_M_ref,
+M4,065,2345,M_ref,pending,,pending,
+M4,065,2345,M_exec,pending,,requires_M_ref,
+M4,065,3456,M_ref,pending,,pending,
+M4,065,3456,M_exec,pending,,requires_M_ref,
+M4,098,1234,M_ref,available,/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m4_oracle_fms/m4_train1234_sample1234_u100000_best_song098.pkl;/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m4_oracle_fms/m4_train2345_sample1234_u100000_best_song098.pkl;/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m4_oracle_fms/m4_train3456_sample1234_u100000_best_song098.pkl,available,
+M4,098,1234,M_exec,available,m4_song098_seed1234_full_rate100_aligned_r03,requires_M_ref,
+M4,098,2345,M_ref,pending,,pending,
+M4,098,2345,M_exec,pending,,requires_M_ref,
+M4,098,3456,M_ref,pending,,pending,
+M4,098,3456,M_exec,pending,,requires_M_ref,

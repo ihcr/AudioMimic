@@ -1,4 +1,5 @@
 from pathlib import Path
+from functools import lru_cache
 
 import numpy as np
 
@@ -71,6 +72,7 @@ def _normalize_quat(quat):
     return quat / norm
 
 
+@lru_cache(maxsize=8)
 def load_g1_mujoco_model(model_path):
     model_path = Path(model_path)
     if not model_path.is_file():

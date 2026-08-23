@@ -1,0 +1,4343 @@
+{
+  "schema_version": "gt_motion_corruption_calibration_v1",
+  "source_manifest": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/manifest_v1/gt_benchmark_manifest.json",
+  "dataset": "AIST++_retargeted_G1",
+  "seed": 1234,
+  "sequence_count": 20,
+  "sequences": [
+    "gBR_sBM_cAll_d04_mBR0_ch02",
+    "gBR_sBM_cAll_d05_mBR0_ch02",
+    "gHO_sBM_cAll_d20_mHO5_ch02",
+    "gHO_sBM_cAll_d21_mHO5_ch02",
+    "gJB_sBM_cAll_d08_mJB5_ch02",
+    "gJB_sBM_cAll_d09_mJB5_ch02",
+    "gJS_sBM_cAll_d01_mJS3_ch02",
+    "gJS_sBM_cAll_d03_mJS3_ch02",
+    "gKR_sBM_cAll_d28_mKR2_ch02",
+    "gKR_sBM_cAll_d30_mKR2_ch02",
+    "gLH_sBM_cAll_d17_mLH4_ch02",
+    "gLH_sBM_cAll_d18_mLH4_ch02",
+    "gLO_sBM_cAll_d13_mLO2_ch02",
+    "gLO_sBM_cAll_d15_mLO2_ch02",
+    "gMH_sBM_cAll_d22_mMH3_ch02",
+    "gMH_sBM_cAll_d24_mMH3_ch02",
+    "gPO_sBM_cAll_d10_mPO1_ch02",
+    "gPO_sBM_cAll_d11_mPO1_ch02",
+    "gWA_sBM_cAll_d25_mWA0_ch02",
+    "gWA_sBM_cAll_d26_mWA0_ch02"
+  ],
+  "variants": [
+    "clean",
+    "jitter",
+    "lowpass",
+    "freeze",
+    "repeat"
+  ],
+  "levels": [
+    "low",
+    "medium",
+    "high"
+  ],
+  "records": [
+    {
+      "sequence_id": "gBR_sBM_cAll_d04_mBR0_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gBR_sBM_cAll_d04_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d04_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 722036138
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d04_mBR0_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gBR_sBM_cAll_d04_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d04_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 1450377946,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d04_mBR0_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gBR_sBM_cAll_d04_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d04_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 1213787882,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d04_mBR0_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gBR_sBM_cAll_d04_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d04_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 3159406203,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d04_mBR0_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gBR_sBM_cAll_d04_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d04_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 3196032815,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d04_mBR0_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gBR_sBM_cAll_d04_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d04_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 1584197156,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d04_mBR0_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gBR_sBM_cAll_d04_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d04_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 771956769,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d04_mBR0_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gBR_sBM_cAll_d04_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d04_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 989260324,
+        "freeze_seconds": 0.25,
+        "start_frame": 193,
+        "stop_frame": 201
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d04_mBR0_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gBR_sBM_cAll_d04_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d04_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 3272461250,
+        "freeze_seconds": 0.5,
+        "start_frame": 190,
+        "stop_frame": 205
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d04_mBR0_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gBR_sBM_cAll_d04_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d04_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 3130827395,
+        "freeze_seconds": 1.0,
+        "start_frame": 182,
+        "stop_frame": 212
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d04_mBR0_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gBR_sBM_cAll_d04_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d04_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 506711877,
+        "repeat_seconds": 0.5,
+        "start_frame": 190,
+        "stop_frame": 205,
+        "source_start_frame": 175,
+        "source_stop_frame": 190
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d04_mBR0_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gBR_sBM_cAll_d04_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d04_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 2539315757,
+        "repeat_seconds": 1.0,
+        "start_frame": 182,
+        "stop_frame": 212,
+        "source_start_frame": 152,
+        "source_stop_frame": 182
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d04_mBR0_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gBR_sBM_cAll_d04_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d04_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 3399995090,
+        "repeat_seconds": 2.0,
+        "start_frame": 167,
+        "stop_frame": 227,
+        "source_start_frame": 107,
+        "source_stop_frame": 167
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d05_mBR0_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gBR_sBM_cAll_d05_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d05_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 1249726193
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d05_mBR0_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gBR_sBM_cAll_d05_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d05_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 3998514811,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d05_mBR0_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gBR_sBM_cAll_d05_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d05_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 2690939921,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d05_mBR0_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gBR_sBM_cAll_d05_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d05_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 3108883097,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d05_mBR0_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gBR_sBM_cAll_d05_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d05_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 3700957910,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d05_mBR0_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gBR_sBM_cAll_d05_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d05_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 3651859695,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d05_mBR0_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gBR_sBM_cAll_d05_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d05_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 488051121,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d05_mBR0_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gBR_sBM_cAll_d05_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d05_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 3242972696,
+        "freeze_seconds": 0.25,
+        "start_frame": 193,
+        "stop_frame": 201
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d05_mBR0_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gBR_sBM_cAll_d05_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d05_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 999978494,
+        "freeze_seconds": 0.5,
+        "start_frame": 190,
+        "stop_frame": 205
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d05_mBR0_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gBR_sBM_cAll_d05_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d05_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 2018490350,
+        "freeze_seconds": 1.0,
+        "start_frame": 182,
+        "stop_frame": 212
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d05_mBR0_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gBR_sBM_cAll_d05_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d05_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 2810801011,
+        "repeat_seconds": 0.5,
+        "start_frame": 190,
+        "stop_frame": 205,
+        "source_start_frame": 175,
+        "source_stop_frame": 190
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d05_mBR0_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gBR_sBM_cAll_d05_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d05_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 2737266424,
+        "repeat_seconds": 1.0,
+        "start_frame": 182,
+        "stop_frame": 212,
+        "source_start_frame": 152,
+        "source_stop_frame": 182
+      }
+    },
+    {
+      "sequence_id": "gBR_sBM_cAll_d05_mBR0_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gBR_sBM_cAll_d05_mBR0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d05_mBR0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 1800119038,
+        "repeat_seconds": 2.0,
+        "start_frame": 167,
+        "stop_frame": 227,
+        "source_start_frame": 107,
+        "source_stop_frame": 167
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d20_mHO5_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gHO_sBM_cAll_d20_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d20_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 1156118417
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d20_mHO5_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gHO_sBM_cAll_d20_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d20_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 764897789,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d20_mHO5_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gHO_sBM_cAll_d20_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d20_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 3562198185,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d20_mHO5_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gHO_sBM_cAll_d20_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d20_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 582563670,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d20_mHO5_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gHO_sBM_cAll_d20_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d20_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 4266730070,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d20_mHO5_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gHO_sBM_cAll_d20_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d20_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 786985803,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d20_mHO5_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gHO_sBM_cAll_d20_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d20_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 3860565281,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d20_mHO5_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gHO_sBM_cAll_d20_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d20_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 1416754238,
+        "freeze_seconds": 0.25,
+        "start_frame": 113,
+        "stop_frame": 121
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d20_mHO5_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gHO_sBM_cAll_d20_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d20_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 1401994004,
+        "freeze_seconds": 0.5,
+        "start_frame": 109,
+        "stop_frame": 124
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d20_mHO5_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gHO_sBM_cAll_d20_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d20_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 3184593357,
+        "freeze_seconds": 1.0,
+        "start_frame": 102,
+        "stop_frame": 132
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d20_mHO5_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gHO_sBM_cAll_d20_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d20_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 780787774,
+        "repeat_seconds": 0.5,
+        "start_frame": 109,
+        "stop_frame": 124,
+        "source_start_frame": 94,
+        "source_stop_frame": 109
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d20_mHO5_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gHO_sBM_cAll_d20_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d20_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 728043755,
+        "repeat_seconds": 1.0,
+        "start_frame": 102,
+        "stop_frame": 132,
+        "source_start_frame": 72,
+        "source_stop_frame": 102
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d20_mHO5_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gHO_sBM_cAll_d20_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d20_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 498442924,
+        "repeat_seconds": 2.0,
+        "start_frame": 90,
+        "stop_frame": 143,
+        "source_start_frame": 37,
+        "source_stop_frame": 90
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d21_mHO5_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gHO_sBM_cAll_d21_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d21_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 2624470219
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d21_mHO5_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gHO_sBM_cAll_d21_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d21_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 1420114410,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d21_mHO5_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gHO_sBM_cAll_d21_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d21_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 3961992482,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d21_mHO5_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gHO_sBM_cAll_d21_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d21_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 503804885,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d21_mHO5_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gHO_sBM_cAll_d21_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d21_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 4029169736,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d21_mHO5_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gHO_sBM_cAll_d21_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d21_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 2741968138,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d21_mHO5_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gHO_sBM_cAll_d21_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d21_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 883478533,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d21_mHO5_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gHO_sBM_cAll_d21_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d21_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 144019386,
+        "freeze_seconds": 0.25,
+        "start_frame": 113,
+        "stop_frame": 121
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d21_mHO5_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gHO_sBM_cAll_d21_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d21_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 2646102189,
+        "freeze_seconds": 0.5,
+        "start_frame": 109,
+        "stop_frame": 124
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d21_mHO5_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gHO_sBM_cAll_d21_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d21_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 3643988053,
+        "freeze_seconds": 1.0,
+        "start_frame": 102,
+        "stop_frame": 132
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d21_mHO5_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gHO_sBM_cAll_d21_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d21_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 1906056643,
+        "repeat_seconds": 0.5,
+        "start_frame": 109,
+        "stop_frame": 124,
+        "source_start_frame": 94,
+        "source_stop_frame": 109
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d21_mHO5_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gHO_sBM_cAll_d21_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d21_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 2966508135,
+        "repeat_seconds": 1.0,
+        "start_frame": 102,
+        "stop_frame": 132,
+        "source_start_frame": 72,
+        "source_stop_frame": 102
+      }
+    },
+    {
+      "sequence_id": "gHO_sBM_cAll_d21_mHO5_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gHO_sBM_cAll_d21_mHO5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d21_mHO5_ch02.wav",
+      "frames": 212,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 2148996330,
+        "repeat_seconds": 2.0,
+        "start_frame": 90,
+        "stop_frame": 143,
+        "source_start_frame": 37,
+        "source_stop_frame": 90
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d08_mJB5_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gJB_sBM_cAll_d08_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d08_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 1169391615
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d08_mJB5_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gJB_sBM_cAll_d08_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d08_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 1403417447,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d08_mJB5_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gJB_sBM_cAll_d08_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d08_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 1059396548,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d08_mJB5_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gJB_sBM_cAll_d08_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d08_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 4256040673,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d08_mJB5_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gJB_sBM_cAll_d08_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d08_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 1251417900,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d08_mJB5_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gJB_sBM_cAll_d08_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d08_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 792622337,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d08_mJB5_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gJB_sBM_cAll_d08_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d08_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 3179163982,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d08_mJB5_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gJB_sBM_cAll_d08_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d08_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 4163447865,
+        "freeze_seconds": 0.25,
+        "start_frame": 118,
+        "stop_frame": 125
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d08_mJB5_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gJB_sBM_cAll_d08_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d08_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 1814171874,
+        "freeze_seconds": 0.5,
+        "start_frame": 114,
+        "stop_frame": 129
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d08_mJB5_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gJB_sBM_cAll_d08_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d08_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 357485067,
+        "freeze_seconds": 1.0,
+        "start_frame": 106,
+        "stop_frame": 136
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d08_mJB5_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gJB_sBM_cAll_d08_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d08_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 1180804142,
+        "repeat_seconds": 0.5,
+        "start_frame": 114,
+        "stop_frame": 129,
+        "source_start_frame": 99,
+        "source_stop_frame": 114
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d08_mJB5_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gJB_sBM_cAll_d08_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d08_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 2302795352,
+        "repeat_seconds": 1.0,
+        "start_frame": 106,
+        "stop_frame": 136,
+        "source_start_frame": 76,
+        "source_stop_frame": 106
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d08_mJB5_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gJB_sBM_cAll_d08_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d08_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 3761367824,
+        "repeat_seconds": 2.0,
+        "start_frame": 94,
+        "stop_frame": 149,
+        "source_start_frame": 39,
+        "source_stop_frame": 94
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d09_mJB5_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gJB_sBM_cAll_d09_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d09_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 3067500658
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d09_mJB5_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gJB_sBM_cAll_d09_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d09_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 626262055,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d09_mJB5_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gJB_sBM_cAll_d09_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d09_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 1584177096,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d09_mJB5_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gJB_sBM_cAll_d09_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d09_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 1474819057,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d09_mJB5_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gJB_sBM_cAll_d09_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d09_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 371934834,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d09_mJB5_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gJB_sBM_cAll_d09_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d09_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 1180306651,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d09_mJB5_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gJB_sBM_cAll_d09_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d09_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 2856795173,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d09_mJB5_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gJB_sBM_cAll_d09_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d09_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 1985134273,
+        "freeze_seconds": 0.25,
+        "start_frame": 118,
+        "stop_frame": 125
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d09_mJB5_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gJB_sBM_cAll_d09_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d09_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 3651819971,
+        "freeze_seconds": 0.5,
+        "start_frame": 114,
+        "stop_frame": 129
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d09_mJB5_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gJB_sBM_cAll_d09_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d09_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 1337574091,
+        "freeze_seconds": 1.0,
+        "start_frame": 106,
+        "stop_frame": 136
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d09_mJB5_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gJB_sBM_cAll_d09_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d09_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 801370644,
+        "repeat_seconds": 0.5,
+        "start_frame": 114,
+        "stop_frame": 129,
+        "source_start_frame": 99,
+        "source_stop_frame": 114
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d09_mJB5_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gJB_sBM_cAll_d09_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d09_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 1566680105,
+        "repeat_seconds": 1.0,
+        "start_frame": 106,
+        "stop_frame": 136,
+        "source_start_frame": 76,
+        "source_stop_frame": 106
+      }
+    },
+    {
+      "sequence_id": "gJB_sBM_cAll_d09_mJB5_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gJB_sBM_cAll_d09_mJB5_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d09_mJB5_ch02.wav",
+      "frames": 220,
+      "fps": 29.932279909706548,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 3825698338,
+        "repeat_seconds": 2.0,
+        "start_frame": 94,
+        "stop_frame": 149,
+        "source_start_frame": 39,
+        "source_stop_frame": 94
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d01_mJS3_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gJS_sBM_cAll_d01_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d01_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 3366015081
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d01_mJS3_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gJS_sBM_cAll_d01_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d01_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 1641898417,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d01_mJS3_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gJS_sBM_cAll_d01_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d01_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 464282412,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d01_mJS3_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gJS_sBM_cAll_d01_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d01_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 2699977777,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d01_mJS3_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gJS_sBM_cAll_d01_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d01_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 1046037273,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d01_mJS3_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gJS_sBM_cAll_d01_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d01_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 4055878276,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d01_mJS3_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gJS_sBM_cAll_d01_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d01_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 2295904583,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d01_mJS3_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gJS_sBM_cAll_d01_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d01_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 278859702,
+        "freeze_seconds": 0.25,
+        "start_frame": 140,
+        "stop_frame": 148
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d01_mJS3_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gJS_sBM_cAll_d01_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d01_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 3906060306,
+        "freeze_seconds": 0.5,
+        "start_frame": 136,
+        "stop_frame": 151
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d01_mJS3_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gJS_sBM_cAll_d01_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d01_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 2484150186,
+        "freeze_seconds": 1.0,
+        "start_frame": 129,
+        "stop_frame": 159
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d01_mJS3_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gJS_sBM_cAll_d01_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d01_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 667496783,
+        "repeat_seconds": 0.5,
+        "start_frame": 136,
+        "stop_frame": 151,
+        "source_start_frame": 121,
+        "source_stop_frame": 136
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d01_mJS3_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gJS_sBM_cAll_d01_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d01_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 743194422,
+        "repeat_seconds": 1.0,
+        "start_frame": 129,
+        "stop_frame": 159,
+        "source_start_frame": 99,
+        "source_stop_frame": 129
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d01_mJS3_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gJS_sBM_cAll_d01_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d01_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 3427246593,
+        "repeat_seconds": 2.0,
+        "start_frame": 114,
+        "stop_frame": 174,
+        "source_start_frame": 54,
+        "source_stop_frame": 114
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d03_mJS3_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gJS_sBM_cAll_d03_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d03_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 1368409479
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d03_mJS3_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gJS_sBM_cAll_d03_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d03_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 1023997918,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d03_mJS3_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gJS_sBM_cAll_d03_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d03_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 1164134530,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d03_mJS3_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gJS_sBM_cAll_d03_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d03_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 561109576,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d03_mJS3_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gJS_sBM_cAll_d03_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d03_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 4275533629,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d03_mJS3_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gJS_sBM_cAll_d03_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d03_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 2425763597,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d03_mJS3_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gJS_sBM_cAll_d03_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d03_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 558251752,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d03_mJS3_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gJS_sBM_cAll_d03_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d03_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 2884344051,
+        "freeze_seconds": 0.25,
+        "start_frame": 140,
+        "stop_frame": 148
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d03_mJS3_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gJS_sBM_cAll_d03_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d03_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 2559480170,
+        "freeze_seconds": 0.5,
+        "start_frame": 136,
+        "stop_frame": 151
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d03_mJS3_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gJS_sBM_cAll_d03_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d03_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 3650130033,
+        "freeze_seconds": 1.0,
+        "start_frame": 129,
+        "stop_frame": 159
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d03_mJS3_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gJS_sBM_cAll_d03_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d03_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 418674890,
+        "repeat_seconds": 0.5,
+        "start_frame": 136,
+        "stop_frame": 151,
+        "source_start_frame": 121,
+        "source_stop_frame": 136
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d03_mJS3_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gJS_sBM_cAll_d03_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d03_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 1062853874,
+        "repeat_seconds": 1.0,
+        "start_frame": 129,
+        "stop_frame": 159,
+        "source_start_frame": 99,
+        "source_stop_frame": 129
+      }
+    },
+    {
+      "sequence_id": "gJS_sBM_cAll_d03_mJS3_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gJS_sBM_cAll_d03_mJS3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d03_mJS3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 3739977579,
+        "repeat_seconds": 2.0,
+        "start_frame": 114,
+        "stop_frame": 174,
+        "source_start_frame": 54,
+        "source_stop_frame": 114
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d28_mKR2_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gKR_sBM_cAll_d28_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d28_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 1403291267
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d28_mKR2_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gKR_sBM_cAll_d28_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d28_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 2281221999,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d28_mKR2_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gKR_sBM_cAll_d28_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d28_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 2810890622,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d28_mKR2_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gKR_sBM_cAll_d28_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d28_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 3765566086,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d28_mKR2_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gKR_sBM_cAll_d28_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d28_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 3341971998,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d28_mKR2_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gKR_sBM_cAll_d28_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d28_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 4138232602,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d28_mKR2_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gKR_sBM_cAll_d28_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d28_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 1933252688,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d28_mKR2_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gKR_sBM_cAll_d28_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d28_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 331281927,
+        "freeze_seconds": 0.25,
+        "start_frame": 154,
+        "stop_frame": 162
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d28_mKR2_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gKR_sBM_cAll_d28_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d28_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 2444848850,
+        "freeze_seconds": 0.5,
+        "start_frame": 150,
+        "stop_frame": 165
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d28_mKR2_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gKR_sBM_cAll_d28_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d28_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 2055548315,
+        "freeze_seconds": 1.0,
+        "start_frame": 143,
+        "stop_frame": 173
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d28_mKR2_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gKR_sBM_cAll_d28_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d28_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 574510506,
+        "repeat_seconds": 0.5,
+        "start_frame": 150,
+        "stop_frame": 165,
+        "source_start_frame": 135,
+        "source_stop_frame": 150
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d28_mKR2_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gKR_sBM_cAll_d28_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d28_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 583206763,
+        "repeat_seconds": 1.0,
+        "start_frame": 143,
+        "stop_frame": 173,
+        "source_start_frame": 113,
+        "source_stop_frame": 143
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d28_mKR2_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gKR_sBM_cAll_d28_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d28_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 4002469697,
+        "repeat_seconds": 2.0,
+        "start_frame": 128,
+        "stop_frame": 188,
+        "source_start_frame": 68,
+        "source_stop_frame": 128
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d30_mKR2_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gKR_sBM_cAll_d30_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d30_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 3164258901
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d30_mKR2_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gKR_sBM_cAll_d30_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d30_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 1897297516,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d30_mKR2_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gKR_sBM_cAll_d30_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d30_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 2942330855,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d30_mKR2_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gKR_sBM_cAll_d30_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d30_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 3611904286,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d30_mKR2_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gKR_sBM_cAll_d30_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d30_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 3101547343,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d30_mKR2_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gKR_sBM_cAll_d30_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d30_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 1726646293,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d30_mKR2_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gKR_sBM_cAll_d30_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d30_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 3944627801,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d30_mKR2_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gKR_sBM_cAll_d30_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d30_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 796518239,
+        "freeze_seconds": 0.25,
+        "start_frame": 154,
+        "stop_frame": 162
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d30_mKR2_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gKR_sBM_cAll_d30_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d30_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 3330666480,
+        "freeze_seconds": 0.5,
+        "start_frame": 150,
+        "stop_frame": 165
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d30_mKR2_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gKR_sBM_cAll_d30_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d30_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 525836279,
+        "freeze_seconds": 1.0,
+        "start_frame": 143,
+        "stop_frame": 173
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d30_mKR2_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gKR_sBM_cAll_d30_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d30_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 3507534940,
+        "repeat_seconds": 0.5,
+        "start_frame": 150,
+        "stop_frame": 165,
+        "source_start_frame": 135,
+        "source_stop_frame": 150
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d30_mKR2_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gKR_sBM_cAll_d30_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d30_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 2885293502,
+        "repeat_seconds": 1.0,
+        "start_frame": 143,
+        "stop_frame": 173,
+        "source_start_frame": 113,
+        "source_stop_frame": 143
+      }
+    },
+    {
+      "sequence_id": "gKR_sBM_cAll_d30_mKR2_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gKR_sBM_cAll_d30_mKR2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d30_mKR2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 1752854400,
+        "repeat_seconds": 2.0,
+        "start_frame": 128,
+        "stop_frame": 188,
+        "source_start_frame": 68,
+        "source_stop_frame": 128
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d17_mLH4_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gLH_sBM_cAll_d17_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d17_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 2346336702
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d17_mLH4_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gLH_sBM_cAll_d17_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d17_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 3644112611,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d17_mLH4_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gLH_sBM_cAll_d17_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d17_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 1963003789,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d17_mLH4_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gLH_sBM_cAll_d17_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d17_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 1961991,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d17_mLH4_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gLH_sBM_cAll_d17_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d17_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 3159212749,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d17_mLH4_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gLH_sBM_cAll_d17_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d17_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 2256393138,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d17_mLH4_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gLH_sBM_cAll_d17_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d17_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 3372523194,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d17_mLH4_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gLH_sBM_cAll_d17_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d17_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 2950859516,
+        "freeze_seconds": 0.25,
+        "start_frame": 127,
+        "stop_frame": 135
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d17_mLH4_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gLH_sBM_cAll_d17_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d17_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 1269569567,
+        "freeze_seconds": 0.5,
+        "start_frame": 124,
+        "stop_frame": 139
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d17_mLH4_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gLH_sBM_cAll_d17_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d17_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 4127292120,
+        "freeze_seconds": 1.0,
+        "start_frame": 116,
+        "stop_frame": 146
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d17_mLH4_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gLH_sBM_cAll_d17_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d17_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 1036950654,
+        "repeat_seconds": 0.5,
+        "start_frame": 124,
+        "stop_frame": 139,
+        "source_start_frame": 109,
+        "source_stop_frame": 124
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d17_mLH4_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gLH_sBM_cAll_d17_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d17_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 716412074,
+        "repeat_seconds": 1.0,
+        "start_frame": 116,
+        "stop_frame": 146,
+        "source_start_frame": 86,
+        "source_stop_frame": 116
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d17_mLH4_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gLH_sBM_cAll_d17_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d17_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 1049544406,
+        "repeat_seconds": 2.0,
+        "start_frame": 102,
+        "stop_frame": 161,
+        "source_start_frame": 43,
+        "source_stop_frame": 102
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d18_mLH4_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gLH_sBM_cAll_d18_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d18_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 4088120464
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d18_mLH4_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gLH_sBM_cAll_d18_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d18_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 4240835220,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d18_mLH4_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gLH_sBM_cAll_d18_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d18_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 1079667548,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d18_mLH4_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gLH_sBM_cAll_d18_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d18_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 3431761979,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d18_mLH4_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gLH_sBM_cAll_d18_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d18_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 3014016398,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d18_mLH4_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gLH_sBM_cAll_d18_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d18_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 762665581,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d18_mLH4_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gLH_sBM_cAll_d18_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d18_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 3102167901,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d18_mLH4_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gLH_sBM_cAll_d18_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d18_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 2574615536,
+        "freeze_seconds": 0.25,
+        "start_frame": 127,
+        "stop_frame": 135
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d18_mLH4_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gLH_sBM_cAll_d18_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d18_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 3612164441,
+        "freeze_seconds": 0.5,
+        "start_frame": 124,
+        "stop_frame": 139
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d18_mLH4_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gLH_sBM_cAll_d18_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d18_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 3747314374,
+        "freeze_seconds": 1.0,
+        "start_frame": 116,
+        "stop_frame": 146
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d18_mLH4_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gLH_sBM_cAll_d18_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d18_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 1734877826,
+        "repeat_seconds": 0.5,
+        "start_frame": 124,
+        "stop_frame": 139,
+        "source_start_frame": 109,
+        "source_stop_frame": 124
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d18_mLH4_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gLH_sBM_cAll_d18_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d18_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 544685978,
+        "repeat_seconds": 1.0,
+        "start_frame": 116,
+        "stop_frame": 146,
+        "source_start_frame": 86,
+        "source_stop_frame": 116
+      }
+    },
+    {
+      "sequence_id": "gLH_sBM_cAll_d18_mLH4_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gLH_sBM_cAll_d18_mLH4_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d18_mLH4_ch02.wav",
+      "frames": 239,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 3201580655,
+        "repeat_seconds": 2.0,
+        "start_frame": 102,
+        "stop_frame": 161,
+        "source_start_frame": 43,
+        "source_stop_frame": 102
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d13_mLO2_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gLO_sBM_cAll_d13_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d13_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 1614781577
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d13_mLO2_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gLO_sBM_cAll_d13_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d13_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 3028392064,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d13_mLO2_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gLO_sBM_cAll_d13_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d13_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 2038521285,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d13_mLO2_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gLO_sBM_cAll_d13_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d13_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 3828566098,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d13_mLO2_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gLO_sBM_cAll_d13_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d13_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 1462780615,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d13_mLO2_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gLO_sBM_cAll_d13_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d13_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 3160211918,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d13_mLO2_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gLO_sBM_cAll_d13_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d13_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 1677278201,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d13_mLO2_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gLO_sBM_cAll_d13_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d13_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 2964543855,
+        "freeze_seconds": 0.25,
+        "start_frame": 154,
+        "stop_frame": 162
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d13_mLO2_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gLO_sBM_cAll_d13_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d13_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 3759226532,
+        "freeze_seconds": 0.5,
+        "start_frame": 150,
+        "stop_frame": 165
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d13_mLO2_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gLO_sBM_cAll_d13_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d13_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 4138868868,
+        "freeze_seconds": 1.0,
+        "start_frame": 143,
+        "stop_frame": 173
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d13_mLO2_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gLO_sBM_cAll_d13_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d13_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 2554518793,
+        "repeat_seconds": 0.5,
+        "start_frame": 150,
+        "stop_frame": 165,
+        "source_start_frame": 135,
+        "source_stop_frame": 150
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d13_mLO2_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gLO_sBM_cAll_d13_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d13_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 3324469238,
+        "repeat_seconds": 1.0,
+        "start_frame": 143,
+        "stop_frame": 173,
+        "source_start_frame": 113,
+        "source_stop_frame": 143
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d13_mLO2_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gLO_sBM_cAll_d13_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d13_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 1042387381,
+        "repeat_seconds": 2.0,
+        "start_frame": 128,
+        "stop_frame": 188,
+        "source_start_frame": 68,
+        "source_stop_frame": 128
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d15_mLO2_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gLO_sBM_cAll_d15_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d15_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 1634093792
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d15_mLO2_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gLO_sBM_cAll_d15_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d15_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 3158223732,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d15_mLO2_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gLO_sBM_cAll_d15_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d15_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 2984124179,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d15_mLO2_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gLO_sBM_cAll_d15_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d15_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 3589026252,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d15_mLO2_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gLO_sBM_cAll_d15_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d15_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 3138193602,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d15_mLO2_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gLO_sBM_cAll_d15_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d15_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 1047935203,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d15_mLO2_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gLO_sBM_cAll_d15_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d15_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 3630913156,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d15_mLO2_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gLO_sBM_cAll_d15_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d15_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 2475712131,
+        "freeze_seconds": 0.25,
+        "start_frame": 154,
+        "stop_frame": 162
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d15_mLO2_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gLO_sBM_cAll_d15_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d15_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 599059715,
+        "freeze_seconds": 0.5,
+        "start_frame": 150,
+        "stop_frame": 165
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d15_mLO2_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gLO_sBM_cAll_d15_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d15_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 2670483744,
+        "freeze_seconds": 1.0,
+        "start_frame": 143,
+        "stop_frame": 173
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d15_mLO2_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gLO_sBM_cAll_d15_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d15_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 4275628112,
+        "repeat_seconds": 0.5,
+        "start_frame": 150,
+        "stop_frame": 165,
+        "source_start_frame": 135,
+        "source_stop_frame": 150
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d15_mLO2_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gLO_sBM_cAll_d15_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d15_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 751380917,
+        "repeat_seconds": 1.0,
+        "start_frame": 143,
+        "stop_frame": 173,
+        "source_start_frame": 113,
+        "source_stop_frame": 143
+      }
+    },
+    {
+      "sequence_id": "gLO_sBM_cAll_d15_mLO2_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gLO_sBM_cAll_d15_mLO2_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d15_mLO2_ch02.wav",
+      "frames": 287,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 1980929610,
+        "repeat_seconds": 2.0,
+        "start_frame": 128,
+        "stop_frame": 188,
+        "source_start_frame": 68,
+        "source_stop_frame": 128
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d22_mMH3_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gMH_sBM_cAll_d22_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d22_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 2603906076
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d22_mMH3_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gMH_sBM_cAll_d22_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d22_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 3924277797,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d22_mMH3_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gMH_sBM_cAll_d22_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d22_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 2362472526,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d22_mMH3_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gMH_sBM_cAll_d22_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d22_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 3806289231,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d22_mMH3_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gMH_sBM_cAll_d22_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d22_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 3373324082,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d22_mMH3_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gMH_sBM_cAll_d22_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d22_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 2994697807,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d22_mMH3_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gMH_sBM_cAll_d22_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d22_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 809748934,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d22_mMH3_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gMH_sBM_cAll_d22_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d22_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 3322140633,
+        "freeze_seconds": 0.25,
+        "start_frame": 140,
+        "stop_frame": 148
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d22_mMH3_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gMH_sBM_cAll_d22_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d22_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 3946241451,
+        "freeze_seconds": 0.5,
+        "start_frame": 136,
+        "stop_frame": 151
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d22_mMH3_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gMH_sBM_cAll_d22_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d22_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 3423579221,
+        "freeze_seconds": 1.0,
+        "start_frame": 129,
+        "stop_frame": 159
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d22_mMH3_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gMH_sBM_cAll_d22_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d22_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 1525090666,
+        "repeat_seconds": 0.5,
+        "start_frame": 136,
+        "stop_frame": 151,
+        "source_start_frame": 121,
+        "source_stop_frame": 136
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d22_mMH3_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gMH_sBM_cAll_d22_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d22_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 2653824832,
+        "repeat_seconds": 1.0,
+        "start_frame": 129,
+        "stop_frame": 159,
+        "source_start_frame": 99,
+        "source_stop_frame": 129
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d22_mMH3_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gMH_sBM_cAll_d22_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d22_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 3519496917,
+        "repeat_seconds": 2.0,
+        "start_frame": 114,
+        "stop_frame": 174,
+        "source_start_frame": 54,
+        "source_stop_frame": 114
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d24_mMH3_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gMH_sBM_cAll_d24_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d24_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 958249775
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d24_mMH3_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gMH_sBM_cAll_d24_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d24_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 2938270503,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d24_mMH3_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gMH_sBM_cAll_d24_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d24_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 230914560,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d24_mMH3_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gMH_sBM_cAll_d24_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d24_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 2348648536,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d24_mMH3_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gMH_sBM_cAll_d24_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d24_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 2198713751,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d24_mMH3_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gMH_sBM_cAll_d24_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d24_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 1885635942,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d24_mMH3_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gMH_sBM_cAll_d24_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d24_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 295386126,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d24_mMH3_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gMH_sBM_cAll_d24_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d24_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 3633112715,
+        "freeze_seconds": 0.25,
+        "start_frame": 140,
+        "stop_frame": 148
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d24_mMH3_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gMH_sBM_cAll_d24_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d24_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 705491943,
+        "freeze_seconds": 0.5,
+        "start_frame": 136,
+        "stop_frame": 151
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d24_mMH3_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gMH_sBM_cAll_d24_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d24_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 1416954429,
+        "freeze_seconds": 1.0,
+        "start_frame": 129,
+        "stop_frame": 159
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d24_mMH3_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gMH_sBM_cAll_d24_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d24_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 969442760,
+        "repeat_seconds": 0.5,
+        "start_frame": 136,
+        "stop_frame": 151,
+        "source_start_frame": 121,
+        "source_stop_frame": 136
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d24_mMH3_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gMH_sBM_cAll_d24_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d24_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 3162993232,
+        "repeat_seconds": 1.0,
+        "start_frame": 129,
+        "stop_frame": 159,
+        "source_start_frame": 99,
+        "source_stop_frame": 129
+      }
+    },
+    {
+      "sequence_id": "gMH_sBM_cAll_d24_mMH3_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gMH_sBM_cAll_d24_mMH3_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d24_mMH3_ch02.wav",
+      "frames": 261,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 96604629,
+        "repeat_seconds": 2.0,
+        "start_frame": 114,
+        "stop_frame": 174,
+        "source_start_frame": 54,
+        "source_stop_frame": 114
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d10_mPO1_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gPO_sBM_cAll_d10_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d10_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 247209664
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d10_mPO1_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gPO_sBM_cAll_d10_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d10_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 4075697275,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d10_mPO1_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gPO_sBM_cAll_d10_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d10_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 496824957,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d10_mPO1_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gPO_sBM_cAll_d10_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d10_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 1885581641,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d10_mPO1_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gPO_sBM_cAll_d10_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d10_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 121742213,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d10_mPO1_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gPO_sBM_cAll_d10_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d10_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 2224977615,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d10_mPO1_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gPO_sBM_cAll_d10_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d10_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 973601824,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d10_mPO1_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gPO_sBM_cAll_d10_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d10_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 3553219255,
+        "freeze_seconds": 0.25,
+        "start_frame": 171,
+        "stop_frame": 179
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d10_mPO1_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gPO_sBM_cAll_d10_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d10_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 798008922,
+        "freeze_seconds": 0.5,
+        "start_frame": 168,
+        "stop_frame": 183
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d10_mPO1_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gPO_sBM_cAll_d10_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d10_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 3723720885,
+        "freeze_seconds": 1.0,
+        "start_frame": 160,
+        "stop_frame": 190
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d10_mPO1_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gPO_sBM_cAll_d10_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d10_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 1688437645,
+        "repeat_seconds": 0.5,
+        "start_frame": 168,
+        "stop_frame": 183,
+        "source_start_frame": 153,
+        "source_stop_frame": 168
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d10_mPO1_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gPO_sBM_cAll_d10_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d10_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 666759918,
+        "repeat_seconds": 1.0,
+        "start_frame": 160,
+        "stop_frame": 190,
+        "source_start_frame": 130,
+        "source_stop_frame": 160
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d10_mPO1_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gPO_sBM_cAll_d10_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d10_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 1331722577,
+        "repeat_seconds": 2.0,
+        "start_frame": 145,
+        "stop_frame": 205,
+        "source_start_frame": 85,
+        "source_stop_frame": 145
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d11_mPO1_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gPO_sBM_cAll_d11_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d11_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 932375642
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d11_mPO1_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gPO_sBM_cAll_d11_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d11_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 3302438030,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d11_mPO1_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gPO_sBM_cAll_d11_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d11_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 3472479060,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d11_mPO1_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gPO_sBM_cAll_d11_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d11_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 2013813675,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d11_mPO1_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gPO_sBM_cAll_d11_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d11_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 139734446,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d11_mPO1_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gPO_sBM_cAll_d11_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d11_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 3110346170,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d11_mPO1_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gPO_sBM_cAll_d11_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d11_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 1065830773,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d11_mPO1_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gPO_sBM_cAll_d11_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d11_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 1422481606,
+        "freeze_seconds": 0.25,
+        "start_frame": 171,
+        "stop_frame": 179
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d11_mPO1_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gPO_sBM_cAll_d11_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d11_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 2923642756,
+        "freeze_seconds": 0.5,
+        "start_frame": 168,
+        "stop_frame": 183
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d11_mPO1_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gPO_sBM_cAll_d11_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d11_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 2520218451,
+        "freeze_seconds": 1.0,
+        "start_frame": 160,
+        "stop_frame": 190
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d11_mPO1_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gPO_sBM_cAll_d11_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d11_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 3797777037,
+        "repeat_seconds": 0.5,
+        "start_frame": 168,
+        "stop_frame": 183,
+        "source_start_frame": 153,
+        "source_stop_frame": 168
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d11_mPO1_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gPO_sBM_cAll_d11_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d11_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 3124301876,
+        "repeat_seconds": 1.0,
+        "start_frame": 160,
+        "stop_frame": 190,
+        "source_start_frame": 130,
+        "source_stop_frame": 160
+      }
+    },
+    {
+      "sequence_id": "gPO_sBM_cAll_d11_mPO1_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gPO_sBM_cAll_d11_mPO1_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d11_mPO1_ch02.wav",
+      "frames": 319,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 180488789,
+        "repeat_seconds": 2.0,
+        "start_frame": 145,
+        "stop_frame": 205,
+        "source_start_frame": 85,
+        "source_stop_frame": 145
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d25_mWA0_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gWA_sBM_cAll_d25_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d25_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 2835809180
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d25_mWA0_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gWA_sBM_cAll_d25_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d25_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 1684447339,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d25_mWA0_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gWA_sBM_cAll_d25_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d25_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 3626205738,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d25_mWA0_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gWA_sBM_cAll_d25_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d25_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 1932891343,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d25_mWA0_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gWA_sBM_cAll_d25_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d25_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 70915833,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d25_mWA0_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gWA_sBM_cAll_d25_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d25_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 43789200,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d25_mWA0_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gWA_sBM_cAll_d25_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d25_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 337805604,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d25_mWA0_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gWA_sBM_cAll_d25_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d25_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 2410620750,
+        "freeze_seconds": 0.25,
+        "start_frame": 193,
+        "stop_frame": 201
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d25_mWA0_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gWA_sBM_cAll_d25_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d25_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 1748606349,
+        "freeze_seconds": 0.5,
+        "start_frame": 190,
+        "stop_frame": 205
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d25_mWA0_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gWA_sBM_cAll_d25_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d25_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 205406912,
+        "freeze_seconds": 1.0,
+        "start_frame": 182,
+        "stop_frame": 212
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d25_mWA0_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gWA_sBM_cAll_d25_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d25_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 693315214,
+        "repeat_seconds": 0.5,
+        "start_frame": 190,
+        "stop_frame": 205,
+        "source_start_frame": 175,
+        "source_stop_frame": 190
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d25_mWA0_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gWA_sBM_cAll_d25_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d25_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 1289258116,
+        "repeat_seconds": 1.0,
+        "start_frame": 182,
+        "stop_frame": 212,
+        "source_start_frame": 152,
+        "source_stop_frame": 182
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d25_mWA0_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gWA_sBM_cAll_d25_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d25_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 661326578,
+        "repeat_seconds": 2.0,
+        "start_frame": 167,
+        "stop_frame": 227,
+        "source_start_frame": 107,
+        "source_stop_frame": 167
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d26_mWA0_ch02",
+      "variant": "clean",
+      "severity": "clean",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/clean/clean/gWA_sBM_cAll_d26_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d26_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "clean",
+        "severity": "clean",
+        "seed": 335362889
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d26_mWA0_ch02",
+      "variant": "jitter",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/low/gWA_sBM_cAll_d26_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d26_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "low",
+        "seed": 4049660914,
+        "joint_noise_std_rad": 0.002,
+        "root_xy_noise_std_m": 8e-05
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d26_mWA0_ch02",
+      "variant": "jitter",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/medium/gWA_sBM_cAll_d26_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d26_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "medium",
+        "seed": 881224629,
+        "joint_noise_std_rad": 0.005,
+        "root_xy_noise_std_m": 0.0002
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d26_mWA0_ch02",
+      "variant": "jitter",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/jitter/high/gWA_sBM_cAll_d26_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d26_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "jitter",
+        "severity": "high",
+        "seed": 3866742400,
+        "joint_noise_std_rad": 0.01,
+        "root_xy_noise_std_m": 0.0004
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d26_mWA0_ch02",
+      "variant": "lowpass",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/low/gWA_sBM_cAll_d26_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d26_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "low",
+        "seed": 4165592512,
+        "gaussian_sigma_frames": 0.75
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d26_mWA0_ch02",
+      "variant": "lowpass",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/medium/gWA_sBM_cAll_d26_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d26_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "medium",
+        "seed": 1587391620,
+        "gaussian_sigma_frames": 1.5
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d26_mWA0_ch02",
+      "variant": "lowpass",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/lowpass/high/gWA_sBM_cAll_d26_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d26_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "lowpass",
+        "severity": "high",
+        "seed": 2653563381,
+        "gaussian_sigma_frames": 3.0
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d26_mWA0_ch02",
+      "variant": "freeze",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/low/gWA_sBM_cAll_d26_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d26_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "low",
+        "seed": 4011514165,
+        "freeze_seconds": 0.25,
+        "start_frame": 193,
+        "stop_frame": 201
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d26_mWA0_ch02",
+      "variant": "freeze",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/medium/gWA_sBM_cAll_d26_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d26_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "medium",
+        "seed": 1231260346,
+        "freeze_seconds": 0.5,
+        "start_frame": 190,
+        "stop_frame": 205
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d26_mWA0_ch02",
+      "variant": "freeze",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/freeze/high/gWA_sBM_cAll_d26_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d26_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "freeze",
+        "severity": "high",
+        "seed": 692055162,
+        "freeze_seconds": 1.0,
+        "start_frame": 182,
+        "stop_frame": 212
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d26_mWA0_ch02",
+      "variant": "repeat",
+      "severity": "low",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/low/gWA_sBM_cAll_d26_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d26_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "low",
+        "seed": 2647685415,
+        "repeat_seconds": 0.5,
+        "start_frame": 190,
+        "stop_frame": 205,
+        "source_start_frame": 175,
+        "source_stop_frame": 190
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d26_mWA0_ch02",
+      "variant": "repeat",
+      "severity": "medium",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/medium/gWA_sBM_cAll_d26_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d26_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "medium",
+        "seed": 866733187,
+        "repeat_seconds": 1.0,
+        "start_frame": 182,
+        "stop_frame": 212,
+        "source_start_frame": 152,
+        "source_stop_frame": 182
+      }
+    },
+    {
+      "sequence_id": "gWA_sBM_cAll_d26_mWA0_ch02",
+      "variant": "repeat",
+      "severity": "high",
+      "path": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/repeat/high/gWA_sBM_cAll_d26_mWA0_ch02.pkl",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d26_mWA0_ch02.wav",
+      "frames": 359,
+      "fps": 30.0,
+      "details": {
+        "variant": "repeat",
+        "severity": "high",
+        "seed": 3406445997,
+        "repeat_seconds": 2.0,
+        "start_frame": 167,
+        "stop_frame": 227,
+        "source_start_frame": 107,
+        "source_stop_frame": 167
+      }
+    }
+  ]
+}

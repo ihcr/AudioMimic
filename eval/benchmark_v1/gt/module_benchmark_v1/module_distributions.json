@@ -1,0 +1,7205 @@
+{
+  "gt_records": 1611,
+  "rows": [
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 1408,
+      "q10": 0.7494814782724781,
+      "median": 5.069249393969676,
+      "q90": 11.831316693617667
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 1408,
+      "q10": 1.7965612062149345,
+      "median": 4.829595942558765,
+      "q90": 7.567832882300288
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 1408,
+      "q10": 16.736424543079224,
+      "median": 64.85340999090505,
+      "q90": 122.52856713774584
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 1408,
+      "q10": 259.5699693365961,
+      "median": 1272.8539135924416,
+      "q90": 2678.5310717892153
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 1408,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.012539184952978056
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 1408,
+      "q10": 0.0,
+      "median": 0.11149825783972125,
+      "q90": 0.7771587743732591
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 1408,
+      "q10": 0.10839160839160839,
+      "median": 0.632076024534125,
+      "q90": 0.9076018099547511
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 1408,
+      "q10": 0.016712725371240477,
+      "median": 0.1668274547720553,
+      "q90": 0.7331870620721594
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 1408,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.00909090909090909
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "M",
+      "metric": "bas",
+      "n": 1408,
+      "q10": 0.1259835123626669,
+      "median": 0.26353919000518955,
+      "q90": 0.47269784869084486
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 1408,
+      "q10": 0.25646360371667487,
+      "median": 0.5134708596195483,
+      "q90": 0.7660566284552373
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 1408,
+      "q10": 0.47947826086956524,
+      "median": 0.65,
+      "q90": 0.896551724137931
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 1408,
+      "q10": 0.5333333333333333,
+      "median": 0.7741935483870968,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 1408,
+      "q10": 0.5365853658536585,
+      "median": 0.7058823529411765,
+      "q90": 0.8464253393665158
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 1408,
+      "q10": 0.05167043740573147,
+      "median": 0.08912698412698439,
+      "q90": 0.12488662131519268
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 1408,
+      "q10": 0.02053924032451976,
+      "median": 0.06016842002007208,
+      "q90": 0.10864252896853167
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 1408,
+      "q10": 0.038779101567634866,
+      "median": 0.09151832802243072,
+      "q90": 0.16992260437400264
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 1408,
+      "q10": 0.1,
+      "median": 0.5333333333333333,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 1408,
+      "q10": 5.341508778800561,
+      "median": 29.81468023255809,
+      "q90": 67.418829647676
+    },
+    {
+      "axis": "dataset",
+      "group": "aistpp",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 1408,
+      "q10": 0.2199291952229953,
+      "median": 0.2674946968492663,
+      "q90": 0.319155265588254
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 203,
+      "q10": 2.161644489391962,
+      "median": 4.2197647206477695,
+      "q90": 6.357368026019667
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 203,
+      "q10": 2.9930572609580355,
+      "median": 4.377982043571216,
+      "q90": 5.584827035535014
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 203,
+      "q10": 31.10815975936362,
+      "median": 55.80464393757753,
+      "q90": 80.29098426008372
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 203,
+      "q10": 601.6941878506044,
+      "median": 1103.6852168632815,
+      "q90": 1649.5346118286354
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 203,
+      "q10": 0.0,
+      "median": 0.01612565445026178,
+      "q90": 0.06464261697954608
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 203,
+      "q10": 0.0,
+      "median": 0.025613660618996798,
+      "q90": 0.10806407470015295
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 203,
+      "q10": 0.14332390889645086,
+      "median": 0.300703082747431,
+      "q90": 0.4210551205498738
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 203,
+      "q10": 0.009824679429820049,
+      "median": 0.02413932737195013,
+      "q90": 0.07653938217834169
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 203,
+      "q10": 0.0,
+      "median": 0.0025602409638554218,
+      "q90": 0.009626006722104816
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "M",
+      "metric": "bas",
+      "n": 203,
+      "q10": 0.17734345683558989,
+      "median": 0.22367652745463976,
+      "q90": 0.29630057370876894
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 203,
+      "q10": 0.3645007958511105,
+      "median": 0.4988573946896115,
+      "q90": 0.607265441217029
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 203,
+      "q10": 0.5562894814940433,
+      "median": 0.7318007662835249,
+      "q90": 0.8997790868924891
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 203,
+      "q10": 0.5375430539609644,
+      "median": 0.6863354037267081,
+      "q90": 0.7777151799687011
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 203,
+      "q10": 0.6089934122473102,
+      "median": 0.6937738246505718,
+      "q90": 0.7748387096774193
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 203,
+      "q10": 0.07874829931973011,
+      "median": 0.09226757369614513,
+      "q90": 0.10432653061224927
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 203,
+      "q10": -1.4964119086294199e-05,
+      "median": 0.036529475389389277,
+      "q90": 0.09557196172453696
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 203,
+      "q10": 0.010107916922772004,
+      "median": 0.03955273580773802,
+      "q90": 0.08271835414366335
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 203,
+      "q10": 0.13333333333333333,
+      "median": 0.5666666666666667,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 203,
+      "q10": 3.046874999999716,
+      "median": 21.007703234264483,
+      "q90": 48.722179625330234
+    },
+    {
+      "axis": "dataset",
+      "group": "finedance",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 203,
+      "q10": 0.23839439285287514,
+      "median": 0.2514960361640059,
+      "q90": 0.27010608854220686
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 141,
+      "q10": 2.5346869068029827,
+      "median": 6.587849938948425,
+      "q90": 11.687443558197415
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 141,
+      "q10": 3.480460566040002,
+      "median": 5.519577770119447,
+      "q90": 7.318906647614396
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 141,
+      "q10": 45.14188676843806,
+      "median": 80.71672449678256,
+      "q90": 131.05740544829078
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 141,
+      "q10": 881.6656023018423,
+      "median": 1751.3840447509817,
+      "q90": 3079.190995426051
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.0
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0502092050209205,
+      "q90": 0.5087108013937283
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 141,
+      "q10": 0.05660377358490566,
+      "median": 0.7027972027972028,
+      "q90": 0.946927374301676
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 141,
+      "q10": 0.11001639388527594,
+      "median": 0.3559965647783969,
+      "q90": 1.3817646728696817
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0038314176245210726,
+      "q90": 0.01567398119122257
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "M",
+      "metric": "bas",
+      "n": 141,
+      "q10": 0.11187673822508441,
+      "median": 0.22634171159244296,
+      "q90": 0.3495337105247071
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 141,
+      "q10": 0.2518735130311662,
+      "median": 0.47538361208541585,
+      "q90": 0.6582199297203044
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 141,
+      "q10": 0.5443037974683544,
+      "median": 0.7058823529411765,
+      "q90": 0.9
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 141,
+      "q10": 0.6,
+      "median": 0.7333333333333333,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 141,
+      "q10": 0.6,
+      "median": 0.717948717948718,
+      "q90": 0.8275862068965517
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 141,
+      "q10": 0.062086167800454284,
+      "median": 0.09005930577359123,
+      "q90": 0.12099773242630385
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 141,
+      "q10": 0.01732607106954807,
+      "median": 0.05568396866208027,
+      "q90": 0.09662970498261886
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 141,
+      "q10": 0.03182943477602689,
+      "median": 0.07430690074206041,
+      "q90": 0.1307384878853399
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 141,
+      "q10": 0.1,
+      "median": 0.5002606882168926,
+      "q90": 0.9666666666666667
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 141,
+      "q10": 2.5461647727272236,
+      "median": 23.376551418439803,
+      "q90": 51.243251661129634
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Ballet_Jazz",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 141,
+      "q10": 0.23169586983729684,
+      "median": 0.2669504129339306,
+      "q90": 0.3138834635416669
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 141,
+      "q10": 4.644225011767353,
+      "median": 8.721637653361416,
+      "q90": 14.978401171089107
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 141,
+      "q10": 4.8026460634635075,
+      "median": 6.411480967913205,
+      "q90": 8.777878970278282
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 141,
+      "q10": 61.29783629262105,
+      "median": 92.5339143787789,
+      "q90": 147.01022424352894
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 141,
+      "q10": 1100.4624300090945,
+      "median": 1854.2188654497725,
+      "q90": 3315.6682823250576
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.0
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.17073170731707318,
+      "q90": 0.5296167247386759
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 141,
+      "q10": 0.06424581005586592,
+      "median": 0.7237762237762237,
+      "q90": 0.9117647058823529
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 141,
+      "q10": 0.1874601625212035,
+      "median": 0.5880743592656195,
+      "q90": 2.2263299237150265
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0034770514603616135,
+      "q90": 0.01583710407239819
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "M",
+      "metric": "bas",
+      "n": 141,
+      "q10": 0.15712355661679814,
+      "median": 0.30704684574388974,
+      "q90": 0.5116687160602171
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 141,
+      "q10": 0.28546336180817444,
+      "median": 0.4711244962875399,
+      "q90": 0.7675014996826249
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 141,
+      "q10": 0.4782608695652174,
+      "median": 0.6086956521739131,
+      "q90": 0.7368421052631579
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 141,
+      "q10": 0.6,
+      "median": 0.7857142857142857,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 141,
+      "q10": 0.5454545454545454,
+      "median": 0.6666666666666667,
+      "q90": 0.8
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 141,
+      "q10": 0.03265306122448975,
+      "median": 0.07795678368671055,
+      "q90": 0.11170068027210878
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 141,
+      "q10": 0.028890369639437544,
+      "median": 0.06428531328294136,
+      "q90": 0.10863591715109068
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 141,
+      "q10": 0.03963239161626792,
+      "median": 0.10582501844375988,
+      "q90": 0.1603115313592773
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 141,
+      "q10": 0.06666666666666667,
+      "median": 0.5333333333333333,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 141,
+      "q10": 8.94976544864582,
+      "median": 37.65285326086982,
+      "q90": 74.53345415360495
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Breaking",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 141,
+      "q10": 0.22082557797805646,
+      "median": 0.2638799252717391,
+      "q90": 0.3052875905797101
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 141,
+      "q10": 2.6178829074134193,
+      "median": 4.453970694646088,
+      "q90": 8.266466525841828
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 141,
+      "q10": 3.483336108839619,
+      "median": 4.587850590809372,
+      "q90": 6.233862271491859
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 141,
+      "q10": 43.660557128394316,
+      "median": 63.47287138227249,
+      "q90": 96.38258299918502
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 141,
+      "q10": 751.1518125762917,
+      "median": 1150.7503612209312,
+      "q90": 1828.9235369429587
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.0
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 141,
+      "q10": 0.016968325791855202,
+      "median": 0.37727272727272726,
+      "q90": 0.7791164658634538
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 141,
+      "q10": 0.6733870967741935,
+      "median": 0.8387096774193549,
+      "q90": 0.9314516129032258
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 141,
+      "q10": 0.12301529575362796,
+      "median": 0.29066366540777305,
+      "q90": 0.6820393399257187
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.0066985645933014355
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "M",
+      "metric": "bas",
+      "n": 141,
+      "q10": 0.14952517627484055,
+      "median": 0.2849261677055075,
+      "q90": 0.459912785411813
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 141,
+      "q10": 0.23971770480584803,
+      "median": 0.4821347613537189,
+      "q90": 0.7759711569281097
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 141,
+      "q10": 0.5,
+      "median": 0.631578947368421,
+      "q90": 0.7777777777777778
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 141,
+      "q10": 0.6,
+      "median": 0.7857142857142857,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 141,
+      "q10": 0.5454545454545454,
+      "median": 0.7058823529411765,
+      "q90": 0.8333333333333333
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 141,
+      "q10": 0.053106575963718816,
+      "median": 0.09172335600907033,
+      "q90": 0.13845804988662103
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 141,
+      "q10": 0.022363897847174873,
+      "median": 0.07588856465744437,
+      "q90": 0.1072060818153773
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 141,
+      "q10": 0.03560532126178925,
+      "median": 0.08858311109656294,
+      "q90": 0.17746879875795354
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 141,
+      "q10": 0.13333333333333333,
+      "median": 0.6333333333333333,
+      "q90": 0.9688536953242836
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 141,
+      "q10": 4.953835227272663,
+      "median": 18.61464665653493,
+      "q90": 62.546164772726996
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/House",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 141,
+      "q10": 0.21804110607008736,
+      "median": 0.274040377869898,
+      "q90": 0.3319454538113693
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 141,
+      "q10": 1.4981613378309981,
+      "median": 6.026924183586635,
+      "q90": 12.713114290255906
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 141,
+      "q10": 2.6100171001880423,
+      "median": 5.279043063758616,
+      "q90": 7.863004397808782
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 141,
+      "q10": 29.079236853871326,
+      "median": 76.13654796566036,
+      "q90": 133.81118485117648
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 141,
+      "q10": 519.9363306132752,
+      "median": 1542.3486618760658,
+      "q90": 2830.130997624538
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.0
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.12643678160919541,
+      "q90": 0.8257839721254355
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 141,
+      "q10": 0.21153846153846154,
+      "median": 0.5363128491620112,
+      "q90": 0.7857142857142857
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 141,
+      "q10": 0.01492510655661836,
+      "median": 0.092846248742803,
+      "q90": 0.4405224766016524
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.00782472613458529
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "M",
+      "metric": "bas",
+      "n": 141,
+      "q10": 0.08594497077476261,
+      "median": 0.2757077808571755,
+      "q90": 0.5207791152022647
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 141,
+      "q10": 0.15841865588397158,
+      "median": 0.5732624213140052,
+      "q90": 0.7974703956657999
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 141,
+      "q10": 0.45454545454545453,
+      "median": 0.6470588235294118,
+      "q90": 0.9090909090909091
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 141,
+      "q10": 0.5333333333333333,
+      "median": 0.7419354838709677,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 141,
+      "q10": 0.5,
+      "median": 0.6875,
+      "q90": 0.8363636363636363
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 141,
+      "q10": 0.0480272108843538,
+      "median": 0.09814058956916094,
+      "q90": 0.1406802721088437
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 141,
+      "q10": 0.01956270624828567,
+      "median": 0.06407504015693063,
+      "q90": 0.11768132198444653
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 141,
+      "q10": 0.03544741219622275,
+      "median": 0.11368223639434841,
+      "q90": 0.19189198624535386
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 141,
+      "q10": 0.1,
+      "median": 0.5333333333333333,
+      "q90": 0.9
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 141,
+      "q10": 2.1373401988638534,
+      "median": 26.048237141203984,
+      "q90": 74.53345415360495
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Krumping",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 141,
+      "q10": 0.20614948850287168,
+      "median": 0.26773462540064097,
+      "q90": 0.3297719925548592
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 141,
+      "q10": 1.7715374238060575,
+      "median": 4.403131452479167,
+      "q90": 8.80280259784828
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 141,
+      "q10": 2.77846413395418,
+      "median": 4.529734422299927,
+      "q90": 6.4741704373812405
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 141,
+      "q10": 30.36747302946943,
+      "median": 56.12086599863263,
+      "q90": 93.04020692853979
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 141,
+      "q10": 502.63264547522317,
+      "median": 1004.5437375223157,
+      "q90": 1922.9332470678196
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.0
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.04090909090909091,
+      "q90": 0.39372822299651566
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 141,
+      "q10": 0.5027932960893855,
+      "median": 0.7097902097902098,
+      "q90": 0.8647798742138365
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 141,
+      "q10": 0.06888101446250838,
+      "median": 0.16786562777071978,
+      "q90": 0.3800231703579657
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.006787330316742082
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "M",
+      "metric": "bas",
+      "n": 141,
+      "q10": 0.1394709033027393,
+      "median": 0.29192956655652386,
+      "q90": 0.6206751532578604
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 141,
+      "q10": 0.2647034599395033,
+      "median": 0.5720019074952959,
+      "q90": 0.8440258899591324
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 141,
+      "q10": 0.44,
+      "median": 0.6521739130434783,
+      "q90": 0.9259259259259259
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 141,
+      "q10": 0.6153846153846154,
+      "median": 0.8064516129032258,
+      "q90": 1.0
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 141,
+      "q10": 0.5454545454545454,
+      "median": 0.7407407407407407,
+      "q90": 0.8749999999999999
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 141,
+      "q10": 0.05798185941043066,
+      "median": 0.09188208616780003,
+      "q90": 0.12049886621315142
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 141,
+      "q10": 0.031458930692683594,
+      "median": 0.07703528138259777,
+      "q90": 0.1294735381736889
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 141,
+      "q10": 0.049495058029189694,
+      "median": 0.1291846983642155,
+      "q90": 0.18154906914674054
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 141,
+      "q10": 0.03334926704907584,
+      "median": 0.5,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 141,
+      "q10": 6.46479379795386,
+      "median": 32.46799906141928,
+      "q90": 72.04455700549445
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/LA_HipHop",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 141,
+      "q10": 0.22201936141304335,
+      "median": 0.273862205263716,
+      "q90": 0.31978561046511617
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 141,
+      "q10": 0.7765018121413857,
+      "median": 5.150722738005138,
+      "q90": 11.111439702037575
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 141,
+      "q10": 1.41907485774501,
+      "median": 4.965652662628259,
+      "q90": 7.441975136374564
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 141,
+      "q10": 15.654980679648736,
+      "median": 70.37543744577748,
+      "q90": 121.37818041591024
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 141,
+      "q10": 227.1855322884416,
+      "median": 1374.8901714946878,
+      "q90": 2593.0415523663355
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.35909090909090907
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 141,
+      "q10": 0.013574660633484163,
+      "median": 0.3008356545961003,
+      "q90": 0.8466898954703833
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 141,
+      "q10": 0.10839160839160839,
+      "median": 0.46923076923076923,
+      "q90": 0.768969422423556
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 141,
+      "q10": 0.005178102557295951,
+      "median": 0.11086004139205147,
+      "q90": 0.3112136476229675
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.005219206680584551
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "M",
+      "metric": "bas",
+      "n": 141,
+      "q10": 0.13945176623048558,
+      "median": 0.25382398364337183,
+      "q90": 0.42677800201978017
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 141,
+      "q10": 0.32553412052383834,
+      "median": 0.6047682407307212,
+      "q90": 0.7701497628797943
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 141,
+      "q10": 0.5217391304347826,
+      "median": 0.7647058823529411,
+      "q90": 1.0
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 141,
+      "q10": 0.4666666666666667,
+      "median": 0.7419354838709677,
+      "q90": 0.9285714285714286
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 141,
+      "q10": 0.5161290322580646,
+      "median": 0.7259259259259259,
+      "q90": 0.8636363636363636
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 141,
+      "q10": 0.05800453514739212,
+      "median": 0.08970521541950105,
+      "q90": 0.12485260770975048
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 141,
+      "q10": 0.019714510838105163,
+      "median": 0.051991700690484394,
+      "q90": 0.09548385703038838
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 141,
+      "q10": 0.039431506145550785,
+      "median": 0.07689377598428722,
+      "q90": 0.132333162468984
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 141,
+      "q10": 0.13333333333333333,
+      "median": 0.5666666666666667,
+      "q90": 0.9004302103250478
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 141,
+      "q10": 6.1722503431709015,
+      "median": 28.13860009671177,
+      "q90": 66.76218133223674
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Locking",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 141,
+      "q10": 0.21293772163120553,
+      "median": 0.26429966517857145,
+      "q90": 0.31835521941489353
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 141,
+      "q10": 4.096297741464382,
+      "median": 7.854085098949699,
+      "q90": 17.30129438204224
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 141,
+      "q10": 4.3123118093183415,
+      "median": 6.032718687073,
+      "q90": 9.544120174999417
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 141,
+      "q10": 53.26324157361484,
+      "median": 83.83062438106296,
+      "q90": 144.08229195183392
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 141,
+      "q10": 924.9831192345255,
+      "median": 1615.3047234517603,
+      "q90": 3154.990956559353
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.0
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.08710801393728224,
+      "q90": 0.4351464435146444
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 141,
+      "q10": 0.5461538461538461,
+      "median": 0.8743016759776536,
+      "q90": 0.9825174825174825
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 141,
+      "q10": 0.14949144313313062,
+      "median": 0.3982158802171892,
+      "q90": 1.0229509936178016
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.008368200836820083
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "M",
+      "metric": "bas",
+      "n": 141,
+      "q10": 0.1434341101005926,
+      "median": 0.29764879186044596,
+      "q90": 0.5379085434545011
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 141,
+      "q10": 0.23222794983832135,
+      "median": 0.5564330040348822,
+      "q90": 0.7916725769940895
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 141,
+      "q10": 0.5357142857142857,
+      "median": 0.725,
+      "q90": 0.9411764705882353
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 141,
+      "q10": 0.6666666666666666,
+      "median": 0.8125,
+      "q90": 1.0
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 141,
+      "q10": 0.6285714285714286,
+      "median": 0.7647058823529413,
+      "q90": 0.9032258064516129
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 141,
+      "q10": 0.05159987071751759,
+      "median": 0.08818594104308392,
+      "q90": 0.11809523809523814
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 141,
+      "q10": 0.024941624646406237,
+      "median": 0.05197286995160216,
+      "q90": 0.12274013583885224
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 141,
+      "q10": 0.04471741530519838,
+      "median": 0.10652705310391157,
+      "q90": 0.19129016013448985
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 141,
+      "q10": 0.1,
+      "median": 0.4666666666666667,
+      "q90": 0.9354449472096531
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 141,
+      "q10": 2.5432180851064317,
+      "median": 30.897090517241324,
+      "q90": 55.61667049632345
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Middle_HipHop",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 141,
+      "q10": 0.2061851594129556,
+      "median": 0.2580566406249999,
+      "q90": 0.3066539842681255
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 140,
+      "q10": 0.2960944379867678,
+      "median": 1.175985215173836,
+      "q90": 3.8014319843685107
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 140,
+      "q10": 1.1960598420939463,
+      "median": 2.3301174452836513,
+      "q90": 4.355091647297895
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 140,
+      "q10": 9.218036032901345,
+      "median": 24.125561005654646,
+      "q90": 54.11006496890327
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 140,
+      "q10": 129.36716997733086,
+      "median": 397.64592422766145,
+      "q90": 982.4387918294925
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 140,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.041811846689895474
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 140,
+      "q10": 0.018779016239299496,
+      "median": 0.5106279066377035,
+      "q90": 0.9593504005572971
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 140,
+      "q10": 0.08938316400580551,
+      "median": 0.3951048951048951,
+      "q90": 0.6578185577668648
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 140,
+      "q10": 0.0036953268152063357,
+      "median": 0.05226091369748556,
+      "q90": 0.14510354246103552
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 140,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.0026609784877915993
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "M",
+      "metric": "bas",
+      "n": 140,
+      "q10": 0.12064101690524914,
+      "median": 0.24218605830468629,
+      "q90": 0.38352294673896486
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 140,
+      "q10": 0.2827856855723507,
+      "median": 0.464023852932386,
+      "q90": 0.6800399730397385
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 140,
+      "q10": 0.4982758620689655,
+      "median": 0.639277108433735,
+      "q90": 0.7835714285714286
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 140,
+      "q10": 0.6,
+      "median": 0.7880184331797235,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 140,
+      "q10": 0.5526586620926244,
+      "median": 0.6988372093023256,
+      "q90": 0.8125
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 140,
+      "q10": 0.05066439909297034,
+      "median": 0.08609977324263007,
+      "q90": 0.11557823129251683
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 140,
+      "q10": 0.024840627291620055,
+      "median": 0.05648200632991644,
+      "q90": 0.09212464226083433
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 140,
+      "q10": 0.042528391138167136,
+      "median": 0.08983434030403235,
+      "q90": 0.2000076569867102
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 140,
+      "q10": 0.09666666666666668,
+      "median": 0.5833333333333333,
+      "q90": 0.9354449472096531
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 140,
+      "q10": 7.647119863831992,
+      "median": 30.795522836538474,
+      "q90": 67.65285326086943
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Popping",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 140,
+      "q10": 0.24031862634879528,
+      "median": 0.2688449239981512,
+      "q90": 0.3230393239479762
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 141,
+      "q10": 0.032140605301176885,
+      "median": 0.7916034810089325,
+      "q90": 4.17824778426273
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 141,
+      "q10": 0.3264128861300317,
+      "median": 1.8307185973452853,
+      "q90": 3.906596467228282
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 141,
+      "q10": 2.5949629823869893,
+      "median": 16.939912820538815,
+      "q90": 58.72457438278744
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 141,
+      "q10": 41.81067187264725,
+      "median": 272.5859059020687,
+      "q90": 1219.7171137763175
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.4789272030651341
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.17827298050139276,
+      "q90": 0.9651567944250871
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 141,
+      "q10": 0.05090054815974941,
+      "median": 0.25157232704402516,
+      "q90": 0.7272727272727273
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 141,
+      "q10": 0.001474111256903839,
+      "median": 0.049957855210638336,
+      "q90": 0.19027350937890672
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 141,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.0066985645933014355
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "M",
+      "metric": "bas",
+      "n": 141,
+      "q10": 0.10776543925812068,
+      "median": 0.21436864229352617,
+      "q90": 0.3437810728068367
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 141,
+      "q10": 0.27379002071006875,
+      "median": 0.4801580764079658,
+      "q90": 0.6593339068119032
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 141,
+      "q10": 0.5,
+      "median": 0.6428571428571429,
+      "q90": 0.9375
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 141,
+      "q10": 0.4,
+      "median": 0.6451612903225806,
+      "q90": 0.8666666666666667
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 141,
+      "q10": 0.4666666666666667,
+      "median": 0.64,
+      "q90": 0.8125
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 141,
+      "q10": 0.057278911564625834,
+      "median": 0.08811791383219986,
+      "q90": 0.12226757369614516
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 141,
+      "q10": 0.010614079657532862,
+      "median": 0.0505098762136716,
+      "q90": 0.09307301000062897
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 141,
+      "q10": 0.02811261808462107,
+      "median": 0.07712665691382178,
+      "q90": 0.14988301585342512
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 141,
+      "q10": 0.13333333333333333,
+      "median": 0.5666666666666667,
+      "q90": 0.8333333333333334
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 141,
+      "q10": 8.386108803986673,
+      "median": 29.814680232558004,
+      "q90": 59.81468023255812
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Street_Jazz",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 141,
+      "q10": 0.22079930830505307,
+      "median": 0.2636175230641264,
+      "q90": 0.32319192325367646
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 140,
+      "q10": 3.5399720750926487,
+      "median": 7.2228760634878935,
+      "q90": 12.504553519859147
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 140,
+      "q10": 3.7485685953710908,
+      "median": 5.623417108371682,
+      "q90": 7.840019823634831
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 140,
+      "q10": 50.17915033225344,
+      "median": 81.86803424460822,
+      "q90": 129.8320370839468
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 140,
+      "q10": 958.8721279450879,
+      "median": 1743.0508236977216,
+      "q90": 2941.2022913595843
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 140,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.0
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 140,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.03518225588928523
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 140,
+      "q10": 0.373584795093175,
+      "median": 0.6566123333868636,
+      "q90": 0.8858447488584474
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 140,
+      "q10": 0.018922187994644308,
+      "median": 0.09247427545836202,
+      "q90": 0.2634240565485129
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 140,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.0067074411656455005
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "M",
+      "metric": "bas",
+      "n": 140,
+      "q10": 0.15722031828593339,
+      "median": 0.3007568295265859,
+      "q90": 0.5046231078669708
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 140,
+      "q10": 0.2512780807624026,
+      "median": 0.496391131913021,
+      "q90": 0.7280224114383955
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 140,
+      "q10": 0.4066666666666667,
+      "median": 0.6,
+      "q90": 0.75
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 140,
+      "q10": 0.6,
+      "median": 0.8,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 140,
+      "q10": 0.5,
+      "median": 0.6666666666666666,
+      "q90": 0.8008823529411766
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 140,
+      "q10": 0.053573034341942494,
+      "median": 0.09242425914303093,
+      "q90": 0.12243990929705216
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 140,
+      "q10": 0.020098101127952524,
+      "median": 0.05375998774244374,
+      "q90": 0.08988379176388772
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 140,
+      "q10": 0.038727848910322146,
+      "median": 0.07223156075761951,
+      "q90": 0.13384099036852964
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 140,
+      "q10": 0.1,
+      "median": 0.5339366515837104,
+      "q90": 0.936666666666667
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 140,
+      "q10": 9.683215112166355,
+      "median": 36.95880258044583,
+      "q90": 67.65285326086956
+    },
+    {
+      "axis": "dataset_style",
+      "group": "aistpp/Waacking",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 140,
+      "q10": 0.2382883223692623,
+      "median": 0.27456801016966437,
+      "q90": 0.31197018884391226
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 13,
+      "q10": 5.056012382614027,
+      "median": 5.429358953345709,
+      "q90": 6.176847041039866
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 13,
+      "q10": 4.878333127798188,
+      "median": 5.103015157604555,
+      "q90": 5.48391649991742
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 13,
+      "q10": 68.18963969341665,
+      "median": 71.58720330288071,
+      "q90": 80.2907302586001
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 13,
+      "q10": 1354.161588703629,
+      "median": 1436.1309737053446,
+      "q90": 1693.8113407023723
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 13,
+      "q10": 0.00019047619047619064,
+      "median": 0.011544585987261146,
+      "q90": 0.06669481999660905
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 13,
+      "q10": 0.0005865102639296193,
+      "median": 0.032170367014046214,
+      "q90": 0.0613030046781871
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 13,
+      "q10": 0.1167674674798824,
+      "median": 0.3280559646539028,
+      "q90": 0.4704257996187798
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 13,
+      "q10": 0.09469418016226554,
+      "median": 0.16862609983332424,
+      "q90": 0.4599213197421285
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 13,
+      "q10": 0.008191825276779741,
+      "median": 0.010402532790592492,
+      "q90": 0.015437171756467614
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "M",
+      "metric": "bas",
+      "n": 13,
+      "q10": 0.19068423730468104,
+      "median": 0.24520952770418739,
+      "q90": 0.31847189300050366
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 13,
+      "q10": 0.3172256772871801,
+      "median": 0.5146699238886904,
+      "q90": 0.5917197141256654
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 13,
+      "q10": 0.6761569788967049,
+      "median": 0.7241379310344828,
+      "q90": 0.756353942866237
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 13,
+      "q10": 0.6323294049177943,
+      "median": 0.7333333333333333,
+      "q90": 0.7599288979177248
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 13,
+      "q10": 0.653806747924395,
+      "median": 0.7120743034055727,
+      "q90": 0.7580696644455971
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 13,
+      "q10": 0.07602721088435552,
+      "median": 0.09337868480725575,
+      "q90": 0.10966893424036349
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 13,
+      "q10": -0.024584170733947096,
+      "median": 0.02794617186075808,
+      "q90": 0.0628090074964657
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 13,
+      "q10": 0.006986489576950793,
+      "median": 0.026615201652453836,
+      "q90": 0.04770873363207082
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 13,
+      "q10": 0.14,
+      "median": 0.4666666666666667,
+      "q90": 0.8933333333333334
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 13,
+      "q10": 4.661018668830924,
+      "median": 15.414663461537543,
+      "q90": 22.943662495591827
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Breaking",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 13,
+      "q10": 0.2350279532052873,
+      "median": 0.2514960361640059,
+      "q90": 0.26474167743225074
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 4,
+      "q10": 2.8971076171492447,
+      "median": 3.087565670334279,
+      "q90": 3.7449301510237794
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 4,
+      "q10": 3.715462028427997,
+      "median": 3.758480059394252,
+      "q90": 4.144188842658653
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 4,
+      "q10": 37.39735710803366,
+      "median": 39.64062006036988,
+      "q90": 47.41784891570043
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 4,
+      "q10": 642.4950304080614,
+      "median": 716.8029167130958,
+      "q90": 883.2449535160853
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 4,
+      "q10": 0.002379235760634463,
+      "median": 0.02745084796508199,
+      "q90": 0.09427176590282987
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 4,
+      "q10": 0.006056236481614997,
+      "median": 0.027841258827778395,
+      "q90": 0.09398763717673203
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 4,
+      "q10": 0.19439000435670933,
+      "median": 0.2527492338200829,
+      "q90": 0.3103390615033537
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 4,
+      "q10": 0.008213894466781203,
+      "median": 0.015594337756355818,
+      "q90": 0.019119446475729374
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 4,
+      "q10": 0.0012066763210406345,
+      "median": 0.002830367870244525,
+      "q90": 0.004650324441240087
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "M",
+      "metric": "bas",
+      "n": 4,
+      "q10": 0.20812368187949093,
+      "median": 0.22041983270053747,
+      "q90": 0.23513800450856323
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 4,
+      "q10": 0.44559360554281724,
+      "median": 0.5784921242051118,
+      "q90": 0.5876260942368071
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 4,
+      "q10": 0.7268534255406436,
+      "median": 0.8802077858369249,
+      "q90": 0.8876495201710102
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 4,
+      "q10": 0.6205582015053742,
+      "median": 0.7077583794372807,
+      "q90": 0.7384022560437431
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 4,
+      "q10": 0.6978758169934641,
+      "median": 0.7404411764705883,
+      "q90": 0.798241857659831
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 4,
+      "q10": 0.08414965986394662,
+      "median": 0.08722222222221987,
+      "q90": 0.09467573696144918
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 4,
+      "q10": 0.018383246274908584,
+      "median": 0.028866529587890884,
+      "q90": 0.1261918606708871
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 4,
+      "q10": 0.028125051062094966,
+      "median": 0.03835767389092877,
+      "q90": 0.07625579327786958
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 4,
+      "q10": 0.11,
+      "median": 0.41666666666666663,
+      "q90": 0.8166666666666667
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 4,
+      "q10": 13.537542420807767,
+      "median": 14.260400674690217,
+      "q90": 31.84924450549382
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Chinese",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 4,
+      "q10": 0.24062082428351436,
+      "median": 0.24652070392092823,
+      "q90": 0.2618958493786197
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 6,
+      "q10": 2.7602286026969223,
+      "median": 3.2871866603808897,
+      "q90": 4.522957914728565
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 6,
+      "q10": 3.4250549366477916,
+      "median": 3.7993674196938034,
+      "q90": 4.615345125376905
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 6,
+      "q10": 40.98796361965972,
+      "median": 45.425284872657095,
+      "q90": 54.894684978423115
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 6,
+      "q10": 765.3559581683705,
+      "median": 864.5713637421691,
+      "q90": 1032.8225684311233
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 6,
+      "q10": 0.0010672358591248667,
+      "median": 0.01924124764895343,
+      "q90": 0.07604268491365265
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 6,
+      "q10": 0.0032017075773745998,
+      "median": 0.0912913013458093,
+      "q90": 0.20464655391743328
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 6,
+      "q10": 0.22640889625627747,
+      "median": 0.2950530268218635,
+      "q90": 0.3255077583738306
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 6,
+      "q10": 0.010724060148325717,
+      "median": 0.017413174557558562,
+      "q90": 0.036842861882377245
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 6,
+      "q10": 0.0008016429745750627,
+      "median": 0.002044752965674231,
+      "q90": 0.004028411112189127
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "M",
+      "metric": "bas",
+      "n": 6,
+      "q10": 0.21520554225006977,
+      "median": 0.23923365953587122,
+      "q90": 0.25650078206829274
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 6,
+      "q10": 0.49757669230491275,
+      "median": 0.5829359407064563,
+      "q90": 0.6033209841559954
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 6,
+      "q10": 0.6742281303602058,
+      "median": 0.8452380952380952,
+      "q90": 0.873762908777969
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 6,
+      "q10": 0.5893066980023501,
+      "median": 0.6588068181818182,
+      "q90": 0.7169764354463989
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 6,
+      "q10": 0.6263815740672056,
+      "median": 0.7422015182884748,
+      "q90": 0.785048734212309
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 6,
+      "q10": 0.08999999999999808,
+      "median": 0.09349206349206263,
+      "q90": 0.10386621315192723
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 6,
+      "q10": 0.03210918881455738,
+      "median": 0.07675499681504006,
+      "q90": 0.14091055886505208
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 6,
+      "q10": 0.030946216951129327,
+      "median": 0.06507987913927205,
+      "q90": 0.08951552683513134
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 6,
+      "q10": 0.11666666666666667,
+      "median": 0.4666666666666667,
+      "q90": 0.7166666666666667
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 6,
+      "q10": 11.205503994362175,
+      "median": 15.491218280075174,
+      "q90": 20.605615601503743
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Choreography",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 6,
+      "q10": 0.24223905114853905,
+      "median": 0.26330000045772056,
+      "q90": 0.2659751379961789
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 48,
+      "q10": 1.3007664483251995,
+      "median": 2.313814971341224,
+      "q90": 3.92881229178824
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 48,
+      "q10": 2.269684203584184,
+      "median": 3.151358763903098,
+      "q90": 4.250143894811361
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 48,
+      "q10": 20.35562407308764,
+      "median": 33.15043601236251,
+      "q90": 53.12866451538029
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 48,
+      "q10": 362.69563250132893,
+      "median": 637.423551767461,
+      "q90": 1078.9884421171257
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 48,
+      "q10": 0.0015233513977306909,
+      "median": 0.02243960882574744,
+      "q90": 0.0633103311793143
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 48,
+      "q10": 0.0,
+      "median": 0.020233866283403373,
+      "q90": 0.0895256217494
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 48,
+      "q10": 0.08056692767479232,
+      "median": 0.20507826457350958,
+      "q90": 0.30297513051484964
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 48,
+      "q10": 0.008625242346145368,
+      "median": 0.021345195865750677,
+      "q90": 0.05172540931045321
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 48,
+      "q10": 0.0004265682047888746,
+      "median": 0.003998902000916776,
+      "q90": 0.009600204392867457
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "M",
+      "metric": "bas",
+      "n": 48,
+      "q10": 0.1589329981057478,
+      "median": 0.18961953474983573,
+      "q90": 0.20855538699983278
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 48,
+      "q10": 0.4455531042940034,
+      "median": 0.5129122658185152,
+      "q90": 0.5931384363392129
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 48,
+      "q10": 0.6604615384615384,
+      "median": 0.7939198100764969,
+      "q90": 0.9020045819014894
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 48,
+      "q10": 0.4520098371777476,
+      "median": 0.5845685754407863,
+      "q90": 0.6496969696969698
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 48,
+      "q10": 0.5594866510140555,
+      "median": 0.6631364647316791,
+      "q90": 0.7191640852858059
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 48,
+      "q10": 0.08544217687075743,
+      "median": 0.09397959183674232,
+      "q90": 0.10466666666666935
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 48,
+      "q10": 0.0036219498194731523,
+      "median": 0.04859277314257987,
+      "q90": 0.1036341707882473
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 48,
+      "q10": 0.016026347818652285,
+      "median": 0.041505190014081275,
+      "q90": 0.09653505892857858
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 48,
+      "q10": 0.06666666666666667,
+      "median": 0.6166666666666667,
+      "q90": 0.9533333333333336
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 48,
+      "q10": 3.046874999999716,
+      "median": 9.199218749998835,
+      "q90": 33.538461538460645
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Classic",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 48,
+      "q10": 0.2385316029686382,
+      "median": 0.24811363256807867,
+      "q90": 0.27293045697326224
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 10,
+      "q10": 1.7355380473813844,
+      "median": 2.503161814370463,
+      "q90": 3.462558435457103
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 10,
+      "q10": 2.7314953850968666,
+      "median": 3.289038225149608,
+      "q90": 3.9493308013970974
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 10,
+      "q10": 29.346122050534227,
+      "median": 37.42476559328553,
+      "q90": 48.93284254181372
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 10,
+      "q10": 545.8863625357512,
+      "median": 711.2507555407226,
+      "q90": 956.6833874957919
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 10,
+      "q10": 0.01807344750921004,
+      "median": 0.028478374966669703,
+      "q90": 0.08170310740078182
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 10,
+      "q10": 0.01794565390116002,
+      "median": 0.0520258891475692,
+      "q90": 0.1068756264522424
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 10,
+      "q10": 0.15024388245415526,
+      "median": 0.1830564256718345,
+      "q90": 0.2393071170600079
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 10,
+      "q10": 0.007038844760247536,
+      "median": 0.014947810369276355,
+      "q90": 0.03227361385562038
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 10,
+      "q10": 0.0006837606837606838,
+      "median": 0.0021500692571261937,
+      "q90": 0.007238051542478782
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "M",
+      "metric": "bas",
+      "n": 10,
+      "q10": 0.16949692649703793,
+      "median": 0.18281258398773886,
+      "q90": 0.2032409707654914
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 10,
+      "q10": 0.37165132914001126,
+      "median": 0.42186497901954584,
+      "q90": 0.4808802574176344
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 10,
+      "q10": 0.5406566706512136,
+      "median": 0.7093744577477008,
+      "q90": 0.8299051233396584
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 10,
+      "q10": 0.498033762685402,
+      "median": 0.5326236263736264,
+      "q90": 0.6374756097560975
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 10,
+      "q10": 0.5307917888563048,
+      "median": 0.6076733954451345,
+      "q90": 0.6767401300142699
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 10,
+      "q10": 0.09063945578231021,
+      "median": 0.09528344671200983,
+      "q90": 0.10045578231292945
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 10,
+      "q10": 0.010479287045442093,
+      "median": 0.043258905975516876,
+      "q90": 0.09216367081395446
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 10,
+      "q10": 0.02339089160786318,
+      "median": 0.036519506752375544,
+      "q90": 0.07867947535734848
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 10,
+      "q10": 0.1,
+      "median": 0.41666666666666663,
+      "q90": 0.8733333333333333
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 10,
+      "q10": 2.9968039772724664,
+      "median": 17.01002038043417,
+      "q90": 34.06747361242925
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Dai",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 10,
+      "q10": 0.24173213004134114,
+      "median": 0.248972854698281,
+      "q90": 0.26529329265717017
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 2,
+      "q10": 3.570995569694535,
+      "median": 3.6431519126500227,
+      "q90": 3.715308255605511
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 2,
+      "q10": 4.057207393103406,
+      "median": 4.061462457094493,
+      "q90": 4.065717521085579
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 2,
+      "q10": 44.468459223250356,
+      "median": 47.55514149154989,
+      "q90": 50.64182375984942
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 2,
+      "q10": 825.6517482302503,
+      "median": 915.2452718680522,
+      "q90": 1004.838795505854
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 2,
+      "q10": 0.022169112269277237,
+      "median": 0.04394882654415629,
+      "q90": 0.06572854081903534
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 2,
+      "q10": 0.026585377580817304,
+      "median": 0.051164212034694415,
+      "q90": 0.07574304648857154
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 2,
+      "q10": 0.2554201944121514,
+      "median": 0.26063788124822396,
+      "q90": 0.2658555680842965
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 2,
+      "q10": 0.018413050306763747,
+      "median": 0.027274078487820746,
+      "q90": 0.036135106668877745
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 2,
+      "q10": 0.005126155984028865,
+      "median": 0.005455574186138485,
+      "q90": 0.005784992388248106
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "M",
+      "metric": "bas",
+      "n": 2,
+      "q10": 0.20842906673721295,
+      "median": 0.22029160669062803,
+      "q90": 0.23215414664404313
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 2,
+      "q10": 0.4675367009232756,
+      "median": 0.4912547517969933,
+      "q90": 0.514972802670711
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 2,
+      "q10": 0.743654591023012,
+      "median": 0.7517657780815675,
+      "q90": 0.759876965140123
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 2,
+      "q10": 0.6142132135826772,
+      "median": 0.6491910679133859,
+      "q90": 0.6841689222440945
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 2,
+      "q10": 0.6725773195876288,
+      "median": 0.6962199312714776,
+      "q90": 0.7198625429553265
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 2,
+      "q10": 0.09554195011337958,
+      "median": 0.09566893424036449,
+      "q90": 0.0957959183673494
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 2,
+      "q10": -0.05041976568738182,
+      "median": -0.026510067016836843,
+      "q90": -0.002600368346291861
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 2,
+      "q10": -0.008948664309921795,
+      "median": 0.004699410380127842,
+      "q90": 0.01834748507017748
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 2,
+      "q10": 0.6333333333333333,
+      "median": 0.7666666666666666,
+      "q90": 0.9
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 2,
+      "q10": 7.072868537713274,
+      "median": 13.266128402847144,
+      "q90": 19.459388267981016
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/DunHuang",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 2,
+      "q10": 0.2514937264721643,
+      "median": 0.2572426509558697,
+      "q90": 0.2629915754395751
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 28,
+      "q10": 2.047861651016133,
+      "median": 3.3366500284753657,
+      "q90": 4.63066849770752
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 28,
+      "q10": 2.9547740899657446,
+      "median": 3.9079735186196594,
+      "q90": 4.532304190831383
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 28,
+      "q10": 31.391815139638865,
+      "median": 48.363992508814945,
+      "q90": 56.785638539965134
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 28,
+      "q10": 588.3666742312588,
+      "median": 937.9033372536846,
+      "q90": 1112.7823325702375
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 28,
+      "q10": 0.0033856805471024955,
+      "median": 0.014523336695718366,
+      "q90": 0.06070901892733006
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 28,
+      "q10": 0.0005896554986770027,
+      "median": 0.0520258891475692,
+      "q90": 0.11706806282722514
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 28,
+      "q10": 0.17133383260635085,
+      "median": 0.32593417681193804,
+      "q90": 0.41344663091168965
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 28,
+      "q10": 0.006792609112138988,
+      "median": 0.02395480391965893,
+      "q90": 0.03790191164682173
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 28,
+      "q10": 0.00029914529914529925,
+      "median": 0.0018229824878136847,
+      "q90": 0.005818187984501512
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "M",
+      "metric": "bas",
+      "n": 28,
+      "q10": 0.18013803028691786,
+      "median": 0.2147454170916298,
+      "q90": 0.29376810103994605
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 28,
+      "q10": 0.37686589992365394,
+      "median": 0.47729881579304395,
+      "q90": 0.6603263462596156
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 28,
+      "q10": 0.5451380347136805,
+      "median": 0.7324598686723091,
+      "q90": 0.9330651388715905
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 28,
+      "q10": 0.5019429265330905,
+      "median": 0.6504498269896194,
+      "q90": 0.7142734657039711
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 28,
+      "q10": 0.5761494469582705,
+      "median": 0.6742382104899205,
+      "q90": 0.7808524094699725
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 28,
+      "q10": 0.08406802721088447,
+      "median": 0.09382086167799386,
+      "q90": 0.10504308390022957
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 28,
+      "q10": -0.015952784989801398,
+      "median": 0.035557992437466525,
+      "q90": 0.09095011947948554
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 28,
+      "q10": -0.0008187945439804521,
+      "median": 0.029283649099804868,
+      "q90": 0.07658641069098567
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 28,
+      "q10": 0.16666666666666666,
+      "median": 0.4666666666666667,
+      "q90": 0.8666666666666667
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 28,
+      "q10": 4.297851562499815,
+      "median": 16.224281832297294,
+      "q90": 57.71484374999854
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Folk",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 28,
+      "q10": 0.24321285556167763,
+      "median": 0.25224277725218314,
+      "q90": 0.27093891788066526
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 11,
+      "q10": 0.4644188094749179,
+      "median": 2.3864105116528753,
+      "q90": 4.1870829170807236
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 11,
+      "q10": 1.0941976445006234,
+      "median": 3.218207956629587,
+      "q90": 4.333829109125004
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 11,
+      "q10": 9.579585959865444,
+      "median": 37.70967800409412,
+      "q90": 53.61382585257927
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 11,
+      "q10": 167.45185390134046,
+      "median": 738.8334277459362,
+      "q90": 1074.0335179086003
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 11,
+      "q10": 0.021947194719471947,
+      "median": 0.036698992203841034,
+      "q90": 0.15217109526895659
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 11,
+      "q10": 0.005178571428571428,
+      "median": 0.08271534512264689,
+      "q90": 0.2594944912508101
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 11,
+      "q10": 0.026626093571700267,
+      "median": 0.15656684744164112,
+      "q90": 0.311767618418881
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 11,
+      "q10": 0.005627671714522512,
+      "median": 0.02810632112527705,
+      "q90": 0.05930687632554135
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 11,
+      "q10": 0.00019015021867275147,
+      "median": 0.004785478547854785,
+      "q90": 0.00676818950930626
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "M",
+      "metric": "bas",
+      "n": 11,
+      "q10": 0.1693424388174768,
+      "median": 0.1948855794654035,
+      "q90": 0.20179587133243354
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 11,
+      "q10": 0.4456306503349111,
+      "median": 0.4859803928680845,
+      "q90": 0.5459199299124201
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 11,
+      "q10": 0.6692307692307692,
+      "median": 0.7792207792207793,
+      "q90": 0.8417721518987342
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 11,
+      "q10": 0.3826530612244898,
+      "median": 0.5552699228791774,
+      "q90": 0.6448412698412699
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 11,
+      "q10": 0.49014084507042255,
+      "median": 0.6369426751592357,
+      "q90": 0.7052341597796142
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 11,
+      "q10": 0.08557823129252995,
+      "median": 0.08870748299320041,
+      "q90": 0.10435374149660248
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 11,
+      "q10": 0.005533963645952065,
+      "median": 0.03212528375251916,
+      "q90": 0.12877780842302855
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 11,
+      "q10": 0.019396767137379832,
+      "median": 0.03704183846394254,
+      "q90": 0.0959984732648258
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 11,
+      "q10": 0.03333333333333333,
+      "median": 0.3,
+      "q90": 0.7333333333333333
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 11,
+      "q10": 3.046874999999716,
+      "median": 11.117593344155267,
+      "q90": 32.868303571429195
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/HanTang",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 11,
+      "q10": 0.22777095782719428,
+      "median": 0.24459599410214133,
+      "q90": 0.25010577417696217
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 18,
+      "q10": 4.774979828953485,
+      "median": 5.621353589114886,
+      "q90": 6.530696747851274
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 18,
+      "q10": 4.824296405560455,
+      "median": 5.296837116581601,
+      "q90": 5.712625913011834
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 18,
+      "q10": 62.00915532612728,
+      "median": 75.3343418674447,
+      "q90": 82.38915656939642
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 18,
+      "q10": 1234.9739274400438,
+      "median": 1524.4273824581762,
+      "q90": 1686.079055586256
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 18,
+      "q10": 0.00228495511682517,
+      "median": 0.027749781630047703,
+      "q90": 0.09569446024343078
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 18,
+      "q10": 0.0012082341998786111,
+      "median": 0.02860408924510511,
+      "q90": 0.09836461532628067
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 18,
+      "q10": 0.34018270885740765,
+      "median": 0.40029934932529687,
+      "q90": 0.522029546078993
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 18,
+      "q10": 0.023319239442222965,
+      "median": 0.051676626381183796,
+      "q90": 0.10875351775245035
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 18,
+      "q10": 0.0,
+      "median": 0.00219703917052007,
+      "q90": 0.0074410023169999145
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "M",
+      "metric": "bas",
+      "n": 18,
+      "q10": 0.22649914571455895,
+      "median": 0.28976372473472234,
+      "q90": 0.3751396776466317
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 18,
+      "q10": 0.3457177177681426,
+      "median": 0.42931360907357496,
+      "q90": 0.52989916023779
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 18,
+      "q10": 0.5102964254577158,
+      "median": 0.6006965944272447,
+      "q90": 0.6630209190059003
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 18,
+      "q10": 0.6814329004329005,
+      "median": 0.7422785547785548,
+      "q90": 0.8006306093528578
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 18,
+      "q10": 0.5929133858267717,
+      "median": 0.6549505873578221,
+      "q90": 0.7133510368804488
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 18,
+      "q10": 0.08295238095238097,
+      "median": 0.089251700680272,
+      "q90": 0.10092970521542668
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 18,
+      "q10": 0.012525017023222047,
+      "median": 0.051548566578106594,
+      "q90": 0.10142163266980919
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 18,
+      "q10": 0.01765849493221894,
+      "median": 0.03485018019600074,
+      "q90": 0.08582124801779559
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 18,
+      "q10": 0.19,
+      "median": 0.6333333333333333,
+      "q90": 0.9666666666666667
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 18,
+      "q10": 28.265507420570614,
+      "median": 35.69421789148398,
+      "q90": 46.83676139888229
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Hiphop",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 18,
+      "q10": 0.2426814490050415,
+      "median": 0.25600580854714716,
+      "q90": 0.27294511214502964
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 21,
+      "q10": 3.045933810993198,
+      "median": 5.011928991532383,
+      "q90": 6.891080900734401
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 21,
+      "q10": 3.7817452740617186,
+      "median": 4.75548113230101,
+      "q90": 5.648232696988481
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 21,
+      "q10": 44.959066384824844,
+      "median": 61.368065052550904,
+      "q90": 84.0810312431617
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 21,
+      "q10": 824.2007697748332,
+      "median": 1167.6959368849632,
+      "q90": 1711.7145673424998
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 21,
+      "q10": 0.0,
+      "median": 0.008004366017827906,
+      "q90": 0.02861111111111111
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 21,
+      "q10": 0.0,
+      "median": 0.003540392661731574,
+      "q90": 0.05570776255707763
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 21,
+      "q10": 0.2485153037916857,
+      "median": 0.29801777170198224,
+      "q90": 0.4270941054808687
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 21,
+      "q10": 0.009214383999507714,
+      "median": 0.021634383375726356,
+      "q90": 0.044080629619772625
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 21,
+      "q10": 0.0,
+      "median": 0.0017232465965879718,
+      "q90": 0.009128630705394191
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "M",
+      "metric": "bas",
+      "n": 21,
+      "q10": 0.19288110648631165,
+      "median": 0.22642638584551247,
+      "q90": 0.26510651396354173
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 21,
+      "q10": 0.3622675465990255,
+      "median": 0.47356987155890445,
+      "q90": 0.5413002752364288
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 21,
+      "q10": 0.5416666666666666,
+      "median": 0.7162921348314607,
+      "q90": 0.8493150684931506
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 21,
+      "q10": 0.6624472573839663,
+      "median": 0.7045454545454546,
+      "q90": 0.7910447761194029
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 21,
+      "q10": 0.6109510086455332,
+      "median": 0.7132867132867132,
+      "q90": 0.7765957446808511
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 21,
+      "q10": 0.08496598639455932,
+      "median": 0.09337868480725575,
+      "q90": 0.10231292517006718
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 21,
+      "q10": -0.0010630587129277847,
+      "median": 0.03279855659547393,
+      "q90": 0.08268926411709097
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 21,
+      "q10": 0.012462734029380832,
+      "median": 0.04070308152626002,
+      "q90": 0.060769727644581474
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 21,
+      "q10": 0.3,
+      "median": 0.5666666666666667,
+      "q90": 0.9666666666666667
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 21,
+      "q10": 9.199218749999943,
+      "median": 21.007703234266756,
+      "q90": 39.46851908866914
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Jazz",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 21,
+      "q10": 0.23121560383313064,
+      "median": 0.2514362640365704,
+      "q90": 0.2759358062330629
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 35,
+      "q10": 4.086711204314514,
+      "median": 5.076112080294712,
+      "q90": 6.518130297142864
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 35,
+      "q10": 4.349368376907032,
+      "median": 4.87247011126806,
+      "q90": 5.640038197708497
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 35,
+      "q10": 57.743137548400796,
+      "median": 69.17723547808885,
+      "q90": 80.290067503036
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 35,
+      "q10": 1124.1730469022482,
+      "median": 1345.7376776135388,
+      "q90": 1664.544072103619
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 35,
+      "q10": 0.0,
+      "median": 0.014634146341463415,
+      "q90": 0.04888719079536276
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 35,
+      "q10": 0.0,
+      "median": 0.039008792965627495,
+      "q90": 0.12296656355869791
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 35,
+      "q10": 0.18742944361517877,
+      "median": 0.31364124597207305,
+      "q90": 0.4005494315520813
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 35,
+      "q10": 0.011131296307274715,
+      "median": 0.022642159118340624,
+      "q90": 0.05800650991746231
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 35,
+      "q10": 0.0,
+      "median": 0.0005434782608695652,
+      "q90": 0.010992055638800149
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "M",
+      "metric": "bas",
+      "n": 35,
+      "q10": 0.18594863872573478,
+      "median": 0.24054604220194808,
+      "q90": 0.27686447021419447
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 35,
+      "q10": 0.38512104468378816,
+      "median": 0.5079328525509713,
+      "q90": 0.6424773379061974
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 35,
+      "q10": 0.6114092140921409,
+      "median": 0.7339667458432304,
+      "q90": 0.9305379218175743
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 35,
+      "q10": 0.6253597122302158,
+      "median": 0.7044334975369458,
+      "q90": 0.7615091946734306
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 35,
+      "q10": 0.6497882046269142,
+      "median": 0.7194412107101281,
+      "q90": 0.7836433681893231
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 35,
+      "q10": 0.07536507936508041,
+      "median": 0.09120181405896233,
+      "q90": 0.1021405895691558
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 35,
+      "q10": -0.006275869237900047,
+      "median": 0.03197446033166019,
+      "q90": 0.07933965068539842
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 35,
+      "q10": 0.011034351818314385,
+      "median": 0.0422968332331027,
+      "q90": 0.07447306491862894
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 35,
+      "q10": 0.16666666666666666,
+      "median": 0.5,
+      "q90": 0.9733333333333334
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 35,
+      "q10": 3.687237926547028,
+      "median": 23.037484975961377,
+      "q90": 42.8161272321434
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Korean",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 35,
+      "q10": 0.22314235313265995,
+      "median": 0.2511856992967336,
+      "q90": 0.27024735472060724
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 1,
+      "q10": 1.0093621216534396,
+      "median": 1.0093621216534396,
+      "q90": 1.0093621216534396
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 1,
+      "q10": 1.9320699918270972,
+      "median": 1.9320699918270972,
+      "q90": 1.9320699918270972
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 1,
+      "q10": 15.873054636346003,
+      "median": 15.873054636346003,
+      "q90": 15.873054636346003
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 1,
+      "q10": 271.695441960825,
+      "median": 271.695441960825,
+      "q90": 271.695441960825
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 1,
+      "q10": 0.0016753536857781086,
+      "median": 0.0016753536857781086,
+      "q90": 0.0016753536857781086
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 1,
+      "q10": 0.0018615040953090098,
+      "median": 0.0018615040953090098,
+      "q90": 0.0018615040953090098
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 1,
+      "q10": 0.13126047291007262,
+      "median": 0.13126047291007262,
+      "q90": 0.13126047291007262
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 1,
+      "q10": 0.010124615741326604,
+      "median": 0.010124615741326604,
+      "q90": 0.010124615741326604
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 1,
+      "q10": 0.00018615040953090097,
+      "median": 0.00018615040953090097,
+      "q90": 0.00018615040953090097
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "M",
+      "metric": "bas",
+      "n": 1,
+      "q10": 0.21573450015348267,
+      "median": 0.21573450015348267,
+      "q90": 0.21573450015348267
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 1,
+      "q10": 0.6160420573004091,
+      "median": 0.6160420573004091,
+      "q90": 0.6160420573004091
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 1,
+      "q10": 0.859504132231405,
+      "median": 0.859504132231405,
+      "q90": 0.859504132231405
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 1,
+      "q10": 0.5024154589371981,
+      "median": 0.5024154589371981,
+      "q90": 0.5024154589371981
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 1,
+      "q10": 0.6341463414634146,
+      "median": 0.6341463414634146,
+      "q90": 0.6341463414634146
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 1,
+      "q10": 0.09294784580498572,
+      "median": 0.09294784580498572,
+      "q90": 0.09294784580498572
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 1,
+      "q10": -0.011787678491096862,
+      "median": -0.011787678491096862,
+      "q90": -0.011787678491096862
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 1,
+      "q10": -0.00027623725083414965,
+      "median": -0.00027623725083414965,
+      "q90": -0.00027623725083414965
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 1,
+      "q10": 0.06666666666666667,
+      "median": 0.06666666666666667,
+      "q90": 0.06666666666666667
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 1,
+      "q10": 23.499177631581773,
+      "median": 23.499177631581773,
+      "q90": 23.499177631581773
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Kun",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 1,
+      "q10": 0.24508872743584714,
+      "median": 0.24508872743584714,
+      "q90": 0.24508872743584714
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 3,
+      "q10": 7.541609811903337,
+      "median": 7.966735241446369,
+      "q90": 8.690646247206264
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 3,
+      "q10": 6.152862643787159,
+      "median": 6.416463217532402,
+      "q90": 6.795390570338958
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 3,
+      "q10": 97.40529133464864,
+      "median": 98.22034035987295,
+      "q90": 102.69663357862294
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 3,
+      "q10": 2054.2667257785597,
+      "median": 2108.770923969933,
+      "q90": 2157.2029414769413
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 3,
+      "q10": 0.00021344717182497335,
+      "median": 0.0010672358591248667,
+      "q90": 0.006505582003285648
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 3,
+      "q10": 0.0035190233806619707,
+      "median": 0.01198501872659176,
+      "q90": 0.02288793224051579
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 3,
+      "q10": 0.2878838751840581,
+      "median": 0.2946357085668535,
+      "q90": 0.3782163631302517
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 3,
+      "q10": 0.037531621587222064,
+      "median": 0.03845833891708809,
+      "q90": 0.043359859840695826
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 3,
+      "q10": 5.336179295624334e-05,
+      "median": 0.00026680896478121667,
+      "q90": 0.0009522381974506255
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "M",
+      "metric": "bas",
+      "n": 3,
+      "q10": 0.26369759816087274,
+      "median": 0.27056743757389135,
+      "q90": 0.2823257446145246
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 3,
+      "q10": 0.522296238162043,
+      "median": 0.5426295354190033,
+      "q90": 0.6427106797801276
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 3,
+      "q10": 0.771779856857598,
+      "median": 0.7751004016064257,
+      "q90": 0.9210978188371862
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 3,
+      "q10": 0.7069388812498755,
+      "median": 0.748062015503876,
+      "q90": 0.7715842340866906
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 3,
+      "q10": 0.7639116879811669,
+      "median": 0.7741935483870966,
+      "q90": 0.8000768049155146
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 3,
+      "q10": 0.08531519274376365,
+      "median": 0.0864399092970558,
+      "q90": 0.08647619047618775
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 3,
+      "q10": -0.04966395415885516,
+      "median": 0.010458973705114678,
+      "q90": 0.017633379639950018
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 3,
+      "q10": 0.02172955728657673,
+      "median": 0.037038585392023274,
+      "q90": 0.04965199296309677
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 3,
+      "q10": 0.6133333333333333,
+      "median": 0.8,
+      "q90": 0.8533333333333334
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 3,
+      "q10": 8.621183503995946,
+      "median": 21.007703234264483,
+      "q90": 30.543616539710893
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Locking",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 3,
+      "q10": 0.24827012105675866,
+      "median": 0.25405454466099686,
+      "q90": 0.26219663038945673
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 10,
+      "q10": 3.1176714820985243,
+      "median": 4.512732421974293,
+      "q90": 4.869356749384208
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 10,
+      "q10": 3.841482143638156,
+      "median": 4.4755384213369585,
+      "q90": 4.69018956137485
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 10,
+      "q10": 39.05022640942061,
+      "median": 55.59664794918336,
+      "q90": 59.38244752126595
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 10,
+      "q10": 755.1032000235508,
+      "median": 1078.0283655210899,
+      "q90": 1161.3802742860878
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 10,
+      "q10": 0.0016710875331564987,
+      "median": 0.006408320372692649,
+      "q90": 0.024054758800521513
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 10,
+      "q10": 0.0005049676818786073,
+      "median": 0.06075726445553273,
+      "q90": 0.22992177314211212
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 10,
+      "q10": 0.32739239381762014,
+      "median": 0.3640411026076803,
+      "q90": 0.4121546278336917
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 10,
+      "q10": 0.005397004242332936,
+      "median": 0.03299083099834193,
+      "q90": 0.038686234960826356
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 10,
+      "q10": 0.0,
+      "median": 0.001250260081506741,
+      "q90": 0.002553775839657847
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "M",
+      "metric": "bas",
+      "n": 10,
+      "q10": 0.21632310749502603,
+      "median": 0.2745726877227721,
+      "q90": 0.3080375671180756
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 10,
+      "q10": 0.39759832391438227,
+      "median": 0.5761369952322861,
+      "q90": 0.6711219814055274
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 10,
+      "q10": 0.5889817473338802,
+      "median": 0.812170323369773,
+      "q90": 0.9102422069167913
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 10,
+      "q10": 0.67958600256246,
+      "median": 0.7071256454388984,
+      "q90": 0.7627982365145228
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 10,
+      "q10": 0.6702921884317232,
+      "median": 0.7543465708603323,
+      "q90": 0.8087512648525499
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 10,
+      "q10": 0.08455328798185846,
+      "median": 0.09606575963718855,
+      "q90": 0.1081043083900199
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 10,
+      "q10": 0.020280237872087038,
+      "median": 0.05277910275209874,
+      "q90": 0.06730230611521978
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 10,
+      "q10": 0.02501807449149671,
+      "median": 0.04444906371991974,
+      "q90": 0.07913998148416891
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 10,
+      "q10": 0.22666666666666668,
+      "median": 0.5666666666666667,
+      "q90": 0.8766666666666667
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 10,
+      "q10": 6.931210237127075,
+      "median": 26.53057391826799,
+      "q90": 57.71484374999801
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Miao",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 10,
+      "q10": 0.24392912055670224,
+      "median": 0.25874559509761486,
+      "q90": 0.2711105732813659
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 45,
+      "q10": 3.138548006903549,
+      "median": 4.816851171960172,
+      "q90": 6.420122360165949
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 45,
+      "q10": 3.757567907517121,
+      "median": 4.7146404488172475,
+      "q90": 5.570012968805025
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 45,
+      "q10": 43.12227415931051,
+      "median": 63.81382808601561,
+      "q90": 79.55309365347719
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 45,
+      "q10": 806.4196573962016,
+      "median": 1296.5878814510836,
+      "q90": 1636.0089725819278
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 45,
+      "q10": 0.0,
+      "median": 0.014634146341463415,
+      "q90": 0.062225470798148615
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 45,
+      "q10": 0.0,
+      "median": 0.039008792965627495,
+      "q90": 0.1260195973285234
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 45,
+      "q10": 0.19399906653088936,
+      "median": 0.3046550929482255,
+      "q90": 0.39293949447366977
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 45,
+      "q10": 0.010181809704774404,
+      "median": 0.019944355748559937,
+      "q90": 0.056843995836380036
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 45,
+      "q10": 0.0,
+      "median": 0.0013749754468670202,
+      "q90": 0.008420610312233234
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "M",
+      "metric": "bas",
+      "n": 45,
+      "q10": 0.18817325183134598,
+      "median": 0.23824842635927537,
+      "q90": 0.27417916089083877
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 45,
+      "q10": 0.3901290235578074,
+      "median": 0.5336808808255321,
+      "q90": 0.6137108673354684
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 45,
+      "q10": 0.6183333333333334,
+      "median": 0.7951807228915663,
+      "q90": 0.911399217221135
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 45,
+      "q10": 0.625,
+      "median": 0.6923076923076923,
+      "q90": 0.7567203880456893
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 45,
+      "q10": 0.6420429665211449,
+      "median": 0.7243401759530791,
+      "q90": 0.7932340678975581
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 45,
+      "q10": 0.07767346938775477,
+      "median": 0.0917913832199524,
+      "q90": 0.1024036281179086
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 45,
+      "q10": -0.0004855958662751381,
+      "median": 0.036494572995992854,
+      "q90": 0.10004122428766068
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 45,
+      "q10": 0.016627849254462448,
+      "median": 0.0422968332331027,
+      "q90": 0.07691323298761639
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 45,
+      "q10": 0.13333333333333333,
+      "median": 0.5,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 45,
+      "q10": 6.285831766916795,
+      "median": 16.224281832299255,
+      "q90": 40.53042367788596
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Mix",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 45,
+      "q10": 0.22439920092386023,
+      "median": 0.2511856992967336,
+      "q90": 0.26841930030462186
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 21,
+      "q10": 2.196456374632396,
+      "median": 3.415646819384998,
+      "q90": 4.345549695609509
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 21,
+      "q10": 3.1834289142071706,
+      "median": 4.103880417220166,
+      "q90": 4.58689806091941
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 21,
+      "q10": 46.118387905439185,
+      "median": 55.22926196015109,
+      "q90": 65.1799007609408
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 21,
+      "q10": 944.6869800698666,
+      "median": 1151.5919019962628,
+      "q90": 1341.3938674891021
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 21,
+      "q10": 0.0,
+      "median": 0.02150753768844221,
+      "q90": 0.04
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 21,
+      "q10": 0.0011961722488038277,
+      "median": 0.023134328358208955,
+      "q90": 0.05709342560553633
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 21,
+      "q10": 0.2611697806661251,
+      "median": 0.3639977285633163,
+      "q90": 0.43548387096774194
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 21,
+      "q10": 0.013605909533582072,
+      "median": 0.023083241118784823,
+      "q90": 0.031046383398956656
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 21,
+      "q10": 0.0,
+      "median": 0.0025,
+      "q90": 0.006985491671144546
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "M",
+      "metric": "bas",
+      "n": 21,
+      "q10": 0.22147129306816765,
+      "median": 0.2684140596220519,
+      "q90": 0.3920538042582859
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 21,
+      "q10": 0.362209223736917,
+      "median": 0.48971984387572115,
+      "q90": 0.5894872625651029
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 21,
+      "q10": 0.5360824742268041,
+      "median": 0.6434540389972145,
+      "q90": 0.7898089171974523
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 21,
+      "q10": 0.6143497757847534,
+      "median": 0.7560975609756098,
+      "q90": 0.8453947368421053
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 21,
+      "q10": 0.6119733924611974,
+      "median": 0.7054409005628518,
+      "q90": 0.7725856697819315
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 21,
+      "q10": 0.06956916099773736,
+      "median": 0.09265306122448624,
+      "q90": 0.10367346938775768
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 21,
+      "q10": 0.010265470610392574,
+      "median": 0.03519862065851885,
+      "q90": 0.10740981238634689
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 21,
+      "q10": 0.03298826401923181,
+      "median": 0.05422664231321231,
+      "q90": 0.09000775243545439
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 21,
+      "q10": 0.16666666666666666,
+      "median": 0.5333333333333333,
+      "q90": 0.8333333333333334
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 21,
+      "q10": 4.1341145833352755,
+      "median": 42.33398437499835,
+      "q90": 71.35120738636545
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Popping",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 21,
+      "q10": 0.24378424310064853,
+      "median": 0.25358340835048027,
+      "q90": 0.26746673583984315
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 34,
+      "q10": 1.7584988746937953,
+      "median": 2.2974058847616314,
+      "q90": 3.689561867649719
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 34,
+      "q10": 2.6387714482117435,
+      "median": 3.11750563765846,
+      "q90": 3.9899545305535353
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 34,
+      "q10": 27.244798101292695,
+      "median": 32.65115867932994,
+      "q90": 51.820180816306106
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 34,
+      "q10": 498.5921047008409,
+      "median": 617.0627027146759,
+      "q90": 1055.194893432662
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 34,
+      "q10": 0.00035060381768601515,
+      "median": 0.01738096657653014,
+      "q90": 0.038155716937965836
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 34,
+      "q10": 0.0,
+      "median": 0.014050178875798385,
+      "q90": 0.06762589928057554
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 34,
+      "q10": 0.11211936974711616,
+      "median": 0.20507826457350958,
+      "q90": 0.2937826291826172
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 34,
+      "q10": 0.010048794760149958,
+      "median": 0.021345195865750677,
+      "q90": 0.047990407565304115
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 34,
+      "q10": 0.0006898827354560406,
+      "median": 0.0038868179327543285,
+      "q90": 0.010483644334532374
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "M",
+      "metric": "bas",
+      "n": 34,
+      "q10": 0.15701193456361545,
+      "median": 0.1869435860786644,
+      "q90": 0.206952356878374
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 34,
+      "q10": 0.44745159374463295,
+      "median": 0.5153749591899713,
+      "q90": 0.5915941194316257
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 34,
+      "q10": 0.656888888888889,
+      "median": 0.8118090986394557,
+      "q90": 0.9244488501189532
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 34,
+      "q10": 0.5119221317769928,
+      "median": 0.5845685754407863,
+      "q90": 0.6432947232947233
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 34,
+      "q10": 0.607124268054652,
+      "median": 0.6671966083730789,
+      "q90": 0.7167820008430519
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 34,
+      "q10": 0.08568934240362935,
+      "median": 0.0945238095238139,
+      "q90": 0.10501587301587119
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 34,
+      "q10": 0.012039813064617528,
+      "median": 0.05419143136251922,
+      "q90": 0.09836209575383661
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 34,
+      "q10": 0.01921795397864316,
+      "median": 0.047432370879415216,
+      "q90": 0.09819573513984667
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 34,
+      "q10": 0.21000000000000002,
+      "median": 0.7833333333333334,
+      "q90": 1.0
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 34,
+      "q10": 3.046874999999716,
+      "median": 8.426036005433588,
+      "q90": 35.000114889706445
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/ShenYun",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 34,
+      "q10": 0.24177556164581412,
+      "median": 0.250061188771041,
+      "q90": 0.2740806598454468
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 80,
+      "q10": 2.909665614066448,
+      "median": 5.18005548635387,
+      "q90": 6.992462254618184
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 80,
+      "q10": 3.768898678068765,
+      "median": 4.974573392794001,
+      "q90": 5.767762908301623
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 80,
+      "q10": 47.323813351346494,
+      "median": 68.21533267777734,
+      "q90": 85.68002922116058
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 80,
+      "q10": 958.5382821277162,
+      "median": 1361.3566945533107,
+      "q90": 1777.3274065343774
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 80,
+      "q10": 0.0,
+      "median": 0.01175315423764971,
+      "q90": 0.07109136519734648
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 80,
+      "q10": 0.0,
+      "median": 0.016662190578582176,
+      "q90": 0.08671035741027049
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 80,
+      "q10": 0.21142789847633897,
+      "median": 0.353047641603376,
+      "q90": 0.47885970474638273
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 80,
+      "q10": 0.013706537101406704,
+      "median": 0.033345779679359616,
+      "q90": 0.14490711407713894
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 80,
+      "q10": 0.0,
+      "median": 0.0035272479727189387,
+      "q90": 0.010147589744545337
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "M",
+      "metric": "bas",
+      "n": 80,
+      "q10": 0.19315548700448426,
+      "median": 0.2487391041971585,
+      "q90": 0.355767400499116
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 80,
+      "q10": 0.3426785334863847,
+      "median": 0.478709360419602,
+      "q90": 0.5732143654293612
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 80,
+      "q10": 0.5349399849962491,
+      "median": 0.657538430214802,
+      "q90": 0.8405464801113472
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 80,
+      "q10": 0.6512976070104483,
+      "median": 0.7262737262737262,
+      "q90": 0.8053649798477385
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 80,
+      "q10": 0.6107830600988606,
+      "median": 0.6950716774382297,
+      "q90": 0.7774408431099623
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 80,
+      "q10": 0.07239909297052308,
+      "median": 0.09162131519274475,
+      "q90": 0.10507482993197358
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 80,
+      "q10": 0.0014496532123780387,
+      "median": 0.03324861872897566,
+      "q90": 0.08798534435450435
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 80,
+      "q10": 0.014851744799247333,
+      "median": 0.03921410034213292,
+      "q90": 0.07633564100824275
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 80,
+      "q10": 0.16666666666666666,
+      "median": 0.5666666666666667,
+      "q90": 0.9666666666666667
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 80,
+      "q10": 5.524553571428777,
+      "median": 29.991468492444604,
+      "q90": 61.23261638684334
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Street",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 80,
+      "q10": 0.24051891582708068,
+      "median": 0.2537992417485535,
+      "q90": 0.2680970811532973
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 6,
+      "q10": 2.768719016363519,
+      "median": 6.435294579301365,
+      "q90": 7.355719462977206
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 6,
+      "q10": 3.5732250441420366,
+      "median": 5.492013401903798,
+      "q90": 5.943439964420687
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 6,
+      "q10": 37.972800898384705,
+      "median": 80.46748674878089,
+      "q90": 88.59471573367225
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 6,
+      "q10": 678.7960779333462,
+      "median": 1651.881668561186,
+      "q90": 1821.2283996285435
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 6,
+      "q10": 0.0,
+      "median": 0.0030980807012241196,
+      "q90": 0.014993045124956436
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 6,
+      "q10": 0.0,
+      "median": 0.004285714285714286,
+      "q90": 0.017757291824089465
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 6,
+      "q10": 0.26874244256348245,
+      "median": 0.3174869910272115,
+      "q90": 0.39409824377792835
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 6,
+      "q10": 0.01719749821161963,
+      "median": 0.024013720258476298,
+      "q90": 0.0478286054499552
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 6,
+      "q10": 0.0018135106543750944,
+      "median": 0.005098444336412251,
+      "q90": 0.007791958252244527
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "M",
+      "metric": "bas",
+      "n": 6,
+      "q10": 0.17640808432777694,
+      "median": 0.21543639902223957,
+      "q90": 0.2399018942247257
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 6,
+      "q10": 0.34673915639876374,
+      "median": 0.5062122516084492,
+      "q90": 0.611890871808356
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 6,
+      "q10": 0.5913855224369473,
+      "median": 0.7631253458321128,
+      "q90": 0.9698535745047372
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 6,
+      "q10": 0.6649671052631578,
+      "median": 0.6850900307422046,
+      "q90": 0.7023310023310023
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 6,
+      "q10": 0.6404021849470682,
+      "median": 0.7164312950663099,
+      "q90": 0.7904825481594506
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 6,
+      "q10": 0.07217687074829893,
+      "median": 0.08750566893423972,
+      "q90": 0.0965532879818598
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 6,
+      "q10": 0.008023226760886407,
+      "median": 0.014362294435547051,
+      "q90": 0.05843529116392668
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 6,
+      "q10": 0.013047288768117699,
+      "median": 0.01861684551401288,
+      "q90": 0.032727773732192315
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 6,
+      "q10": 0.3,
+      "median": 0.55,
+      "q90": 0.8666666666666667
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 6,
+      "q10": 15.563383556545588,
+      "median": 31.83191320398241,
+      "q90": 33.80408653846193
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Urban",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 6,
+      "q10": 0.25291530917320104,
+      "median": 0.25497777710486624,
+      "q90": 0.26671031142002555
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 8,
+      "q10": 2.847500009922325,
+      "median": 3.3366500284753657,
+      "q90": 3.8223160705618002
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 8,
+      "q10": 3.522713187622631,
+      "median": 3.8763641163562967,
+      "q90": 4.117724249856864
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 8,
+      "q10": 41.1699132279721,
+      "median": 49.437339547869776,
+      "q90": 51.715581977050974
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 8,
+      "q10": 778.199244420039,
+      "median": 959.5199274488539,
+      "q90": 1021.418183901309
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 8,
+      "q10": 0.007623347795891847,
+      "median": 0.012010012915411001,
+      "q90": 0.021350069916425476
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 8,
+      "q10": 0.00043050430504305045,
+      "median": 0.040953424386707744,
+      "q90": 0.11706806282722512
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 8,
+      "q10": 0.26035066133497387,
+      "median": 0.3516819571865444,
+      "q90": 0.4317134478424801
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 8,
+      "q10": 0.012832710711601737,
+      "median": 0.0252585190249609,
+      "q90": 0.037356522463654306
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 8,
+      "q10": 0.0004397905759162304,
+      "median": 0.0022415781350450144,
+      "q90": 0.006301594448305225
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "M",
+      "metric": "bas",
+      "n": 8,
+      "q10": 0.19662717754041079,
+      "median": 0.2147454170916298,
+      "q90": 0.22992825978323866
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 8,
+      "q10": 0.45654309022126527,
+      "median": 0.48683865599698173,
+      "q90": 0.6777924285847322
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 8,
+      "q10": 0.6979310344827586,
+      "median": 0.7324598686723091,
+      "q90": 0.9831951219512195
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 8,
+      "q10": 0.48487654320987655,
+      "median": 0.6347051461385556,
+      "q90": 0.6873446579561977
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 8,
+      "q10": 0.6401891525619214,
+      "median": 0.6718869447039837,
+      "q90": 0.703545855471056
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 8,
+      "q10": 0.08362585034013419,
+      "median": 0.0887528344671189,
+      "q90": 0.09792063492063452
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 8,
+      "q10": -0.027245575104374812,
+      "median": -0.005119001879166314,
+      "q90": 0.013032244146606729
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 8,
+      "q10": -0.011211656713037258,
+      "median": 0.00015496376663606747,
+      "q90": 0.01686334401472057
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 8,
+      "q10": 0.23666666666666666,
+      "median": 0.4166666666666667,
+      "q90": 0.6466666666666666
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 8,
+      "q10": 7.014363354036973,
+      "median": 13.670937588230203,
+      "q90": 66.82031249999812
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/Wei",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 8,
+      "q10": 0.24583301931623347,
+      "median": 0.2519557990350644,
+      "q90": 0.26556453968614047
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 2,
+      "q10": 3.019035388203639,
+      "median": 3.0309902427767765,
+      "q90": 3.042945097349914
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 2,
+      "q10": 3.728662071103932,
+      "median": 3.752254605751837,
+      "q90": 3.7758471403997422
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 2,
+      "q10": 40.73432858438008,
+      "median": 41.026843501911,
+      "q90": 41.319358419441926
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 2,
+      "q10": 711.5380816423972,
+      "median": 727.3367793197122,
+      "q90": 743.1354769970272
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 2,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.0
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 2,
+      "q10": 0.004315304948216341,
+      "median": 0.01160337552742616,
+      "q90": 0.01889144610663598
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 2,
+      "q10": 0.2921350469978899,
+      "median": 0.29359294072511033,
+      "q90": 0.2950508344523307
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 2,
+      "q10": 0.009788488545351273,
+      "median": 0.012084906728725503,
+      "q90": 0.014381324912099733
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 2,
+      "q10": 0.0014000767165324127,
+      "median": 0.002397391637897967,
+      "q90": 0.0033947065592635213
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "M",
+      "metric": "bas",
+      "n": 2,
+      "q10": 0.23603557953043663,
+      "median": 0.2489559948340389,
+      "q90": 0.2618764101376412
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 2,
+      "q10": 0.4755017065776871,
+      "median": 0.4832290466528175,
+      "q90": 0.49095638672794795
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 2,
+      "q10": 0.7185884227809793,
+      "median": 0.7277735745790541,
+      "q90": 0.7369587263771289
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 2,
+      "q10": 0.7530973451327433,
+      "median": 0.7566371681415929,
+      "q90": 0.7601769911504425
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 2,
+      "q10": 0.7354316546762589,
+      "median": 0.7419064748201438,
+      "q90": 0.7483812949640288
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 2,
+      "q10": 0.08796598639455482,
+      "median": 0.090351473922901,
+      "q90": 0.09273696145124717
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 2,
+      "q10": 0.008753324521786558,
+      "median": 0.010303282736684922,
+      "q90": 0.011853240951583285
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 2,
+      "q10": 0.01297441499778817,
+      "median": 0.015021138871417521,
+      "q90": 0.017067862745046875
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 2,
+      "q10": 0.36,
+      "median": 0.4666666666666667,
+      "q90": 0.5733333333333334
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 2,
+      "q10": 16.39231861888125,
+      "median": 18.443600670163192,
+      "q90": 20.494882721445133
+    },
+    {
+      "axis": "dataset_style",
+      "group": "finedance/jiewu",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 2,
+      "q10": 0.2496134453561497,
+      "median": 0.2498020942592621,
+      "q90": 0.2499907431623745
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 222,
+      "q10": 0.5078139049328637,
+      "median": 3.991106696430329,
+      "q90": 9.144088290783625
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 222,
+      "q10": 1.4208070301468423,
+      "median": 4.228655217039007,
+      "q90": 6.658888660248312
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 222,
+      "q10": 13.688200827113134,
+      "median": 55.59664794918336,
+      "q90": 98.48917764909385
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 222,
+      "q10": 213.28153585536876,
+      "median": 1049.826375269396,
+      "q90": 2173.842095380454
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 222,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.06037768362468116
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 222,
+      "q10": 0.0,
+      "median": 0.08161090845989494,
+      "q90": 0.8186629526462396
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 222,
+      "q10": 0.0799492981550162,
+      "median": 0.40756539215613924,
+      "q90": 0.8249880453925194
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 222,
+      "q10": 0.008728994403801982,
+      "median": 0.0792002494287456,
+      "q90": 0.38099101043425915
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 222,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.008971955013346458
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "M",
+      "metric": "bas",
+      "n": 222,
+      "q10": 0.16628436834196322,
+      "median": 0.23134878486274957,
+      "q90": 0.33538594505346203
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 222,
+      "q10": 0.5066148304570194,
+      "median": 0.6145995303577343,
+      "q90": 0.7665397333083597
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 222,
+      "q10": 0.8308091908091909,
+      "median": 0.9230769230769231,
+      "q90": 1.0
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 222,
+      "q10": 0.5043717497788232,
+      "median": 0.6984126984126984,
+      "q90": 0.8064516129032258
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 222,
+      "q10": 0.6423417793432564,
+      "median": 0.7846802272310793,
+      "q90": 0.8712820512820513
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 222,
+      "q10": 0.06557596371882086,
+      "median": 0.09188208616780047,
+      "q90": 0.11550793650793666
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 222,
+      "q10": 0.010417753134112615,
+      "median": 0.046858918677070135,
+      "q90": 0.10885526065271527
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 222,
+      "q10": 0.025201809640353966,
+      "median": 0.07448101431401132,
+      "q90": 0.1507155018640818
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 222,
+      "q10": 0.1,
+      "median": 0.5666666666666667,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 222,
+      "q10": 5.2223307823733345,
+      "median": 23.037484975961576,
+      "q90": 52.238970588235325
+    },
+    {
+      "axis": "tempo",
+      "group": "fast_>130",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 222,
+      "q10": 0.22254618550394908,
+      "median": 0.2578728309044466,
+      "q90": 0.3072456359863286
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 1167,
+      "q10": 0.9589303250764142,
+      "median": 5.027290500069031,
+      "q90": 11.762149180052683
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 1167,
+      "q10": 2.020981517524369,
+      "median": 4.799704503561616,
+      "q90": 7.5414861923534415
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 1167,
+      "q10": 20.47046547879584,
+      "median": 64.8645686061023,
+      "q90": 122.66928596797695
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 1167,
+      "q10": 348.77071645938497,
+      "median": 1274.39727391604,
+      "q90": 2687.7364603050637
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 1167,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.027536965117427075
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 1167,
+      "q10": 0.0,
+      "median": 0.0842911877394636,
+      "q90": 0.7275770254849754
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 1167,
+      "q10": 0.11654490760636015,
+      "median": 0.6092436974789915,
+      "q90": 0.9076147382029736
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 1167,
+      "q10": 0.014578272259200348,
+      "median": 0.16385732061866715,
+      "q90": 0.7555215705661386
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 1167,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.009429163663745025
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "M",
+      "metric": "bas",
+      "n": 1167,
+      "q10": 0.13408054826695856,
+      "median": 0.2572169693443929,
+      "q90": 0.4576246453397285
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 1167,
+      "q10": 0.2778580193145151,
+      "median": 0.48898395781846354,
+      "q90": 0.750837289703402
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 1167,
+      "q10": 0.5238095238095238,
+      "median": 0.6551724137931034,
+      "q90": 0.8125
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 1167,
+      "q10": 0.5714285714285714,
+      "median": 0.7619047619047619,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 1167,
+      "q10": 0.5582222222222223,
+      "median": 0.7054409005628518,
+      "q90": 0.8275862068965518
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 1167,
+      "q10": 0.05182339407782557,
+      "median": 0.08965986394557846,
+      "q90": 0.12270294784580518
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 1167,
+      "q10": 0.017410519061346528,
+      "median": 0.061662815322773006,
+      "q90": 0.10866719090238054
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 1167,
+      "q10": 0.029619158995857296,
+      "median": 0.08497576544656375,
+      "q90": 0.16847329442079534
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 1167,
+      "q10": 0.1,
+      "median": 0.5333333333333333,
+      "q90": 0.9354449472096531
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 1167,
+      "q10": 4.014817012442794,
+      "median": 25.6673177083333,
+      "q90": 62.600915332786165
+    },
+    {
+      "axis": "tempo",
+      "group": "medium_90-130",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 1167,
+      "q10": 0.22092327703050008,
+      "median": 0.26431746012437946,
+      "q90": 0.31907354817573064
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "D",
+      "metric": "motion_energy",
+      "n": 222,
+      "q10": 0.7384795437897671,
+      "median": 5.095901157892914,
+      "q90": 10.18042993850545
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "D",
+      "metric": "velocity_p95",
+      "n": 222,
+      "q10": 1.8392785579164082,
+      "median": 4.825002743265285,
+      "q90": 7.031264017224596
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "D",
+      "metric": "acceleration_p95",
+      "n": 222,
+      "q10": 15.47775367275169,
+      "median": 63.63932347531568,
+      "q90": 104.23930539839759
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "D",
+      "metric": "jerk_p95",
+      "n": 222,
+      "q10": 254.44659455181718,
+      "median": 1241.598714886397,
+      "q90": 2269.664465760109
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "D",
+      "metric": "static_ratio",
+      "n": 222,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.025078369905956112
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "D",
+      "metric": "repeated_pose_ratio",
+      "n": 222,
+      "q10": 0.0,
+      "median": 0.06269592476489028,
+      "q90": 0.7467084639498435
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "D",
+      "metric": "fsr_proxy",
+      "n": 222,
+      "q10": 0.0987421383647799,
+      "median": 0.5501212185095394,
+      "q90": 0.8581761006289309
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "D",
+      "metric": "pfc_proxy",
+      "n": 222,
+      "q10": 0.014630234757870883,
+      "median": 0.09796266830433534,
+      "q90": 0.5331117930762412
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "D",
+      "metric": "penetration_ratio",
+      "n": 222,
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.008607198748043818
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "M",
+      "metric": "bas",
+      "n": 222,
+      "q10": 0.10986780769362257,
+      "median": 0.3007568295265859,
+      "q90": 0.5636212814433836
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "M",
+      "metric": "reverse_bas",
+      "n": 222,
+      "q10": 0.18150446424150493,
+      "median": 0.43225010372858885,
+      "q90": 0.716070056195141
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "M",
+      "metric": "event_precision",
+      "n": 222,
+      "q10": 0.38461538461538464,
+      "median": 0.5094017094017094,
+      "q90": 0.6486363636363637
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "M",
+      "metric": "event_recall",
+      "n": 222,
+      "q10": 0.5333333333333333,
+      "median": 0.7556556346878928,
+      "q90": 0.9333333333333333
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "M",
+      "metric": "event_f1",
+      "n": 222,
+      "q10": 0.4708978328173375,
+      "median": 0.6056618819776713,
+      "q90": 0.7364912280701754
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "M",
+      "metric": "event_timing_error",
+      "n": 222,
+      "q10": 0.05394557823129228,
+      "median": 0.09004535147392301,
+      "q90": 0.12637641723356008
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "M",
+      "metric": "speed_correlation",
+      "n": 222,
+      "q10": 0.01979748676855126,
+      "median": 0.05169911193776407,
+      "q90": 0.09438694350587583
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "M",
+      "metric": "impact_correlation",
+      "n": 222,
+      "q10": 0.03498855949395896,
+      "median": 0.09032366867717714,
+      "q90": 0.16879192490649653
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "M",
+      "metric": "impact_abs_lag",
+      "n": 222,
+      "q10": 0.1,
+      "median": 0.5166666666666666,
+      "q90": 0.9
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "M",
+      "metric": "tempo_error",
+      "n": 222,
+      "q10": 23.397090517241352,
+      "median": 49.35862897877949,
+      "q90": 74.533454153605
+    },
+    {
+      "axis": "tempo",
+      "group": "slow_<90",
+      "module": "M",
+      "metric": "phase_error",
+      "n": 222,
+      "q10": 0.22782138464385263,
+      "median": 0.2663803886877668,
+      "q90": 0.3095682779947917
+    }
+  ]
+}

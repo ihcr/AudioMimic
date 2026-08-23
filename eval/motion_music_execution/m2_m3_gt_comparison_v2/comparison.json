@@ -1,0 +1,193 @@
+{
+  "schema_version": "m2_m3_gt_comparison_v1",
+  "gt_suite": "eval/benchmark_v1/gt/gt_oracle_suite_all_v1/gt_oracle_suite_metrics.json",
+  "rows": [
+    {
+      "route": "M2",
+      "source": "eval/motion_music_execution/gt_calibrated_m0_m2_m4_song098_v2/reference_metrics.json",
+      "sequence_id": "098",
+      "seed": 1234,
+      "label": "m2_train1234_sample1234_u100000_best_song098",
+      "motion_energy": 1.9131134772867442,
+      "joint_jerk_p95": 718.8149051740763,
+      "static_ratio": 0.0,
+      "repeated_pose_ratio": 0.0,
+      "fsr_proxy": 0.7782101167315175,
+      "pfc_proxy": 0.07211560438363873,
+      "root_height_min": 0.706773042678833,
+      "impact_corr": 0.01874588575297437,
+      "impact_abs_lag": -0.43333333333333335,
+      "bas": 0.25235416713313985,
+      "motion_energy_in_gt_q10_q90": true,
+      "joint_jerk_p95_in_gt_q10_q90": true,
+      "static_ratio_in_gt_q10_q90": true,
+      "repeated_pose_ratio_in_gt_q10_q90": true,
+      "fsr_proxy_in_gt_q10_q90": true,
+      "pfc_proxy_in_gt_q10_q90": true,
+      "root_height_min_in_gt_q10_q90": true,
+      "impact_corr_in_gt_q10_q90": false,
+      "impact_abs_lag_in_gt_q10_q90": false,
+      "bas_in_gt_q10_q90": true
+    },
+    {
+      "route": "M2",
+      "source": "eval/motion_music_execution/gt_calibrated_m0_m2_m4_song098_v2/reference_metrics.json",
+      "sequence_id": "098",
+      "seed": 1234,
+      "label": "m2_train2345_sample1234_u100000_best_song098",
+      "motion_energy": 1.9501336003668683,
+      "joint_jerk_p95": 713.7642486020919,
+      "static_ratio": 0.0005555555555555556,
+      "repeated_pose_ratio": 0.0,
+      "fsr_proxy": 0.7932184546970539,
+      "pfc_proxy": 0.06921199278944985,
+      "root_height_min": 0.6853600144386292,
+      "impact_corr": 0.03699752319197714,
+      "impact_abs_lag": 0.7333333333333333,
+      "bas": 0.24185163777572277,
+      "motion_energy_in_gt_q10_q90": true,
+      "joint_jerk_p95_in_gt_q10_q90": true,
+      "static_ratio_in_gt_q10_q90": true,
+      "repeated_pose_ratio_in_gt_q10_q90": true,
+      "fsr_proxy_in_gt_q10_q90": true,
+      "pfc_proxy_in_gt_q10_q90": true,
+      "root_height_min_in_gt_q10_q90": true,
+      "impact_corr_in_gt_q10_q90": true,
+      "impact_abs_lag_in_gt_q10_q90": true,
+      "bas_in_gt_q10_q90": true
+    },
+    {
+      "route": "M2",
+      "source": "eval/motion_music_execution/gt_calibrated_m0_m2_m4_song098_v2/reference_metrics.json",
+      "sequence_id": "098",
+      "seed": 1234,
+      "label": "m2_train3456_sample1234_u100000_best_song098",
+      "motion_energy": 1.9385226737044872,
+      "joint_jerk_p95": 721.6858511790629,
+      "static_ratio": 0.0,
+      "repeated_pose_ratio": 0.0,
+      "fsr_proxy": 0.7865480822679266,
+      "pfc_proxy": 0.05411881264767418,
+      "root_height_min": 0.7421483993530273,
+      "impact_corr": 0.01994534274958299,
+      "impact_abs_lag": 0.6666666666666666,
+      "bas": 0.24649679719582154,
+      "motion_energy_in_gt_q10_q90": true,
+      "joint_jerk_p95_in_gt_q10_q90": true,
+      "static_ratio_in_gt_q10_q90": true,
+      "repeated_pose_ratio_in_gt_q10_q90": true,
+      "fsr_proxy_in_gt_q10_q90": true,
+      "pfc_proxy_in_gt_q10_q90": true,
+      "root_height_min_in_gt_q10_q90": true,
+      "impact_corr_in_gt_q10_q90": false,
+      "impact_abs_lag_in_gt_q10_q90": true,
+      "bas_in_gt_q10_q90": true
+    },
+    {
+      "route": "M3",
+      "source": "eval/mrt2_metrics/m3_012_pair_metrics.json",
+      "sequence_id": "012",
+      "seed": "",
+      "label": "M3-012",
+      "motion_energy": 1.9944871151153116,
+      "joint_jerk_p95": 655.2378259599209,
+      "static_ratio": 0.0,
+      "repeated_pose_ratio": 0.0,
+      "fsr_proxy": 0.7709838799332963,
+      "pfc_proxy": 0.08486057081983257,
+      "root_height_min": 0.7334972620010376,
+      "impact_corr": 0.02755688895569202,
+      "impact_abs_lag": -0.6333333333333333,
+      "bas": 0.24330030554833929,
+      "motion_energy_in_gt_q10_q90": true,
+      "joint_jerk_p95_in_gt_q10_q90": true,
+      "static_ratio_in_gt_q10_q90": true,
+      "repeated_pose_ratio_in_gt_q10_q90": true,
+      "fsr_proxy_in_gt_q10_q90": true,
+      "pfc_proxy_in_gt_q10_q90": true,
+      "root_height_min_in_gt_q10_q90": true,
+      "impact_corr_in_gt_q10_q90": false,
+      "impact_abs_lag_in_gt_q10_q90": false,
+      "bas_in_gt_q10_q90": true
+    },
+    {
+      "route": "M3",
+      "source": "eval/mrt2_metrics/m3_065_pair_metrics.json",
+      "sequence_id": "065",
+      "seed": "",
+      "label": "M3-065",
+      "motion_energy": 1.9094145619190839,
+      "joint_jerk_p95": 642.683589085935,
+      "static_ratio": 0.0,
+      "repeated_pose_ratio": 0.0,
+      "fsr_proxy": 0.8465814341300723,
+      "pfc_proxy": 0.08567083930204193,
+      "root_height_min": 0.7697048783302307,
+      "impact_corr": 0.013758050854847726,
+      "impact_abs_lag": -0.8666666666666667,
+      "bas": 0.2832497914723486,
+      "motion_energy_in_gt_q10_q90": true,
+      "joint_jerk_p95_in_gt_q10_q90": true,
+      "static_ratio_in_gt_q10_q90": true,
+      "repeated_pose_ratio_in_gt_q10_q90": true,
+      "fsr_proxy_in_gt_q10_q90": true,
+      "pfc_proxy_in_gt_q10_q90": true,
+      "root_height_min_in_gt_q10_q90": true,
+      "impact_corr_in_gt_q10_q90": false,
+      "impact_abs_lag_in_gt_q10_q90": false,
+      "bas_in_gt_q10_q90": true
+    }
+  ],
+  "gt_quantiles": {
+    "motion_energy": {
+      "q10": 0.8188762341117866,
+      "median": 4.808933972604373,
+      "q90": 11.17599653685585
+    },
+    "joint_jerk_p95": {
+      "q10": 290.3354959260222,
+      "median": 1236.9681275193411,
+      "q90": 2578.91419540242
+    },
+    "static_ratio": {
+      "q10": 0.0,
+      "median": 0.0,
+      "q90": 0.03064066852367688
+    },
+    "repeated_pose_ratio": {
+      "q10": 0.0,
+      "median": 0.0807799442896936,
+      "q90": 0.7456445993031359
+    },
+    "fsr_proxy": {
+      "q10": 0.11302681992337164,
+      "median": 0.5664335664335665,
+      "q90": 0.8986013986013986
+    },
+    "pfc_proxy": {
+      "q10": 0.013520156030396852,
+      "median": 0.14148657378256152,
+      "q90": 0.6944858320849246
+    },
+    "root_height_min": {
+      "q10": 0.39277928679534213,
+      "median": 0.7729248809297108,
+      "q90": 0.856391773102376
+    },
+    "impact_corr": {
+      "q10": 0.02966844581403781,
+      "median": 0.08437697561636161,
+      "q90": 0.16642037819180924
+    },
+    "impact_abs_lag": {
+      "q10": 0.1,
+      "median": 0.5333333333333333,
+      "q90": 0.9333333333333333
+    },
+    "bas": {
+      "q10": 0.1369088863730511,
+      "median": 0.25490458689433376,
+      "q90": 0.45598489011626414
+    }
+  }
+}

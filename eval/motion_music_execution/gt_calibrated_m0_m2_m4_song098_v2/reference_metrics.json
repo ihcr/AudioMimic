@@ -1,0 +1,722 @@
+[
+  {
+    "motion_id": "m2_train1234_sample1234_u100000_best_song098",
+    "motion_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m2_predicted_fms/m2_train1234_sample1234_u100000_best_song098.pkl",
+    "audio_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/audio/098_t000128_60s.wav",
+    "route": "M2",
+    "sequence_id": "098",
+    "training_seed": 1234,
+    "sampling_seed": 1234,
+    "checkpoint_update": 100000,
+    "motion_mse": 0.20440785586833954,
+    "audio_start_seconds": 4.266666666666667,
+    "quality": {
+      "frames": 1800,
+      "fps": 30.0,
+      "duration_seconds": 60.0,
+      "joint_amplitude_median_rad": 0.6545647382736206,
+      "motion_energy_rad2_s2": 1.9131134772867442,
+      "joint_velocity_abs_rad_s": {
+        "p50": 0.5488172918558121,
+        "p95": 3.04685267060995,
+        "p99": 4.974298855662364,
+        "max": 11.068199872970581
+      },
+      "joint_acceleration_abs_rad_s2": {
+        "p50": 7.149850577116013,
+        "p95": 37.279537618160234,
+        "p99": 61.75099168717876,
+        "max": 205.99219053983688
+      },
+      "joint_jerk_abs_rad_s3": {
+        "p50": 139.26739990711212,
+        "p95": 718.8149051740763,
+        "p99": 1194.705941523426,
+        "max": 3222.4158346652985
+      },
+      "static_ratio_speed_below_008": 0.0,
+      "repeated_pose_ratio_rms008_after2s": 0.0,
+      "median_nearest_nonlocal_pose_rms_rad": 0.22639041447461417,
+      "c4_boundary_position_jump_p95_rad": 0.07373528552282481,
+      "c4_boundary_velocity_jump_p95_rad_s": 1.0288199991057563,
+      "c4_position_jump_ratio_to_nonboundary": 0.9920371822287029,
+      "c4_velocity_jump_ratio_to_nonboundary": 0.9502990576730106,
+      "root_planar_displacement_m": 0.5814047577283592,
+      "root_path_length_m": 10.658675079777238,
+      "root_planar_speed_p95_m_s": 0.3943417371814483,
+      "root_height_min_m": 0.706773042678833,
+      "root_height_median_m": 0.8414708375930786,
+      "root_angular_speed_p95_rad_s": 1.9487033467629182,
+      "physical": {
+        "fsr_world_z0_contact5cm_speed20cms": 0.08171206225680934,
+        "fsr_ground_calibrated_proxy": 0.7782101167315175,
+        "left_contact_ratio": 0.7865480822679266,
+        "right_contact_ratio": 0.7709838799332963,
+        "ground_penetration_ratio": 0.006666666666666667,
+        "estimated_ground_height_m": 0.03892034374177456,
+        "minimum_foot_height_relative_m": -0.027719652168452742,
+        "pfc_proxy": 0.07211560438363873,
+        "keypoint_speed": {
+          "p50": 0.5939182761316648,
+          "p95": 1.180878884698859,
+          "p99": 1.4533460085412675,
+          "max": 1.7301162589029384
+        }
+      }
+    },
+    "music": {
+      "speed_zero_lag_correlation": -0.04699888983226134,
+      "speed_best_correlation": -0.03648958972282747,
+      "speed_best_lag_seconds": -0.36666666666666664,
+      "impact_zero_lag_correlation": -0.01304782387421474,
+      "impact_best_correlation": 0.01874588575297437,
+      "impact_best_lag_seconds": -0.43333333333333335,
+      "impact_lag_reliable_at_corr010": false,
+      "bas_music_to_motion": 0.25235416713313985,
+      "bas_motion_to_music": 0.37790074098336285,
+      "audio_beats": 99,
+      "motion_beats": 66,
+      "motion_beats_per_minute": 66.0
+    }
+  },
+  {
+    "motion_id": "m2_train2345_sample1234_u100000_best_song098",
+    "motion_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m2_predicted_fms/m2_train2345_sample1234_u100000_best_song098.pkl",
+    "audio_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/audio/098_t000128_60s.wav",
+    "route": "M2",
+    "sequence_id": "098",
+    "training_seed": 2345,
+    "sampling_seed": 1234,
+    "checkpoint_update": 100000,
+    "motion_mse": 0.19942502677440643,
+    "audio_start_seconds": 4.266666666666667,
+    "quality": {
+      "frames": 1800,
+      "fps": 30.0,
+      "duration_seconds": 60.0,
+      "joint_amplitude_median_rad": 0.6805012091994285,
+      "motion_energy_rad2_s2": 1.9501336003668683,
+      "joint_velocity_abs_rad_s": {
+        "p50": 0.5865958705544472,
+        "p95": 3.034532636404037,
+        "p99": 4.911543864011771,
+        "max": 11.143131405115128
+      },
+      "joint_acceleration_abs_rad_s2": {
+        "p50": 7.772370334714651,
+        "p95": 37.25664793979366,
+        "p99": 60.68875042442237,
+        "max": 212.49991357326508
+      },
+      "joint_jerk_abs_rad_s3": {
+        "p50": 151.59497084096074,
+        "p95": 713.7642486020919,
+        "p99": 1168.683645031415,
+        "max": 3092.5482027232647
+      },
+      "static_ratio_speed_below_008": 0.0005555555555555556,
+      "repeated_pose_ratio_rms008_after2s": 0.0,
+      "median_nearest_nonlocal_pose_rms_rad": 0.22083187591688735,
+      "c4_boundary_position_jump_p95_rad": 0.07670222076114168,
+      "c4_boundary_velocity_jump_p95_rad_s": 1.0079413352547408,
+      "c4_position_jump_ratio_to_nonboundary": 0.988136010739074,
+      "c4_velocity_jump_ratio_to_nonboundary": 0.963297822792426,
+      "root_planar_displacement_m": 0.8406800011574198,
+      "root_path_length_m": 10.521363955311765,
+      "root_planar_speed_p95_m_s": 0.38877684848156135,
+      "root_height_min_m": 0.6853600144386292,
+      "root_height_median_m": 0.8341719508171082,
+      "root_angular_speed_p95_rad_s": 1.9405917535149388,
+      "physical": {
+        "fsr_world_z0_contact5cm_speed20cms": 0.10172317954419122,
+        "fsr_ground_calibrated_proxy": 0.7932184546970539,
+        "left_contact_ratio": 0.7281823235130628,
+        "right_contact_ratio": 0.7120622568093385,
+        "ground_penetration_ratio": 0.005,
+        "estimated_ground_height_m": 0.03467845819890499,
+        "minimum_foot_height_relative_m": -0.022795655727386475,
+        "pfc_proxy": 0.06921199278944985,
+        "keypoint_speed": {
+          "p50": 0.5818473010103482,
+          "p95": 1.1423023435740736,
+          "p99": 1.3525019930633178,
+          "max": 1.918830372344975
+        }
+      }
+    },
+    "music": {
+      "speed_zero_lag_correlation": -0.010270897644196158,
+      "speed_best_correlation": -0.0022735479341160895,
+      "speed_best_lag_seconds": -0.36666666666666664,
+      "impact_zero_lag_correlation": -0.0027570959171000276,
+      "impact_best_correlation": 0.03699752319197714,
+      "impact_best_lag_seconds": 0.7333333333333333,
+      "impact_lag_reliable_at_corr010": false,
+      "bas_music_to_motion": 0.24185163777572277,
+      "bas_motion_to_music": 0.38544865635267733,
+      "audio_beats": 99,
+      "motion_beats": 62,
+      "motion_beats_per_minute": 62.00000000000001
+    }
+  },
+  {
+    "motion_id": "m2_train3456_sample1234_u100000_best_song098",
+    "motion_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m2_predicted_fms/m2_train3456_sample1234_u100000_best_song098.pkl",
+    "audio_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/audio/098_t000128_60s.wav",
+    "route": "M2",
+    "sequence_id": "098",
+    "training_seed": 3456,
+    "sampling_seed": 1234,
+    "checkpoint_update": 100000,
+    "motion_mse": 0.19804570078849792,
+    "audio_start_seconds": 4.266666666666667,
+    "quality": {
+      "frames": 1800,
+      "fps": 30.0,
+      "duration_seconds": 60.0,
+      "joint_amplitude_median_rad": 0.6179146483540534,
+      "motion_energy_rad2_s2": 1.9385226737044872,
+      "joint_velocity_abs_rad_s": {
+        "p50": 0.5545536428689957,
+        "p95": 3.0650687813758837,
+        "p99": 5.016195987258109,
+        "max": 10.950894802808762
+      },
+      "joint_acceleration_abs_rad_s2": {
+        "p50": 7.276048511266708,
+        "p95": 37.41344355046749,
+        "p99": 61.461242940277,
+        "max": 206.39658719301224
+      },
+      "joint_jerk_abs_rad_s3": {
+        "p50": 143.19810178130865,
+        "p95": 721.6858511790629,
+        "p99": 1189.6831937972468,
+        "max": 3298.5035330057144
+      },
+      "static_ratio_speed_below_008": 0.0,
+      "repeated_pose_ratio_rms008_after2s": 0.0,
+      "median_nearest_nonlocal_pose_rms_rad": 0.2223075407764797,
+      "c4_boundary_position_jump_p95_rad": 0.07768529313344136,
+      "c4_boundary_velocity_jump_p95_rad_s": 1.0241603976635272,
+      "c4_position_jump_ratio_to_nonboundary": 0.9874419458270683,
+      "c4_velocity_jump_ratio_to_nonboundary": 0.966816831252631,
+      "root_planar_displacement_m": 0.42628498572729073,
+      "root_path_length_m": 9.780320188247021,
+      "root_planar_speed_p95_m_s": 0.3641875185564154,
+      "root_height_min_m": 0.7421483993530273,
+      "root_height_median_m": 0.8411417007446289,
+      "root_angular_speed_p95_rad_s": 2.0509174635371434,
+      "physical": {
+        "fsr_world_z0_contact5cm_speed20cms": 0.07893274041133963,
+        "fsr_ground_calibrated_proxy": 0.7865480822679266,
+        "left_contact_ratio": 0.8010005558643691,
+        "right_contact_ratio": 0.7821011673151751,
+        "ground_penetration_ratio": 0.0044444444444444444,
+        "estimated_ground_height_m": 0.03825291007757187,
+        "minimum_foot_height_relative_m": -0.01977276563644409,
+        "pfc_proxy": 0.05411881264767418,
+        "keypoint_speed": {
+          "p50": 0.5635840835953567,
+          "p95": 1.1470965074505823,
+          "p99": 1.362415811099665,
+          "max": 1.9006753611024227
+        }
+      }
+    },
+    "music": {
+      "speed_zero_lag_correlation": -0.026737071360278048,
+      "speed_best_correlation": -0.011915348000673764,
+      "speed_best_lag_seconds": -0.36666666666666664,
+      "impact_zero_lag_correlation": -0.0067517997708288905,
+      "impact_best_correlation": 0.01994534274958299,
+      "impact_best_lag_seconds": 0.6666666666666666,
+      "impact_lag_reliable_at_corr010": false,
+      "bas_music_to_motion": 0.24649679719582154,
+      "bas_motion_to_music": 0.39461099450133597,
+      "audio_beats": 99,
+      "motion_beats": 62,
+      "motion_beats_per_minute": 62.00000000000001
+    }
+  },
+  {
+    "motion_id": "m4_train1234_sample1234_u100000_best_song098",
+    "motion_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m4_oracle_fms/m4_train1234_sample1234_u100000_best_song098.pkl",
+    "audio_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/audio/098_t000128_60s.wav",
+    "route": "M4",
+    "sequence_id": "098",
+    "training_seed": 1234,
+    "sampling_seed": 1234,
+    "checkpoint_update": 100000,
+    "motion_mse": 0.18914799392223358,
+    "audio_start_seconds": 4.266666666666667,
+    "quality": {
+      "frames": 1800,
+      "fps": 30.0,
+      "duration_seconds": 60.0,
+      "joint_amplitude_median_rad": 0.6079931363463402,
+      "motion_energy_rad2_s2": 1.7592471379113193,
+      "joint_velocity_abs_rad_s": {
+        "p50": 0.5398045107722282,
+        "p95": 2.901662047952412,
+        "p99": 4.734825083613402,
+        "max": 10.22475153207779
+      },
+      "joint_acceleration_abs_rad_s2": {
+        "p50": 7.089847885072231,
+        "p95": 35.95109213143585,
+        "p99": 58.64248028397569,
+        "max": 195.10619044303894
+      },
+      "joint_jerk_abs_rad_s3": {
+        "p50": 137.9931214323733,
+        "p95": 681.7261956632137,
+        "p99": 1121.2858301773688,
+        "max": 3071.9916857779026
+      },
+      "static_ratio_speed_below_008": 0.0011111111111111111,
+      "repeated_pose_ratio_rms008_after2s": 0.0,
+      "median_nearest_nonlocal_pose_rms_rad": 0.20258094271319885,
+      "c4_boundary_position_jump_p95_rad": 0.0728369589282769,
+      "c4_boundary_velocity_jump_p95_rad_s": 0.909243682822066,
+      "c4_position_jump_ratio_to_nonboundary": 0.9758989151378141,
+      "c4_velocity_jump_ratio_to_nonboundary": 0.9471602171289513,
+      "root_planar_displacement_m": 1.1959823756479935,
+      "root_path_length_m": 11.11084746330917,
+      "root_planar_speed_p95_m_s": 0.4194842549968281,
+      "root_height_min_m": 0.7495899200439453,
+      "root_height_median_m": 0.8428622484207153,
+      "root_angular_speed_p95_rad_s": 1.9597313429045822,
+      "physical": {
+        "fsr_world_z0_contact5cm_speed20cms": 0.0528071150639244,
+        "fsr_ground_calibrated_proxy": 0.7909949972206781,
+        "left_contact_ratio": 0.8071150639244025,
+        "right_contact_ratio": 0.7665369649805448,
+        "ground_penetration_ratio": 0.006666666666666667,
+        "estimated_ground_height_m": 0.03934394139796495,
+        "minimum_foot_height_relative_m": -0.018363313190639018,
+        "pfc_proxy": 0.06961385599138864,
+        "keypoint_speed": {
+          "p50": 0.583677339282823,
+          "p95": 1.1618329873013011,
+          "p99": 1.3890801701452233,
+          "max": 1.8803243892871218
+        }
+      }
+    },
+    "music": {
+      "speed_zero_lag_correlation": -0.02747557079504169,
+      "speed_best_correlation": -0.020988400482796998,
+      "speed_best_lag_seconds": -0.36666666666666664,
+      "impact_zero_lag_correlation": -0.03511495572301188,
+      "impact_best_correlation": 0.03096456529748737,
+      "impact_best_lag_seconds": 0.7333333333333333,
+      "impact_lag_reliable_at_corr010": false,
+      "bas_music_to_motion": 0.2610141854917645,
+      "bas_motion_to_music": 0.41699143696732593,
+      "audio_beats": 99,
+      "motion_beats": 62,
+      "motion_beats_per_minute": 62.00000000000001
+    }
+  },
+  {
+    "motion_id": "m4_train2345_sample1234_u100000_best_song098",
+    "motion_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m4_oracle_fms/m4_train2345_sample1234_u100000_best_song098.pkl",
+    "audio_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/audio/098_t000128_60s.wav",
+    "route": "M4",
+    "sequence_id": "098",
+    "training_seed": 2345,
+    "sampling_seed": 1234,
+    "checkpoint_update": 100000,
+    "motion_mse": 0.19166697561740875,
+    "audio_start_seconds": 4.266666666666667,
+    "quality": {
+      "frames": 1800,
+      "fps": 30.0,
+      "duration_seconds": 60.0,
+      "joint_amplitude_median_rad": 0.6523488923907279,
+      "motion_energy_rad2_s2": 2.074334970803151,
+      "joint_velocity_abs_rad_s": {
+        "p50": 0.6296085566282272,
+        "p95": 3.1290436070412375,
+        "p99": 5.019065536558631,
+        "max": 10.924161896109581
+      },
+      "joint_acceleration_abs_rad_s2": {
+        "p50": 8.579080738127232,
+        "p95": 39.94461938738821,
+        "p99": 63.527786632999835,
+        "max": 183.99433493614197
+      },
+      "joint_jerk_abs_rad_s3": {
+        "p50": 169.4239075295627,
+        "p95": 775.4224568372578,
+        "p99": 1234.6714201569564,
+        "max": 3342.5078205764294
+      },
+      "static_ratio_speed_below_008": 0.0,
+      "repeated_pose_ratio_rms008_after2s": 0.0,
+      "median_nearest_nonlocal_pose_rms_rad": 0.20951072997842277,
+      "c4_boundary_position_jump_p95_rad": 0.07670012295785757,
+      "c4_boundary_velocity_jump_p95_rad_s": 0.9850221968965418,
+      "c4_position_jump_ratio_to_nonboundary": 0.9607894320816005,
+      "c4_velocity_jump_ratio_to_nonboundary": 0.9463851669117188,
+      "root_planar_displacement_m": 0.915413234276306,
+      "root_path_length_m": 10.54995077061173,
+      "root_planar_speed_p95_m_s": 0.38725395680204955,
+      "root_height_min_m": 0.7347917556762695,
+      "root_height_median_m": 0.8338896930217743,
+      "root_angular_speed_p95_rad_s": 2.431438478962392,
+      "physical": {
+        "fsr_world_z0_contact5cm_speed20cms": 0.06837131739855476,
+        "fsr_ground_calibrated_proxy": 0.8371317398554753,
+        "left_contact_ratio": 0.7976653696498055,
+        "right_contact_ratio": 0.7431906614785992,
+        "ground_penetration_ratio": 0.008333333333333333,
+        "estimated_ground_height_m": 0.03994237620383501,
+        "minimum_foot_height_relative_m": -0.025656836926937106,
+        "pfc_proxy": 0.0633884384542638,
+        "keypoint_speed": {
+          "p50": 0.6190340286759417,
+          "p95": 1.157099324047071,
+          "p99": 1.4191768354876957,
+          "max": 1.764159047344176
+        }
+      }
+    },
+    "music": {
+      "speed_zero_lag_correlation": -0.005646692303981909,
+      "speed_best_correlation": 0.003443927291313869,
+      "speed_best_lag_seconds": -0.36666666666666664,
+      "impact_zero_lag_correlation": -0.012979945665022533,
+      "impact_best_correlation": 0.0286131419617249,
+      "impact_best_lag_seconds": -0.43333333333333335,
+      "impact_lag_reliable_at_corr010": false,
+      "bas_music_to_motion": 0.24041832106146258,
+      "bas_motion_to_music": 0.3959838956376877,
+      "audio_beats": 99,
+      "motion_beats": 60,
+      "motion_beats_per_minute": 60.0
+    }
+  },
+  {
+    "motion_id": "m4_train3456_sample1234_u100000_best_song098",
+    "motion_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m4_oracle_fms/m4_train3456_sample1234_u100000_best_song098.pkl",
+    "audio_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/audio/098_t000128_60s.wav",
+    "route": "M4",
+    "sequence_id": "098",
+    "training_seed": 3456,
+    "sampling_seed": 1234,
+    "checkpoint_update": 100000,
+    "motion_mse": 0.19351300597190857,
+    "audio_start_seconds": 4.266666666666667,
+    "quality": {
+      "frames": 1800,
+      "fps": 30.0,
+      "duration_seconds": 60.0,
+      "joint_amplitude_median_rad": 0.6716733455657957,
+      "motion_energy_rad2_s2": 1.5340022025018132,
+      "joint_velocity_abs_rad_s": {
+        "p50": 0.4855625331401825,
+        "p95": 2.7123234048485747,
+        "p99": 4.474617508426311,
+        "max": 11.308507025241852
+      },
+      "joint_acceleration_abs_rad_s2": {
+        "p50": 6.136315036565065,
+        "p95": 32.38959599286313,
+        "p99": 53.591855663806214,
+        "max": 202.96244770288467
+      },
+      "joint_jerk_abs_rad_s3": {
+        "p50": 118.15516278147697,
+        "p95": 618.0964795639705,
+        "p99": 1016.6879867389813,
+        "max": 2950.4797075060196
+      },
+      "static_ratio_speed_below_008": 0.0033333333333333335,
+      "repeated_pose_ratio_rms008_after2s": 0.0,
+      "median_nearest_nonlocal_pose_rms_rad": 0.21525310657028535,
+      "c4_boundary_position_jump_p95_rad": 0.06982690510789367,
+      "c4_boundary_velocity_jump_p95_rad_s": 0.9119780525190967,
+      "c4_position_jump_ratio_to_nonboundary": 0.992121100355492,
+      "c4_velocity_jump_ratio_to_nonboundary": 0.9906381610254301,
+      "root_planar_displacement_m": 0.4313445274979831,
+      "root_path_length_m": 9.472596155180144,
+      "root_planar_speed_p95_m_s": 0.36231369074323583,
+      "root_height_min_m": 0.754114031791687,
+      "root_height_median_m": 0.8511927425861359,
+      "root_angular_speed_p95_rad_s": 1.8182465149556688,
+      "physical": {
+        "fsr_world_z0_contact5cm_speed20cms": 0.04391328515842134,
+        "fsr_ground_calibrated_proxy": 0.7770983879933296,
+        "left_contact_ratio": 0.8949416342412452,
+        "right_contact_ratio": 0.8460255697609783,
+        "ground_penetration_ratio": 0.009444444444444445,
+        "estimated_ground_height_m": 0.04327005721628666,
+        "minimum_foot_height_relative_m": -0.03090963434427977,
+        "pfc_proxy": 0.03808882360061326,
+        "keypoint_speed": {
+          "p50": 0.5067319815706601,
+          "p95": 1.0948487315324629,
+          "p99": 1.3607901788714913,
+          "max": 1.9014377707136831
+        }
+      }
+    },
+    "music": {
+      "speed_zero_lag_correlation": -0.035698434614286643,
+      "speed_best_correlation": -0.02296981436848566,
+      "speed_best_lag_seconds": -0.36666666666666664,
+      "impact_zero_lag_correlation": -0.0004752945155834867,
+      "impact_best_correlation": 0.03122477395149154,
+      "impact_best_lag_seconds": 0.7666666666666667,
+      "impact_lag_reliable_at_corr010": false,
+      "bas_music_to_motion": 0.22506135114991918,
+      "bas_motion_to_music": 0.3705131134029604,
+      "audio_beats": 99,
+      "motion_beats": 60,
+      "motion_beats_per_minute": 60.0
+    }
+  },
+  {
+    "motion_id": "m0_train1234_sample1234_u200000_best_song098",
+    "motion_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/uncond_m0/m0_train1234_sample1234_u200000_best_song098.pkl",
+    "audio_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/audio/098_t000128_60s.wav",
+    "route": "M0",
+    "sequence_id": "098",
+    "training_seed": 1234,
+    "sampling_seed": 1234,
+    "checkpoint_update": 200000,
+    "motion_mse": 0.2074500024318695,
+    "audio_start_seconds": 4.266666666666667,
+    "quality": {
+      "frames": 1800,
+      "fps": 30.0,
+      "duration_seconds": 60.0,
+      "joint_amplitude_median_rad": 0.6395093724131584,
+      "motion_energy_rad2_s2": 2.3052352190691483,
+      "joint_velocity_abs_rad_s": {
+        "p50": 0.6238611415028572,
+        "p95": 3.314580962061879,
+        "p99": 5.397900096327068,
+        "max": 11.328135430812836
+      },
+      "joint_acceleration_abs_rad_s2": {
+        "p50": 8.355571422725916,
+        "p95": 41.81487578898667,
+        "p99": 68.46002778410913,
+        "max": 228.00923734903336
+      },
+      "joint_jerk_abs_rad_s3": {
+        "p50": 165.97138275392354,
+        "p95": 812.8887203754855,
+        "p99": 1351.7210699245338,
+        "max": 3609.612587839365
+      },
+      "static_ratio_speed_below_008": 0.0005555555555555556,
+      "repeated_pose_ratio_rms008_after2s": 0.0,
+      "median_nearest_nonlocal_pose_rms_rad": 0.23550058678317226,
+      "c4_boundary_position_jump_p95_rad": 0.08261201144743376,
+      "c4_boundary_velocity_jump_p95_rad_s": 1.1893329512327269,
+      "c4_position_jump_ratio_to_nonboundary": 0.9838192813888147,
+      "c4_velocity_jump_ratio_to_nonboundary": 0.9249105605719197,
+      "root_planar_displacement_m": 1.386873073531861,
+      "root_path_length_m": 10.629356854486609,
+      "root_planar_speed_p95_m_s": 0.38548533118260053,
+      "root_height_min_m": 0.714846134185791,
+      "root_height_median_m": 0.8341593444347382,
+      "root_angular_speed_p95_rad_s": 2.117721395429584,
+      "physical": {
+        "fsr_world_z0_contact5cm_speed20cms": 0.09616453585325181,
+        "fsr_ground_calibrated_proxy": 0.7943301834352418,
+        "left_contact_ratio": 0.7342968315730961,
+        "right_contact_ratio": 0.6648137854363535,
+        "ground_penetration_ratio": 0.0005555555555555556,
+        "estimated_ground_height_m": 0.03422386694699526,
+        "minimum_foot_height_relative_m": -0.010184142105281353,
+        "pfc_proxy": 0.07160042301722783,
+        "keypoint_speed": {
+          "p50": 0.6300998239553046,
+          "p95": 1.205752779597344,
+          "p99": 1.451041656993594,
+          "max": 1.7665899701679422
+        }
+      }
+    },
+    "music": {
+      "speed_zero_lag_correlation": -0.029655421942833587,
+      "speed_best_correlation": -0.011498265715870596,
+      "speed_best_lag_seconds": -0.36666666666666664,
+      "impact_zero_lag_correlation": -0.0013678921073968702,
+      "impact_best_correlation": 0.03632141732220945,
+      "impact_best_lag_seconds": 0.7666666666666667,
+      "impact_lag_reliable_at_corr010": false,
+      "bas_music_to_motion": 0.22191074661437857,
+      "bas_motion_to_music": 0.35517373000044694,
+      "audio_beats": 99,
+      "motion_beats": 62,
+      "motion_beats_per_minute": 62.00000000000001
+    }
+  },
+  {
+    "motion_id": "m0_train1234_sample2345_u200000_best_song065",
+    "motion_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/uncond_m0/m0_train1234_sample2345_u200000_best_song065.pkl",
+    "audio_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/audio/065_t000128_60s.wav",
+    "route": "M0",
+    "sequence_id": "065",
+    "training_seed": 1234,
+    "sampling_seed": 2345,
+    "checkpoint_update": 200000,
+    "motion_mse": 0.22939816117286682,
+    "audio_start_seconds": 4.266666666666667,
+    "quality": {
+      "frames": 1800,
+      "fps": 30.0,
+      "duration_seconds": 60.0,
+      "joint_amplitude_median_rad": 0.7591991633176803,
+      "motion_energy_rad2_s2": 2.8716274316615653,
+      "joint_velocity_abs_rad_s": {
+        "p50": 0.7021466642618179,
+        "p95": 3.7412969470024104,
+        "p99": 5.936073198169478,
+        "max": 15.78617200255394
+      },
+      "joint_acceleration_abs_rad_s2": {
+        "p50": 9.58736166357994,
+        "p95": 46.04973681271071,
+        "p99": 76.50621964037425,
+        "max": 194.078166782856
+      },
+      "joint_jerk_abs_rad_s3": {
+        "p50": 189.59870003163815,
+        "p95": 885.3957155719395,
+        "p99": 1460.2871557697665,
+        "max": 4260.502941906452
+      },
+      "static_ratio_speed_below_008": 0.0,
+      "repeated_pose_ratio_rms008_after2s": 0.0,
+      "median_nearest_nonlocal_pose_rms_rad": 0.23782386565769326,
+      "c4_boundary_position_jump_p95_rad": 0.0839039814689712,
+      "c4_boundary_velocity_jump_p95_rad_s": 1.1950857444050704,
+      "c4_position_jump_ratio_to_nonboundary": 1.005245647071192,
+      "c4_velocity_jump_ratio_to_nonboundary": 0.9684899391862138,
+      "root_planar_displacement_m": 1.0635530663896078,
+      "root_path_length_m": 11.345507160539967,
+      "root_planar_speed_p95_m_s": 0.4040797211938185,
+      "root_height_min_m": 0.7238161563873291,
+      "root_height_median_m": 0.8334704339504242,
+      "root_angular_speed_p95_rad_s": 1.9366160649397115,
+      "physical": {
+        "fsr_world_z0_contact5cm_speed20cms": 0.0689271817676487,
+        "fsr_ground_calibrated_proxy": 0.8421345191773207,
+        "left_contact_ratio": 0.6631461923290717,
+        "right_contact_ratio": 0.7292940522512507,
+        "ground_penetration_ratio": 0.007222222222222222,
+        "estimated_ground_height_m": 0.03822979595512152,
+        "minimum_foot_height_relative_m": -0.018231090940535072,
+        "pfc_proxy": 0.08089535148778536,
+        "keypoint_speed": {
+          "p50": 0.6915171867752435,
+          "p95": 1.272535410402219,
+          "p99": 1.4922507567601775,
+          "max": 1.8950256972173476
+        }
+      }
+    },
+    "music": {
+      "speed_zero_lag_correlation": -0.024563607123266655,
+      "speed_best_correlation": -0.006127936362547341,
+      "speed_best_lag_seconds": 0.5666666666666667,
+      "impact_zero_lag_correlation": -0.0209235760008979,
+      "impact_best_correlation": 0.009808053944023233,
+      "impact_best_lag_seconds": -0.9666666666666667,
+      "impact_lag_reliable_at_corr010": false,
+      "bas_music_to_motion": 0.2529976106846955,
+      "bas_motion_to_music": 0.5263255140727557,
+      "audio_beats": 124,
+      "motion_beats": 59,
+      "motion_beats_per_minute": 59.0
+    }
+  },
+  {
+    "motion_id": "m0_train1234_sample3456_u200000_best_song098",
+    "motion_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/uncond_m0/m0_train1234_sample3456_u200000_best_song098.pkl",
+    "audio_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/audio/098_t000128_60s.wav",
+    "route": "M0",
+    "sequence_id": "098",
+    "training_seed": 1234,
+    "sampling_seed": 3456,
+    "checkpoint_update": 200000,
+    "motion_mse": 0.1939792037010193,
+    "audio_start_seconds": 4.266666666666667,
+    "quality": {
+      "frames": 1800,
+      "fps": 30.0,
+      "duration_seconds": 60.0,
+      "joint_amplitude_median_rad": 0.8339693590998649,
+      "motion_energy_rad2_s2": 2.4867602657515584,
+      "joint_velocity_abs_rad_s": {
+        "p50": 0.6611444614827633,
+        "p95": 3.401144117116927,
+        "p99": 5.523155499994757,
+        "max": 14.73431646823883
+      },
+      "joint_acceleration_abs_rad_s2": {
+        "p50": 8.949784655123949,
+        "p95": 42.82417595386505,
+        "p99": 67.54405313730248,
+        "max": 195.37445828318596
+      },
+      "joint_jerk_abs_rad_s3": {
+        "p50": 177.7449119836092,
+        "p95": 825.3242248669264,
+        "p99": 1323.354567177596,
+        "max": 4605.903401970863
+      },
+      "static_ratio_speed_below_008": 0.011111111111111112,
+      "repeated_pose_ratio_rms008_after2s": 0.0044444444444444444,
+      "median_nearest_nonlocal_pose_rms_rad": 0.23236293875014766,
+      "c4_boundary_position_jump_p95_rad": 0.08261316072466388,
+      "c4_boundary_velocity_jump_p95_rad_s": 1.0739011540597205,
+      "c4_position_jump_ratio_to_nonboundary": 1.0064340269594978,
+      "c4_velocity_jump_ratio_to_nonboundary": 0.9514567743054879,
+      "root_planar_displacement_m": 1.198959741497143,
+      "root_path_length_m": 13.050124901699753,
+      "root_planar_speed_p95_m_s": 0.5055170918556426,
+      "root_height_min_m": 0.6905648708343506,
+      "root_height_median_m": 0.8412484228610992,
+      "root_angular_speed_p95_rad_s": 2.506107148976956,
+      "physical": {
+        "fsr_world_z0_contact5cm_speed20cms": 0.07226236798221233,
+        "fsr_ground_calibrated_proxy": 0.7782101167315175,
+        "left_contact_ratio": 0.6470261256253474,
+        "right_contact_ratio": 0.7192884936075598,
+        "ground_penetration_ratio": 0.009444444444444445,
+        "estimated_ground_height_m": 0.03852896437048912,
+        "minimum_foot_height_relative_m": -0.02859637930989265,
+        "pfc_proxy": 0.08100967160613452,
+        "keypoint_speed": {
+          "p50": 0.6762360970061907,
+          "p95": 1.2592622453596876,
+          "p99": 1.5717811180665222,
+          "max": 2.124137921504159
+        }
+      }
+    },
+    "music": {
+      "speed_zero_lag_correlation": -0.023235935685491937,
+      "speed_best_correlation": -0.01436177000508302,
+      "speed_best_lag_seconds": -0.36666666666666664,
+      "impact_zero_lag_correlation": 0.025873754659746027,
+      "impact_best_correlation": 0.026948824156812774,
+      "impact_best_lag_seconds": 0.03333333333333333,
+      "impact_lag_reliable_at_corr010": false,
+      "bas_music_to_motion": 0.29200627734845175,
+      "bas_motion_to_music": 0.4842364401599372,
+      "audio_beats": 99,
+      "motion_beats": 60,
+      "motion_beats_per_minute": 60.0
+    }
+  }
+]

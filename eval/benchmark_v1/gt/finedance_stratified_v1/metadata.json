@@ -1,0 +1,37 @@
+{
+  "style_counts": {
+    "Breaking": 13,
+    "Chinese": 4,
+    "Choreography": 6,
+    "Classic": 48,
+    "Dai": 10,
+    "DunHuang": 2,
+    "Folk": 28,
+    "HanTang": 11,
+    "Hiphop": 18,
+    "Jazz": 19,
+    "Korean": 35,
+    "Kun": 1,
+    "Locking": 3,
+    "Miao": 10,
+    "Mix": 45,
+    "Popping": 21,
+    "ShenYun": 34,
+    "Street": 80,
+    "Urban": 6,
+    "Wei": 8,
+    "jazz": 2,
+    "jiewu": 2
+  },
+  "tempo_counts": {
+    "slow": 13,
+    "medium": 134,
+    "fast": 56,
+    "unknown": 0
+  },
+  "tempo_definition_bpm": {
+    "slow": "<90",
+    "medium": "90-130",
+    "fast": ">130"
+  }
+}

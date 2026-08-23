@@ -1,0 +1,862 @@
+{
+  "scope": {
+    "reference_files": 9,
+    "matched_song098_reference_files": 8,
+    "execution_runs": 9,
+    "notes": [
+      "Reference route summaries use all available exported PKLs.",
+      "Matched song098 summaries remove the M0 song065 music confound.",
+      "Execution summaries are three SONIC repeats of one fixed seed1234 trajectory per route.",
+      "Automatic metrics do not establish aesthetic beauty without a human study."
+    ]
+  },
+  "reference_all_available": {
+    "M0": {
+      "samples": 3,
+      "motion_mse": {
+        "mean": 0.21027578910191855,
+        "std": 0.014597133047887774
+      },
+      "quality.joint_amplitude_median_rad": {
+        "mean": 0.7442259649435679,
+        "std": 0.08009086135014161
+      },
+      "quality.motion_energy_rad2_s2": {
+        "mean": 2.554540972160757,
+        "std": 0.2361436042500847
+      },
+      "quality.joint_velocity_abs_rad_s.p95": {
+        "mean": 3.4856740087270723,
+        "std": 0.1841749347453106
+      },
+      "quality.joint_acceleration_abs_rad_s2.p95": {
+        "mean": 43.56292951852081,
+        "std": 1.8060693221344812
+      },
+      "quality.joint_jerk_abs_rad_s3.p95": {
+        "mean": 841.2028869381171,
+        "std": 31.65875360763016
+      },
+      "quality.static_ratio_speed_below_008": {
+        "mean": 0.003888888888888889,
+        "std": 0.005111916200682319
+      },
+      "quality.repeated_pose_ratio_rms008_after2s": {
+        "mean": 0.0014814814814814814,
+        "std": 0.0020951312035156966
+      },
+      "quality.c4_position_jump_ratio_to_nonboundary": {
+        "mean": 0.9984996518065015,
+        "std": 0.010391920527990392
+      },
+      "quality.c4_velocity_jump_ratio_to_nonboundary": {
+        "mean": 0.9482857580212071,
+        "std": 0.01793194669313923
+      },
+      "quality.root_planar_displacement_m": {
+        "mean": 1.2164619604728706,
+        "std": 0.13257375936039636
+      },
+      "quality.root_path_length_m": {
+        "mean": 11.674996305575442,
+        "std": 1.0153658805652905
+      },
+      "quality.root_height_min_m": {
+        "mean": 0.7097423871358236,
+        "std": 0.01404630848761738
+      },
+      "quality.physical.fsr_world_z0_contact5cm_speed20cms": {
+        "mean": 0.07911802853437096,
+        "std": 0.012130359313198379
+      },
+      "quality.physical.pfc_proxy": {
+        "mean": 0.0778351487037159,
+        "std": 0.00440886384167777
+      },
+      "music.speed_zero_lag_correlation": {
+        "mean": -0.02581832158386406,
+        "std": 0.0027668492592687146
+      },
+      "music.speed_best_correlation": {
+        "mean": -0.010662657361166986,
+        "std": 0.0034129835535374763
+      },
+      "music.impact_zero_lag_correlation": {
+        "mean": 0.001194095517150419,
+        "std": 0.01919062921813076
+      },
+      "music.impact_best_correlation": {
+        "mean": 0.024359431807681815,
+        "std": 0.010977805608263731
+      },
+      "music.impact_best_lag_seconds": {
+        "mean": -0.055555555555555546,
+        "std": 0.7104163272509236
+      },
+      "music.bas_music_to_motion": {
+        "mean": 0.25563821154917526,
+        "std": 0.028677231815698527
+      },
+      "music.bas_motion_to_music": {
+        "mean": 0.4552452280777133,
+        "std": 0.0728175852445956
+      }
+    },
+    "M2": {
+      "samples": 3,
+      "motion_mse": {
+        "mean": 0.2006261944770813,
+        "std": 0.002732685760986863
+      },
+      "quality.joint_amplitude_median_rad": {
+        "mean": 0.6509935319423675,
+        "std": 0.025675338824226453
+      },
+      "quality.motion_energy_rad2_s2": {
+        "mean": 1.9339232504526997,
+        "std": 0.015459374694204078
+      },
+      "quality.joint_velocity_abs_rad_s.p95": {
+        "mean": 3.04881802946329,
+        "std": 0.012543551171876081
+      },
+      "quality.joint_acceleration_abs_rad_s2.p95": {
+        "mean": 37.316543036140466,
+        "std": 0.06915329156573584
+      },
+      "quality.joint_jerk_abs_rad_s3.p95": {
+        "mean": 718.088334985077,
+        "std": 3.2745355931821343
+      },
+      "quality.static_ratio_speed_below_008": {
+        "mean": 0.00018518518518518518,
+        "std": 0.00026189140043946207
+      },
+      "quality.repeated_pose_ratio_rms008_after2s": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "quality.c4_position_jump_ratio_to_nonboundary": {
+        "mean": 0.9892050462649484,
+        "std": 0.002022568847351127
+      },
+      "quality.c4_velocity_jump_ratio_to_nonboundary": {
+        "mean": 0.9601379039060225,
+        "std": 0.007103896889894932
+      },
+      "quality.root_planar_displacement_m": {
+        "mean": 0.6161232482043566,
+        "std": 0.17094801819858021
+      },
+      "quality.root_path_length_m": {
+        "mean": 10.320119741112007,
+        "std": 0.3857903179884317
+      },
+      "quality.root_height_min_m": {
+        "mean": 0.7114271521568298,
+        "std": 0.023416172709922047
+      },
+      "quality.physical.fsr_world_z0_contact5cm_speed20cms": {
+        "mean": 0.08745599407078007,
+        "std": 0.010152030781399092
+      },
+      "quality.physical.pfc_proxy": {
+        "mean": 0.06514880327358759,
+        "std": 0.007888948386964313
+      },
+      "music.speed_zero_lag_correlation": {
+        "mean": -0.02800228627891185,
+        "std": 0.015020806217474798
+      },
+      "music.speed_best_correlation": {
+        "mean": -0.016892828552539107,
+        "std": 0.014405227370758137
+      },
+      "music.impact_zero_lag_correlation": {
+        "mean": -0.007518906520714553,
+        "std": 0.004236044542268624
+      },
+      "music.impact_best_correlation": {
+        "mean": 0.02522958389817817,
+        "std": 0.00833558518995844
+      },
+      "music.impact_best_lag_seconds": {
+        "mean": 0.3222222222222222,
+        "std": 0.5349512496538099
+      },
+      "music.bas_music_to_motion": {
+        "mean": 0.24690086736822806,
+        "std": 0.004297149074601545
+      },
+      "music.bas_motion_to_music": {
+        "mean": 0.3859867972791253,
+        "std": 0.006832536859335729
+      }
+    },
+    "M4": {
+      "samples": 3,
+      "motion_mse": {
+        "mean": 0.1914426585038503,
+        "std": 0.0017890539723605053
+      },
+      "quality.joint_amplitude_median_rad": {
+        "mean": 0.6440051247676213,
+        "std": 0.026658408369214494
+      },
+      "quality.motion_energy_rad2_s2": {
+        "mean": 1.7891947704054278,
+        "std": 0.2216040322197056
+      },
+      "quality.joint_velocity_abs_rad_s.p95": {
+        "mean": 2.9143430199474083,
+        "std": 0.17036145302841027
+      },
+      "quality.joint_acceleration_abs_rad_s2.p95": {
+        "mean": 36.09510250389573,
+        "std": 3.086005926056887
+      },
+      "quality.joint_jerk_abs_rad_s3.p95": {
+        "mean": 691.7483773548141,
+        "std": 64.61784519074848
+      },
+      "quality.static_ratio_speed_below_008": {
+        "mean": 0.0014814814814814814,
+        "std": 0.001385799032138497
+      },
+      "quality.repeated_pose_ratio_rms008_after2s": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "quality.c4_position_jump_ratio_to_nonboundary": {
+        "mean": 0.9762698158583022,
+        "std": 0.012793788459369331
+      },
+      "quality.c4_velocity_jump_ratio_to_nonboundary": {
+        "mean": 0.9613945150220333,
+        "std": 0.02068080107069991
+      },
+      "quality.root_planar_displacement_m": {
+        "mean": 0.8475800458074275,
+        "std": 0.3158256542242469
+      },
+      "quality.root_path_length_m": {
+        "mean": 10.377798129700347,
+        "std": 0.6798010669679717
+      },
+      "quality.root_height_min_m": {
+        "mean": 0.7461652358373007,
+        "std": 0.008251623476889843
+      },
+      "quality.physical.fsr_world_z0_contact5cm_speed20cms": {
+        "mean": 0.05503057254030017,
+        "std": 0.010107972352778107
+      },
+      "quality.physical.pfc_proxy": {
+        "mean": 0.05703037268208857,
+        "std": 0.01363269763185406
+      },
+      "music.speed_zero_lag_correlation": {
+        "mean": -0.022940232571103416,
+        "std": 0.012680793181694818
+      },
+      "music.speed_best_correlation": {
+        "mean": -0.013504762519989597,
+        "std": 0.012011801557535999
+      },
+      "music.impact_zero_lag_correlation": {
+        "mean": -0.01619006530120597,
+        "std": 0.014322597138794644
+      },
+      "music.impact_best_correlation": {
+        "mean": 0.03026749373690127,
+        "std": 0.001174616812106987
+      },
+      "music.impact_best_lag_seconds": {
+        "mean": 0.35555555555555557,
+        "std": 0.5579946457550986
+      },
+      "music.bas_music_to_motion": {
+        "mean": 0.24216461923438212,
+        "std": 0.014729533649205147
+      },
+      "music.bas_motion_to_music": {
+        "mean": 0.39449614866932464,
+        "std": 0.019003836167466634
+      }
+    }
+  },
+  "reference_matched_song098": {
+    "M0": {
+      "samples": 2,
+      "motion_mse": {
+        "mean": 0.2007146030664444,
+        "std": 0.00673539936542511
+      },
+      "quality.joint_amplitude_median_rad": {
+        "mean": 0.7367393657565117,
+        "std": 0.09722999334335325
+      },
+      "quality.motion_energy_rad2_s2": {
+        "mean": 2.395997742410353,
+        "std": 0.09076252334120505
+      },
+      "quality.joint_velocity_abs_rad_s.p95": {
+        "mean": 3.3578625395894033,
+        "std": 0.04328157752752415
+      },
+      "quality.joint_acceleration_abs_rad_s2.p95": {
+        "mean": 42.31952587142586,
+        "std": 0.5046500824391913
+      },
+      "quality.joint_jerk_abs_rad_s3.p95": {
+        "mean": 819.106472621206,
+        "std": 6.217752245720476
+      },
+      "quality.static_ratio_speed_below_008": {
+        "mean": 0.005833333333333334,
+        "std": 0.005277777777777778
+      },
+      "quality.repeated_pose_ratio_rms008_after2s": {
+        "mean": 0.0022222222222222222,
+        "std": 0.0022222222222222222
+      },
+      "quality.c4_position_jump_ratio_to_nonboundary": {
+        "mean": 0.9951266541741562,
+        "std": 0.011307372785341552
+      },
+      "quality.c4_velocity_jump_ratio_to_nonboundary": {
+        "mean": 0.9381836674387038,
+        "std": 0.013273106866784123
+      },
+      "quality.root_planar_displacement_m": {
+        "mean": 1.292916407514502,
+        "std": 0.09395666601735908
+      },
+      "quality.root_path_length_m": {
+        "mean": 11.839740878093181,
+        "std": 1.2103840236065722
+      },
+      "quality.root_height_min_m": {
+        "mean": 0.7027055025100708,
+        "std": 0.012140631675720215
+      },
+      "quality.physical.fsr_world_z0_contact5cm_speed20cms": {
+        "mean": 0.08421345191773208,
+        "std": 0.01195108393551974
+      },
+      "quality.physical.pfc_proxy": {
+        "mean": 0.07630504731168117,
+        "std": 0.004704624294453348
+      },
+      "music.speed_zero_lag_correlation": {
+        "mean": -0.026445678814162762,
+        "std": 0.003209743128670825
+      },
+      "music.speed_best_correlation": {
+        "mean": -0.012930017860476808,
+        "std": 0.001431752144606212
+      },
+      "music.impact_zero_lag_correlation": {
+        "mean": 0.012252931276174578,
+        "std": 0.01362082338357145
+      },
+      "music.impact_best_correlation": {
+        "mean": 0.03163512073951111,
+        "std": 0.004686296582698337
+      },
+      "music.impact_best_lag_seconds": {
+        "mean": 0.4,
+        "std": 0.3666666666666667
+      },
+      "music.bas_music_to_motion": {
+        "mean": 0.25695851198141517,
+        "std": 0.03504776536703659
+      },
+      "music.bas_motion_to_music": {
+        "mean": 0.4197050850801921,
+        "std": 0.06453135507974514
+      }
+    },
+    "M2": {
+      "samples": 3,
+      "motion_mse": {
+        "mean": 0.2006261944770813,
+        "std": 0.002732685760986863
+      },
+      "quality.joint_amplitude_median_rad": {
+        "mean": 0.6509935319423675,
+        "std": 0.025675338824226453
+      },
+      "quality.motion_energy_rad2_s2": {
+        "mean": 1.9339232504526997,
+        "std": 0.015459374694204078
+      },
+      "quality.joint_velocity_abs_rad_s.p95": {
+        "mean": 3.04881802946329,
+        "std": 0.012543551171876081
+      },
+      "quality.joint_acceleration_abs_rad_s2.p95": {
+        "mean": 37.316543036140466,
+        "std": 0.06915329156573584
+      },
+      "quality.joint_jerk_abs_rad_s3.p95": {
+        "mean": 718.088334985077,
+        "std": 3.2745355931821343
+      },
+      "quality.static_ratio_speed_below_008": {
+        "mean": 0.00018518518518518518,
+        "std": 0.00026189140043946207
+      },
+      "quality.repeated_pose_ratio_rms008_after2s": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "quality.c4_position_jump_ratio_to_nonboundary": {
+        "mean": 0.9892050462649484,
+        "std": 0.002022568847351127
+      },
+      "quality.c4_velocity_jump_ratio_to_nonboundary": {
+        "mean": 0.9601379039060225,
+        "std": 0.007103896889894932
+      },
+      "quality.root_planar_displacement_m": {
+        "mean": 0.6161232482043566,
+        "std": 0.17094801819858021
+      },
+      "quality.root_path_length_m": {
+        "mean": 10.320119741112007,
+        "std": 0.3857903179884317
+      },
+      "quality.root_height_min_m": {
+        "mean": 0.7114271521568298,
+        "std": 0.023416172709922047
+      },
+      "quality.physical.fsr_world_z0_contact5cm_speed20cms": {
+        "mean": 0.08745599407078007,
+        "std": 0.010152030781399092
+      },
+      "quality.physical.pfc_proxy": {
+        "mean": 0.06514880327358759,
+        "std": 0.007888948386964313
+      },
+      "music.speed_zero_lag_correlation": {
+        "mean": -0.02800228627891185,
+        "std": 0.015020806217474798
+      },
+      "music.speed_best_correlation": {
+        "mean": -0.016892828552539107,
+        "std": 0.014405227370758137
+      },
+      "music.impact_zero_lag_correlation": {
+        "mean": -0.007518906520714553,
+        "std": 0.004236044542268624
+      },
+      "music.impact_best_correlation": {
+        "mean": 0.02522958389817817,
+        "std": 0.00833558518995844
+      },
+      "music.impact_best_lag_seconds": {
+        "mean": 0.3222222222222222,
+        "std": 0.5349512496538099
+      },
+      "music.bas_music_to_motion": {
+        "mean": 0.24690086736822806,
+        "std": 0.004297149074601545
+      },
+      "music.bas_motion_to_music": {
+        "mean": 0.3859867972791253,
+        "std": 0.006832536859335729
+      }
+    },
+    "M4": {
+      "samples": 3,
+      "motion_mse": {
+        "mean": 0.1914426585038503,
+        "std": 0.0017890539723605053
+      },
+      "quality.joint_amplitude_median_rad": {
+        "mean": 0.6440051247676213,
+        "std": 0.026658408369214494
+      },
+      "quality.motion_energy_rad2_s2": {
+        "mean": 1.7891947704054278,
+        "std": 0.2216040322197056
+      },
+      "quality.joint_velocity_abs_rad_s.p95": {
+        "mean": 2.9143430199474083,
+        "std": 0.17036145302841027
+      },
+      "quality.joint_acceleration_abs_rad_s2.p95": {
+        "mean": 36.09510250389573,
+        "std": 3.086005926056887
+      },
+      "quality.joint_jerk_abs_rad_s3.p95": {
+        "mean": 691.7483773548141,
+        "std": 64.61784519074848
+      },
+      "quality.static_ratio_speed_below_008": {
+        "mean": 0.0014814814814814814,
+        "std": 0.001385799032138497
+      },
+      "quality.repeated_pose_ratio_rms008_after2s": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "quality.c4_position_jump_ratio_to_nonboundary": {
+        "mean": 0.9762698158583022,
+        "std": 0.012793788459369331
+      },
+      "quality.c4_velocity_jump_ratio_to_nonboundary": {
+        "mean": 0.9613945150220333,
+        "std": 0.02068080107069991
+      },
+      "quality.root_planar_displacement_m": {
+        "mean": 0.8475800458074275,
+        "std": 0.3158256542242469
+      },
+      "quality.root_path_length_m": {
+        "mean": 10.377798129700347,
+        "std": 0.6798010669679717
+      },
+      "quality.root_height_min_m": {
+        "mean": 0.7461652358373007,
+        "std": 0.008251623476889843
+      },
+      "quality.physical.fsr_world_z0_contact5cm_speed20cms": {
+        "mean": 0.05503057254030017,
+        "std": 0.010107972352778107
+      },
+      "quality.physical.pfc_proxy": {
+        "mean": 0.05703037268208857,
+        "std": 0.01363269763185406
+      },
+      "music.speed_zero_lag_correlation": {
+        "mean": -0.022940232571103416,
+        "std": 0.012680793181694818
+      },
+      "music.speed_best_correlation": {
+        "mean": -0.013504762519989597,
+        "std": 0.012011801557535999
+      },
+      "music.impact_zero_lag_correlation": {
+        "mean": -0.01619006530120597,
+        "std": 0.014322597138794644
+      },
+      "music.impact_best_correlation": {
+        "mean": 0.03026749373690127,
+        "std": 0.001174616812106987
+      },
+      "music.impact_best_lag_seconds": {
+        "mean": 0.35555555555555557,
+        "std": 0.5579946457550986
+      },
+      "music.bas_music_to_motion": {
+        "mean": 0.24216461923438212,
+        "std": 0.014729533649205147
+      },
+      "music.bas_motion_to_music": {
+        "mean": 0.39449614866932464,
+        "std": 0.019003836167466634
+      }
+    }
+  },
+  "execution_fixed_reference_repeats": {
+    "M0": {
+      "samples": 3,
+      "tracking.raw_position_rmse_rad": {
+        "mean": 0.1781200513666763,
+        "std": 0.0005646961564486776
+      },
+      "tracking.lag_compensated_position_rmse_rad": {
+        "mean": 0.17630567140634493,
+        "std": 0.0004372554615291284
+      },
+      "tracking.global_lag_seconds": {
+        "mean": 0.02,
+        "std": 0.0
+      },
+      "tracking.fk.root_relative_empkpe_m": {
+        "mean": 0.07899569045954068,
+        "std": 0.0003959788598802592
+      },
+      "tracking.fk.root_relative_empkpe_p95_m": {
+        "mean": 0.1815251454058773,
+        "std": 0.0013110941186203135
+      },
+      "tracking.fk.contact.left.f1": {
+        "mean": 0.6995749782484996,
+        "std": 0.009716071267182928
+      },
+      "tracking.fk.contact.right.f1": {
+        "mean": 0.5301256290503602,
+        "std": 0.021161236619065313
+      },
+      "tracking.fk.contact.left.transition_timing.matched_ratio": {
+        "mean": 0.411764705882353,
+        "std": 0.0480292106428074
+      },
+      "tracking.fk.contact.right.transition_timing.matched_ratio": {
+        "mean": 0.7608695652173912,
+        "std": 0.023480944559448772
+      },
+      "tracking.body_groups.full_body.band_power_retention.low_0_1.median": {
+        "mean": 0.8016002636389797,
+        "std": 0.0023617909367751834
+      },
+      "tracking.body_groups.full_body.band_power_retention.mid_1_3.median": {
+        "mean": 0.4268611822959271,
+        "std": 0.0014413777955470488
+      },
+      "tracking.body_groups.full_body.band_power_retention.high_3_8.median": {
+        "mean": 0.22694089592361433,
+        "std": 0.008663248344604975
+      },
+      "tracking.body_groups.legs.band_power_retention.high_3_8.median": {
+        "mean": 0.3508669698898421,
+        "std": 0.01632300686009718
+      },
+      "tracking.body_groups.waist.band_power_retention.high_3_8.median": {
+        "mean": 0.39079064241193856,
+        "std": 0.009677141213314235
+      },
+      "tracking.body_groups.arms.band_power_retention.high_3_8.median": {
+        "mean": 0.20400769254766304,
+        "std": 0.010093858749396814
+      },
+      "loss.motion_energy_retention": {
+        "mean": 0.4262011379264981,
+        "std": 0.00453438745109042
+      },
+      "loss.median_amplitude_statistic_ratio": {
+        "mean": 0.9939931965336992,
+        "std": 0.00339891687357798
+      },
+      "loss.jerk_p95_ratio": {
+        "mean": 0.5329620651249801,
+        "std": 0.040459823969801044
+      },
+      "loss.fsr_ground_calibrated_proxy_change": {
+        "mean": -0.22396354340335664,
+        "std": 0.01435576491783709
+      },
+      "loss.static_ratio_change": {
+        "mean": 0.010555555555555556,
+        "std": 0.0004157397096415487
+      },
+      "loss.repeated_pose_ratio_change": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "loss.onset_impact_correlation_change": {
+        "mean": -0.02662757580476585,
+        "std": 0.002008880418141704
+      },
+      "loss.bas_music_to_motion_change": {
+        "mean": -0.03213562216205712,
+        "std": 0.003949298174277984
+      },
+      "loss.additional_music_response_lag_seconds": {
+        "mean": -1.0733333333333335,
+        "std": 0.024944382578492966
+      }
+    },
+    "M2": {
+      "samples": 3,
+      "tracking.raw_position_rmse_rad": {
+        "mean": 0.19334230154417228,
+        "std": 0.03614328004342223
+      },
+      "tracking.lag_compensated_position_rmse_rad": {
+        "mean": 0.18504718370384474,
+        "std": 0.0268240551350899
+      },
+      "tracking.global_lag_seconds": {
+        "mean": 0.06,
+        "std": 0.0565685424949238
+      },
+      "tracking.fk.root_relative_empkpe_m": {
+        "mean": 0.08741230742454072,
+        "std": 0.013687549301607836
+      },
+      "tracking.fk.root_relative_empkpe_p95_m": {
+        "mean": 0.21281428051839893,
+        "std": 0.039544954465580165
+      },
+      "tracking.fk.contact.left.f1": {
+        "mean": 0.6524094018712251,
+        "std": 0.06869294877260274
+      },
+      "tracking.fk.contact.right.f1": {
+        "mean": 0.5722827094797296,
+        "std": 0.015503404434476361
+      },
+      "tracking.fk.contact.left.transition_timing.matched_ratio": {
+        "mean": 0.6153846153846154,
+        "std": 0.020935809767377606
+      },
+      "tracking.fk.contact.right.transition_timing.matched_ratio": {
+        "mean": 0.7017543859649122,
+        "std": 0.0610894222683514
+      },
+      "tracking.body_groups.full_body.band_power_retention.low_0_1.median": {
+        "mean": 0.8075130062246374,
+        "std": 0.010221455204457486
+      },
+      "tracking.body_groups.full_body.band_power_retention.mid_1_3.median": {
+        "mean": 0.412930609557923,
+        "std": 0.03509601015508717
+      },
+      "tracking.body_groups.full_body.band_power_retention.high_3_8.median": {
+        "mean": 0.3946125799733111,
+        "std": 0.2515603015720865
+      },
+      "tracking.body_groups.legs.band_power_retention.high_3_8.median": {
+        "mean": 0.5287624261670761,
+        "std": 0.2363809923416768
+      },
+      "tracking.body_groups.waist.band_power_retention.high_3_8.median": {
+        "mean": 0.5207509057287671,
+        "std": 0.15846781571284788
+      },
+      "tracking.body_groups.arms.band_power_retention.high_3_8.median": {
+        "mean": 0.3300473560454707,
+        "std": 0.2180849349836414
+      },
+      "loss.motion_energy_retention": {
+        "mean": 0.46798820387501566,
+        "std": 0.026797743891691338
+      },
+      "loss.median_amplitude_statistic_ratio": {
+        "mean": 1.0484245946407358,
+        "std": 0.05645697755446082
+      },
+      "loss.jerk_p95_ratio": {
+        "mean": 0.8272076942351198,
+        "std": 0.36867695310784876
+      },
+      "loss.fsr_ground_calibrated_proxy_change": {
+        "mean": -0.28358007261037205,
+        "std": 0.06403411147398681
+      },
+      "loss.static_ratio_change": {
+        "mean": 0.010334741210032973,
+        "std": 0.0017016059897601093
+      },
+      "loss.repeated_pose_ratio_change": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "loss.onset_impact_correlation_change": {
+        "mean": -0.013220244809625992,
+        "std": 0.005772933350796904
+      },
+      "loss.bas_music_to_motion_change": {
+        "mean": -0.03526814928664624,
+        "std": 0.05572693869032258
+      },
+      "loss.additional_music_response_lag_seconds": {
+        "mean": 0.7133333333333334,
+        "std": 0.1948218559493661
+      }
+    },
+    "M4": {
+      "samples": 3,
+      "tracking.raw_position_rmse_rad": {
+        "mean": 0.16940365220354206,
+        "std": 0.0004919935955256085
+      },
+      "tracking.lag_compensated_position_rmse_rad": {
+        "mean": 0.1677789631187383,
+        "std": 0.0004251098917202068
+      },
+      "tracking.global_lag_seconds": {
+        "mean": 0.02,
+        "std": 0.0
+      },
+      "tracking.fk.root_relative_empkpe_m": {
+        "mean": 0.07545147397453295,
+        "std": 0.0006132026365453349
+      },
+      "tracking.fk.root_relative_empkpe_p95_m": {
+        "mean": 0.17549995250621167,
+        "std": 0.001107150547587435
+      },
+      "tracking.fk.contact.left.f1": {
+        "mean": 0.691438930897566,
+        "std": 0.023690793424780473
+      },
+      "tracking.fk.contact.right.f1": {
+        "mean": 0.5883650056368067,
+        "std": 0.004319615919462572
+      },
+      "tracking.fk.contact.left.transition_timing.matched_ratio": {
+        "mean": 0.6133333333333333,
+        "std": 0.018856180831641284
+      },
+      "tracking.fk.contact.right.transition_timing.matched_ratio": {
+        "mean": 0.6972789115646258,
+        "std": 0.03367175148507373
+      },
+      "tracking.body_groups.full_body.band_power_retention.low_0_1.median": {
+        "mean": 0.7849454624639035,
+        "std": 0.004620141149532805
+      },
+      "tracking.body_groups.full_body.band_power_retention.mid_1_3.median": {
+        "mean": 0.4673484927390674,
+        "std": 0.011433602417508253
+      },
+      "tracking.body_groups.full_body.band_power_retention.high_3_8.median": {
+        "mean": 0.2442775221934711,
+        "std": 0.006054656967714207
+      },
+      "tracking.body_groups.legs.band_power_retention.high_3_8.median": {
+        "mean": 0.3797939439499663,
+        "std": 0.0188195988243366
+      },
+      "tracking.body_groups.waist.band_power_retention.high_3_8.median": {
+        "mean": 0.33242827854763785,
+        "std": 0.025426912999010925
+      },
+      "tracking.body_groups.arms.band_power_retention.high_3_8.median": {
+        "mean": 0.22684233723652533,
+        "std": 0.003797258882960201
+      },
+      "loss.motion_energy_retention": {
+        "mean": 0.4515993679620118,
+        "std": 0.0013674892754520199
+      },
+      "loss.median_amplitude_statistic_ratio": {
+        "mean": 1.0331993299268978,
+        "std": 0.014253994566563956
+      },
+      "loss.jerk_p95_ratio": {
+        "mean": 0.5567846304482922,
+        "std": 0.00651964382807368
+      },
+      "loss.fsr_ground_calibrated_proxy_change": {
+        "mean": -0.1919528731799489,
+        "std": 0.020290552580851183
+      },
+      "loss.static_ratio_change": {
+        "mean": 0.011888888888888888,
+        "std": 0.0004157397096415487
+      },
+      "loss.repeated_pose_ratio_change": {
+        "mean": 0.0,
+        "std": 0.0
+      },
+      "loss.onset_impact_correlation_change": {
+        "mean": -0.02401138182014634,
+        "std": 0.005538744690670715
+      },
+      "loss.bas_music_to_motion_change": {
+        "mean": -0.06490550447136476,
+        "std": 0.00831682698761896
+      },
+      "loss.additional_music_response_lag_seconds": {
+        "mean": -1.0333333333333334,
+        "std": 0.018856180831641284
+      }
+    }
+  }
+}

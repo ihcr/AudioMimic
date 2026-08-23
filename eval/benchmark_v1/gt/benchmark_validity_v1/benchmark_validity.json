@@ -1,0 +1,164 @@
+{
+  "schema_version": "gt_benchmark_validity_v1",
+  "input": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/motion_corruptions_v1/per_sequence_metrics.csv",
+  "row_count": 260,
+  "sequence_count": 20,
+  "checks": [
+    {
+      "check_id": "jitter_jerk",
+      "variant": "jitter",
+      "metric": "jerk_p95_rad_s3",
+      "expected_response": "increasing",
+      "levels": {
+        "clean": 2478.0347309112544,
+        "low": 2556.2473757934567,
+        "medium": 2877.215969848633,
+        "high": 3634.6705554199216
+      },
+      "high_minus_clean": 1156.6358245086672,
+      "result": "PASS",
+      "rationale": "Artificial joint noise should increase high-frequency jerk."
+    },
+    {
+      "check_id": "lowpass_jerk",
+      "variant": "lowpass",
+      "metric": "jerk_p95_rad_s3",
+      "expected_response": "decreasing",
+      "levels": {
+        "clean": 2478.0347309112544,
+        "low": 1229.8001952075956,
+        "medium": 586.4496473646163,
+        "high": 211.571361105442
+      },
+      "high_minus_clean": -2266.4633698058124,
+      "result": "PASS",
+      "rationale": "Low-pass corruption should remove high-frequency motion."
+    },
+    {
+      "check_id": "lowpass_energy",
+      "variant": "lowpass",
+      "metric": "motion_energy_rad2_s2",
+      "expected_response": "decreasing",
+      "levels": {
+        "clean": 5.312526980321854,
+        "low": 4.196857655327767,
+        "medium": 3.0329640217125418,
+        "high": 1.5481743209529668
+      },
+      "high_minus_clean": -3.764352659368887,
+      "result": "PASS",
+      "rationale": "Low-pass corruption should reduce motion energy in this construction."
+    },
+    {
+      "check_id": "freeze_static",
+      "variant": "freeze",
+      "metric": "static_ratio_below_0p05_rad_s",
+      "expected_response": "increasing",
+      "levels": {
+        "clean": 0.066905264546774,
+        "low": 0.08979529525627833,
+        "medium": 0.1135985679749151,
+        "high": 0.16552271175781355
+      },
+      "high_minus_clean": 0.09861744721103956,
+      "result": "PASS",
+      "rationale": "A frozen interval should increase the global static ratio."
+    },
+    {
+      "check_id": "freeze_beat_f1",
+      "variant": "freeze",
+      "metric": "G1BeatF1",
+      "expected_response": "decreasing",
+      "levels": {
+        "clean": 0.2665544543176122,
+        "low": 0.231025139001151,
+        "medium": 0.22530551504689433,
+        "high": 0.2098320332694593
+      },
+      "high_minus_clean": -0.05672242104815292,
+      "result": "PASS",
+      "rationale": "A frozen interval should remove some motion events aligned to audio."
+    },
+    {
+      "check_id": "freeze_bas",
+      "variant": "freeze",
+      "metric": "G1BAS",
+      "expected_response": "decreasing",
+      "levels": {
+        "clean": 0.2931040571979939,
+        "low": 0.2714296050790147,
+        "medium": 0.26804773228665557,
+        "high": 0.2581092411457052
+      },
+      "high_minus_clean": -0.03499481605228866,
+      "result": "PASS",
+      "rationale": "BAS should fall in this particular freeze construction, but remains a rhythm diagnostic."
+    },
+    {
+      "check_id": "repeat_similarity",
+      "variant": "repeat",
+      "metric": "repeat_similarity",
+      "expected_response": "increasing",
+      "levels": {
+        "clean": 0.47378429397940636,
+        "low": 0.3718616433441639,
+        "medium": 0.3592278778553009,
+        "high": 0.45433051586151124
+      },
+      "high_minus_clean": -0.019453778117895115,
+      "result": "WARN",
+      "rationale": "A repetition corruption should increase long-range temporal self-similarity."
+    }
+  ],
+  "metric_status": {
+    "jerk": {
+      "status": "core_validated",
+      "evidence": [
+        "jitter_jerk",
+        "lowpass_jerk"
+      ],
+      "note": "Sensitive to both injected high-frequency noise and smoothing."
+    },
+    "motion_energy": {
+      "status": "core_validated_for_lowpass",
+      "evidence": [
+        "lowpass_energy"
+      ],
+      "note": "Do not expect global energy to detect every local freeze or repeat defect."
+    },
+    "static_ratio": {
+      "status": "core_validated",
+      "evidence": [
+        "freeze_static"
+      ],
+      "note": "Useful for freeze/average-pose collapse, not jitter detection."
+    },
+    "beat_f1": {
+      "status": "music_diagnostic_validated",
+      "evidence": [
+        "freeze_beat_f1"
+      ],
+      "note": "Useful for event loss, not a general dance-quality score."
+    },
+    "bas": {
+      "status": "supplementary_only",
+      "evidence": [
+        "freeze_bas"
+      ],
+      "note": "Must be paired with event coverage, lag and phase; never use alone."
+    },
+    "repeat_similarity": {
+      "status": "needs_revision",
+      "evidence": [
+        "repeat_similarity"
+      ],
+      "note": "The current corruption/metric pair does not reliably detect repetition."
+    },
+    "fid_div_retrieval_human": {
+      "status": "not_yet_validated",
+      "evidence": [],
+      "note": "Requires fixed extractors, negative controls, or human studies."
+    }
+  },
+  "scope_note": "Controlled GT corruptions validate metric sensitivity; clean GT is a reference distribution, not a perfect score of human aesthetics."
+}

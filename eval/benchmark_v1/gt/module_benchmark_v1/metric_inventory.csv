@@ -1,0 +1,50 @@
+module,submodule,metric_id,name,current_status,calibration_status,level
+P,P.interface,P0-SCHEMA,Motion schema validity,prototype,not_directionally_calibrated,hard_gate
+P,P.interface,P0-ORDER,Interface convention validity,prototype,not_directionally_calibrated,hard_gate
+P,P.time,P0-TIME,Clock and audio alignment validity,prototype,not_directionally_calibrated,hard_gate
+P,P.time,P0-COVER,Feedback coverage,implemented,not_directionally_calibrated,hard_gate
+D,D.realism,G-FID-K,Kinetic FID,missing,not_implemented,core
+D,D.realism,G-FID-G,Geometric FID,missing,not_implemented,supplementary
+D,D.diversity,G-DIV-K,Kinetic diversity,prototype,not_directionally_calibrated,core
+D,D.diversity,G-DIV-G,Geometric diversity,prototype,not_directionally_calibrated,core
+D,D.smoothness,G-DYNAMICS,Joint dynamics distribution,implemented,core_validated,core
+D,D.smoothness,G-C4-CONT,C4 boundary continuity,implemented,not_directionally_calibrated,core
+D,D.liveliness,G-ENERGY,Motion energy,implemented,core_validated_for_lowpass,core
+D,D.liveliness,G-STATIC,Static ratio,implemented,core_validated,core
+D,D.liveliness,G-FREEZE,Adaptive freeze proportion,missing,not_implemented,core
+D,D.liveliness,G-FREEZE-LR,Freeze length regularity,missing,not_implemented,supplementary
+D,D.liveliness,G-REPEAT,Long-term pose repetition,implemented,needs_revision,core
+D,D.physics,G-PFC,Physical Foot Contact,prototype,not_directionally_calibrated,core
+D,D.physics,G-FSR,Foot Skating Ratio,prototype,not_directionally_calibrated,core
+D,D.physics,G-PEN,Ground penetration,prototype,not_directionally_calibrated,core
+D,D.physics,G-ROOT,Root behavior,implemented,not_directionally_calibrated,core
+M,M.rhythm,M-BAS,Beat Alignment Score,implemented,supplementary_only,supplementary
+M,M.rhythm,M-BEAT-F1,Beat precision; recall and F1,prototype,music_diagnostic_validated,conditional
+M,M.rhythm,M-BAP,Beat Assignment Precision,prototype,not_directionally_calibrated,conditional
+M,M.rhythm,M-KPD,Key Pose Distance,missing,not_implemented,conditional
+M,M.rhythm,M-RS,Rhythmic Score,missing,not_implemented,supplementary
+M,M.dynamics,M-ONSET,Onset-motion response,implemented,not_directionally_calibrated,core
+M,M.dynamics,M-RESP-LAG,Music response lag,implemented,not_directionally_calibrated,core
+M,M.dynamics,M-TEMPO-PHASE,Tempo consistency and phase error,missing,not_implemented,core
+M,M.structure,M-PHRASE,Phrase-boundary response,missing,not_implemented,core
+M,M.semantic,M-RETRIEVAL,Audio-motion R@1; R@2 and R@3,missing,not_implemented,core
+M,M.semantic,M-MMDIST,Multimodal Distance,missing,not_implemented,core
+M,M.semantic,M-DS,Dance-music semantic retrieval score,missing,not_implemented,supplementary
+X,X.reference,X-DYN,Reference dynamic-envelope violation,missing,not_implemented,hard_gate
+X,X.reference,X-JLIMIT,Reference joint-limit violation,prototype,not_directionally_calibrated,hard_gate
+X,X.tracking,T-EMPJPE,Mean per-joint position error,implemented,not_directionally_calibrated,core
+X,X.tracking,T-EMPKPE,Mean per-keybody position error,implemented,not_directionally_calibrated,core
+X,X.tracking,T-RMSE-RAW,Raw joint RMSE,implemented,not_directionally_calibrated,core
+X,X.tracking,T-RMSE-ALIGN,Lag-compensated joint RMSE,implemented,not_directionally_calibrated,core
+X,X.tracking,T-LAG,Tracking lag,implemented,not_directionally_calibrated,core
+X,X.retention,T-AMP,Amplitude retention,implemented,not_directionally_calibrated,core
+X,X.retention,T-ENERGY,Motion-energy retention,implemented,not_directionally_calibrated,core
+X,X.retention,T-BAND,Frequency-band power retention,implemented,not_directionally_calibrated,core
+X,X.retention,T-CONTACT,Contact retention,prototype,not_directionally_calibrated,core
+X,X.retention,E-MUSIC-RET,Executed music-expression retention,implemented,not_directionally_calibrated,core
+X,X.safety,T-SUCC,Execution success rate,implemented,not_directionally_calibrated,hard_gate
+X,X.safety,T-TTF,Time to fall,implemented,not_directionally_calibrated,core
+R,R.runtime,R-DEADLINE,Generator deadline miss rate,prototype,not_directionally_calibrated,hard_gate
+R,R.runtime,R-LATENCY,End-to-end latency decomposition,prototype,not_directionally_calibrated,core
+R,R.runtime,R-RTF,Realtime factor,prototype,not_directionally_calibrated,hard_gate
+H,H.perception,H-PREFERENCE,Blind pairwise preference,manual,human_study_required,core

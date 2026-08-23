@@ -11,11 +11,16 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import os
 import pickle
 import sys
 from collections import defaultdict
 from pathlib import Path
+
+# Keep the legacy librosa/resampy evaluator independent of the server's
+# Numba cache state. This must be set before any optional audio package import.
+os.environ["NUMBA_DISABLE_JIT"] = "1"
 
 import numpy as np
 from scipy.ndimage import gaussian_filter1d
@@ -58,7 +63,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--model_path", default=str(DEFAULT_MODEL_PATH))
     parser.add_argument(
         "--output_dir",
-        default="eval/motion_music_execution/first_round_20260819",
+        default="eval/motion_music_execution/gt_calibrated_m0_m2_m4_song098_v2",
     )
     parser.add_argument("--analysis_fps", default=50.0, type=float)
     parser.add_argument("--max_lag_seconds", default=0.5, type=float)
@@ -283,14 +288,32 @@ def compute_motion_quality(
 
 def load_audio_analysis(audio_path: Path, fps: float, frames: int) -> tuple[np.ndarray, np.ndarray]:
     os.environ.setdefault("NUMBA_CACHE_DIR", "/tmp/audiomimic-numba-cache")
-    import librosa
+    # The pinned librosa/resampy stack is incompatible with the server's
+    # current Numba cache/JIT setup. Evaluation does not need JIT here, and
+    # disabling it makes audio metrics reproducible across shells.
+    os.environ["NUMBA_DISABLE_JIT"] = "1"
     import scipy.signal
+    import soundfile as sf
+    import librosa
 
     # librosa 0.9 uses the pre-SciPy-1.13 alias removed from scipy.signal.
     if not hasattr(scipy.signal, "hann"):
         scipy.signal.hann = scipy.signal.windows.hann
 
-    y, sample_rate = librosa.load(audio_path, sr=22050, mono=True)
+    # Avoid librosa.load(..., sr=22050): the installed legacy librosa calls
+    # resampy, whose Numba gufunc is broken by the server's package mix.
+    y, sample_rate = sf.read(audio_path, dtype="float32", always_2d=False)
+    if y.ndim == 2:
+        y = np.mean(y, axis=1)
+    target_sample_rate = 22050
+    if int(sample_rate) != target_sample_rate:
+        divisor = math.gcd(int(sample_rate), target_sample_rate)
+        y = scipy.signal.resample_poly(
+            y,
+            target_sample_rate // divisor,
+            int(sample_rate) // divisor,
+        )
+        sample_rate = target_sample_rate
     hop_length = 512
     onset = librosa.onset.onset_strength(y=y, sr=sample_rate, hop_length=hop_length)
     onset_times = librosa.times_like(onset, sr=sample_rate, hop_length=hop_length)

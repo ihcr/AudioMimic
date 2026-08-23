@@ -88,12 +88,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--route_summary",
         type=Path,
-        default=Path("eval/motion_music_execution/first_round_20260819/route_summary.json"),
+        default=Path("eval/motion_music_execution/gt_calibrated_m0_m2_m4_song098_v2/route_summary.json"),
     )
     parser.add_argument(
         "--execution_metrics",
         type=Path,
-        default=Path("eval/motion_music_execution/first_round_20260819/execution_metrics.json"),
+        default=Path("eval/motion_music_execution/gt_calibrated_m0_m2_m4_song098_v2/execution_metrics.json"),
     )
     parser.add_argument(
         "--native_capability",

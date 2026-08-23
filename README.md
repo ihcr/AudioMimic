@@ -91,6 +91,14 @@ are documented in [`eval/README.md`](eval/README.md).
 The latest quantitative comparison is in
 [`docs/experiments/RESULT-20260820-generator-vs-sonic-baselines.md`](docs/experiments/RESULT-20260820-generator-vs-sonic-baselines.md).
 
+### Paper evaluation entry point
+
+论文所需的 GT benchmark、M0/M2/M3/M4 的 `M_ref`/`M_exec` 指标、SONIC retention、
+音乐消融和复现实验命令统一从 [`eval/RESULTS.md`](eval/RESULTS.md) 开始。指标定义和
+论文来源见 [`docs/evaluation/README.md`](docs/evaluation/README.md)。不要只查看 BAS；
+正式结果按 dance quality、beat/rhythm、music adaptation、SONIC execution 和 online
+system 五个模块报告。
+
 ## EDGE &mdash; Official PyTorch implementation
 **EDGE: Editable Dance Generation From Music** (CVPR 2023)<br>
 Jonathan Tseng, Rodrigo Castellon, C. Karen Liu<br>

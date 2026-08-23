@@ -1,0 +1,775 @@
+{
+  "summary": {
+    "test_ids": [
+      "063",
+      "132",
+      "143",
+      "036",
+      "098",
+      "198",
+      "012",
+      "211",
+      "193",
+      "179",
+      "065",
+      "137",
+      "161",
+      "092",
+      "037",
+      "109",
+      "204",
+      "144"
+    ],
+    "pair_count": 18,
+    "wrong_song_control": "cyclic shift by one test sequence ID",
+    "max_lag_seconds": 2.0,
+    "event_tolerance_seconds": 0.2,
+    "paired_mean": {
+      "zero_lag_corr": 0.1098180169990493,
+      "best_lag_corr": 0.1654758633242735,
+      "event_f1": 0.7126520610209619,
+      "dominant_rate_error_hz": 1.7374852723621932
+    },
+    "wrong_song_mean": {
+      "zero_lag_corr": 0.03764691958899623,
+      "best_lag_corr": 0.09188737492794884,
+      "event_f1": 0.685699965370197,
+      "dominant_rate_error_hz": 1.8111789889123022
+    },
+    "mean_margin": {
+      "zero_lag_corr": 0.07217109741005306,
+      "best_lag_corr": 0.07358848839632465,
+      "event_f1": 0.02695209565076504
+    },
+    "all_wrong_song_control": {
+      "mean_zero_lag_corr": 0.03924919918233335,
+      "mean_best_lag_corr": 0.08837121502983712,
+      "mean_event_f1": 0.6930208941394355,
+      "mean_best_corr_margin": 0.07710464829443638,
+      "mean_paired_rank_percentile": 0.8366013071895425,
+      "top1_rate": 0.2222222222222222
+    }
+  },
+  "pairs": [
+    {
+      "sequence_id": "063",
+      "wrong_song_id": "132",
+      "paired": {
+        "frames": 2767,
+        "duration_seconds": 92.23333333333333,
+        "motion_energy_mean": 0.6722290001881989,
+        "audio_onset_mean": 0.19746857301604434,
+        "zero_lag_corr": 0.116233341018386,
+        "best_lag_corr": 0.1947124466099863,
+        "best_lag_seconds": 0.43333333333333335,
+        "motion_dominant_rate_hz": 1.9515720997470185,
+        "audio_dominant_rate_hz": 1.9515720997470185,
+        "dominant_rate_error_hz": 0.0,
+        "event_f1": 0.851063829787234
+      },
+      "wrong_song": {
+        "frames": 1876,
+        "duration_seconds": 62.53333333333333,
+        "motion_energy_mean": 0.6674658336368218,
+        "audio_onset_mean": 0.16570607379004723,
+        "zero_lag_corr": -0.003678867132899494,
+        "best_lag_corr": 0.029312585439310146,
+        "best_lag_seconds": -1.9666666666666666,
+        "motion_dominant_rate_hz": 1.950959488272921,
+        "audio_dominant_rate_hz": 2.238805970149254,
+        "dominant_rate_error_hz": 0.2878464818763329,
+        "event_f1": 0.7377521613832855
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.052699993440310795,
+        "best_lag_corr": 0.09697022397322384,
+        "event_f1": 0.8257636568865773
+      },
+      "paired_best_corr_rank": 0.8823529411764706,
+      "paired_is_top1": false,
+      "best_corr_margin": 0.16539986117067615,
+      "zero_lag_corr_margin": 0.1199122081512855,
+      "event_f1_margin": 0.11331166840394857
+    },
+    {
+      "sequence_id": "132",
+      "wrong_song_id": "143",
+      "paired": {
+        "frames": 1874,
+        "duration_seconds": 62.46666666666667,
+        "motion_energy_mean": 0.8040369567898022,
+        "audio_onset_mean": 0.16586267957801365,
+        "zero_lag_corr": -0.03821598111116629,
+        "best_lag_corr": 0.021894354438392827,
+        "best_lag_seconds": -0.9,
+        "motion_dominant_rate_hz": 0.512273212379936,
+        "audio_dominant_rate_hz": 2.2251867662753466,
+        "dominant_rate_error_hz": 1.7129135538954108,
+        "event_f1": 0.6319702602230484
+      },
+      "wrong_song": {
+        "frames": 1874,
+        "duration_seconds": 62.46666666666667,
+        "motion_energy_mean": 0.8040369567898022,
+        "audio_onset_mean": 0.07211529660051055,
+        "zero_lag_corr": -0.015047702788331603,
+        "best_lag_corr": 0.06714307993406698,
+        "best_lag_seconds": -1.8,
+        "motion_dominant_rate_hz": 0.512273212379936,
+        "audio_dominant_rate_hz": 2.8655282817502665,
+        "dominant_rate_error_hz": 2.3532550693703307,
+        "event_f1": 0.6805555555555556
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.02365800666511278,
+        "best_lag_corr": 0.08187320222862346,
+        "event_f1": 0.637439144004297
+      },
+      "paired_best_corr_rank": 0.23529411764705882,
+      "paired_is_top1": false,
+      "best_corr_margin": -0.04524872549567416,
+      "zero_lag_corr_margin": -0.023168278322834683,
+      "event_f1_margin": -0.04858529533250722
+    },
+    {
+      "sequence_id": "143",
+      "wrong_song_id": "036",
+      "paired": {
+        "frames": 5800,
+        "duration_seconds": 193.33333333333334,
+        "motion_energy_mean": 0.6777671956848769,
+        "audio_onset_mean": 0.05790629530458131,
+        "zero_lag_corr": 0.13967457402752295,
+        "best_lag_corr": 0.17502338178895208,
+        "best_lag_seconds": 0.4,
+        "motion_dominant_rate_hz": 0.7344827586206897,
+        "audio_dominant_rate_hz": 2.8655172413793104,
+        "dominant_rate_error_hz": 2.1310344827586207,
+        "event_f1": 0.5668874172185431
+      },
+      "wrong_song": {
+        "frames": 3050,
+        "duration_seconds": 101.66666666666667,
+        "motion_energy_mean": 0.7240824585984162,
+        "audio_onset_mean": 0.1358338259448838,
+        "zero_lag_corr": -0.016641213416465284,
+        "best_lag_corr": 0.013290061476680446,
+        "best_lag_seconds": 0.9,
+        "motion_dominant_rate_hz": 0.6098360655737705,
+        "audio_dominant_rate_hz": 3.9934426229508193,
+        "dominant_rate_error_hz": 3.383606557377049,
+        "event_f1": 0.55863539445629
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": -0.007185573952506002,
+        "best_lag_corr": 0.041597879176446466,
+        "event_f1": 0.5564039520102471
+      },
+      "paired_best_corr_rank": 1.0,
+      "paired_is_top1": true,
+      "best_corr_margin": 0.16173332031227164,
+      "zero_lag_corr_margin": 0.15631578744398825,
+      "event_f1_margin": 0.00825202276225312
+    },
+    {
+      "sequence_id": "036",
+      "wrong_song_id": "098",
+      "paired": {
+        "frames": 3050,
+        "duration_seconds": 101.66666666666667,
+        "motion_energy_mean": 0.8197722607678327,
+        "audio_onset_mean": 0.1358338259448838,
+        "zero_lag_corr": 0.11571235245474693,
+        "best_lag_corr": 0.15175470925898257,
+        "best_lag_seconds": -0.5333333333333333,
+        "motion_dominant_rate_hz": 0.7770491803278687,
+        "audio_dominant_rate_hz": 3.9934426229508193,
+        "dominant_rate_error_hz": 3.216393442622951,
+        "event_f1": 0.46009389671361506
+      },
+      "wrong_song": {
+        "frames": 2980,
+        "duration_seconds": 99.33333333333333,
+        "motion_energy_mean": 0.828216667790809,
+        "audio_onset_mean": 0.2419878859375503,
+        "zero_lag_corr": 0.030513744057973885,
+        "best_lag_corr": 0.053461879246871624,
+        "best_lag_seconds": 1.1333333333333333,
+        "motion_dominant_rate_hz": 0.7651006711409397,
+        "audio_dominant_rate_hz": 3.3322147651006717,
+        "dominant_rate_error_hz": 2.567114093959732,
+        "event_f1": 0.4893111638954869
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": -0.026672355659557338,
+        "best_lag_corr": 0.021236984213088738,
+        "event_f1": 0.49522613794323683
+      },
+      "paired_best_corr_rank": 1.0,
+      "paired_is_top1": true,
+      "best_corr_margin": 0.09829283001211095,
+      "zero_lag_corr_margin": 0.08519860839677304,
+      "event_f1_margin": -0.029217267181871842
+    },
+    {
+      "sequence_id": "098",
+      "wrong_song_id": "198",
+      "paired": {
+        "frames": 2980,
+        "duration_seconds": 99.33333333333333,
+        "motion_energy_mean": 0.9826219715854687,
+        "audio_onset_mean": 0.2419878859375503,
+        "zero_lag_corr": 0.22667650183025706,
+        "best_lag_corr": 0.2749132193887996,
+        "best_lag_seconds": 0.26666666666666666,
+        "motion_dominant_rate_hz": 3.3322147651006717,
+        "audio_dominant_rate_hz": 3.3322147651006717,
+        "dominant_rate_error_hz": 0.0,
+        "event_f1": 0.8136200716845878
+      },
+      "wrong_song": {
+        "frames": 1170,
+        "duration_seconds": 39.0,
+        "motion_energy_mean": 1.2716738318610206,
+        "audio_onset_mean": 0.1605099159567683,
+        "zero_lag_corr": 0.2673810910685175,
+        "best_lag_corr": 0.3328507312443191,
+        "best_lag_seconds": -0.26666666666666666,
+        "motion_dominant_rate_hz": 1.846153846153846,
+        "audio_dominant_rate_hz": 2.5384615384615383,
+        "dominant_rate_error_hz": 0.6923076923076923,
+        "event_f1": 0.7344632768361581
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.07144637787642712,
+        "best_lag_corr": 0.11190145358476565,
+        "event_f1": 0.7731262993221589
+      },
+      "paired_best_corr_rank": 0.9411764705882353,
+      "paired_is_top1": false,
+      "best_corr_margin": -0.057937511855519486,
+      "zero_lag_corr_margin": -0.040704589238260425,
+      "event_f1_margin": 0.07915679484842975
+    },
+    {
+      "sequence_id": "198",
+      "wrong_song_id": "012",
+      "paired": {
+        "frames": 1170,
+        "duration_seconds": 39.0,
+        "motion_energy_mean": 1.2979301911591077,
+        "audio_onset_mean": 0.1605099159567683,
+        "zero_lag_corr": 0.23800202041616758,
+        "best_lag_corr": 0.3482311626176435,
+        "best_lag_seconds": -0.26666666666666666,
+        "motion_dominant_rate_hz": 1.2564102564102564,
+        "audio_dominant_rate_hz": 2.5384615384615383,
+        "dominant_rate_error_hz": 1.282051282051282,
+        "event_f1": 0.7428571428571429
+      },
+      "wrong_song": {
+        "frames": 1170,
+        "duration_seconds": 39.0,
+        "motion_energy_mean": 1.2979301911591077,
+        "audio_onset_mean": 0.2872659433184909,
+        "zero_lag_corr": 0.22414085859220162,
+        "best_lag_corr": 0.2665788680676988,
+        "best_lag_seconds": 1.0666666666666667,
+        "motion_dominant_rate_hz": 1.2564102564102564,
+        "audio_dominant_rate_hz": 2.7948717948717947,
+        "dominant_rate_error_hz": 1.5384615384615383,
+        "event_f1": 0.7374301675977656
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.06427368846885273,
+        "best_lag_corr": 0.12240899685525211,
+        "event_f1": 0.6926976165478054
+      },
+      "paired_best_corr_rank": 0.9411764705882353,
+      "paired_is_top1": false,
+      "best_corr_margin": 0.08165229454994466,
+      "zero_lag_corr_margin": 0.013861161823965962,
+      "event_f1_margin": 0.005426975259377298
+    },
+    {
+      "sequence_id": "012",
+      "wrong_song_id": "211",
+      "paired": {
+        "frames": 2970,
+        "duration_seconds": 99.0,
+        "motion_energy_mean": 0.7773237569250102,
+        "audio_onset_mean": 0.29199275050920354,
+        "zero_lag_corr": 0.028968277049110615,
+        "best_lag_corr": 0.14509142479851259,
+        "best_lag_seconds": 0.9333333333333333,
+        "motion_dominant_rate_hz": 0.696969696969697,
+        "audio_dominant_rate_hz": 2.797979797979798,
+        "dominant_rate_error_hz": 2.101010101010101,
+        "event_f1": 0.7391304347826086
+      },
+      "wrong_song": {
+        "frames": 2970,
+        "duration_seconds": 99.0,
+        "motion_energy_mean": 0.7773237569250102,
+        "audio_onset_mean": 0.3432859319806326,
+        "zero_lag_corr": 0.05870856024154884,
+        "best_lag_corr": 0.08911759752253713,
+        "best_lag_seconds": -1.6666666666666667,
+        "motion_dominant_rate_hz": 0.696969696969697,
+        "audio_dominant_rate_hz": 2.3636363636363638,
+        "dominant_rate_error_hz": 1.6666666666666667,
+        "event_f1": 0.6642728904847397
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.03316321249493109,
+        "best_lag_corr": 0.07352166332179905,
+        "event_f1": 0.6963729380395854
+      },
+      "paired_best_corr_rank": 0.9411764705882353,
+      "paired_is_top1": false,
+      "best_corr_margin": 0.055973827275975455,
+      "zero_lag_corr_margin": -0.029740283192438228,
+      "event_f1_margin": 0.07485754429786895
+    },
+    {
+      "sequence_id": "211",
+      "wrong_song_id": "193",
+      "paired": {
+        "frames": 3260,
+        "duration_seconds": 108.66666666666667,
+        "motion_energy_mean": 1.0087492698741236,
+        "audio_onset_mean": 0.3624597560211732,
+        "zero_lag_corr": 0.19306856346612322,
+        "best_lag_corr": 0.22423866037692322,
+        "best_lag_seconds": -0.26666666666666666,
+        "motion_dominant_rate_hz": 0.5613496932515337,
+        "audio_dominant_rate_hz": 2.3650306748466257,
+        "dominant_rate_error_hz": 1.8036809815950918,
+        "event_f1": 0.6392092257001647
+      },
+      "wrong_song": {
+        "frames": 2050,
+        "duration_seconds": 68.33333333333333,
+        "motion_energy_mean": 1.0321656214442798,
+        "audio_onset_mean": 0.5810876326790474,
+        "zero_lag_corr": 0.04818225483614533,
+        "best_lag_corr": 0.07262275748367122,
+        "best_lag_seconds": 1.8666666666666667,
+        "motion_dominant_rate_hz": 0.8341463414634147,
+        "audio_dominant_rate_hz": 3.2926829268292686,
+        "dominant_rate_error_hz": 2.458536585365854,
+        "event_f1": 0.6728971962616822
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.05951145578934097,
+        "best_lag_corr": 0.09792669145144599,
+        "event_f1": 0.6624206311255996
+      },
+      "paired_best_corr_rank": 1.0,
+      "paired_is_top1": true,
+      "best_corr_margin": 0.151615902893252,
+      "zero_lag_corr_margin": 0.1448863086299779,
+      "event_f1_margin": -0.03368797056151751
+    },
+    {
+      "sequence_id": "193",
+      "wrong_song_id": "179",
+      "paired": {
+        "frames": 2050,
+        "duration_seconds": 68.33333333333333,
+        "motion_energy_mean": 1.0279008492019583,
+        "audio_onset_mean": 0.5810876326790474,
+        "zero_lag_corr": -0.014289281077343565,
+        "best_lag_corr": 0.07128336797627652,
+        "best_lag_seconds": 0.23333333333333334,
+        "motion_dominant_rate_hz": 0.7609756097560976,
+        "audio_dominant_rate_hz": 3.2926829268292686,
+        "dominant_rate_error_hz": 2.531707317073171,
+        "event_f1": 0.8251366120218581
+      },
+      "wrong_song": {
+        "frames": 1614,
+        "duration_seconds": 53.8,
+        "motion_energy_mean": 1.0115018949535242,
+        "audio_onset_mean": 0.3103332455039661,
+        "zero_lag_corr": 0.0055044006225945475,
+        "best_lag_corr": 0.0487675588921125,
+        "best_lag_seconds": -1.7666666666666666,
+        "motion_dominant_rate_hz": 0.7434944237918216,
+        "audio_dominant_rate_hz": 2.992565055762082,
+        "dominant_rate_error_hz": 2.2490706319702602,
+        "event_f1": 0.7918088737201365
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.012499272758655467,
+        "best_lag_corr": 0.0678619045199397,
+        "event_f1": 0.7724593564642899
+      },
+      "paired_best_corr_rank": 0.5294117647058824,
+      "paired_is_top1": false,
+      "best_corr_margin": 0.02251580908416402,
+      "zero_lag_corr_margin": -0.01979368169993811,
+      "event_f1_margin": 0.03332773830172153
+    },
+    {
+      "sequence_id": "179",
+      "wrong_song_id": "065",
+      "paired": {
+        "frames": 1614,
+        "duration_seconds": 53.8,
+        "motion_energy_mean": 1.1660688983184848,
+        "audio_onset_mean": 0.3103332455039661,
+        "zero_lag_corr": 0.17775527999310894,
+        "best_lag_corr": 0.2355544053494897,
+        "best_lag_seconds": -0.36666666666666664,
+        "motion_dominant_rate_hz": 0.7806691449814127,
+        "audio_dominant_rate_hz": 2.992565055762082,
+        "dominant_rate_error_hz": 2.2118959107806693,
+        "event_f1": 0.7749077490774906
+      },
+      "wrong_song": {
+        "frames": 1614,
+        "duration_seconds": 53.8,
+        "motion_energy_mean": 1.1660688983184848,
+        "audio_onset_mean": 0.23417321213661546,
+        "zero_lag_corr": 0.05132357088716302,
+        "best_lag_corr": 0.1049386426251937,
+        "best_lag_seconds": 0.26666666666666666,
+        "motion_dominant_rate_hz": 0.7806691449814127,
+        "audio_dominant_rate_hz": 2.0817843866171004,
+        "dominant_rate_error_hz": 1.3011152416356877,
+        "event_f1": 0.662613981762918
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.05592292521335506,
+        "best_lag_corr": 0.10821015987877208,
+        "event_f1": 0.7213331502412687
+      },
+      "paired_best_corr_rank": 1.0,
+      "paired_is_top1": true,
+      "best_corr_margin": 0.130615762724296,
+      "zero_lag_corr_margin": 0.12643170910594592,
+      "event_f1_margin": 0.11229376731457263
+    },
+    {
+      "sequence_id": "065",
+      "wrong_song_id": "137",
+      "paired": {
+        "frames": 3747,
+        "duration_seconds": 124.9,
+        "motion_energy_mean": 1.0571659326392493,
+        "audio_onset_mean": 0.26666287291311763,
+        "zero_lag_corr": 0.06356512718683106,
+        "best_lag_corr": 0.11370808298120406,
+        "best_lag_seconds": -1.9666666666666666,
+        "motion_dominant_rate_hz": 0.656525220176141,
+        "audio_dominant_rate_hz": 2.081665332265813,
+        "dominant_rate_error_hz": 1.425140112089672,
+        "event_f1": 0.7849331713244229
+      },
+      "wrong_song": {
+        "frames": 3068,
+        "duration_seconds": 102.26666666666667,
+        "motion_energy_mean": 1.0723669395898832,
+        "audio_onset_mean": 0.34685280358085385,
+        "zero_lag_corr": 0.04765366949006884,
+        "best_lag_corr": 0.10406567170714642,
+        "best_lag_seconds": 1.5,
+        "motion_dominant_rate_hz": 1.046284224250326,
+        "audio_dominant_rate_hz": 1.1049543676662321,
+        "dominant_rate_error_hz": 0.05867014341590604,
+        "event_f1": 0.8187702265372168
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.05458614083750912,
+        "best_lag_corr": 0.10632263580280282,
+        "event_f1": 0.8127429055757236
+      },
+      "paired_best_corr_rank": 0.7058823529411765,
+      "paired_is_top1": false,
+      "best_corr_margin": 0.009642411274057641,
+      "zero_lag_corr_margin": 0.01591145769676222,
+      "event_f1_margin": -0.0338370552127939
+    },
+    {
+      "sequence_id": "137",
+      "wrong_song_id": "161",
+      "paired": {
+        "frames": 3068,
+        "duration_seconds": 102.26666666666667,
+        "motion_energy_mean": 0.6461136504679424,
+        "audio_onset_mean": 0.34685280358085385,
+        "zero_lag_corr": 0.08209296012374921,
+        "best_lag_corr": 0.14910675800698697,
+        "best_lag_seconds": -0.5333333333333333,
+        "motion_dominant_rate_hz": 1.1049543676662321,
+        "audio_dominant_rate_hz": 1.1049543676662321,
+        "dominant_rate_error_hz": 0.0,
+        "event_f1": 0.7353463587921847
+      },
+      "wrong_song": {
+        "frames": 3068,
+        "duration_seconds": 102.26666666666667,
+        "motion_energy_mean": 0.6461136504679424,
+        "audio_onset_mean": 0.5187322081066748,
+        "zero_lag_corr": 0.027185531468008377,
+        "best_lag_corr": 0.08083442622830243,
+        "best_lag_seconds": 0.13333333333333333,
+        "motion_dominant_rate_hz": 1.1049543676662321,
+        "audio_dominant_rate_hz": 3.7353324641460235,
+        "dominant_rate_error_hz": 2.6303780964797916,
+        "event_f1": 0.7403314917127072
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.03790291960893848,
+        "best_lag_corr": 0.09203849514484048,
+        "event_f1": 0.7604678241395716
+      },
+      "paired_best_corr_rank": 0.8823529411764706,
+      "paired_is_top1": false,
+      "best_corr_margin": 0.06827233177868454,
+      "zero_lag_corr_margin": 0.05490742865574083,
+      "event_f1_margin": -0.004985132920522495
+    },
+    {
+      "sequence_id": "161",
+      "wrong_song_id": "092",
+      "paired": {
+        "frames": 4180,
+        "duration_seconds": 139.33333333333334,
+        "motion_energy_mean": 0.8282446199163587,
+        "audio_onset_mean": 0.5213688319846793,
+        "zero_lag_corr": 0.19636003549875047,
+        "best_lag_corr": 0.23258078660102927,
+        "best_lag_seconds": -1.5666666666666667,
+        "motion_dominant_rate_hz": 1.866028708133971,
+        "audio_dominant_rate_hz": 3.732057416267942,
+        "dominant_rate_error_hz": 1.866028708133971,
+        "event_f1": 0.7787839586028461
+      },
+      "wrong_song": {
+        "frames": 1861,
+        "duration_seconds": 62.03333333333333,
+        "motion_energy_mean": 1.0560011078716716,
+        "audio_onset_mean": 0.24792938481730462,
+        "zero_lag_corr": 0.0910453349779683,
+        "best_lag_corr": 0.13316356309997995,
+        "best_lag_seconds": 0.8,
+        "motion_dominant_rate_hz": 1.8699623858140786,
+        "audio_dominant_rate_hz": 3.8688876947877486,
+        "dominant_rate_error_hz": 1.99892530897367,
+        "event_f1": 0.6846846846846846
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.09074839361782712,
+        "best_lag_corr": 0.12239456380014124,
+        "event_f1": 0.705709040212329
+      },
+      "paired_best_corr_rank": 0.8235294117647058,
+      "paired_is_top1": false,
+      "best_corr_margin": 0.09941722350104931,
+      "zero_lag_corr_margin": 0.10531470052078218,
+      "event_f1_margin": 0.09409927391816153
+    },
+    {
+      "sequence_id": "092",
+      "wrong_song_id": "037",
+      "paired": {
+        "frames": 1861,
+        "duration_seconds": 62.03333333333333,
+        "motion_energy_mean": 0.8127434740747566,
+        "audio_onset_mean": 0.24792938481730462,
+        "zero_lag_corr": 0.18746071043346016,
+        "best_lag_corr": 0.2060499356052603,
+        "best_lag_seconds": 1.0,
+        "motion_dominant_rate_hz": 0.5480924234282644,
+        "audio_dominant_rate_hz": 3.8688876947877486,
+        "dominant_rate_error_hz": 3.320795271359484,
+        "event_f1": 0.7989130434782608
+      },
+      "wrong_song": {
+        "frames": 1861,
+        "duration_seconds": 62.03333333333333,
+        "motion_energy_mean": 0.8127434740747566,
+        "audio_onset_mean": 0.09770391504894813,
+        "zero_lag_corr": -0.12990263500261703,
+        "best_lag_corr": -0.08599161184091544,
+        "best_lag_seconds": 0.06666666666666667,
+        "motion_dominant_rate_hz": 0.5480924234282644,
+        "audio_dominant_rate_hz": 2.063406770553466,
+        "dominant_rate_error_hz": 1.5153143471252015,
+        "event_f1": 0.7806267806267806
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.10549546585684577,
+        "best_lag_corr": 0.1399899990388066,
+        "event_f1": 0.7760591784339766
+      },
+      "paired_best_corr_rank": 0.7647058823529411,
+      "paired_is_top1": false,
+      "best_corr_margin": 0.2920415474461757,
+      "zero_lag_corr_margin": 0.3173633454360772,
+      "event_f1_margin": 0.01828626285148016
+    },
+    {
+      "sequence_id": "037",
+      "wrong_song_id": "109",
+      "paired": {
+        "frames": 2980,
+        "duration_seconds": 99.33333333333333,
+        "motion_energy_mean": 0.6407642322214012,
+        "audio_onset_mean": 0.10217710540453408,
+        "zero_lag_corr": 0.08701923422694859,
+        "best_lag_corr": 0.08701923422694859,
+        "best_lag_seconds": 0.0,
+        "motion_dominant_rate_hz": 0.5838926174496645,
+        "audio_dominant_rate_hz": 2.063758389261745,
+        "dominant_rate_error_hz": 1.4798657718120807,
+        "event_f1": 0.5689277899343544
+      },
+      "wrong_song": {
+        "frames": 2980,
+        "duration_seconds": 99.33333333333333,
+        "motion_energy_mean": 0.6407642322214012,
+        "audio_onset_mean": 0.16018164166815868,
+        "zero_lag_corr": 0.01542308484757811,
+        "best_lag_corr": 0.07367774486285715,
+        "best_lag_seconds": 0.06666666666666667,
+        "motion_dominant_rate_hz": 0.5838926174496645,
+        "audio_dominant_rate_hz": 1.5503355704697988,
+        "dominant_rate_error_hz": 0.9664429530201343,
+        "event_f1": 0.5208747514910537
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.03974261467257778,
+        "best_lag_corr": 0.08529567777631993,
+        "event_f1": 0.5548562731628244
+      },
+      "paired_best_corr_rank": 0.6470588235294118,
+      "paired_is_top1": false,
+      "best_corr_margin": 0.013341489364091436,
+      "zero_lag_corr_margin": 0.07159614937937048,
+      "event_f1_margin": 0.04805303844330078
+    },
+    {
+      "sequence_id": "109",
+      "wrong_song_id": "204",
+      "paired": {
+        "frames": 3606,
+        "duration_seconds": 120.2,
+        "motion_energy_mean": 0.6517622720889149,
+        "audio_onset_mean": 0.15869268315699842,
+        "zero_lag_corr": 0.011574865862003986,
+        "best_lag_corr": 0.09257863089747169,
+        "best_lag_seconds": -1.5666666666666667,
+        "motion_dominant_rate_hz": 0.5657237936772046,
+        "audio_dominant_rate_hz": 2.0632279534109816,
+        "dominant_rate_error_hz": 1.497504159733777,
+        "event_f1": 0.5249169435215947
+      },
+      "wrong_song": {
+        "frames": 1290,
+        "duration_seconds": 43.0,
+        "motion_energy_mean": 0.6100785679034318,
+        "audio_onset_mean": 0.36915112482336027,
+        "zero_lag_corr": -0.022561151431430473,
+        "best_lag_corr": 0.06450174405265856,
+        "best_lag_seconds": -0.2,
+        "motion_dominant_rate_hz": 0.5581395348837209,
+        "audio_dominant_rate_hz": 3.186046511627907,
+        "dominant_rate_error_hz": 2.627906976744186,
+        "event_f1": 0.5792349726775956
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.004078085443979106,
+        "best_lag_corr": 0.05095092709157557,
+        "event_f1": 0.5723153844552722
+      },
+      "paired_best_corr_rank": 0.9411764705882353,
+      "paired_is_top1": false,
+      "best_corr_margin": 0.02807688684481313,
+      "zero_lag_corr_margin": 0.03413601729343446,
+      "event_f1_margin": -0.054318029156000924
+    },
+    {
+      "sequence_id": "204",
+      "wrong_song_id": "144",
+      "paired": {
+        "frames": 1290,
+        "duration_seconds": 43.0,
+        "motion_energy_mean": 1.0287696287057204,
+        "audio_onset_mean": 0.36915112482336027,
+        "zero_lag_corr": 0.034045578510304424,
+        "best_lag_corr": 0.10512484620278954,
+        "best_lag_seconds": 0.1,
+        "motion_dominant_rate_hz": 0.5116279069767442,
+        "audio_dominant_rate_hz": 3.186046511627907,
+        "dominant_rate_error_hz": 2.6744186046511627,
+        "event_f1": 0.8776371308016878
+      },
+      "wrong_song": {
+        "frames": 1290,
+        "duration_seconds": 43.0,
+        "motion_energy_mean": 1.0287696287057204,
+        "audio_onset_mean": 0.364285685529169,
+        "zero_lag_corr": -0.020072708226794557,
+        "best_lag_corr": 0.09479865878554326,
+        "best_lag_seconds": -1.8,
+        "motion_dominant_rate_hz": 0.5116279069767442,
+        "audio_dominant_rate_hz": 3.4186046511627906,
+        "dominant_rate_error_hz": 2.9069767441860463,
+        "event_f1": 0.8245614035087718
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": -0.009933605154643638,
+        "best_lag_corr": 0.07108569801897031,
+        "event_f1": 0.8077903323007449
+      },
+      "paired_best_corr_rank": 0.9411764705882353,
+      "paired_is_top1": false,
+      "best_corr_margin": 0.01032618741724628,
+      "zero_lag_corr_margin": 0.05411828673709898,
+      "event_f1_margin": 0.053075727292915986
+    },
+    {
+      "sequence_id": "144",
+      "wrong_song_id": "063",
+      "paired": {
+        "frames": 3252,
+        "duration_seconds": 108.4,
+        "motion_energy_mean": 0.6694172635399616,
+        "audio_onset_mean": 0.37704757141714235,
+        "zero_lag_corr": 0.131020146073926,
+        "best_lag_corr": 0.14970013271127372,
+        "best_lag_seconds": -0.23333333333333334,
+        "motion_dominant_rate_hz": 0.5535055350553506,
+        "audio_dominant_rate_hz": 2.57380073800738,
+        "dominant_rate_error_hz": 2.0202952029520294,
+        "event_f1": 0.7134020618556701
+      },
+      "wrong_song": {
+        "frames": 2767,
+        "duration_seconds": 92.23333333333333,
+        "motion_energy_mean": 0.6795744239337331,
+        "audio_onset_mean": 0.19746857301604434,
+        "zero_lag_corr": 0.018486729510702286,
+        "best_lag_corr": 0.11083878987504531,
+        "best_lag_seconds": -0.9333333333333333,
+        "motion_dominant_rate_hz": 0.5529454282616553,
+        "audio_dominant_rate_hz": 1.9515720997470185,
+        "dominant_rate_error_hz": 1.3986266714853632,
+        "event_f1": 0.6637744034707158
+      },
+      "wrong_song_all_mean": {
+        "zero_lag_corr": 0.04454856730404372,
+        "best_lag_corr": 0.0990947146602544,
+        "event_f1": 0.6511922736443279
+      },
+      "paired_best_corr_rank": 0.8823529411764706,
+      "paired_is_top1": false,
+      "best_corr_margin": 0.03886134283622841,
+      "zero_lag_corr_margin": 0.11253341656322371,
+      "event_f1_margin": 0.04962765838495431
+    }
+  ]
+}

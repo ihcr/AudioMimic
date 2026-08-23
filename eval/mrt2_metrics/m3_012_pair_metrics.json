@@ -1,0 +1,162 @@
+{
+  "schema_version": "motion_execution_pair_metrics_v1",
+  "label": "M3-012",
+  "reference_pkl": "/tmp/mrt2_m3_012_60s_fixed/m3_012_60s.pkl",
+  "execution_pkl": "/home/tianhup/AudioMimic/eval/mrt2_comparison/m3_012_sonic_measured_corrected_portable.pkl",
+  "audio": "/home/tianhup/AudioMimic/eval/mrt2_metrics/audio/012_t000128_60s.wav",
+  "frames": 1800,
+  "fps": 30.0,
+  "generator": {
+    "quality": {
+      "frames": 1800,
+      "fps": 30.0,
+      "duration_seconds": 60.0,
+      "joint_amplitude_median_rad": 0.7861380055546761,
+      "motion_energy_rad2_s2": 1.9944871151153116,
+      "joint_velocity_abs_rad_s": {
+        "p50": 0.5860271863639355,
+        "p95": 3.034633219242096,
+        "p99": 5.106569047272212,
+        "max": 15.711855590343475
+      },
+      "joint_acceleration_abs_rad_s2": {
+        "p50": 7.474632561206818,
+        "p95": 35.35085348412391,
+        "p99": 58.78155235201131,
+        "max": 152.30207741260529
+      },
+      "joint_jerk_abs_rad_s3": {
+        "p50": 144.6858712588437,
+        "p95": 655.2378259599209,
+        "p99": 1060.763238519432,
+        "max": 3367.1514708548784
+      },
+      "static_ratio_speed_below_008": 0.0,
+      "repeated_pose_ratio_rms008_after2s": 0.0,
+      "median_nearest_nonlocal_pose_rms_rad": 0.21072361300919779,
+      "c4_boundary_position_jump_p95_rad": 0.07658707336029096,
+      "c4_boundary_velocity_jump_p95_rad_s": 0.9722051116176298,
+      "c4_position_jump_ratio_to_nonboundary": 0.9857935335955356,
+      "c4_velocity_jump_ratio_to_nonboundary": 0.9666380968285987,
+      "root_planar_displacement_m": 1.9653957532367987,
+      "root_path_length_m": 13.42920756674777,
+      "root_planar_speed_p95_m_s": 0.47857651886206615,
+      "root_height_min_m": 0.7334972620010376,
+      "root_height_median_m": 0.8492942750453949,
+      "root_angular_speed_p95_rad_s": 1.787828743133278,
+      "physical": {
+        "fsr_world_z0_contact5cm_speed20cms": 0.09783212896053363,
+        "fsr_ground_calibrated_proxy": 0.7709838799332963,
+        "left_contact_ratio": 0.547526403557532,
+        "right_contact_ratio": 0.6025569760978321,
+        "ground_penetration_ratio": 0.0022222222222222222,
+        "estimated_ground_height_m": 0.03446112662553787,
+        "minimum_foot_height_relative_m": -0.017240974083542825,
+        "pfc_proxy": 0.08486057081983257,
+        "keypoint_speed": {
+          "p50": 0.6306558454262511,
+          "p95": 1.1719707139669524,
+          "p99": 1.4212184072510687,
+          "max": 1.7401974511204195
+        }
+      }
+    },
+    "music": {
+      "speed_zero_lag_correlation": 0.018473153193796606,
+      "speed_best_correlation": 0.03507644976496891,
+      "speed_best_lag_seconds": -1.0,
+      "impact_zero_lag_correlation": 0.01986629304800681,
+      "impact_best_correlation": 0.02755688895569202,
+      "impact_best_lag_seconds": -0.6333333333333333,
+      "impact_lag_reliable_at_corr010": false,
+      "bas_music_to_motion": 0.24330030554833929,
+      "bas_motion_to_music": 0.3178128068699925,
+      "audio_beats": 82,
+      "motion_beats": 63,
+      "motion_beats_per_minute": 63.0
+    }
+  },
+  "execution": {
+    "quality": {
+      "frames": 1800,
+      "fps": 30.0,
+      "duration_seconds": 60.0,
+      "joint_amplitude_median_rad": 0.6253558957949281,
+      "motion_energy_rad2_s2": 0.9140547768276066,
+      "joint_velocity_abs_rad_s": {
+        "p50": 0.37270240020006895,
+        "p95": 1.9795757699757812,
+        "p99": 3.5343246576609095,
+        "max": 14.938088804483414
+      },
+      "joint_acceleration_abs_rad_s2": {
+        "p50": 4.414522927254438,
+        "p95": 24.842999428510648,
+        "p99": 48.24773528426892,
+        "max": 194.65324580669403
+      },
+      "joint_jerk_abs_rad_s3": {
+        "p50": 85.84463596343994,
+        "p95": 535.3899369947605,
+        "p99": 1083.7095484707997,
+        "max": 5808.763604611158
+      },
+      "static_ratio_speed_below_008": 0.0005555555555555556,
+      "repeated_pose_ratio_rms008_after2s": 0.0,
+      "median_nearest_nonlocal_pose_rms_rad": 0.18490817060201115,
+      "c4_boundary_position_jump_p95_rad": 0.05793643042772312,
+      "c4_boundary_velocity_jump_p95_rad_s": 0.9232204838953657,
+      "c4_position_jump_ratio_to_nonboundary": 0.9552013772063928,
+      "c4_velocity_jump_ratio_to_nonboundary": 1.0670339893803185,
+      "root_planar_displacement_m": 1.434251516537072,
+      "root_path_length_m": 9.880893550357065,
+      "root_planar_speed_p95_m_s": 0.4595571812105927,
+      "root_height_min_m": 0.6350451111793518,
+      "root_height_median_m": 0.754751443862915,
+      "root_angular_speed_p95_rad_s": 1.7915287727711056,
+      "physical": {
+        "fsr_world_z0_contact5cm_speed20cms": 0.6770428015564203,
+        "fsr_ground_calibrated_proxy": 0.6503613118399111,
+        "left_contact_ratio": 0.9944413563090606,
+        "right_contact_ratio": 0.9138410227904391,
+        "ground_penetration_ratio": 0.0011111111111111111,
+        "estimated_ground_height_m": -0.02348611820489168,
+        "minimum_foot_height_relative_m": -0.011292234621942045,
+        "pfc_proxy": 0.05619200054646241,
+        "keypoint_speed": {
+          "p50": 0.40596791846912134,
+          "p95": 1.2069883700623485,
+          "p99": 1.6109053586166966,
+          "max": 2.268729757480424
+        }
+      }
+    },
+    "music": {
+      "speed_zero_lag_correlation": 0.006154074024882259,
+      "speed_best_correlation": 0.021243087217607964,
+      "speed_best_lag_seconds": -1.0,
+      "impact_zero_lag_correlation": -0.00538140021593551,
+      "impact_best_correlation": 0.03236934904836662,
+      "impact_best_lag_seconds": -0.13333333333333333,
+      "impact_lag_reliable_at_corr010": false,
+      "bas_music_to_motion": 0.3497566025048827,
+      "bas_motion_to_music": 0.4573253787410101,
+      "audio_beats": 82,
+      "motion_beats": 63,
+      "motion_beats_per_minute": 63.0
+    }
+  },
+  "retention": {
+    "motion_energy_retention": 0.45829064018533927,
+    "median_amplitude_statistic_ratio": 0.7954785182452733,
+    "jerk_p95_ratio": 0.8170925361496284,
+    "fsr_ground_calibrated_proxy_change": -0.12062256809338523,
+    "static_ratio_change": 0.0005555555555555556,
+    "repeated_pose_ratio_change": 0.0,
+    "onset_impact_correlation_retention": 1.1746372785553705,
+    "onset_impact_correlation_change": 0.004812460092674602,
+    "bas_music_to_motion_retention": 1.4375510204009692,
+    "bas_music_to_motion_change": 0.10645629695654343,
+    "additional_music_response_lag_seconds": 0.5
+  }
+}

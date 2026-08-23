@@ -1,0 +1,1024 @@
+{
+  "schema_version": "formal_music_to_g1_four_layer_manifest_v1",
+  "description": "O-Human/O-G1 GT and M-ref/M-exec model records under one music identity.",
+  "generator_domain": "G1; generator is trained on O-G1 and is not retargeted again at inference.",
+  "gt_suite": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/gt_oracle_suite_v2/gt_oracle_suite_metrics.json",
+  "retargeting_audit": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json",
+  "layers": [
+    "O_Human",
+    "O_G1",
+    "M_ref",
+    "M_exec"
+  ],
+  "gt_records": [
+    {
+      "sample_id": "aistpp:gBR_sBM_cAll_d04_mBR0_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gBR_sBM_cAll_d04_mBR0_ch02",
+      "tempo_bin": "medium_90-120",
+      "style": "AIST_genre_BR",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d04_mBR0_ch02.wav",
+      "duration_seconds": 11.966666666666667,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gBR_sBM_cAll_d04_mBR0_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gBR_sBM_cAll_d04_mBR0_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gBR_sBM_cAll_d05_mBR0_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gBR_sBM_cAll_d05_mBR0_ch02",
+      "tempo_bin": "medium_90-120",
+      "style": "AIST_genre_BR",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gBR_sBM_cAll_d05_mBR0_ch02.wav",
+      "duration_seconds": 11.966666666666667,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gBR_sBM_cAll_d05_mBR0_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gBR_sBM_cAll_d05_mBR0_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gHO_sBM_cAll_d20_mHO5_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gHO_sBM_cAll_d20_mHO5_ch02",
+      "tempo_bin": "medium_90-120",
+      "style": "AIST_genre_HO",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d20_mHO5_ch02.wav",
+      "duration_seconds": 7.066666666666666,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gHO_sBM_cAll_d20_mHO5_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gHO_sBM_cAll_d20_mHO5_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gHO_sBM_cAll_d21_mHO5_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gHO_sBM_cAll_d21_mHO5_ch02",
+      "tempo_bin": "medium_90-120",
+      "style": "AIST_genre_HO",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gHO_sBM_cAll_d21_mHO5_ch02.wav",
+      "duration_seconds": 7.066666666666666,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gHO_sBM_cAll_d21_mHO5_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gHO_sBM_cAll_d21_mHO5_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gJB_sBM_cAll_d08_mJB5_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gJB_sBM_cAll_d08_mJB5_ch02",
+      "tempo_bin": "fast_>=120",
+      "style": "AIST_genre_JB",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d08_mJB5_ch02.wav",
+      "duration_seconds": 7.3499245852187025,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gJB_sBM_cAll_d08_mJB5_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gJB_sBM_cAll_d08_mJB5_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gJB_sBM_cAll_d09_mJB5_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gJB_sBM_cAll_d09_mJB5_ch02",
+      "tempo_bin": "fast_>=120",
+      "style": "AIST_genre_JB",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJB_sBM_cAll_d09_mJB5_ch02.wav",
+      "duration_seconds": 7.3499245852187025,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gJB_sBM_cAll_d09_mJB5_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gJB_sBM_cAll_d09_mJB5_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gJS_sBM_cAll_d01_mJS3_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gJS_sBM_cAll_d01_mJS3_ch02",
+      "tempo_bin": "medium_90-120",
+      "style": "AIST_genre_JS",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d01_mJS3_ch02.wav",
+      "duration_seconds": 8.7,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gJS_sBM_cAll_d01_mJS3_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gJS_sBM_cAll_d01_mJS3_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gJS_sBM_cAll_d03_mJS3_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gJS_sBM_cAll_d03_mJS3_ch02",
+      "tempo_bin": "medium_90-120",
+      "style": "AIST_genre_JS",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gJS_sBM_cAll_d03_mJS3_ch02.wav",
+      "duration_seconds": 8.7,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gJS_sBM_cAll_d03_mJS3_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gJS_sBM_cAll_d03_mJS3_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gKR_sBM_cAll_d28_mKR2_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gKR_sBM_cAll_d28_mKR2_ch02",
+      "tempo_bin": "medium_90-120",
+      "style": "AIST_genre_KR",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d28_mKR2_ch02.wav",
+      "duration_seconds": 9.566666666666666,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gKR_sBM_cAll_d28_mKR2_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gKR_sBM_cAll_d28_mKR2_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gKR_sBM_cAll_d30_mKR2_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gKR_sBM_cAll_d30_mKR2_ch02",
+      "tempo_bin": "medium_90-120",
+      "style": "AIST_genre_KR",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gKR_sBM_cAll_d30_mKR2_ch02.wav",
+      "duration_seconds": 9.566666666666666,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gKR_sBM_cAll_d30_mKR2_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gKR_sBM_cAll_d30_mKR2_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gLH_sBM_cAll_d17_mLH4_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gLH_sBM_cAll_d17_mLH4_ch02",
+      "tempo_bin": "fast_>=120",
+      "style": "AIST_genre_LH",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d17_mLH4_ch02.wav",
+      "duration_seconds": 7.966666666666667,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gLH_sBM_cAll_d17_mLH4_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gLH_sBM_cAll_d17_mLH4_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gLH_sBM_cAll_d18_mLH4_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gLH_sBM_cAll_d18_mLH4_ch02",
+      "tempo_bin": "fast_>=120",
+      "style": "AIST_genre_LH",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLH_sBM_cAll_d18_mLH4_ch02.wav",
+      "duration_seconds": 7.966666666666667,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gLH_sBM_cAll_d18_mLH4_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gLH_sBM_cAll_d18_mLH4_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gLO_sBM_cAll_d13_mLO2_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gLO_sBM_cAll_d13_mLO2_ch02",
+      "tempo_bin": "medium_90-120",
+      "style": "AIST_genre_LO",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d13_mLO2_ch02.wav",
+      "duration_seconds": 9.566666666666666,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gLO_sBM_cAll_d13_mLO2_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gLO_sBM_cAll_d13_mLO2_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gLO_sBM_cAll_d15_mLO2_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gLO_sBM_cAll_d15_mLO2_ch02",
+      "tempo_bin": "medium_90-120",
+      "style": "AIST_genre_LO",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gLO_sBM_cAll_d15_mLO2_ch02.wav",
+      "duration_seconds": 9.566666666666666,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gLO_sBM_cAll_d15_mLO2_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gLO_sBM_cAll_d15_mLO2_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gMH_sBM_cAll_d22_mMH3_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gMH_sBM_cAll_d22_mMH3_ch02",
+      "tempo_bin": "medium_90-120",
+      "style": "AIST_genre_MH",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d22_mMH3_ch02.wav",
+      "duration_seconds": 8.7,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gMH_sBM_cAll_d22_mMH3_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gMH_sBM_cAll_d22_mMH3_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gMH_sBM_cAll_d24_mMH3_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gMH_sBM_cAll_d24_mMH3_ch02",
+      "tempo_bin": "medium_90-120",
+      "style": "AIST_genre_MH",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gMH_sBM_cAll_d24_mMH3_ch02.wav",
+      "duration_seconds": 8.7,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gMH_sBM_cAll_d24_mMH3_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gMH_sBM_cAll_d24_mMH3_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gPO_sBM_cAll_d10_mPO1_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gPO_sBM_cAll_d10_mPO1_ch02",
+      "tempo_bin": "slow_<90",
+      "style": "AIST_genre_PO",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d10_mPO1_ch02.wav",
+      "duration_seconds": 10.633333333333333,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gPO_sBM_cAll_d10_mPO1_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gPO_sBM_cAll_d10_mPO1_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gPO_sBM_cAll_d11_mPO1_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gPO_sBM_cAll_d11_mPO1_ch02",
+      "tempo_bin": "slow_<90",
+      "style": "AIST_genre_PO",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gPO_sBM_cAll_d11_mPO1_ch02.wav",
+      "duration_seconds": 10.633333333333333,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gPO_sBM_cAll_d11_mPO1_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gPO_sBM_cAll_d11_mPO1_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gWA_sBM_cAll_d25_mWA0_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gWA_sBM_cAll_d25_mWA0_ch02",
+      "tempo_bin": "slow_<90",
+      "style": "AIST_genre_WA",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d25_mWA0_ch02.wav",
+      "duration_seconds": 11.966666666666667,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gWA_sBM_cAll_d25_mWA0_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gWA_sBM_cAll_d25_mWA0_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "aistpp:gWA_sBM_cAll_d26_mWA0_ch02",
+      "dataset": "aistpp",
+      "sequence_id": "gWA_sBM_cAll_d26_mWA0_ch02",
+      "tempo_bin": "slow_<90",
+      "style": "AIST_genre_WA",
+      "audio_path": "/home/tianhup/AudioMimic/data/edge_aistpp/wavs/gWA_sBM_cAll_d26_mWA0_ch02.wav",
+      "duration_seconds": 11.966666666666667,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "data/edge_aistpp/motions/gWA_sBM_cAll_d26_mWA0_ch02.pkl"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Downloads/edge_smpl_dataset_retargeted/unitree_g1/gWA_sBM_cAll_d26_mWA0_ch02.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:012",
+      "dataset": "finedance",
+      "sequence_id": "012",
+      "tempo_bin": "slow_<90",
+      "style": "Street+Jazz",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/012.wav",
+      "duration_seconds": 99.0,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/012.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/012.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:036",
+      "dataset": "finedance",
+      "sequence_id": "036",
+      "tempo_bin": "medium_90-120",
+      "style": "Classic+HanTang",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/036.wav",
+      "duration_seconds": 101.7,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/036.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/036.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:037",
+      "dataset": "finedance",
+      "sequence_id": "037",
+      "tempo_bin": "fast_>=120",
+      "style": "Classic+ShenYun",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/037.wav",
+      "duration_seconds": 99.33333333333333,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/037.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/037.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:063",
+      "dataset": "finedance",
+      "sequence_id": "063",
+      "tempo_bin": "medium_90-120",
+      "style": "Street+Breaking",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/063.wav",
+      "duration_seconds": 92.23333333333333,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/063.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/063.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:065",
+      "dataset": "finedance",
+      "sequence_id": "065",
+      "tempo_bin": "fast_>=120",
+      "style": "Street+Locking",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/065.wav",
+      "duration_seconds": 124.93333333333334,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/065.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/065.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:092",
+      "dataset": "finedance",
+      "sequence_id": "092",
+      "tempo_bin": "medium_90-120",
+      "style": "Street+Popping",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/092.wav",
+      "duration_seconds": 62.03333333333333,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/092.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/092.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:098",
+      "dataset": "finedance",
+      "sequence_id": "098",
+      "tempo_bin": "medium_90-120",
+      "style": "Street+Hiphop",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/098.wav",
+      "duration_seconds": 99.33333333333333,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/098.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/098.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:109",
+      "dataset": "finedance",
+      "sequence_id": "109",
+      "tempo_bin": "fast_>=120",
+      "style": "Classic+ShenYun",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/109.wav",
+      "duration_seconds": 120.2,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/109.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/109.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:132",
+      "dataset": "finedance",
+      "sequence_id": "132",
+      "tempo_bin": "fast_>=120",
+      "style": "Mix+Choreography",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/132.wav",
+      "duration_seconds": 62.46666666666667,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/132.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/132.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:137",
+      "dataset": "finedance",
+      "sequence_id": "137",
+      "tempo_bin": "fast_>=120",
+      "style": "Folk+Miao",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/137.wav",
+      "duration_seconds": 102.26666666666667,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/137.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/137.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:143",
+      "dataset": "finedance",
+      "sequence_id": "143",
+      "tempo_bin": "slow_<90",
+      "style": "Folk+Dai",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/143.wav",
+      "duration_seconds": 193.33333333333334,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/143.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/143.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:144",
+      "dataset": "finedance",
+      "sequence_id": "144",
+      "tempo_bin": "fast_>=120",
+      "style": "Folk+Wei",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/144.wav",
+      "duration_seconds": 108.4,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/144.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/144.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:161",
+      "dataset": "finedance",
+      "sequence_id": "161",
+      "tempo_bin": "medium_90-120",
+      "style": "Street+Popping",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/161.wav",
+      "duration_seconds": 139.33333333333334,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/161.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/161.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:179",
+      "dataset": "finedance",
+      "sequence_id": "179",
+      "tempo_bin": "slow_<90",
+      "style": "Mix+Korean",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/179.wav",
+      "duration_seconds": 53.8,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/179.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/179.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:193",
+      "dataset": "finedance",
+      "sequence_id": "193",
+      "tempo_bin": "medium_90-120",
+      "style": "Mix+Korean",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/193.wav",
+      "duration_seconds": 68.33333333333333,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/193.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/193.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:198",
+      "dataset": "finedance",
+      "sequence_id": "198",
+      "tempo_bin": "slow_<90",
+      "style": "Street+Hiphop",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/198.wav",
+      "duration_seconds": 39.0,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/198.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/198.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:204",
+      "dataset": "finedance",
+      "sequence_id": "204",
+      "tempo_bin": "medium_90-120",
+      "style": "Street+Urban",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/204.wav",
+      "duration_seconds": 43.0,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/204.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/204.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    },
+    {
+      "sample_id": "finedance:211",
+      "dataset": "finedance",
+      "sequence_id": "211",
+      "tempo_bin": "fast_>=120",
+      "style": "Mix+Korean",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/211.wav",
+      "duration_seconds": 108.66666666666667,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/211.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/211.pkl"
+        }
+      },
+      "retargeting_record": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/retargeting_loss_v1/retargeting_loss_metrics.json"
+    }
+  ],
+  "model_records": [
+    {
+      "sample_id": "finedance:098:m2_train1234_sample1234_u100000_best_song098",
+      "model": "M2",
+      "condition": "predicted_future_music",
+      "dataset": "finedance",
+      "sequence_id": "098",
+      "tempo_bin": "medium_90-120",
+      "style": "Street+Hiphop",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/098.wav",
+      "training_seed": 1234,
+      "sampling_seed": 1234,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/098.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/098.pkl"
+        },
+        "M_ref": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m2_predicted_fms/m2_train1234_sample1234_u100000_best_song098.pkl"
+        },
+        "M_exec": {
+          "status": "metrics_artifact_only",
+          "format": "SONIC_G1",
+          "artifact_dir": "/home/tianhup/AudioMimic/eval/generation_to_execution_gap/m2_song098_seed1234_full_rate100_aligned_r03"
+        }
+      }
+    },
+    {
+      "sample_id": "finedance:098:m2_train2345_sample1234_u100000_best_song098",
+      "model": "M2",
+      "condition": "predicted_future_music",
+      "dataset": "finedance",
+      "sequence_id": "098",
+      "tempo_bin": "medium_90-120",
+      "style": "Street+Hiphop",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/098.wav",
+      "training_seed": 2345,
+      "sampling_seed": 1234,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/098.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/098.pkl"
+        },
+        "M_ref": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m2_predicted_fms/m2_train2345_sample1234_u100000_best_song098.pkl"
+        },
+        "M_exec": {
+          "status": "pending",
+          "format": "SONIC_G1",
+          "artifact_dir": null
+        }
+      }
+    },
+    {
+      "sample_id": "finedance:098:m2_train3456_sample1234_u100000_best_song098",
+      "model": "M2",
+      "condition": "predicted_future_music",
+      "dataset": "finedance",
+      "sequence_id": "098",
+      "tempo_bin": "medium_90-120",
+      "style": "Street+Hiphop",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/098.wav",
+      "training_seed": 3456,
+      "sampling_seed": 1234,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/098.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/098.pkl"
+        },
+        "M_ref": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/Musics2Dance-prior-dev/onlinegeneratedmotion/m2_predicted_fms/m2_train3456_sample1234_u100000_best_song098.pkl"
+        },
+        "M_exec": {
+          "status": "pending",
+          "format": "SONIC_G1",
+          "artifact_dir": null
+        }
+      }
+    },
+    {
+      "sample_id": "finedance:012:M3-012",
+      "model": "M3",
+      "condition": "music_sidecar_paired",
+      "dataset": "finedance",
+      "sequence_id": "012",
+      "tempo_bin": "slow_<90",
+      "style": "Street+Jazz",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/012.wav",
+      "training_seed": null,
+      "sampling_seed": null,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/012.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/012.pkl"
+        },
+        "M_ref": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/eval/mrt2_comparison/m3_012_generator_portable.pkl"
+        },
+        "M_exec": {
+          "status": "available",
+          "format": "SONIC_G1",
+          "motion_path": "/home/tianhup/AudioMimic/eval/mrt2_comparison/m3_012_sonic_measured_corrected_portable.pkl"
+        }
+      }
+    },
+    {
+      "sample_id": "finedance:065:M3-065",
+      "model": "M3",
+      "condition": "music_sidecar_paired",
+      "dataset": "finedance",
+      "sequence_id": "065",
+      "tempo_bin": "fast_>=120",
+      "style": "Street+Locking",
+      "audio_path": "/home/tianhup/AudioMimic/data/finedance/music_wav/065.wav",
+      "training_seed": null,
+      "sampling_seed": null,
+      "layers": {
+        "O_Human": {
+          "status": "available",
+          "format": "SMPL_or_SMPLH",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance/motion/065.npy"
+        },
+        "O_G1": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/data/finedance-g1-retargeted/065.pkl"
+        },
+        "M_ref": {
+          "status": "available",
+          "format": "G1",
+          "motion_path": "/home/tianhup/AudioMimic/eval/mrt2_comparison/m3_065_generator_portable.pkl"
+        },
+        "M_exec": {
+          "status": "available",
+          "format": "SONIC_G1",
+          "motion_path": "/home/tianhup/AudioMimic/eval/mrt2_comparison/m3_065_sonic_measured_corrected_portable.pkl"
+        }
+      }
+    }
+  ],
+  "pending_policy": "Missing M_ref/M_exec artifacts are explicit pending states and cannot enter a result table."
+}

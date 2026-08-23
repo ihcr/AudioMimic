@@ -1,13 +1,8 @@
 # Generation-to-Execution Gap 实验协议
 
-更新日期：2026-08-19
-状态：Phase A、Phase C已完成；Phase B、Phase D待执行
+更新日期：2026-08-19  
+状态：Phase A、Phase C已完成；Phase B、Phase D待执行  
 系统：AudioMimic motion generator + SONIC + Unitree G1/MuJoCo
-
-本实验的指标定义、证据等级、统计规则和验收 gate 统一服从
-[`AudioMimic Music-to-G1 Evaluation Map v1.0`](../evaluation/EVALUATION_MAP_MUSIC_TO_G1.md)。
-本文件规定本次实验如何采集数据；Evaluation Map 规定这些数据必须如何评价。若两者
-表述不一致，以 Evaluation Map 为准，并在修改前提升其版本号。
 
 ## 1. 研究问题
 
@@ -200,9 +195,6 @@ Lag-compensated gap = 补偿时间延迟后的动作形状/幅度误差
 ```
 
 ## 7. 完整评价体系
-
-本节是本实验的执行摘要。完整 metric registry 及每项指标的适用条件见
-[`eval/evaluation_map_v1.json`](../../eval/evaluation_map_v1.json)。
 
 ### 7.1 评价原则
 
@@ -600,33 +592,12 @@ hold + full packet + 1.0x`为固定轨迹SONIC评估协议。
 
 ### Phase B：音乐特征保留
 
-- [x] 对reference/tracked使用同一动作beat检测器。
-- [x] 实现onset-speed/impact correlation和response lag；tempo consistency待实现。
-- [x] 实现BAS及其reference-to-execution retention，明确其仅是辅助指标。
+- [ ] 对reference/tracked使用同一动作beat检测器。
+- [ ] 优先实现onset-motion-energy correlation、response lag和tempo consistency。
+- [ ] 实现BAS及其reference-to-execution retention，明确其仅是辅助指标。
 - [ ] 在存在显式beat target时再实现Beat Precision/Recall/F1与BAP。
 - [ ] 实现wrist/foot/torso/full-body分组音乐响应结果。
-- [x] 验证预切片音乐与`audio_start_seconds`。
-
-#### Phase B第一轮结果（2026-08-19）
-
-完整报告见：
-[`eval/motion_music_execution/first_round_20260819/FIRST_ROUND_ANALYSIS.md`](../../eval/motion_music_execution/first_round_20260819/FIRST_ROUND_ANALYSIS.md)。
-
-在song098匹配子集中，M0/M2/M4的music-to-motion BAS分别为
-`0.257/0.247/0.242`，best onset-impact correlation分别为
-`0.032/0.025/0.031`。M2/M4没有在当前自动音乐指标上优于无音乐M0；所有impact
-correlation均低于0.1，其最优lag不具有可靠解释。该结果进一步说明BAS不能单独验证
-音乐条件是否有效，也不能支持“舞蹈优美”的结论。
-
-M2 reference的motion energy为`1.934 +/- 0.015 rad^2/s^2`，jerk P95为
-`718.1 +/- 3.3 rad/s^3`，static/repeated-pose ratio接近零，C4 boundary位置/
-速度jump与普通帧之比为`0.989/0.960`。因此当前M2证据支持动作连续、活跃且没有
-明显commit拼接异常，但审美质量仍需盲测。
-
-M2经SONIC执行后的aggregate energy retention为`46.8 +/- 2.7%`；旧定义的
-median-per-joint energy/amplitude retention为`52.2 +/- 4.7%`和
-`90.6 +/- 1.0%`。三次执行全部稳定，但BAS平均下降0.035且方差较大。当前主要
-问题是动态表达衰减，而不是60 s稳定性。
+- [ ] 验证音乐时钟与`audio_start_seconds`。
 
 ### Phase C：M0/M2/M4矩阵
 

@@ -1,0 +1,868 @@
+{
+  "schema_version": "module_calibration_audit_v1",
+  "source_audit": "/home/tianhup/AudioMimic/eval/benchmark_v1/gt/stratified_audit_v1/stratified_audit.json",
+  "sequence_count": 38,
+  "checks": [
+    {
+      "dataset": "aistpp",
+      "check": "jitter_jerk_p95_rad_s3",
+      "expected": "increase",
+      "delta_high_minus_clean": 1135.3793578338623,
+      "result": "PASS",
+      "module": "D",
+      "submodule": "smoothness",
+      "metric": "jerk_p95",
+      "metric_id": "G-DYNAMICS",
+      "interpretation": "随机关节扰动应提高高阶运动变化率"
+    },
+    {
+      "dataset": "aistpp",
+      "check": "lowpass_jerk_p95_rad_s3",
+      "expected": "decrease",
+      "delta_high_minus_clean": -2266.4633698058124,
+      "result": "PASS",
+      "module": "D",
+      "submodule": "smoothness",
+      "metric": "jerk_p95",
+      "metric_id": "G-DYNAMICS",
+      "interpretation": "低通平滑应降低高阶运动变化率"
+    },
+    {
+      "dataset": "aistpp",
+      "check": "freeze_static_ratio_below_0p05_rad_s",
+      "expected": "increase",
+      "delta_high_minus_clean": 0.09861744721103956,
+      "result": "PASS",
+      "module": "D",
+      "submodule": "liveliness",
+      "metric": "static_ratio",
+      "metric_id": "G-STATIC",
+      "interpretation": "冻结动作应提高近似静止帧比例"
+    },
+    {
+      "dataset": "aistpp",
+      "check": "freeze_G1BeatF1",
+      "expected": "decrease",
+      "delta_high_minus_clean": -0.05672242104815292,
+      "result": "PASS",
+      "module": "M",
+      "submodule": "rhythm",
+      "metric": "event_f1",
+      "metric_id": "M-BEAT-F1",
+      "interpretation": "冻结动作通常应削弱音乐事件的覆盖和匹配"
+    },
+    {
+      "dataset": "finedance",
+      "check": "jitter_jerk_p95_rad_s3",
+      "expected": "increase",
+      "delta_high_minus_clean": 858.4908684624552,
+      "result": "PASS",
+      "module": "D",
+      "submodule": "smoothness",
+      "metric": "jerk_p95",
+      "metric_id": "G-DYNAMICS",
+      "interpretation": "随机关节扰动应提高高阶运动变化率"
+    },
+    {
+      "dataset": "finedance",
+      "check": "lowpass_jerk_p95_rad_s3",
+      "expected": "decrease",
+      "delta_high_minus_clean": -2463.344560580783,
+      "result": "PASS",
+      "module": "D",
+      "submodule": "smoothness",
+      "metric": "jerk_p95",
+      "metric_id": "G-DYNAMICS",
+      "interpretation": "低通平滑应降低高阶运动变化率"
+    },
+    {
+      "dataset": "finedance",
+      "check": "freeze_static_ratio_below_0p05_rad_s",
+      "expected": "increase",
+      "delta_high_minus_clean": 0.011891201894720996,
+      "result": "PASS",
+      "module": "D",
+      "submodule": "liveliness",
+      "metric": "static_ratio",
+      "metric_id": "G-STATIC",
+      "interpretation": "冻结动作应提高近似静止帧比例"
+    },
+    {
+      "dataset": "finedance",
+      "check": "freeze_G1BeatF1",
+      "expected": "decrease",
+      "delta_high_minus_clean": 0.0017713652265435587,
+      "result": "WARN",
+      "module": "M",
+      "submodule": "rhythm",
+      "metric": "event_f1",
+      "metric_id": "M-BEAT-F1",
+      "interpretation": "冻结动作通常应削弱音乐事件的覆盖和匹配"
+    }
+  ],
+  "metric_inventory": [
+    {
+      "module": "P",
+      "module_name_zh": "数据与评估协议有效性",
+      "submodule": "P.interface",
+      "submodule_name_zh": "数据与接口约定",
+      "metric_id": "P0-SCHEMA",
+      "name": "Motion schema validity",
+      "level": "hard_gate",
+      "current_status": "prototype",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "motion_pickle"
+      ]
+    },
+    {
+      "module": "P",
+      "module_name_zh": "数据与评估协议有效性",
+      "submodule": "P.interface",
+      "submodule_name_zh": "数据与接口约定",
+      "metric_id": "P0-ORDER",
+      "name": "Interface convention validity",
+      "level": "hard_gate",
+      "current_status": "prototype",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "motion_pickle",
+        "interface_manifest"
+      ]
+    },
+    {
+      "module": "P",
+      "module_name_zh": "数据与评估协议有效性",
+      "submodule": "P.time",
+      "submodule_name_zh": "配对、时钟与覆盖",
+      "metric_id": "P0-TIME",
+      "name": "Clock and audio alignment validity",
+      "level": "hard_gate",
+      "current_status": "prototype",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "timestamps",
+        "audio_metadata"
+      ]
+    },
+    {
+      "module": "P",
+      "module_name_zh": "数据与评估协议有效性",
+      "submodule": "P.time",
+      "submodule_name_zh": "配对、时钟与覆盖",
+      "metric_id": "P0-COVER",
+      "name": "Feedback coverage",
+      "level": "hard_gate",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "feedback_timestamps",
+        "requested_interval"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.realism",
+      "submodule_name_zh": "动作分布真实性",
+      "metric_id": "G-FID-K",
+      "name": "Kinetic FID",
+      "level": "core",
+      "current_status": "missing",
+      "calibration_status": "not_implemented",
+      "required_inputs": [
+        "M_ref_set",
+        "GT_set",
+        "frozen_kinetic_extractor"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.realism",
+      "submodule_name_zh": "动作分布真实性",
+      "metric_id": "G-FID-G",
+      "name": "Geometric FID",
+      "level": "supplementary",
+      "current_status": "missing",
+      "calibration_status": "not_implemented",
+      "required_inputs": [
+        "M_ref_set",
+        "GT_set",
+        "frozen_geometric_extractor"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.diversity",
+      "submodule_name_zh": "多样性与覆盖",
+      "metric_id": "G-DIV-K",
+      "name": "Kinetic diversity",
+      "level": "core",
+      "current_status": "prototype",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "motion_set",
+        "frozen_kinetic_extractor"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.diversity",
+      "submodule_name_zh": "多样性与覆盖",
+      "metric_id": "G-DIV-G",
+      "name": "Geometric diversity",
+      "level": "core",
+      "current_status": "prototype",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "motion_set",
+        "frozen_geometric_extractor"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.smoothness",
+      "submodule_name_zh": "平滑度与局部连续性",
+      "metric_id": "G-DYNAMICS",
+      "name": "Joint dynamics distribution",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "core_validated",
+      "required_inputs": [
+        "dof_pos",
+        "fps"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.smoothness",
+      "submodule_name_zh": "平滑度与局部连续性",
+      "metric_id": "G-C4-CONT",
+      "name": "C4 boundary continuity",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "dof_pos",
+        "fps",
+        "commit_size"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.liveliness",
+      "submodule_name_zh": "活力、冻结与长期重复",
+      "metric_id": "G-ENERGY",
+      "name": "Motion energy",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "core_validated_for_lowpass",
+      "required_inputs": [
+        "dof_pos",
+        "fps"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.liveliness",
+      "submodule_name_zh": "活力、冻结与长期重复",
+      "metric_id": "G-STATIC",
+      "name": "Static ratio",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "core_validated",
+      "required_inputs": [
+        "dof_pos",
+        "fps"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.liveliness",
+      "submodule_name_zh": "活力、冻结与长期重复",
+      "metric_id": "G-FREEZE",
+      "name": "Adaptive freeze proportion",
+      "level": "core",
+      "current_status": "missing",
+      "calibration_status": "not_implemented",
+      "required_inputs": [
+        "dof_pos",
+        "fps"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.liveliness",
+      "submodule_name_zh": "活力、冻结与长期重复",
+      "metric_id": "G-FREEZE-LR",
+      "name": "Freeze length regularity",
+      "level": "supplementary",
+      "current_status": "missing",
+      "calibration_status": "not_implemented",
+      "required_inputs": [
+        "dof_pos",
+        "fps"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.liveliness",
+      "submodule_name_zh": "活力、冻结与长期重复",
+      "metric_id": "G-REPEAT",
+      "name": "Long-term pose repetition",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "needs_revision",
+      "required_inputs": [
+        "dof_pos",
+        "fps"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.physics",
+      "submodule_name_zh": "接触、滑步与身体物理合理性",
+      "metric_id": "G-PFC",
+      "name": "Physical Foot Contact",
+      "level": "core",
+      "current_status": "prototype",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "G1_FK_positions"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.physics",
+      "submodule_name_zh": "接触、滑步与身体物理合理性",
+      "metric_id": "G-FSR",
+      "name": "Foot Skating Ratio",
+      "level": "core",
+      "current_status": "prototype",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "G1_FK_foot_positions"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.physics",
+      "submodule_name_zh": "接触、滑步与身体物理合理性",
+      "metric_id": "G-PEN",
+      "name": "Ground penetration",
+      "level": "core",
+      "current_status": "prototype",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "G1_FK_positions",
+        "ground_height"
+      ]
+    },
+    {
+      "module": "D",
+      "module_name_zh": "舞蹈动作质量",
+      "submodule": "D.physics",
+      "submodule_name_zh": "接触、滑步与身体物理合理性",
+      "metric_id": "G-ROOT",
+      "name": "Root behavior",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "root_pos",
+        "root_rot",
+        "fps"
+      ]
+    },
+    {
+      "module": "M",
+      "module_name_zh": "音乐-舞蹈适配",
+      "submodule": "M.rhythm",
+      "submodule_name_zh": "节拍、重音与节奏网格",
+      "metric_id": "M-BAS",
+      "name": "Beat Alignment Score",
+      "level": "supplementary",
+      "current_status": "implemented",
+      "calibration_status": "supplementary_only",
+      "required_inputs": [
+        "audio",
+        "motion",
+        "frozen_beat_detectors"
+      ]
+    },
+    {
+      "module": "M",
+      "module_name_zh": "音乐-舞蹈适配",
+      "submodule": "M.rhythm",
+      "submodule_name_zh": "节拍、重音与节奏网格",
+      "metric_id": "M-BEAT-F1",
+      "name": "Beat precision, recall and F1",
+      "level": "conditional",
+      "current_status": "prototype",
+      "calibration_status": "music_diagnostic_validated",
+      "required_inputs": [
+        "explicit_beat_targets",
+        "motion_beats"
+      ]
+    },
+    {
+      "module": "M",
+      "module_name_zh": "音乐-舞蹈适配",
+      "submodule": "M.rhythm",
+      "submodule_name_zh": "节拍、重音与节奏网格",
+      "metric_id": "M-BAP",
+      "name": "Beat Assignment Precision",
+      "level": "conditional",
+      "current_status": "prototype",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "designated_beat_frames",
+        "motion_beats"
+      ]
+    },
+    {
+      "module": "M",
+      "module_name_zh": "音乐-舞蹈适配",
+      "submodule": "M.rhythm",
+      "submodule_name_zh": "节拍、重音与节奏网格",
+      "metric_id": "M-KPD",
+      "name": "Key Pose Distance",
+      "level": "conditional",
+      "current_status": "missing",
+      "calibration_status": "not_implemented",
+      "required_inputs": [
+        "designated_keyposes",
+        "G1_FK_positions"
+      ]
+    },
+    {
+      "module": "M",
+      "module_name_zh": "音乐-舞蹈适配",
+      "submodule": "M.rhythm",
+      "submodule_name_zh": "节拍、重音与节奏网格",
+      "metric_id": "M-RS",
+      "name": "Rhythmic Score",
+      "level": "supplementary",
+      "current_status": "missing",
+      "calibration_status": "not_implemented",
+      "required_inputs": [
+        "music_beats",
+        "motion_accents",
+        "shared_clock"
+      ]
+    },
+    {
+      "module": "M",
+      "module_name_zh": "音乐-舞蹈适配",
+      "submodule": "M.dynamics",
+      "submodule_name_zh": "速度、相位与动态响应",
+      "metric_id": "M-ONSET",
+      "name": "Onset-motion response",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "audio",
+        "motion",
+        "shared_clock"
+      ]
+    },
+    {
+      "module": "M",
+      "module_name_zh": "音乐-舞蹈适配",
+      "submodule": "M.dynamics",
+      "submodule_name_zh": "速度、相位与动态响应",
+      "metric_id": "M-RESP-LAG",
+      "name": "Music response lag",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "audio_onset",
+        "motion_response",
+        "shared_clock"
+      ]
+    },
+    {
+      "module": "M",
+      "module_name_zh": "音乐-舞蹈适配",
+      "submodule": "M.dynamics",
+      "submodule_name_zh": "速度、相位与动态响应",
+      "metric_id": "M-TEMPO-PHASE",
+      "name": "Tempo consistency and phase error",
+      "level": "core",
+      "current_status": "missing",
+      "calibration_status": "not_implemented",
+      "required_inputs": [
+        "music_rhythm_grid",
+        "motion_accent_curve"
+      ]
+    },
+    {
+      "module": "M",
+      "module_name_zh": "音乐-舞蹈适配",
+      "submodule": "M.structure",
+      "submodule_name_zh": "乐句与段落结构响应",
+      "metric_id": "M-PHRASE",
+      "name": "Phrase-boundary response",
+      "level": "core",
+      "current_status": "missing",
+      "calibration_status": "not_implemented",
+      "required_inputs": [
+        "audio_phrase_boundaries",
+        "motion_structure_curve"
+      ]
+    },
+    {
+      "module": "M",
+      "module_name_zh": "音乐-舞蹈适配",
+      "submodule": "M.semantic",
+      "submodule_name_zh": "风格、情绪与跨模态语义",
+      "metric_id": "M-RETRIEVAL",
+      "name": "Audio-motion R@1, R@2 and R@3",
+      "level": "core",
+      "current_status": "missing",
+      "calibration_status": "not_implemented",
+      "required_inputs": [
+        "audio_motion_pairs",
+        "frozen_retrieval_encoder"
+      ]
+    },
+    {
+      "module": "M",
+      "module_name_zh": "音乐-舞蹈适配",
+      "submodule": "M.semantic",
+      "submodule_name_zh": "风格、情绪与跨模态语义",
+      "metric_id": "M-MMDIST",
+      "name": "Multimodal Distance",
+      "level": "core",
+      "current_status": "missing",
+      "calibration_status": "not_implemented",
+      "required_inputs": [
+        "audio_motion_pairs",
+        "frozen_retrieval_encoder"
+      ]
+    },
+    {
+      "module": "M",
+      "module_name_zh": "音乐-舞蹈适配",
+      "submodule": "M.semantic",
+      "submodule_name_zh": "风格、情绪与跨模态语义",
+      "metric_id": "M-DS",
+      "name": "Dance-music semantic retrieval score",
+      "level": "supplementary",
+      "current_status": "missing",
+      "calibration_status": "not_implemented",
+      "required_inputs": [
+        "audio_motion_pairs",
+        "frozen_retrieval_encoder"
+      ]
+    },
+    {
+      "module": "X",
+      "module_name_zh": "机器人可执行性与跟踪保真",
+      "submodule": "X.reference",
+      "submodule_name_zh": "跟踪前 reference 可执行性",
+      "metric_id": "X-DYN",
+      "name": "Reference dynamic-envelope violation",
+      "level": "hard_gate",
+      "current_status": "missing",
+      "calibration_status": "not_implemented",
+      "required_inputs": [
+        "M_ref",
+        "GT_SONIC_capability_envelope"
+      ]
+    },
+    {
+      "module": "X",
+      "module_name_zh": "机器人可执行性与跟踪保真",
+      "submodule": "X.reference",
+      "submodule_name_zh": "跟踪前 reference 可执行性",
+      "metric_id": "X-JLIMIT",
+      "name": "Reference joint-limit violation",
+      "level": "hard_gate",
+      "current_status": "prototype",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "dof_pos",
+        "G1_joint_limits"
+      ]
+    },
+    {
+      "module": "X",
+      "module_name_zh": "机器人可执行性与跟踪保真",
+      "submodule": "X.tracking",
+      "submodule_name_zh": "关节与关键身体跟踪误差",
+      "metric_id": "T-EMPJPE",
+      "name": "Mean per-joint position error",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "reference_dof",
+        "measured_dof",
+        "shared_clock"
+      ]
+    },
+    {
+      "module": "X",
+      "module_name_zh": "机器人可执行性与跟踪保真",
+      "submodule": "X.tracking",
+      "submodule_name_zh": "关节与关键身体跟踪误差",
+      "metric_id": "T-EMPKPE",
+      "name": "Mean per-keybody position error",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "reference_FK",
+        "measured_keybody_positions",
+        "shared_clock"
+      ]
+    },
+    {
+      "module": "X",
+      "module_name_zh": "机器人可执行性与跟踪保真",
+      "submodule": "X.tracking",
+      "submodule_name_zh": "关节与关键身体跟踪误差",
+      "metric_id": "T-RMSE-RAW",
+      "name": "Raw joint RMSE",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "reference_dof",
+        "measured_dof",
+        "shared_clock"
+      ]
+    },
+    {
+      "module": "X",
+      "module_name_zh": "机器人可执行性与跟踪保真",
+      "submodule": "X.tracking",
+      "submodule_name_zh": "关节与关键身体跟踪误差",
+      "metric_id": "T-RMSE-ALIGN",
+      "name": "Lag-compensated joint RMSE",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "reference_dof",
+        "measured_dof",
+        "shared_clock"
+      ]
+    },
+    {
+      "module": "X",
+      "module_name_zh": "机器人可执行性与跟踪保真",
+      "submodule": "X.tracking",
+      "submodule_name_zh": "关节与关键身体跟踪误差",
+      "metric_id": "T-LAG",
+      "name": "Tracking lag",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "reference_dof",
+        "measured_dof",
+        "shared_clock"
+      ]
+    },
+    {
+      "module": "X",
+      "module_name_zh": "机器人可执行性与跟踪保真",
+      "submodule": "X.retention",
+      "submodule_name_zh": "动作与音乐表现力保留",
+      "metric_id": "T-AMP",
+      "name": "Amplitude retention",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "reference_dof",
+        "measured_dof"
+      ]
+    },
+    {
+      "module": "X",
+      "module_name_zh": "机器人可执行性与跟踪保真",
+      "submodule": "X.retention",
+      "submodule_name_zh": "动作与音乐表现力保留",
+      "metric_id": "T-ENERGY",
+      "name": "Motion-energy retention",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "reference_dof",
+        "measured_dof",
+        "fps"
+      ]
+    },
+    {
+      "module": "X",
+      "module_name_zh": "机器人可执行性与跟踪保真",
+      "submodule": "X.retention",
+      "submodule_name_zh": "动作与音乐表现力保留",
+      "metric_id": "T-BAND",
+      "name": "Frequency-band power retention",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "reference_dof",
+        "measured_dof",
+        "fps"
+      ]
+    },
+    {
+      "module": "X",
+      "module_name_zh": "机器人可执行性与跟踪保真",
+      "submodule": "X.retention",
+      "submodule_name_zh": "动作与音乐表现力保留",
+      "metric_id": "T-CONTACT",
+      "name": "Contact retention",
+      "level": "core",
+      "current_status": "prototype",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "reference_contact",
+        "measured_contact",
+        "foot_kinematics"
+      ]
+    },
+    {
+      "module": "X",
+      "module_name_zh": "机器人可执行性与跟踪保真",
+      "submodule": "X.retention",
+      "submodule_name_zh": "动作与音乐表现力保留",
+      "metric_id": "E-MUSIC-RET",
+      "name": "Executed music-expression retention",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "audio",
+        "M_ref",
+        "M_exec",
+        "shared_clock"
+      ]
+    },
+    {
+      "module": "X",
+      "module_name_zh": "机器人可执行性与跟踪保真",
+      "submodule": "X.safety",
+      "submodule_name_zh": "稳定性与安全",
+      "metric_id": "T-SUCC",
+      "name": "Execution success rate",
+      "level": "hard_gate",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "measured_state",
+        "failure_definition"
+      ]
+    },
+    {
+      "module": "X",
+      "module_name_zh": "机器人可执行性与跟踪保真",
+      "submodule": "X.safety",
+      "submodule_name_zh": "稳定性与安全",
+      "metric_id": "T-TTF",
+      "name": "Time to fall",
+      "level": "core",
+      "current_status": "implemented",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "measured_state",
+        "failure_definition"
+      ]
+    },
+    {
+      "module": "R",
+      "module_name_zh": "在线实时系统",
+      "submodule": "R.runtime",
+      "submodule_name_zh": "延迟、deadline 与实时率",
+      "metric_id": "R-DEADLINE",
+      "name": "Generator deadline miss rate",
+      "level": "hard_gate",
+      "current_status": "prototype",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "runtime_trace",
+        "commit_deadlines"
+      ]
+    },
+    {
+      "module": "R",
+      "module_name_zh": "在线实时系统",
+      "submodule": "R.runtime",
+      "submodule_name_zh": "延迟、deadline 与实时率",
+      "metric_id": "R-LATENCY",
+      "name": "End-to-end latency decomposition",
+      "level": "core",
+      "current_status": "prototype",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "timestamped_runtime_trace"
+      ]
+    },
+    {
+      "module": "R",
+      "module_name_zh": "在线实时系统",
+      "submodule": "R.runtime",
+      "submodule_name_zh": "延迟、deadline 与实时率",
+      "metric_id": "R-RTF",
+      "name": "Realtime factor",
+      "level": "hard_gate",
+      "current_status": "prototype",
+      "calibration_status": "not_directionally_calibrated",
+      "required_inputs": [
+        "runtime_trace"
+      ]
+    },
+    {
+      "module": "H",
+      "module_name_zh": "人类感知评价",
+      "submodule": "H.perception",
+      "submodule_name_zh": "自然性、舞蹈感、优美度、节奏、风格与情绪",
+      "metric_id": "H-PREFERENCE",
+      "name": "Blind pairwise preference",
+      "level": "core",
+      "current_status": "manual",
+      "calibration_status": "human_study_required",
+      "required_inputs": [
+        "blinded_matched_videos",
+        "frozen_questionnaire"
+      ]
+    }
+  ],
+  "module_status": {
+    "D": {
+      "checks": 6,
+      "pass": 6,
+      "warn": 0,
+      "status": "PASS"
+    },
+    "M": {
+      "checks": 2,
+      "pass": 1,
+      "warn": 1,
+      "status": "PASS_WITH_CAVEAT"
+    }
+  },
+  "decision": "D_PASS_M_PASS_WITH_CAVEAT"
+}

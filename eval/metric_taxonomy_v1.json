@@ -1,0 +1,169 @@
+{
+  "schema_version": "metric_taxonomy_v1",
+  "freeze_status": "frozen_for_current_study",
+  "change_policy": "Do not redefine, move or remove v1 metrics. New evidence-backed metrics require a new taxonomy version.",
+  "evaluation_map": "eval/evaluation_map_v1.json",
+  "principle": "Every metric belongs to exactly one module and one submodule. Corruption operations are calibration methods, not report metrics.",
+  "modules": [
+    {
+      "id": "P",
+      "name_zh": "数据与评估协议有效性",
+      "question": "数据、接口、配对和时间轴是否有效？",
+      "submodules": [
+        {
+          "id": "P.interface",
+          "name_zh": "数据与接口约定",
+          "metric_ids": ["P0-SCHEMA", "P0-ORDER"]
+        },
+        {
+          "id": "P.time",
+          "name_zh": "配对、时钟与覆盖",
+          "metric_ids": ["P0-TIME", "P0-COVER"]
+        }
+      ]
+    },
+    {
+      "id": "D",
+      "name_zh": "舞蹈动作质量",
+      "question": "不看音乐时，这段动作本身是否自然、丰富、平滑并具有物理合理性？",
+      "submodules": [
+        {
+          "id": "D.realism",
+          "name_zh": "动作分布真实性",
+          "metric_ids": ["G-FID-K", "G-FID-G"]
+        },
+        {
+          "id": "D.diversity",
+          "name_zh": "多样性与覆盖",
+          "metric_ids": ["G-DIV-K", "G-DIV-G"]
+        },
+        {
+          "id": "D.smoothness",
+          "name_zh": "平滑度与局部连续性",
+          "metric_ids": ["G-DYNAMICS", "G-C4-CONT"]
+        },
+        {
+          "id": "D.liveliness",
+          "name_zh": "活力、冻结与长期重复",
+          "metric_ids": ["G-ENERGY", "G-STATIC", "G-FREEZE", "G-FREEZE-LR", "G-REPEAT"]
+        },
+        {
+          "id": "D.physics",
+          "name_zh": "接触、滑步与身体物理合理性",
+          "metric_ids": ["G-PFC", "G-FSR", "G-PEN", "G-ROOT"]
+        }
+      ]
+    },
+    {
+      "id": "M",
+      "name_zh": "音乐-舞蹈适配",
+      "question": "动作是否在节奏、动态、结构、风格和情绪上适合这首音乐？",
+      "submodules": [
+        {
+          "id": "M.rhythm",
+          "name_zh": "节拍、重音与节奏网格",
+          "metric_ids": ["M-BAS", "M-BEAT-F1", "M-BAP", "M-KPD", "M-RS"]
+        },
+        {
+          "id": "M.dynamics",
+          "name_zh": "速度、相位与动态响应",
+          "metric_ids": ["M-ONSET", "M-RESP-LAG", "M-TEMPO-PHASE"]
+        },
+        {
+          "id": "M.structure",
+          "name_zh": "乐句与段落结构响应",
+          "metric_ids": ["M-PHRASE"]
+        },
+        {
+          "id": "M.semantic",
+          "name_zh": "风格、情绪与跨模态语义",
+          "metric_ids": ["M-RETRIEVAL", "M-MMDIST", "M-DS"]
+        }
+      ]
+    },
+    {
+      "id": "X",
+      "name_zh": "机器人可执行性与跟踪保真",
+      "question": "G1 能否安全执行 reference，SONIC 又保留了多少动作和音乐表达？",
+      "submodules": [
+        {
+          "id": "X.reference",
+          "name_zh": "跟踪前 reference 可执行性",
+          "metric_ids": ["X-DYN", "X-JLIMIT"]
+        },
+        {
+          "id": "X.tracking",
+          "name_zh": "关节与关键身体跟踪误差",
+          "metric_ids": ["T-EMPJPE", "T-EMPKPE", "T-RMSE-RAW", "T-RMSE-ALIGN", "T-LAG"]
+        },
+        {
+          "id": "X.retention",
+          "name_zh": "动作与音乐表现力保留",
+          "metric_ids": ["T-AMP", "T-ENERGY", "T-BAND", "T-CONTACT", "E-MUSIC-RET"]
+        },
+        {
+          "id": "X.safety",
+          "name_zh": "稳定性与安全",
+          "metric_ids": ["T-SUCC", "T-TTF"]
+        }
+      ]
+    },
+    {
+      "id": "R",
+      "name_zh": "在线实时系统",
+      "question": "整条 audio-to-motion-to-execution 链路是否因果、低延迟并满足 deadline？",
+      "submodules": [
+        {
+          "id": "R.runtime",
+          "name_zh": "延迟、deadline 与实时率",
+          "metric_ids": ["R-DEADLINE", "R-LATENCY", "R-RTF"]
+        }
+      ]
+    },
+    {
+      "id": "H",
+      "name_zh": "人类感知评价",
+      "question": "人是否认为动作自然、优美、富有表现力并且适合音乐？",
+      "submodules": [
+        {
+          "id": "H.perception",
+          "name_zh": "自然性、舞蹈感、优美度、节奏、风格与情绪",
+          "metric_ids": ["H-PREFERENCE"]
+        }
+      ]
+    }
+  ],
+  "calibration_methods": [
+    {
+      "id": "C.jitter",
+      "operation": "inject high-frequency joint noise",
+      "validates": ["G-DYNAMICS"],
+      "expected_response": "jerk and jitter increase"
+    },
+    {
+      "id": "C.lowpass",
+      "operation": "low-pass filter joint trajectories",
+      "validates": ["G-DYNAMICS", "G-ENERGY"],
+      "expected_response": "jerk and high-frequency energy decrease",
+      "note": "low-pass energy response is not a standalone metric"
+    },
+    {
+      "id": "C.freeze",
+      "operation": "replace intervals with held poses",
+      "validates": ["G-STATIC", "G-FREEZE", "M-BEAT-F1", "M-BAS"],
+      "expected_response": "static/freeze increase and rhythm-event coverage usually decreases"
+    },
+    {
+      "id": "C.repeat",
+      "operation": "repeat an earlier motion segment",
+      "validates": ["G-REPEAT"],
+      "expected_response": "long-range repetition increases"
+    },
+    {
+      "id": "C.music_counterfactual",
+      "operation": "wrong-song, time-shift, null-audio and tempo-preserved controls",
+      "validates": ["M-BAS", "M-BEAT-F1", "M-ONSET", "M-RESP-LAG", "M-TEMPO-PHASE", "M-RETRIEVAL", "M-MMDIST", "M-DS"],
+      "expected_response": "paired music should outperform counterfactual controls for the claimed property"
+    }
+  ]
+}
