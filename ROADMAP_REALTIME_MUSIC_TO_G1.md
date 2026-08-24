@@ -223,31 +223,32 @@ Generation-to-Execution Gap的数据采集、时间对齐与指标协议见：
 - [x] 完成 AIST++ 音频/G1 motion schema、成对文件和 split/cache 一致性审计，生成 GT benchmark manifest。
 - [x] 用 AIST++ test GT 完成第一轮动作质量指标校准：jitter、low-pass、freeze 的方向检查通过。
 - [x] 将统一动作质量、音乐响应和 execution-retention evaluator 跑通 M0/M2/M4 song098：9/9 SONIC runs 完成 60 s。
-- [x] 补齐 FineDance-G1 raw motion、WAV、label 和 retargeted G1 资产；203 条同 ID 配对有效，官方 cross-genre test 18/18 可用，审计见 `eval/benchmark_v1/gt/manifest_v2_finedance/`。
+- [x] 补齐 FineDance-G1 raw motion、WAV、label 和 retargeted G1 资产；203 条同 ID 配对有效，官方 cross-genre test 18/18 可用，审计见 `eval/results/benchmark_v1/gt/manifest_v2_finedance/`。
 - [x] 完成 FineDance test 的 paired-vs-wrong-song 音乐对应性审计：paired 最佳相关性 `0.1655`，全错配均值 `0.0884`，平均 margin `+0.0771`；这证明存在音乐-动作对应信号，但不等于最终 musicality 分数。
 - [x] 生成 FineDance-G1 baseline+beat prepared tree：train `47,817`、test `3,265`；motion/audio/baseline/beat basename 全部一致，仓库校验通过。目录为 `data/finedance_g1_fkbeats/`，metadata 记录了 extractor。
 - [x] 生成 FineDance-G1 逐 clip quality manifest，并将 root-height 规则改为可审计的训练候选过滤；当前不删除文件，sealed test 保持完整。train 有 `213` 个负 root clip、`330` 个低于 `0.2 m`，test 有 `20/66` 个对应诊断样本。
 - [x] 用真实 `AISTPPDataset` 完成 FineDance-G1 baseline+beat smoke test：train/test `47,817/3,265`，motion/music/beat batch shape 为 `[4,150,38]`、`[4,150,35]`、`[4,150]`。
-- [x] 建立 FineDance-G1 sealed GT oracle：18 条完整 paired G1/audio 序列，补齐 motion quality、event F1、tempo error、lag 和 phase error；结果见 `eval/benchmark_v1/gt/finedance_gt_oracle_v1/`。
+- [x] 建立 FineDance-G1 sealed GT oracle：18 条完整 paired G1/audio 序列，补齐 motion quality、event F1、tempo error、lag 和 phase error；结果见 `eval/results/benchmark_v1/gt/finedance_gt_oracle_v1/`。
 - [x] 修正 beat condition 的 train/test 泄漏：train/test 都使用 audio beat，motion beat 只作为 beat loss target。
 - [x] 完成修正后 audio-beat baseline 的 1 epoch smoke train/eval：18/18 FineDance test clips 生成和 FK 指标跑通；checkpoint 与结果见 `eval/finedance_baseline_audio_beat_smoke/`。该结果仅用于链路诊断，不作为论文结果。
-- [x] 建立多数据集 GT oracle calibration suite：AIST++ held-out 20 条 + FineDance held-out 18 条，共 38 条 paired G1/audio 序列；输出 per-dataset 与 pooled motion/music reference distributions，见 `eval/benchmark_v1/gt/gt_oracle_suite_v2/`。校准后扩展到 AIST++ 1,408 条 + FineDance 203 条，见 `eval/benchmark_v1/gt/gt_oracle_suite_all_v1/`。
-- [x] 建立统一 GT/GMR/SONIC benchmark：对同一音乐的原始 SMPL/SMPLH、G1 reference 和 SONIC execution 使用同一套舞蹈质量与音乐适配指标；38 条 source→G1 配对审计结果见 `eval/benchmark_v1/gt/retargeting_loss_v1/`。retargeting 与 tracking 只用前后 delta 区分，不把跨骨架位置差作为主结论。
-- [x] 完成全量 source→G1 retargeting audit：1,611 条有效配对；扩展结果见 `eval/benchmark_v1/gt/retargeting_loss_all_v1/`。AIST++ 与 FineDance 分布分开报告，不用 pooled 数值掩盖 FineDance 的 GMR 保真度问题。
-- [x] 将已有 M2/M3 generator reference 按 GT calibration 统一出表：M2 song098 三 seed、M3 song012/065 各一条 60 s，结果见 `eval/motion_music_execution/m2_m3_gt_comparison_v2/`。
-- [x] 完成 M3 正式 generator-level 音乐条件因果消融：song012/065 × seed1234/2345/3456 × paired/wrong/+4s shifted/null，共 24 条 30 s 轨迹；逐条结果见 `eval/m3_music_ablation/formal_30s/song012/analysis_v2/`、`song065/analysis_v2/`，汇总见 `aggregate_v2/`。
+- [x] 建立多数据集 GT oracle calibration suite：AIST++ held-out 20 条 + FineDance held-out 18 条，共 38 条 paired G1/audio 序列；输出 per-dataset 与 pooled motion/music reference distributions，见 `eval/results/benchmark_v1/gt/gt_oracle_suite_v2/`。校准后扩展到 AIST++ 1,408 条 + FineDance 203 条，见 `eval/results/benchmark_v1/gt/gt_oracle_suite_all_v1/`。
+- [x] 建立统一 GT/GMR/SONIC benchmark：对同一音乐的原始 SMPL/SMPLH、G1 reference 和 SONIC execution 使用同一套舞蹈质量与音乐适配指标；38 条 source→G1 配对审计结果见 `eval/results/benchmark_v1/gt/retargeting_loss_v1/`。retargeting 与 tracking 只用前后 delta 区分，不把跨骨架位置差作为主结论。
+- [x] 完成全量 source→G1 retargeting audit：1,611 条有效配对；扩展结果见 `eval/results/benchmark_v1/gt/retargeting_loss_all_v1/`。AIST++ 与 FineDance 分布分开报告，不用 pooled 数值掩盖 FineDance 的 GMR 保真度问题。
+- [x] 将已有 M2/M3 generator reference 按 GT calibration 统一出表：M2 song098 三 seed、M3 song012/065 各一条 60 s，结果见 `eval/results/motion_music_execution/m2_m3_gt_comparison_v2/`。
+- [x] 完成 M3 `M_ref` 首轮 G1-native 全模块评估：song012/065 × 3 sampling seeds，共 6 条 60 s reference；FK BAS `0.2708`、Beat F1 `0.2275`、Beat recall `0.1866`、timing mean/std `-0.049/1.448` 帧。该结果只支持 reference-side diagnosis，不包含 SONIC execution 或实时性 claim。
+- [x] 完成 M3 正式 generator-level 音乐条件因果消融：song012/065 × seed1234/2345/3456 × paired/wrong/+4s shifted/null，共 24 条 30 s 轨迹；逐条结果见 `eval/results/m3_music_ablation/formal_30s/song012/analysis_v2/`、`song065/analysis_v2/`，汇总见 `aggregate_v2/`。
 - [x] 确认 M3 sidecar 对生成有因果作用，但当前 paired condition 尚未证明优于 wrong/shifted/null：paired 相对 wrong 的 BAS 差为 `-0.0193`、impact correlation 差为 `+0.0023`，paired 胜出分别为 `2/6`、`4/6`；不能据此宣称已经学会正确音乐对齐。
 - [x] 完成论文指标审计并冻结 evaluation map v1.2：BAS 升级为 beat-alignment suite 的核心指标，同时固定 event coverage/F1、onset response、lag、tempo/phase 等互补 beat 指标；动作质量、音乐适配、SONIC 执行和实时系统四组指标保持分开报告。来源与定义见 `docs/evaluation/LITERATURE_METRIC_AUDIT_20260823.md`。
-- [x] 用 AIST++ GT corruption 验证 benchmark 指标方向：20 条 GT、260 个 clean/退化样本；jerk、low-pass energy、static ratio 和 freeze event F1 通过；`repeat_similarity` 未通过，暂不作为核心指标。结果见 `eval/benchmark_v1/gt/benchmark_validity_v1/`。
-- [x] 将 GT benchmark 按数据集、tempo 和可用 style/genre 分层验证：AIST++ 20 条 + FineDance 18 条，共 494 个 clean/退化样本；8 个跨数据集方向检查中 7 个通过。FineDance 的 freeze Beat F1 为 WARN，因此 Beat F1 不能单独作为退化判据，但继续作为 beat-alignment suite 的核心指标，与 BAS、coverage、lag、tempo/phase 联合报告。结果见 `eval/benchmark_v1/gt/stratified_audit_v1/`。
-- [x] 将 GT reference distribution 扩展到全量 paired 数据：AIST++ 1,408 条 + FineDance 203 条，共 1,611 条、32 个 dataset/tempo/style strata；全量结果只用于条件化 calibration，不回写 sealed test 或指标设计。结果见 `eval/benchmark_v1/gt/stratified_audit_all_v1/`。
-- [x] 建立四层正式实验 manifest：同一音乐固定 O-Human(SMPL/SMPLH)、O-G1(GMR)、M-ref(G1 generator) 和 M-exec(SONIC G1)；当前接入 38 条 GT 和已有模型记录，缺失 execution 显式标为 pending。结果见 `eval/benchmark_v1/formal/`。
-- [x] 汇总 38 条 O-Human -> O-G1 两层正式 GT 结果，统一报告 GMR 前后 activity、root、BAS、Beat F1、impact、tempo/phase 等变化；结果见 `eval/benchmark_v1/formal/GT_REPORT.md`。AIST++ retargeting correspondence 较稳定，FineDance correspondence 偏低，后者先作为数据/格式审计项，不作为 generator 退化结论。
-- [x] 完成 AIST++ 20 条与 FineDance 18 条 paired/wrong-song 音乐配对完整性审计；两套数据的 paired 平均相关性高于 wrong-song，但 Top-1 分别为 `0.30/0.22`，不能把自动指标视为绝对音乐性 oracle。结果见 `eval/benchmark_v1/gt/aist_music_pairing_v1/` 和 `finedance_music_pairing_v1/`。
-- [x] 将已有 M0/M2/M4 song098 的 9 次 SONIC repeat 与 M3 012/065 的 paired `M_ref/M_exec` 指标统一汇总；结果见 `eval/benchmark_v1/formal/MODEL_REPORT.md`。该表是现有进度记录，不是平衡的模型排名。
-- [x] 生成现有 route-level 描述性汇总 `eval/benchmark_v1/formal/MODEL_SUMMARY.md`；仅用于检查动作质量与 tracker retention，不做跨歌曲/跨协议排名。
-- [x] 对已有完整 motion/audio artifact 补算 Beat event Precision/Recall/F1、tempo error 和 phase error；结果见 `eval/benchmark_v1/formal/model_music_extended/REPORT.md` 和 `REPORT_ZH.md`。此前 9 条 M0/M2/M4 SONIC 记录已从 feedback log 恢复 measured-motion PKL，旧 execution event 指标已补齐；未采集矩阵单元仍显式 pending。
-- [x] 固化正式扩展采集矩阵：4 routes × 3 songs（012/065/098）× 3 sampling seeds（1234/2345/3456）× `M_ref/M_exec`，共 72 个 target cells；当前 5 个 reference、3 个 execution 已有，其余显式 pending，见 `eval/benchmark_v1/formal/EXPANSION_MATRIX.csv`。
+- [x] 用 AIST++ GT corruption 验证 benchmark 指标方向：20 条 GT、260 个 clean/退化样本；jerk、low-pass energy、static ratio 和 freeze event F1 通过；`repeat_similarity` 未通过，暂不作为核心指标。结果见 `eval/results/benchmark_v1/gt/benchmark_validity_v1/`。
+- [x] 将 GT benchmark 按数据集、tempo 和可用 style/genre 分层验证：AIST++ 20 条 + FineDance 18 条，共 494 个 clean/退化样本；8 个跨数据集方向检查中 7 个通过。FineDance 的 freeze Beat F1 为 WARN，因此 Beat F1 不能单独作为退化判据，但继续作为 beat-alignment suite 的核心指标，与 BAS、coverage、lag、tempo/phase 联合报告。结果见 `eval/results/benchmark_v1/gt/stratified_audit_v1/`。
+- [x] 将 GT reference distribution 扩展到全量 paired 数据：AIST++ 1,408 条 + FineDance 203 条，共 1,611 条、32 个 dataset/tempo/style strata；全量结果只用于条件化 calibration，不回写 sealed test 或指标设计。结果见 `eval/results/benchmark_v1/gt/stratified_audit_all_v1/`。
+- [x] 建立四层正式实验 manifest：同一音乐固定 O-Human(SMPL/SMPLH)、O-G1(GMR)、M-ref(G1 generator) 和 M-exec(SONIC G1)；当前接入 38 条 GT 和已有模型记录，缺失 execution 显式标为 pending。结果见 `eval/results/benchmark_v1/formal/`。
+- [x] 汇总 38 条 O-Human -> O-G1 两层正式 GT 结果，统一报告 GMR 前后 activity、root、BAS、Beat F1、impact、tempo/phase 等变化；结果见 `eval/results/benchmark_v1/formal/GT_REPORT.md`。AIST++ retargeting correspondence 较稳定，FineDance correspondence 偏低，后者先作为数据/格式审计项，不作为 generator 退化结论。
+- [x] 完成 AIST++ 20 条与 FineDance 18 条 paired/wrong-song 音乐配对完整性审计；两套数据的 paired 平均相关性高于 wrong-song，但 Top-1 分别为 `0.30/0.22`，不能把自动指标视为绝对音乐性 oracle。结果见 `eval/results/benchmark_v1/gt/aist_music_pairing_v1/` 和 `finedance_music_pairing_v1/`。
+- [x] 将已有 M0/M2/M4 song098 的 9 次 SONIC repeat 与 M3 012/065 的 paired `M_ref/M_exec` 指标统一汇总；结果见 `eval/results/benchmark_v1/formal/MODEL_REPORT.md`。该表是现有进度记录，不是平衡的模型排名。
+- [x] 生成现有 route-level 描述性汇总 `eval/results/benchmark_v1/formal/MODEL_SUMMARY.md`；仅用于检查动作质量与 tracker retention，不做跨歌曲/跨协议排名。
+- [x] 对已有完整 motion/audio artifact 补算 Beat event Precision/Recall/F1、tempo error 和 phase error；结果见 `eval/results/benchmark_v1/formal/model_music_extended/REPORT.md` 和 `REPORT_ZH.md`。此前 9 条 M0/M2/M4 SONIC 记录已从 feedback log 恢复 measured-motion PKL，旧 execution event 指标已补齐；未采集矩阵单元仍显式 pending。
+- [x] 固化正式扩展采集矩阵：4 routes × 3 songs（012/065/098）× 3 sampling seeds（1234/2345/3456）× `M_ref/M_exec`，共 72 个 target cells；当前 5 个 reference、3 个 execution 已有，其余显式 pending，见 `eval/results/benchmark_v1/formal/EXPANSION_MATRIX.csv`。
 - [ ] 获取或发布可复现 M2/M3 music-conditioned inference checkpoint、feature-cache contract、training/sampling seed 和 audio alignment metadata；当前 prior-dev release 只有 unconditional pure Commit Forcing，不能继续生成新的 M2/M3 PKL。
 - [x] 冻结音乐条件输入对照：`8D beat-only` 下限、`MERT + Librosa + 8D beat` 主线、`Wav2CLIP + beat` 历史 anchor；STFT/Jukebox 只作为消融，不同时堆叠多个高层 encoder。
 - [ ] 在固定 quality manifest 下比较 unfiltered train、`root_z >= 0` 和 retarget correction 三种训练策略；不得清洗 sealed test。

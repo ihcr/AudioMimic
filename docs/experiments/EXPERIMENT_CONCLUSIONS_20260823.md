@@ -1,6 +1,6 @@
 # AudioMimic Experiment Conclusions and ICRA Claim Status
 
-更新日期：2026-08-23
+更新日期：2026-08-24
 
 这是当前实验结论的总账。旧的实验文件保留原始命令、日志和中间结果；本文只记录
 经过整理后可以用于研究判断和论文写作的结论。新实验完成后，先更新本文，再更新
@@ -76,19 +76,19 @@ extractor、split、序列长度、beat detector 和统计协议一致时才能�
 - 本轮已按固定协议重算全量 GT oracle：AIST++ `1,408` 条、FineDance `203` 条，共 `1,611` 条 paired G1 sequence；逐条结果、dataset/style/tempo 分层和 D/M 分布均已更新。
 - 全量 FineDance-G1 的 root-height 已单独审计：203 条中 186 条 root z 全程非负，17 条出现短时负 root z；这 17 条同时表现为脚部接近地面且穿透率较低，不能直接解释为 Breaking 等风格的舞蹈质量下降。
 
-报告：[`stratified_audit_v1`](../../eval/benchmark_v1/gt/stratified_audit_v1/)、
-[`stratified_audit_all_v1`](../../eval/benchmark_v1/gt/stratified_audit_all_v1/)。
+报告：[`stratified_audit_v1`](../../eval/results/benchmark_v1/gt/stratified_audit_v1/)、
+[`stratified_audit_all_v1`](../../eval/results/benchmark_v1/gt/stratified_audit_all_v1/)。
 
 38 条 sealed GT 的完整音乐-动作校准（BAS、Event F1、tempo、phase、impact
 correlation 和 lag）见中文报告
-[`gt_oracle_suite_v2/REPORT_ZH.md`](../../eval/benchmark_v1/gt/gt_oracle_suite_v2/REPORT_ZH.md)。
+[`gt_oracle_suite_v2/REPORT_ZH.md`](../../eval/results/benchmark_v1/gt/gt_oracle_suite_v2/REPORT_ZH.md)。
 AIST++ 与 FineDance 的指标分布明显不同，后续模型和 SONIC 结果必须先做数据集/速度/风格
 分层比较，不能用 pooled BAS 或单一总分直接排名。
 差异来源和区分实验单独记录在
 [`DATASET_DIFFERENCE_ANALYSIS_20260823.md`](../evaluation/DATASET_DIFFERENCE_ANALYSIS_20260823.md)。
 
 该已有 G1 root/ground 诊断见
-[`finedance_root_height_audit_v1/REPORT_ZH.md`](../../eval/benchmark_v1/gt/finedance_root_height_audit_v1/REPORT_ZH.md)。在 root 坐标约定修正前，D5 的
+[`finedance_root_height_audit_v1/REPORT_ZH.md`](../../eval/results/benchmark_v1/gt/finedance_root_height_audit_v1/REPORT_ZH.md)。在 root 坐标约定修正前，D5 的
 `root_height_min` 只保留为诊断字段；generator 和 SONIC execution 的正式比较优先使用
 foot penetration、FSR/PFC proxy，以及其余冻结的 D/M/X 指标。
 
@@ -110,15 +110,15 @@ M4/M_ref 为 `43.3/67.4`；SONIC 执行后分别为 M2 `44.7/58.8`、M3 `47.5/54
 M4 `38.8/61.9`。这些结果仅用于 pipeline diagnosis，因为当前歌曲、seed、时长和
 执行协议未平衡，不能作为最终模型排名。
 
-报告：[`module_benchmark_v1/REPORT_ZH.md`](../../eval/benchmark_v1/gt/module_benchmark_v1/REPORT_ZH.md)。
+报告：[`module_benchmark_v1/REPORT_ZH.md`](../../eval/results/benchmark_v1/gt/module_benchmark_v1/REPORT_ZH.md)。
 
-全量中文 oracle 报告：[`gt_oracle_suite_all_v1/REPORT_ZH.md`](../../eval/benchmark_v1/gt/gt_oracle_suite_all_v1/REPORT_ZH.md)。需要注意，GT 原始 paired 数据可以直接建立 P/D/M 的 reference distribution；X（SONIC 执行）、R（在线 deadline/latency）和 H（人类感知）没有对应观测，已在全模块 inventory 中标为 pending，不能从 GT 分数推断。
+全量中文 oracle 报告：[`gt_oracle_suite_all_v1/REPORT_ZH.md`](../../eval/results/benchmark_v1/gt/gt_oracle_suite_all_v1/REPORT_ZH.md)。需要注意，GT 原始 paired 数据可以直接建立 P/D/M 的 reference distribution；X（SONIC 执行）、R（在线 deadline/latency）和 H（人类感知）没有对应观测，已在全模块 inventory 中标为 pending，不能从 GT 分数推断。
 
 这次分数不能被理解成只看 D/M 两个总分。taxonomy v1 共冻结 49 个指标，覆盖 P/D/M/X/R/H：
 当前 D 的 jerk、energy、static ratio 已有 GT corruption 方向证据，M 的 BAS/Beat F1
 只有部分方向证据；FID/Div、phrase、retrieval/MMDist、完整 X retention、R latency/deadline
 和 H blind study 仍需补齐。完整清单见
-[`module_calibration_audit.json`](../../eval/benchmark_v1/gt/module_benchmark_v1/module_calibration_audit.json)。
+[`module_calibration_audit.json`](../../eval/results/benchmark_v1/gt/module_benchmark_v1/module_calibration_audit.json)。
 因此后续任何 M2/M3/M4 结果都必须逐模块给出原始值、matched-GT reference、SONIC retention
 和 pending 项，不能用单个 BAS、单个 D/M 分数或 success rate 代替整个 benchmark。
 
@@ -146,11 +146,35 @@ M4 `38.8/61.9`。这些结果仅用于 pipeline diagnosis，因为当前歌曲�
 
 已有 M2 song098 三个 sampling seed 和 M3 song012/065 reference 已按全量 1,611 条
 GT distribution 重新标定，结果见
-[`m2_m3_gt_comparison_v2`](../../eval/motion_music_execution/m2_m3_gt_comparison_v2/)。
+[`m2_m3_gt_comparison_v2`](../../eval/results/motion_music_execution/m2_m3_gt_comparison_v2/)。
 这只是 reference-level calibration：当前 M2/M3 仍集中在少数歌曲，不能代表跨数据集、
 跨 tempo/style 的最终 generator benchmark。
 
-### 4.3 SONIC execution
+### 4.3 M3 `M_ref` 首轮完整指标
+
+M3 MRT2-conditioned release 已生成 `song012/065 x seed{1234,2345,3456}` 六条 60 秒
+G1 reference，并完成 G1-native 全模块中的 reference-side 指标。结果见
+[`eval/RESULTS.md`](../../eval/RESULTS.md) 和
+[`m3_reference_metrics/REPORT.md`](../../eval/results/benchmark_v1/formal/m3_reference_metrics/REPORT.md)。
+
+| 模块 | 结果 | 判断 |
+|---|---:|---|
+| 有限轨迹率 | 1.000 | 生成格式和数值有效 |
+| D overall | 51.6 | 相对对应 GT 分层为中等接近度，不是绝对质量百分比 |
+| M overall | 62.9 | 存在音乐适配信号，但仍不稳定 |
+| FK BAS | 0.2708 | 有一定 beat 对齐 |
+| Beat precision / recall / F1 | 0.3037 / 0.1866 / 0.2275 | 命中精度尚可，音乐 beat 覆盖不足 |
+| Beat timing mean / std | -0.049 / 1.448 帧 | 已命中事件的时间偏差较小 |
+| Offbeat false-positive rate | 0.6963 | 非拍动作比例较高 |
+| Root drift / foot sliding | 1.535 m / 0.505 m | 需要和同音乐 O-G1 GT 做严格分层比较 |
+
+当前最稳妥的结论是：M3 能生成有效的 G1 reference，部分节奏事件能够准确落在音乐
+beat 附近，但没有稳定覆盖音乐中的全部节奏事件，动作动态表现力也偏弱。不能把
+`BAS` 或单个 timing 指标解释成整体舞蹈质量，也不能把这六条 reference 与其他论文的
+headline 数值直接排名。当前结果不包含 SONIC execution、tracking retention 或实时性
+claim；这些属于下一层 paired `M_exec` 评估。
+
+### 4.4 SONIC execution
 
 - SONIC 基础接口、reference stream 和 tracking loop 已跑通。
 - 统一 reference/execution 对照显示，tracker 能保留主要姿态，但会衰减 motion energy、
@@ -163,7 +187,7 @@ GT distribution 重新标定，结果见
 结论：SONIC 是可用 tracker，但当前 paper 主线应优先使用严格时钟的 open-loop online
 generator + SONIC tracking；closed-loop 作为后续 tracker-aware extension。
 
-### 4.4 GT capability 和 retargeting
+### 4.5 GT capability 和 retargeting
 
 - GT/O-G1/O-Exec 已建立三级 oracle 关系，四层正式记录已固定为
   O-Human / O-G1 / M_ref / M_exec。
@@ -171,7 +195,7 @@ generator + SONIC tracking；closed-loop 作为后续 tracker-aware extension。
 - O-Human/O-G1/O-Exec 的同一套 music-motion 指标可以作为 generator 和 tracker 的共同
   参考标准。
 - 当前 38 条 O-Human -> O-G1 正式汇总见
-  [`eval/benchmark_v1/formal/GT_REPORT.md`](../../eval/benchmark_v1/formal/GT_REPORT.md)。
+  [`eval/results/benchmark_v1/formal/GT_REPORT.md`](../../eval/results/benchmark_v1/formal/GT_REPORT.md)。
   AIST++ 的 activity/root correspondence 在 retarget 后总体保持较好；FineDance
   明显偏低，说明需要先排查 SMPL/G1 配对、帧率、坐标和 beat 标注兼容性。这个结果
   是 retargeting audit，不应直接归因于 diffusion，也不应把 O-G1 当成无条件完美
@@ -209,26 +233,26 @@ generator + SONIC tracking；closed-loop 作为后续 tracker-aware extension。
 6. 完成 3 songs × 3 seeds × 3 SONIC repeats 和盲评。
 7. 证明 causal audio-prefix inference 在连续 60 s 内满足 deadline、无 future leakage。
 
-四层正式 manifest 已建立在 [`eval/benchmark_v1/formal/`](../../eval/benchmark_v1/formal/)。
+四层正式 manifest 已建立在 [`eval/results/benchmark_v1/formal/`](../../eval/results/benchmark_v1/formal/)。
 它把同一音乐下的 O-Human、O-G1、M-ref 和 M-exec 固定在一条记录中；当前已有 38 条
 GT records 和 5 条 model records。缺失的 M-ref/M-exec 明确标为 `pending`，在补齐前不
 进入正式结果表。
 已有的 M0/M2/M4 song098 SONIC repeats 与 M3 012/065 pair metrics 已另外汇总到
-[`eval/benchmark_v1/formal/MODEL_REPORT.md`](../../eval/benchmark_v1/formal/MODEL_REPORT.md)。
+[`eval/results/benchmark_v1/formal/MODEL_REPORT.md`](../../eval/results/benchmark_v1/formal/MODEL_REPORT.md)。
 它用于检查评估链路和 tracker retention，不能替代平衡的多歌曲、多 seed 正式实验。
 当前 route-level 描述性均值见
-[`MODEL_SUMMARY.md`](../../eval/benchmark_v1/formal/MODEL_SUMMARY.md)，不作为跨 route
+[`MODEL_SUMMARY.md`](../../eval/results/benchmark_v1/formal/MODEL_SUMMARY.md)，不作为跨 route
 排名。
 Beat event Precision/Recall/F1、tempo error 和 phase error 已对有完整 motion/audio
 的 22 条 artifact 补算，见
-[`model_music_extended/REPORT.md`](../../eval/benchmark_v1/formal/model_music_extended/REPORT.md)
+[`model_music_extended/REPORT.md`](../../eval/results/benchmark_v1/formal/model_music_extended/REPORT.md)
 和中文说明
-[`REPORT_ZH.md`](../../eval/benchmark_v1/formal/model_music_extended/REPORT_ZH.md)。
+[`REPORT_ZH.md`](../../eval/results/benchmark_v1/formal/model_music_extended/REPORT_ZH.md)。
 此前的 9 条 M0/M2/M4 SONIC execution 已从 feedback log 恢复为完整 measured-motion
 PKL，因此这些旧记录的 event-level execution 指标已经补齐；未采集的正式矩阵单元仍为
 pending。
 正式扩展的 72-cell 采集矩阵见
-[`eval/benchmark_v1/formal/EXPANSION_MATRIX.csv`](../../eval/benchmark_v1/formal/EXPANSION_MATRIX.csv)。
+[`eval/results/benchmark_v1/formal/EXPANSION_MATRIX.csv`](../../eval/results/benchmark_v1/formal/EXPANSION_MATRIX.csv)。
 当前只有 5 个 balanced reference cell 和 3 个 execution cell；M3 pilot 与 M2
 不同 training seed 的结果暂不混入 balanced sampling-seed 统计。
 最新 `prior-dev` release 只有 unconditional pure Commit Forcing 权重，不能继续

@@ -61,7 +61,7 @@ The current end-to-end status and prioritized work toward a real-time
 music-driven G1 are tracked in
 [`ROADMAP_REALTIME_MUSIC_TO_G1.md`](ROADMAP_REALTIME_MUSIC_TO_G1.md).
 
-### Validated status (2026-08-20)
+### Validated status (2026-08-24)
 
 - The motion-only K64/H8/C4 generator runs within the real-time budget
   (typically 48--55 ms inference for a 267 ms C4 execution window), and the
@@ -79,6 +79,14 @@ music-driven G1 are tracked in
   music-to-motion runtime. Correct-song, shifted-song, and wrong-song tests on
   these fixed trajectories also do not yet establish a causal music-condition
   benefit.
+- The current MRT2 M3 release has six G1 `M_ref` trajectories for
+  `song012/065 x seed{1234,2345,3456}`. All six are finite and pass the native
+  G1 schema check. Their aggregate FK beat F1 is `0.2275` with precision
+  `0.3037` and recall `0.1866`; matched beat timing is centered near zero
+  (`-0.049` frames, `1.448` frame standard deviation), but the high offbeat
+  rate (`0.6963`) means this is not yet evidence of strong beat coverage.
+  These are generator-side reference results only; no SONIC execution or
+  real-time claim is attached to them.
 - The immediate blocker is the releasable M2 checkpoint and exact causal music
   feature contract. After that, the next milestone is an Open-loop live-music
   demo using the validated SONIC boundary, followed by tracker-aware
@@ -416,7 +424,7 @@ This is useful when generation and visualization should happen in separate
 jobs. To replay a saved G1 `.pkl` with the robot model:
 ```.bash
 MUJOCO_GL=egl python - <<'PY'
-from eval.g1_visualization import render_g1_motion
+from eval.render.g1_visualization import render_g1_motion
 
 render_g1_motion(
     "renders/g1_demo_motions/test_0_song_g1.pkl",
@@ -441,7 +449,7 @@ Physical Foot Contact (PFC), Beat Alignment Score (BAS), Beat Assignment Precisi
 1. Generate motions with `--save_motions`
 2. Run the benchmark suite:
 ```.bash
-python -m eval.run_benchmark_eval \
+python -m eval.benchmark.run_benchmark_eval \
   --motion_path eval/motions \
   --metrics_path eval/metrics.json \
   --edge_table_path eval/edge_table.json \
@@ -454,7 +462,7 @@ The current PFC value should be treated as an internal ranking metric until the 
 
 Generated checkpoint eval can be run directly from a model checkpoint. Use `--max_eval_clips` for a small screening run:
 ```.bash
-python -m eval.run_dataset_eval \
+python -m eval.benchmark.run_dataset_eval \
   --checkpoint runs/train/<run>/weights/train-500.pt \
   --feature_type jukebox \
   --motion_save_dir eval/motions \
@@ -463,7 +471,7 @@ python -m eval.run_dataset_eval \
 ```
 For the safe `lbeat` pipeline, prefer the automated screening helper created by the Slurm preset:
 ```.bash
-python eval/screen_lbeat_checkpoints.py \
+python eval/benchmark/screen_lbeat_checkpoints.py \
   --project runs/train \
   --train_name edge_beatdistance_lbeat_safe \
   --output_dir slurm/pipelines/<run_id>/eval \
@@ -473,28 +481,28 @@ By default this helper exits successfully when eval completes, even if the quali
 
 Standalone metric scripts are still available when you only want one score:
 ```.bash
-python eval/eval_pfc.py --motion_path eval/motions
-python eval/eval_bas_bap.py --motion_path eval/motions
-python eval/eval_diversity.py --motion_path eval/motions
+python eval/metrics/eval_pfc.py --motion_path eval/motions
+python eval/metrics/eval_bas_bap.py --motion_path eval/motions
+python eval/metrics/eval_diversity.py --motion_path eval/motions
 ```
 To compare PFC anchors such as ground truth, the official checkpoint, and new runs:
 ```.bash
-python eval/audit_pfc.py \
+python eval/tools/audit_pfc.py \
   --source ground_truth=data/test/motions \
   --source official_checkpoint=slurm/evals/official-checkpoint-baseline3/motions \
   --source beatdistance_run=slurm/pipelines/<run_id>/eval/motions
 ```
 For qualitative debugging of velocity peaks versus detected beats:
 ```.bash
-python eval/plot_velocity_vs_beats.py --motion_file eval/motions/sample.pkl
+python eval/music/plot_velocity_vs_beats.py --motion_file eval/motions/sample.pkl
 ```
 
 ### G1 evaluation
-Robot-native G1 evaluation uses `eval/run_g1_dataset_eval.py` and writes G1
+Robot-native G1 evaluation uses `eval/benchmark/run_g1_dataset_eval.py` and writes G1
 reports instead of SMPL-only metric tables. FK metrics are opt-in and use the
 local Unitree model under `third_party/unitree_g1_description`:
 ```.bash
-python -m eval.run_g1_dataset_eval \
+python -m eval.benchmark.run_g1_dataset_eval \
   --checkpoint runs/train/<run>/weights/train-2000.pt \
   --feature_type jukebox \
   --data_path data/g1_aistpp_full_fkbeats \
@@ -519,7 +527,7 @@ minima, while FK G1 uses FK keypoint velocity minima.
 For qualitative whole-song G1 videos, use the raw full AIST music directory,
 not the choreography-trimmed `test/wavs` tree and not the 5-second model slices:
 ```.bash
-MUJOCO_GL=egl python -m eval.run_full_song_eval \
+MUJOCO_GL=egl python -m eval.benchmark.run_full_song_eval \
   --checkpoint runs/train/<run>/weights/train-2000.pt \
   --motion_format g1 \
   --feature_type jukebox \

@@ -51,6 +51,9 @@ core.*
 AGENTS.md
 .venv311
 
+# Generated evaluation audio is kept locally; compact metrics and reports are tracked.
+eval/results/**/audio/
+
 # Local artifact manifests and experiment outputs.
 hf_manifest.json
 eval/EXP-*/
